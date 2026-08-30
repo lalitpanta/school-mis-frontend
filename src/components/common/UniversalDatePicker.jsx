@@ -1,6 +1,4 @@
 import React from 'react';
-import NepaliDatePicker from '@zener/nepali-datepicker-react';
-import '@zener/nepali-datepicker-react/index.css';
 import { useSettings } from '../../context/SettingsContext';
 import { adToBs, bsToAd } from '../../utils/bsCalendar';
 
@@ -45,19 +43,10 @@ const UniversalDatePicker = ({ value, onChange, className = '' }) => {
     return '';
   };
 
-  if (calendarType === 'BS') {
-    return (
-      <div className={`relative ${className}`}>
-        <NepaliDatePicker
-          value={getBsValue()}
-          onChange={handleBsChange}
-          lang="np"
-          className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500"
-        />
-      </div>
-    );
-  }
-
+  // The external Nepali datepicker package was causing runtime crashes in production
+  // and the app needs a reliable, browser-safe fallback to keep the frontend alive.
+  // The component still accepts BS/AD semantics via the conversion helpers, but it
+  // renders a standard native date input so the app can deploy reliably on Render.
   return (
     <input
       type="date"
