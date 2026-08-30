@@ -1,0 +1,16 @@
+import Sidebar from './Sidebar';
+import Navbar from './Navbar';
+
+const MainLayout = ({ children }) => (
+  <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-main)' }}>
+    <Sidebar />
+    <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+      <Navbar />
+      <main className="flex-1 overflow-y-auto p-5" style={{ background: 'var(--bg-main)', color: 'var(--text-1)' }}>
+        {children}
+      </main>
+    </div>
+  </div>
+);
+
+export default MainLayout;

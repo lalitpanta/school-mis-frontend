@@ -1,0 +1,560 @@
+import { useEffect, useMemo, useState } from 'react';
+import { roomsApi } from '../../api/roomsApi';
+import { classesApi } from '../../api/classesApi';
+import { sectionsApi } from '../../api/sectionsApi';
+import { usersApi } from '../../api/usersApi';
+import Button from '../common/Button';
+import { Plus, Edit, Trash2, X, LayoutGrid, List, Map } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useSettings } from '../../context/SettingsContext';
+
+const Rooms = () => {
+  const { settings } = useSettings();
+  const school = settings?.school_profile || {};
+  const floorCount = Math.max(1, parseInt(school?.total_floors || 1, 10) || 1);
+  const floors = useMemo(() => Array.from({ length: floorCount }, (_, index) => index + 1), [floorCount]);
+
+  // Tab management
+  const [activeTab, setActiveTab] = useState('rooms'); // 'rooms', 'classes', 'sections'
+
+  // Rooms state
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [roomsViewMode, setRoomsViewMode] = useState('list');
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [roomForm, setRoomForm] = useState({ room_number: '', floor_number: floors[0] || 1, room_type: 'Classroom', total_capacity: 0, monitor_name: '' });
+  const [roomMode, setRoomMode] = useState('create'); // 'create' or 'edit'
+  const [selectedRoom, setSelectedRoom] = useState(null);
+
+  // Classes state
+  const [classes, setClasses] = useState([]);
+  const [showClassModal, setShowClassModal] = useState(false);
+  const [classForm, setClassForm] = useState({ class_name: '', total_students: 0, faculty: '' });
+  const [classMode, setClassMode] = useState('create');
+  const [selectedClass, setSelectedClass] = useState(null);
+
+  // Sections state
+  const [sections, setSections] = useState([]);
+  const [showSectionModal, setShowSectionModal] = useState(false);
+  const [sectionForm, setSectionForm] = useState({ section_name: '', room_id: null, total_students: 0, monitor_name: '', class_teacher_id: '' });
+  const [sectionMode, setSectionMode] = useState('create');
+  const [selectedSection, setSelectedSection] = useState(null);
+  const [staff, setStaff] = useState([]);
+
+  // Load data
+  const loadRooms = async () => {
+    try {
+      setLoading(true);
+      const res = await roomsApi.getRooms();
+      setRooms(res.data?.data || []);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load rooms');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadClasses = async () => {
+    try {
+      setLoading(true);
+      const res = await classesApi.getClasses();
+      setClasses(res.data?.data || []);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load classes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSections = async () => {
+    try {
+      setLoading(true);
+      const res = await sectionsApi.getSections();
+      setSections(res.data?.data || []);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load sections');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const u = await usersApi.getAllUsers();
+        setStaff(u.data || []);
+      } catch (e) {
+        console.error('Failed to load staff');
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'rooms') loadRooms();
+    else if (activeTab === 'classes') loadClasses();
+    else if (activeTab === 'sections') loadSections();
+  }, [activeTab]);
+
+  const getDefaultFormState = () => ({
+    name:'',
+    total_capacity:0,
+    monitor_name:'',
+    room_number:'',
+    room_type:'Classroom',
+    number_of_sections:0,
+    class_teacher_id:'',
+    floor_number: floors[0] || 1,
+  });
+
+  const normalizeRoomNumber = (roomNumber, floorNumber) => {
+    const raw = String(roomNumber || '').trim();
+    if (!raw) return raw;
+    const prefix = String(floorNumber || floors[0] || 1);
+    if (raw.startsWith(prefix)) return raw;
+    if (/^\d+$/.test(raw) && raw.length <= 2) {
+      return `${prefix}${raw.padStart(2, '0')}`;
+    }
+    return raw;
+  };
+
+  const openCreate = () => {
+    setMode('create');
+    setSelected(null);
+    setForm(getDefaultFormState());
+    setShowModal(true);
+  };
+
+  const submitAndMaybeSections = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const payload = {
+        ...form,
+        room_number: normalizeRoomNumber(form.room_number, form.floor_number),
+      };
+      const res = await createClassroom(payload);
+      await load();
+      const created = res.data?.data || res.data || res;
+      if (created && Number(form.number_of_sections) > 1) {
+        const count = Number(form.number_of_sections) || 0;
+        const defaults = Array.from({length: count}, (_,i) => `Section ${i+1}`);
+        setSectionsDraft(defaults);
+        setPendingClassroom(created);
+        setShowModal(false);
+        setShowSectionsModal(true);
+        toast.success('Room created — add sections now');
+      } else {
+        setShowModal(false);
+        toast.success('Room created');
+      }
+    } catch (err) { console.error(err); } finally { setLoading(false); }
+  };
+
+  const openManageSections = async (classroom) => {
+    try {
+      setPendingClassroom(classroom);
+      setShowModal(false);
+      setShowSectionsModal(true);
+      const res = await getClassroomSections(classroom.id);
+      setSectionsDraft((res.data?.data || []).map(s => ({ id: s.id, name: s.name })));
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load sections');
+    }
+  };
+
+  const openEdit = (classroom) => {
+    setMode('edit');
+    setSelected(classroom);
+    setForm({
+      name: classroom.name || '',
+      total_capacity: classroom.total_capacity || 0,
+      monitor_name: classroom.monitor_name || '',
+      room_number: classroom.room_number || '',
+      room_type: classroom.room_type || 'Classroom',
+      number_of_sections: classroom.number_of_sections || 0,
+      class_teacher_id: classroom.class_teacher_id || '',
+      floor_number: classroom.floor_number || floors[0] || 1,
+    });
+    setShowModal(true);
+    (async ()=>{
+      try {
+        const res = await getClassroomSections(classroom.id);
+        setSectionsDraft((res.data?.data || []).map(s => ({ id: s.id, name: s.name })));
+      } catch (e) {
+        setSectionsDraft([]);
+      }
+    })();
+  };
+
+  const handleDelete = async (classroom) => {
+    if (!confirm('Delete classroom?')) return;
+    try {
+      setLoading(true);
+      await deleteClassroom(classroom.id);
+      toast.success('Room deleted');
+      await load();
+    } catch (err) { console.error(err); toast.error('Delete failed'); } finally { setLoading(false); }
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      if (mode === 'edit' && selected) {
+        const payload = {
+          ...form,
+          room_number: normalizeRoomNumber(form.room_number, form.floor_number),
+        };
+        await updateClassroom(selected.id, payload);
+        try {
+          const toCreate = sectionsDraft.filter(s => !s || typeof s === 'string' || !s.id).map(s => (typeof s === 'string' ? s : s.name)).map(s => s && s.trim()).filter(Boolean);
+          const toUpdate = sectionsDraft.filter(s => s && s.id).map(s => ({ id: s.id, name: s.name && s.name.trim() }));
+          if (toCreate.length > 0) await createClassroomSections(selected.id, toCreate);
+          for (const u of toUpdate) { if (u.name) await updateClassroomSection(u.id, u.name); }
+        } catch (err) { console.error('sections save failed', err); }
+        toast.success('Room updated');
+      } else {
+        await submitAndMaybeSections(e);
+        return;
+      }
+      await load();
+      setShowModal(false);
+      setMode('create');
+      setSelected(null);
+    } catch (err) { console.error(err); toast.error('Save failed'); } finally { setLoading(false); }
+  };
+
+  const unassignedRooms = useMemo(() => list.filter(room => !room.floor_number), [list]);
+  const roomsByFloor = useMemo(() => {
+    return floors.reduce((acc, floor) => {
+      acc[floor] = list.filter(room => room.floor_number === floor);
+      return acc;
+    }, {});
+  }, [list, floors]);
+
+  const viewLabel = {
+    list: 'List View',
+    grid: 'Grid View',
+    floor: 'Floor View',
+  };
+
+  return (
+    <div className="rounded-2xl p-6" style={{ background:'var(--bg-card)', border:'1px solid var(--border-card)' }}>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 className="text-base font-semibold" style={{ color:'var(--text-1)' }}>Rooms</h2>
+          <p className="text-xs text-slate-400">{viewLabel[viewMode]}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center bg-slate-800/60 border border-slate-700/60 rounded-lg overflow-hidden">
+            <button onClick={() => setViewMode('list')} className={`px-3 py-2 text-xs inline-flex items-center gap-1 ${viewMode==='list'?'bg-indigo-600/40 text-white':'text-slate-300'}`}>
+              <List size={14}/> List
+            </button>
+            <button onClick={() => setViewMode('grid')} className={`px-3 py-2 text-xs inline-flex items-center gap-1 ${viewMode==='grid'?'bg-indigo-600/40 text-white':'text-slate-300'}`}>
+              <LayoutGrid size={14}/> Grid
+            </button>
+            <button onClick={() => setViewMode('floor')} className={`px-3 py-2 text-xs inline-flex items-center gap-1 ${viewMode==='floor'?'bg-indigo-600/40 text-white':'text-slate-300'}`}>
+              <Map size={14}/> Floor View
+            </button>
+          </div>
+          <button onClick={openCreate} className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">
+            <Plus size={14}/> Create
+          </button>
+        </div>
+      </div>
+
+      {viewMode === 'list' && (
+        <div className="overflow-hidden rounded-lg border border-slate-700/60">
+          {list.length===0 ? <div className="p-6 text-center">{loading ? 'Loading...' : 'No rooms yet.'}</div> : (
+            <table className="w-full text-sm"><thead className="bg-slate-800/60 border-b"><tr><th className="px-4 py-3">Name</th><th className="px-4 py-3">Room</th><th className="px-4 py-3">Floor</th><th className="px-4 py-3">Type</th><th className="px-4 py-3">Capacity</th><th className="px-4 py-3">Monitor</th><th className="px-4 py-3">Sections</th><th className="px-4 py-3 text-right">Actions</th></tr></thead>
+              <tbody className="divide-y divide-slate-700/60">{list.map(c=> (
+                <tr key={c.id}><td className="px-4 py-3">{c.name}</td><td className="px-4 py-3">{c.room_number || '—'}</td><td className="px-4 py-3">{c.floor_number ? `Floor ${c.floor_number}` : 'Unassigned'}</td><td className="px-4 py-3">{c.room_type || '—'}</td><td className="px-4 py-3">{c.total_capacity}</td><td className="px-4 py-3">{c.monitor_name||'—'}</td><td className="px-4 py-3">{c.number_of_sections||0}</td><td className="px-4 py-3 text-right space-x-2"><button onClick={()=>openEdit(c)} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded"><Edit size={12}/>Edit</button><button onClick={()=>openManageSections(c)} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded"><Edit size={12}/>Manage Sections</button><button onClick={()=>handleDelete(c)} className="px-3 py-1 bg-red-500/20 text-red-300 rounded"><Trash2 size={12}/>Delete</button></td></tr>
+              ))}</tbody></table>
+          )}
+        </div>
+      )}
+
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {list.length===0 ? <div className="p-6 text-center col-span-full">{loading ? 'Loading...' : 'No rooms yet.'}</div> : list.map(c => (
+            <div key={c.id} className="rounded-xl border border-slate-700/60 bg-slate-900/60 p-4 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-base font-semibold text-white">{c.name}</div>
+                  <div className="text-xs text-slate-400">Room: {c.room_number || '—'} · {c.room_type || '—'}</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Floor: {c.floor_number ? `Floor ${c.floor_number}` : 'Unassigned'}</div>
+                </div>
+                <span className="text-xs px-2 py-1 rounded bg-indigo-500/20 text-indigo-200">Sections: {c.number_of_sections || 0}</span>
+              </div>
+              <div className="mt-3 text-xs text-slate-400">Monitor: {c.monitor_name || '—'}</div>
+              <div className="mt-4 flex gap-2">
+                <button onClick={()=>openEdit(c)} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded text-xs inline-flex items-center gap-1"><Edit size={12}/>Edit</button>
+                <button onClick={()=>openManageSections(c)} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded text-xs inline-flex items-center gap-1"><Edit size={12}/>Sections</button>
+                <button onClick={()=>handleDelete(c)} className="px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs inline-flex items-center gap-1"><Trash2 size={12}/>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {viewMode === 'floor' && (
+        <div className="rounded-xl border border-slate-700/60 bg-slate-900/60 p-4">
+          <div className="flex flex-col gap-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-slate-300">School rooms are grouped by floor from the current School Profile. Drag a room into a floor to assign it, or drag it to Unassigned to remove the floor assignment.</div>
+              <button onClick={() => { setFloorCreateForm({ name: '', room_number: '', total_capacity: 0, room_type: 'Classroom', floor_number: floors[0] || 1, monitor_name: '' }); setFloorCreateModal(true); }} className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">
+                <Plus size={14}/> Create Room
+              </button>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {floors.slice().reverse().map((floor) => (
+                <div
+                  key={floor}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const id = e.dataTransfer.getData('text/plain');
+                    if (!id) return;
+                    try {
+                      setLoading(true);
+                      await updateClassroom(id, { floor_number: floor });
+                      await load();
+                      toast.success(`Assigned room to Floor ${floor}`);
+                    } catch (err) {
+                      console.error(err);
+                      toast.error('Failed to assign room');
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  className="rounded-2xl border border-slate-700/70 bg-slate-800/80 p-4 min-h-55"
+                >
+                  <div className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Floor {floor}</div>
+                  <div className="space-y-3">
+                    {(roomsByFloor[floor] || []).map((room) => (
+                      <div
+                        key={room.id}
+                        draggable
+                        onDragStart={(e) => e.dataTransfer.setData('text/plain', String(room.id))}
+                        className="rounded-xl border border-slate-700/60 bg-slate-950/80 p-3 text-sm text-slate-100 cursor-grab"
+                      >
+                        <div className="font-semibold text-white">{room.room_number || 'Room'} — {room.name || 'Unnamed'}</div>
+                        <div className="mt-1 text-[11px] text-slate-400">Type: {room.room_type || 'Classroom'}</div>
+                        <div className="mt-1 text-[11px] text-slate-400">Capacity: {room.total_capacity || 0}</div>
+                        {room.monitor_name ? <div className="mt-1 text-[11px] text-slate-400">Teacher: {room.monitor_name}</div> : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={async (e) => {
+                e.preventDefault();
+                const id = e.dataTransfer.getData('text/plain');
+                if (!id) return;
+                try {
+                  setLoading(true);
+                  await updateClassroom(id, { floor_number: null });
+                  await load();
+                  toast.success('Room unassigned');
+                } catch (err) {
+                  console.error(err);
+                  toast.error('Failed to unassign room');
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              className="rounded-2xl border border-slate-700/70 bg-slate-800/80 p-4"
+            >
+              <div className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Unassigned Rooms</div>
+              <div className="grid gap-3">
+                {unassignedRooms.map((room) => (
+                  <div
+                    key={room.id}
+                    draggable
+                    onDragStart={(e) => e.dataTransfer.setData('text/plain', String(room.id))}
+                    className="rounded-xl border border-slate-700/60 bg-slate-950/80 p-3 text-sm text-slate-100 cursor-grab"
+                  >
+                    <div className="font-semibold text-white">{room.room_number || 'Room'} — {room.name || 'Unnamed'}</div>
+                    <div className="mt-1 text-[11px] text-slate-400">Type: {room.room_type || 'Classroom'}</div>
+                    <div className="mt-1 text-[11px] text-slate-400">Capacity: {room.total_capacity || 0}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md border border-slate-700">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-bold">{mode === 'edit' ? 'Edit Room' : 'Create Room'}</h3>
+              <button onClick={()=>setShowModal(false)} className="text-slate-400"><X/></button>
+            </div>
+            <form onSubmit={submitForm} className="p-4 space-y-3">
+              <div><label className="block text-sm text-slate-300 mb-1">Room name</label><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Total capacity</label><input type="number" value={form.total_capacity} onChange={e=>setForm({...form,total_capacity: parseInt(e.target.value||0)})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Monitor name</label><input value={form.monitor_name} onChange={e=>setForm({...form,monitor_name:e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div>
+                <label className="block text-sm text-slate-300 mb-1">Room Type</label>
+                <select value={form.room_type} onChange={e=>setForm({...form,room_type: e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded">
+                  {['Classroom','Computer Lab','Science Lab','Library','Staff Room','Office'].map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+              <div><label className="block text-sm text-slate-300 mb-1">Room Number</label><input value={form.room_number} placeholder={form.floor_number ? `${String(form.floor_number)}01` : '101'} onChange={e=>setForm({...form,room_number:e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Floor</label><select value={form.floor_number} onChange={e=>setForm({...form,floor_number: Number(e.target.value)})} className="w-full px-3 py-2 bg-slate-800 text-white rounded">
+                {floors.map((floor) => (
+                  <option key={floor} value={floor}>{`Floor ${floor}`}</option>
+                ))}
+              </select></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Number of sections</label><input type="number" value={form.number_of_sections} onChange={e=>setForm({...form,number_of_sections: parseInt(e.target.value||0)})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div>
+                <label className="block text-sm text-slate-300 mb-1">Class teacher</label>
+                <select value={form.class_teacher_id||''} onChange={e=>setForm({...form,class_teacher_id: e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded">
+                  <option value="">-- Select teacher --</option>
+                  {staff.map(u=> <option key={u.id} value={u.id}>{u.name || u.email}</option>)}
+                </select>
+              </div>
+              {mode === 'edit' && (
+                <div className="border-t pt-3">
+                  <h4 className="text-sm font-medium text-slate-200 mb-2">Sections</h4>
+                  <div className="space-y-2 mb-3">
+                    {sectionsDraft.map((s, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <input value={typeof s === 'string' ? s : (s.name||'')} onChange={e=>{ const arr = [...sectionsDraft]; if (typeof arr[idx] === 'string') arr[idx] = e.target.value; else arr[idx] = { ...(arr[idx]||{}), name: e.target.value }; setSectionsDraft(arr); }} className="flex-1 px-3 py-2 bg-slate-800 text-white rounded" />
+                        {s && s.id ? (
+                          <button type="button" onClick={async ()=>{
+                            if (!confirm('Delete this section?')) return;
+                            try { setLoading(true); await deleteClassroomSection(s.id); const arr = sectionsDraft.filter(x=>!(x && x.id === s.id)); setSectionsDraft(arr); toast.success('Section deleted'); } catch(e){ console.error(e); toast.error('Delete failed'); } finally{ setLoading(false); }
+                          }} className="px-3 py-1 bg-red-600 text-white rounded"><Trash2 size={14}/></button>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <button type="button" onClick={()=>{ setSectionsDraft([...(sectionsDraft||[]), '']); }} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded">Add Section</button>
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-end"><Button type="submit" loading={loading}>{mode==='edit'?'Save':'Create'}</Button></div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showSectionsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md border border-slate-700">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-bold">Create Sections for {pendingClassroom?.name}</h3>
+              <button onClick={()=>{ setShowSectionsModal(false); setPendingClassroom(null); }} className="text-slate-400"><X/></button>
+            </div>
+            <form onSubmit={async (e)=>{
+              e.preventDefault();
+              try {
+                setLoading(true);
+                const toCreate = sectionsDraft.filter(s => !s || typeof s === 'string' || !s.id).map(s => (typeof s === 'string' ? s : s.name)).map(s => s && s.trim()).filter(Boolean);
+                const toUpdate = sectionsDraft.filter(s => s && s.id).map(s => ({ id: s.id, name: s.name && s.name.trim() }));
+                if (toCreate.length > 0) {
+                  await createClassroomSections(pendingClassroom.id, toCreate);
+                }
+                for (const u of toUpdate) {
+                  if (u.name) {
+                    await updateClassroomSection(u.id, u.name);
+                  }
+                }
+                await load();
+                setShowSectionsModal(false);
+                setPendingClassroom(null);
+                toast.success('Sections saved');
+              } catch(err){ console.error(err); toast.error('Failed to save sections'); } finally{ setLoading(false); }
+            }} className="p-4 space-y-3">
+              <div className="space-y-2">
+                {sectionsDraft.map((s, idx)=> (
+                  <div key={idx} className="flex gap-2 items-center">
+                    <div className="flex-1">
+                      <label className="block text-sm text-slate-300 mb-1">{s && s.id ? `Section ${s.id}` : `Section ${idx+1}`}</label>
+                      <input value={typeof s === 'string' ? s : (s.name||'')} onChange={e=>{ const arr = [...sectionsDraft]; if (typeof arr[idx] === 'string') arr[idx] = e.target.value; else arr[idx] = { ...(arr[idx]||{}), name: e.target.value }; setSectionsDraft(arr); }} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/>
+                    </div>
+                    {s && s.id ? (
+                      <button type="button" onClick={async ()=>{
+                        if (!confirm('Delete this section?')) return;
+                        try { setLoading(true); await deleteClassroomSection(s.id); const arr = sectionsDraft.filter(x=>!(x && x.id === s.id)); setSectionsDraft(arr); toast.success('Section deleted'); await load(); } catch(e){ console.error(e); toast.error('Delete failed'); } finally{ setLoading(false); }
+                      }} className="px-3 py-1 bg-red-600 text-white rounded"><Trash2 size={14}/></button>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={()=>{ setSectionsDraft([...(sectionsDraft||[]), '']); }} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded">Add Section</button>
+              </div>
+              <div className="flex justify-end space-x-2"><button type="button" onClick={()=>{ setShowSectionsModal(false); setPendingClassroom(null); }} className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded">Cancel</button><Button type="submit" loading={loading}>Save Sections</Button></div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {floorCreateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md border border-slate-700">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-bold">Create Room</h3>
+              <button onClick={()=>setFloorCreateModal(false)} className="text-slate-400"><X/></button>
+            </div>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                setLoading(true);
+                const payload = {
+                  ...floorCreateForm,
+                  room_number: normalizeRoomNumber(floorCreateForm.room_number, floorCreateForm.floor_number),
+                };
+                await createClassroom(payload);
+                await load();
+                setFloorCreateModal(false);
+                setFloorCreateForm({ name: '', room_number: '', total_capacity: 0, room_type: 'Classroom', floor_number: floors[0] || 1, monitor_name: '' });
+                toast.success('Room created and assigned to floor');
+              } catch (err) {
+                console.error(err);
+                toast.error('Failed to create room');
+              } finally {
+                setLoading(false);
+              }
+            }} className="p-4 space-y-3">
+              <div><label className="block text-sm text-slate-300 mb-1">Room name</label><input required value={floorCreateForm.name} onChange={e=>setFloorCreateForm({...floorCreateForm,name:e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Room Number</label><input required value={floorCreateForm.room_number} placeholder={floorCreateForm.floor_number ? `${String(floorCreateForm.floor_number)}01` : '101'} onChange={e=>setFloorCreateForm({...floorCreateForm,room_number:e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Floor</label><select required value={floorCreateForm.floor_number} onChange={e=>setFloorCreateForm({...floorCreateForm,floor_number: Number(e.target.value)})} className="w-full px-3 py-2 bg-slate-800 text-white rounded">
+                {floors.map((floor) => (
+                  <option key={floor} value={floor}>{`Floor ${floor}`}</option>
+                ))}
+              </select></div>
+              <div><label className="block text-sm text-slate-300 mb-1">Total capacity</label><input required type="number" value={floorCreateForm.total_capacity} onChange={e=>setFloorCreateForm({...floorCreateForm,total_capacity: parseInt(e.target.value||0)})} className="w-full px-3 py-2 bg-slate-800 text-white rounded"/></div>
+              <div>
+                <label className="block text-sm text-slate-300 mb-1">Room Type</label>
+                <select value={floorCreateForm.room_type} onChange={e=>setFloorCreateForm({...floorCreateForm,room_type: e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded">
+                  {['Classroom','Computer Lab','Science Lab','Library','Staff Room','Office'].map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+              <div><label className="block text-sm text-slate-300 mb-1">Monitor name</label><input value={floorCreateForm.monitor_name} onChange={e=>setFloorCreateForm({...floorCreateForm,monitor_name:e.target.value})} className="w-full px-3 py-2 bg-slate-800 text-white rounded" placeholder="Optional"/></div>
+              <div className="flex justify-end gap-2"><button type="button" onClick={()=>setFloorCreateModal(false)} className="px-3 py-2 bg-slate-700/60 text-slate-200 rounded">Cancel</button><Button type="submit" loading={loading}>Create & Assign</Button></div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Rooms;
