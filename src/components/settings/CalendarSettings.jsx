@@ -43,18 +43,34 @@ import {
 } from "../../api/calendarApi";
 
 // Utils
-import {
-  BS_MONTHS,
-} from "../../utils/bsCalendar";
+import { BS_MONTHS } from "../../utils/bsCalendar";
 import { dayColor } from "../../utils/calendarStyles";
 import { useSettings } from "../../context/SettingsContext";
 
 const AD_MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
-const WEEKDAYS_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const WEEKDAYS_FULL = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 // ============================================================================
 // INLINE STYLES (Matching the HTML design exactly)
@@ -847,14 +863,23 @@ const CalendarSettings = () => {
   const [gridMonthId, setGridMonthId] = useState("");
   const [bulkSelected, setBulkSelected] = useState(new Set());
   const [bulkTypeId, setBulkTypeId] = useState("");
-  const [weekdayRule, setWeekdayRule] = useState({ dayTypeId: "", weekday: "", scope: "month" });
+  const [weekdayRule, setWeekdayRule] = useState({
+    dayTypeId: "",
+    weekday: "",
+    scope: "month",
+  });
 
   // Edit modals
   const [editYear, setEditYear] = useState(null);
   const [editMonth, setEditMonth] = useState(null);
 
   // UI state
-  const [openSections, setOpenSections] = useState({ years: true, months: false, categories: false, types: false });
+  const [openSections, setOpenSections] = useState({
+    years: true,
+    months: false,
+    categories: false,
+    types: false,
+  });
 
   // Load all data
   const loadAll = useCallback(async () => {
@@ -1114,7 +1139,9 @@ const CalendarSettings = () => {
       }));
 
       await bulkAssignDayTypes(assignments);
-      toast.success(`${assignments.length} day(s) ${clearMode ? "cleared" : "assigned"}`);
+      toast.success(
+        `${assignments.length} day(s) ${clearMode ? "cleared" : "assigned"}`,
+      );
       setBulkSelected(new Set());
       setBulkTypeId("");
       await fetchGridDays();
@@ -1170,7 +1197,14 @@ const CalendarSettings = () => {
       <div className="cal-root">
         <style>{styles}</style>
         <div className="cal-empty" style={{ padding: "60px 20px" }}>
-          <Loader2 size={32} style={{ margin: "0 auto 12px", color: "var(--accent)", animation: "spin 1s linear infinite" }} />
+          <Loader2
+            size={32}
+            style={{
+              margin: "0 auto 12px",
+              color: "var(--accent)",
+              animation: "spin 1s linear infinite",
+            }}
+          />
           <p>Loading calendar settings...</p>
         </div>
       </div>
@@ -1186,7 +1220,8 @@ const CalendarSettings = () => {
         <div>
           <h1 className="cal-title">Academic calendar settings</h1>
           <p className="cal-subtitle">
-            Manage academic years, months, day categories and classification rules for the school calendar.
+            Manage academic years, months, day categories and classification
+            rules for the school calendar.
           </p>
         </div>
         <div className="cal-header-actions">
@@ -1194,14 +1229,21 @@ const CalendarSettings = () => {
             {["BS", "AD"].map((k) => (
               <button
                 key={k}
-                className={clsx("cal-seg-btn", calendarType === k && "is-active")}
+                className={clsx(
+                  "cal-seg-btn",
+                  calendarType === k && "is-active",
+                )}
                 onClick={() => updateSetting("calendar_type", k)}
               >
                 {k}
               </button>
             ))}
           </div>
-          <button className="cal-btn cal-btn-subtle" onClick={loadAll} disabled={busy || loading}>
+          <button
+            className="cal-btn cal-btn-subtle"
+            onClick={loadAll}
+            disabled={busy || loading}
+          >
             <RefreshCw size={15} /> Refresh
           </button>
         </div>
@@ -1230,7 +1272,9 @@ const CalendarSettings = () => {
           {/* Years Section */}
           <CollapsibleSection
             isOpen={openSections.years}
-            onToggle={() => setOpenSections({ ...openSections, years: !openSections.years })}
+            onToggle={() =>
+              setOpenSections({ ...openSections, years: !openSections.years })
+            }
             icon={Calendar}
             title="Academic years"
           >
@@ -1243,7 +1287,9 @@ const CalendarSettings = () => {
                     className="cal-input"
                     placeholder="2083/084"
                     value={newYear.year_label_BS}
-                    onChange={(e) => setNewYear({ ...newYear, year_label_BS: e.target.value })}
+                    onChange={(e) =>
+                      setNewYear({ ...newYear, year_label_BS: e.target.value })
+                    }
                   />
                 </div>
                 <div className="cal-field">
@@ -1252,7 +1298,9 @@ const CalendarSettings = () => {
                     className="cal-input"
                     placeholder="2026/27"
                     value={newYear.year_label_AD}
-                    onChange={(e) => setNewYear({ ...newYear, year_label_AD: e.target.value })}
+                    onChange={(e) =>
+                      setNewYear({ ...newYear, year_label_AD: e.target.value })
+                    }
                   />
                 </div>
                 <div className="cal-field">
@@ -1261,7 +1309,9 @@ const CalendarSettings = () => {
                     type="date"
                     className="cal-input"
                     value={newYear.start_date_AD}
-                    onChange={(e) => setNewYear({ ...newYear, start_date_AD: e.target.value })}
+                    onChange={(e) =>
+                      setNewYear({ ...newYear, start_date_AD: e.target.value })
+                    }
                   />
                 </div>
                 <div className="cal-field">
@@ -1270,7 +1320,9 @@ const CalendarSettings = () => {
                     type="date"
                     className="cal-input"
                     value={newYear.end_date_AD}
-                    onChange={(e) => setNewYear({ ...newYear, end_date_AD: e.target.value })}
+                    onChange={(e) =>
+                      setNewYear({ ...newYear, end_date_AD: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -1278,12 +1330,18 @@ const CalendarSettings = () => {
                 <input
                   type="checkbox"
                   checked={newYear.is_current}
-                  onChange={(e) => setNewYear({ ...newYear, is_current: e.target.checked })}
+                  onChange={(e) =>
+                    setNewYear({ ...newYear, is_current: e.target.checked })
+                  }
                 />
                 <span>Mark this year as current</span>
               </div>
               <div className="cal-form-actions">
-                <button className="cal-btn cal-btn-primary" onClick={handleAddYear} disabled={busy}>
+                <button
+                  className="cal-btn cal-btn-primary"
+                  onClick={handleAddYear}
+                  disabled={busy}
+                >
                   <Plus size={14} /> Add year
                 </button>
               </div>
@@ -1298,9 +1356,12 @@ const CalendarSettings = () => {
                     <div className="cal-row-main">
                       <Calendar size={17} />
                       <div>
-                        <div className="cal-row-name">{y.year_label_BS || y.year_label_AD || y.year_label}</div>
+                        <div className="cal-row-name">
+                          {y.year_label_BS || y.year_label_AD || y.year_label}
+                        </div>
                         <div className="cal-row-sub">
-                          {y.year_label_AD} · {y.start_date_AD || "—"} to {y.end_date_AD || "—"}
+                          {y.year_label_AD} · {y.start_date_AD || "—"} to{" "}
+                          {y.end_date_AD || "—"}
                         </div>
                       </div>
                       {y.is_current && (
@@ -1310,10 +1371,21 @@ const CalendarSettings = () => {
                       )}
                     </div>
                     <div className="cal-row-actions">
-                      <button className="cal-icon-btn" onClick={() => setEditYear(y)}>
+                      <button
+                        className="cal-icon-btn"
+                        onClick={() => setEditYear(y)}
+                      >
                         <Edit2 size={14} />
                       </button>
-                      <button className="cal-icon-btn danger" onClick={() => handleDeleteYear(y.id, y.year_label_BS || y.year_label)}>
+                      <button
+                        className="cal-icon-btn danger"
+                        onClick={() =>
+                          handleDeleteYear(
+                            y.id,
+                            y.year_label_BS || y.year_label,
+                          )
+                        }
+                      >
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -1326,7 +1398,9 @@ const CalendarSettings = () => {
           {/* Months Section */}
           <CollapsibleSection
             isOpen={openSections.months}
-            onToggle={() => setOpenSections({ ...openSections, months: !openSections.months })}
+            onToggle={() =>
+              setOpenSections({ ...openSections, months: !openSections.months })
+            }
             icon={Calendar}
             title="Academic months"
           >
@@ -1338,7 +1412,9 @@ const CalendarSettings = () => {
                   <select
                     className="cal-select"
                     value={newMonth.year_id}
-                    onChange={(e) => setNewMonth({ ...newMonth, year_id: e.target.value })}
+                    onChange={(e) =>
+                      setNewMonth({ ...newMonth, year_id: e.target.value })
+                    }
                   >
                     <option value="">Select year…</option>
                     {years.map((y) => (
@@ -1353,7 +1429,12 @@ const CalendarSettings = () => {
                   <select
                     className="cal-select"
                     value={newMonth.bs_month_index}
-                    onChange={(e) => setNewMonth({ ...newMonth, bs_month_index: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      setNewMonth({
+                        ...newMonth,
+                        bs_month_index: parseInt(e.target.value),
+                      })
+                    }
                   >
                     {BS_MONTHS.map((name, i) => (
                       <option key={name} value={i}>
@@ -1368,7 +1449,9 @@ const CalendarSettings = () => {
                     type="date"
                     className="cal-input"
                     value={newMonth.start_date}
-                    onChange={(e) => setNewMonth({ ...newMonth, start_date: e.target.value })}
+                    onChange={(e) =>
+                      setNewMonth({ ...newMonth, start_date: e.target.value })
+                    }
                   />
                 </div>
                 <div className="cal-field">
@@ -1377,12 +1460,18 @@ const CalendarSettings = () => {
                     type="date"
                     className="cal-input"
                     value={newMonth.end_date}
-                    onChange={(e) => setNewMonth({ ...newMonth, end_date: e.target.value })}
+                    onChange={(e) =>
+                      setNewMonth({ ...newMonth, end_date: e.target.value })
+                    }
                   />
                 </div>
               </div>
               <div className="cal-form-actions">
-                <button className="cal-btn cal-btn-primary" onClick={handleAddMonth} disabled={busy}>
+                <button
+                  className="cal-btn cal-btn-primary"
+                  onClick={handleAddMonth}
+                  disabled={busy}
+                >
                   <Plus size={14} /> Add month
                 </button>
               </div>
@@ -1404,10 +1493,16 @@ const CalendarSettings = () => {
                       </div>
                     </div>
                     <div className="cal-row-actions">
-                      <button className="cal-icon-btn" onClick={() => setEditMonth(m)}>
+                      <button
+                        className="cal-icon-btn"
+                        onClick={() => setEditMonth(m)}
+                      >
                         <Edit2 size={14} />
                       </button>
-                      <button className="cal-icon-btn danger" onClick={() => handleDeleteMonth(m.id)}>
+                      <button
+                        className="cal-icon-btn danger"
+                        onClick={() => handleDeleteMonth(m.id)}
+                      >
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -1420,7 +1515,12 @@ const CalendarSettings = () => {
           {/* Categories Section */}
           <CollapsibleSection
             isOpen={openSections.categories}
-            onToggle={() => setOpenSections({ ...openSections, categories: !openSections.categories })}
+            onToggle={() =>
+              setOpenSections({
+                ...openSections,
+                categories: !openSections.categories,
+              })
+            }
             icon={Settings}
             title="Day categories"
           >
@@ -1435,7 +1535,11 @@ const CalendarSettings = () => {
                 />
               </div>
               <div className="cal-form-actions">
-                <button className="cal-btn cal-btn-primary" onClick={handleAddCategory} disabled={busy}>
+                <button
+                  className="cal-btn cal-btn-primary"
+                  onClick={handleAddCategory}
+                  disabled={busy}
+                >
                   <Plus size={14} /> Add category
                 </button>
               </div>
@@ -1456,7 +1560,9 @@ const CalendarSettings = () => {
           {/* Day Types Section */}
           <CollapsibleSection
             isOpen={openSections.types}
-            onToggle={() => setOpenSections({ ...openSections, types: !openSections.types })}
+            onToggle={() =>
+              setOpenSections({ ...openSections, types: !openSections.types })
+            }
             icon={Settings}
             title="Day classifications"
           >
@@ -1486,8 +1592,15 @@ const CalendarSettings = () => {
                     ))}
                   </select>
                 </div>
-                <div className="cal-form-actions" style={{ justifyContent: "flex-start", marginTop: 0 }}>
-                  <button className="cal-btn cal-btn-primary" onClick={handleAddDayType} disabled={busy}>
+                <div
+                  className="cal-form-actions"
+                  style={{ justifyContent: "flex-start", marginTop: 0 }}
+                >
+                  <button
+                    className="cal-btn cal-btn-primary"
+                    onClick={handleAddDayType}
+                    disabled={busy}
+                  >
                     <Plus size={14} /> Add type
                   </button>
                 </div>
@@ -1500,11 +1613,16 @@ const CalendarSettings = () => {
                   <div className="cal-row-main">
                     <div>
                       <div className="cal-row-name">{t.day_type}</div>
-                      {t.category_name && <div className="cal-row-sub">{t.category_name}</div>}
+                      {t.category_name && (
+                        <div className="cal-row-sub">{t.category_name}</div>
+                      )}
                     </div>
                   </div>
                   <div className="cal-row-actions">
-                    <button className="cal-icon-btn danger" onClick={() => handleDeleteDayType(t.id)}>
+                    <button
+                      className="cal-icon-btn danger"
+                      onClick={() => handleDeleteDayType(t.id)}
+                    >
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -1555,8 +1673,15 @@ const CalendarSettings = () => {
                   ))}
                 </select>
               </div>
-              <div className="cal-form-actions" style={{ justifyContent: "flex-start", marginTop: 0 }}>
-                <button className="cal-btn cal-btn-subtle" onClick={() => refreshYearlyStats(gridYearId)} disabled={busy || !gridYearId}>
+              <div
+                className="cal-form-actions"
+                style={{ justifyContent: "flex-start", marginTop: 0 }}
+              >
+                <button
+                  className="cal-btn cal-btn-subtle"
+                  onClick={() => refreshYearlyStats(gridYearId)}
+                  disabled={busy || !gridYearId}
+                >
                   <RefreshCw size={14} /> Stats
                 </button>
               </div>
@@ -1570,7 +1695,12 @@ const CalendarSettings = () => {
                   <select
                     className="cal-select"
                     value={weekdayRule.dayTypeId}
-                    onChange={(e) => setWeekdayRule({ ...weekdayRule, dayTypeId: e.target.value })}
+                    onChange={(e) =>
+                      setWeekdayRule({
+                        ...weekdayRule,
+                        dayTypeId: e.target.value,
+                      })
+                    }
                   >
                     <option value="">Select type…</option>
                     {dayTypes.map((t) => (
@@ -1585,7 +1715,12 @@ const CalendarSettings = () => {
                   <select
                     className="cal-select"
                     value={weekdayRule.weekday}
-                    onChange={(e) => setWeekdayRule({ ...weekdayRule, weekday: e.target.value })}
+                    onChange={(e) =>
+                      setWeekdayRule({
+                        ...weekdayRule,
+                        weekday: e.target.value,
+                      })
+                    }
                   >
                     <option value="">Select day…</option>
                     {WEEKDAYS_FULL.map((w, i) => (
@@ -1595,8 +1730,15 @@ const CalendarSettings = () => {
                     ))}
                   </select>
                 </div>
-                <div className="cal-form-actions" style={{ justifyContent: "flex-start", marginTop: 0 }}>
-                  <button className="cal-btn cal-btn-primary" onClick={handleAssignByWeekday} disabled={busy}>
+                <div
+                  className="cal-form-actions"
+                  style={{ justifyContent: "flex-start", marginTop: 0 }}
+                >
+                  <button
+                    className="cal-btn cal-btn-primary"
+                    onClick={handleAssignByWeekday}
+                    disabled={busy}
+                  >
                     <Check size={14} /> Apply
                   </button>
                 </div>
@@ -1606,9 +1748,17 @@ const CalendarSettings = () => {
 
           {/* Calendar Grid */}
           {!gridMonthId ? (
-            <div className="cal-panel" style={{ textAlign: "center", padding: "60px 20px" }}>
-              <Calendar size={48} style={{ margin: "0 auto 12px", opacity: 0.3 }} />
-              <p style={{ color: "var(--text-faint)" }}>Select a year and month to view the calendar</p>
+            <div
+              className="cal-panel"
+              style={{ textAlign: "center", padding: "60px 20px" }}
+            >
+              <Calendar
+                size={48}
+                style={{ margin: "0 auto 12px", opacity: 0.3 }}
+              />
+              <p style={{ color: "var(--text-faint)" }}>
+                Select a year and month to view the calendar
+              </p>
             </div>
           ) : (
             <div className="cal-grid-wrap">
@@ -1627,7 +1777,11 @@ const CalendarSettings = () => {
                   return (
                     <button
                       key={day.id}
-                      className={clsx("cal-cell", isSelected && "is-selected", day.day_type && "has-type")}
+                      className={clsx(
+                        "cal-cell",
+                        isSelected && "is-selected",
+                        day.day_type && "has-type",
+                      )}
                       onClick={() => {
                         const newSet = new Set(bulkSelected);
                         if (newSet.has(day.id)) newSet.delete(day.id);
@@ -1640,10 +1794,14 @@ const CalendarSettings = () => {
                       }}
                     >
                       <div className="cal-cell-top">
-                        <span className="cal-cell-primary">{day.day_number}</span>
+                        <span className="cal-cell-primary">
+                          {day.day_number}
+                        </span>
                         <div className="cal-cell-check" />
                       </div>
-                      {day.day_type && <span className="cal-cell-badge">{day.day_type}</span>}
+                      {day.day_type && (
+                        <span className="cal-cell-badge">{day.day_type}</span>
+                      )}
                       {day.day_type && (
                         <button
                           className="cal-cell-clear"
@@ -1682,10 +1840,17 @@ const CalendarSettings = () => {
                     </option>
                   ))}
                 </select>
-                <button className="cal-btn cal-btn-primary" onClick={() => handleBulkAssign(false)} disabled={!bulkTypeId}>
+                <button
+                  className="cal-btn cal-btn-primary"
+                  onClick={() => handleBulkAssign(false)}
+                  disabled={!bulkTypeId}
+                >
                   Assign
                 </button>
-                <button className="cal-btn cal-btn-danger" onClick={() => handleBulkAssign(true)}>
+                <button
+                  className="cal-btn cal-btn-danger"
+                  onClick={() => handleBulkAssign(true)}
+                >
                   Clear
                 </button>
               </div>
@@ -1704,11 +1869,14 @@ const CalendarSettings = () => {
               </div>
               <div>
                 <h3 className="cal-card-title">Export Month</h3>
-                <p className="cal-card-subtitle">Download calendar data for a specific month</p>
+                <p className="cal-card-subtitle">
+                  Download calendar data for a specific month
+                </p>
               </div>
             </div>
             <p style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-              Select year and month, then download as CSV format for backup or sharing.
+              Select year and month, then download as CSV format for backup or
+              sharing.
             </p>
           </div>
 
@@ -1719,11 +1887,14 @@ const CalendarSettings = () => {
               </div>
               <div>
                 <h3 className="cal-card-title">Import Calendar</h3>
-                <p className="cal-card-subtitle">Upload CSV to update assignments</p>
+                <p className="cal-card-subtitle">
+                  Upload CSV to update assignments
+                </p>
               </div>
             </div>
             <p style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-              Upload a pre-formatted CSV file to bulk update day assignments across the calendar.
+              Upload a pre-formatted CSV file to bulk update day assignments
+              across the calendar.
             </p>
           </div>
         </div>
@@ -1739,7 +1910,9 @@ const CalendarSettings = () => {
               <input
                 className="cal-input"
                 value={editYear.year_label_BS || ""}
-                onChange={(e) => setEditYear({ ...editYear, year_label_BS: e.target.value })}
+                onChange={(e) =>
+                  setEditYear({ ...editYear, year_label_BS: e.target.value })
+                }
               />
             </div>
             <div className="cal-field">
@@ -1747,7 +1920,9 @@ const CalendarSettings = () => {
               <input
                 className="cal-input"
                 value={editYear.year_label_AD || ""}
-                onChange={(e) => setEditYear({ ...editYear, year_label_AD: e.target.value })}
+                onChange={(e) =>
+                  setEditYear({ ...editYear, year_label_AD: e.target.value })
+                }
               />
             </div>
           </div>
@@ -1755,7 +1930,11 @@ const CalendarSettings = () => {
             <button className="cal-btn" onClick={() => setEditYear(null)}>
               Cancel
             </button>
-            <button className="cal-btn cal-btn-primary" onClick={handleUpdateYear} disabled={busy}>
+            <button
+              className="cal-btn cal-btn-primary"
+              onClick={handleUpdateYear}
+              disabled={busy}
+            >
               Save
             </button>
           </div>
@@ -1765,19 +1944,28 @@ const CalendarSettings = () => {
       {editMonth && (
         <Modal onClose={() => setEditMonth(null)}>
           <h3 className="cal-modal-title">Edit Month</h3>
-          <div className="cal-field" style={{ marginTop: "14px", marginBottom: "12px" }}>
+          <div
+            className="cal-field"
+            style={{ marginTop: "14px", marginBottom: "12px" }}
+          >
             <label>Month name</label>
             <input
               className="cal-input"
               value={editMonth.month_name || ""}
-              onChange={(e) => setEditMonth({ ...editMonth, month_name: e.target.value })}
+              onChange={(e) =>
+                setEditMonth({ ...editMonth, month_name: e.target.value })
+              }
             />
           </div>
           <div className="cal-modal-actions">
             <button className="cal-btn" onClick={() => setEditMonth(null)}>
               Cancel
             </button>
-            <button className="cal-btn cal-btn-primary" onClick={handleUpdateMonth} disabled={busy}>
+            <button
+              className="cal-btn cal-btn-primary"
+              onClick={handleUpdateMonth}
+              disabled={busy}
+            >
               Save
             </button>
           </div>
@@ -1791,7 +1979,13 @@ const CalendarSettings = () => {
 // HELPER COMPONENTS
 // ============================================================================
 
-const CollapsibleSection = ({ isOpen, onToggle, icon: Icon, title, children }) => (
+const CollapsibleSection = ({
+  isOpen,
+  onToggle,
+  icon: Icon,
+  title,
+  children,
+}) => (
   <div className={clsx("cal-collapsible", isOpen && "is-open")}>
     <button className="cal-collapsible-head" onClick={onToggle}>
       <span className="cal-collapsible-head-left">
@@ -1811,7 +2005,16 @@ const Modal = ({ children, onClose }) => (
     <div className="cal-modal" onClick={(e) => e.stopPropagation()}>
       <div className="cal-modal-header">
         <div style={{ flex: 1 }} />
-        <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "20px" }}>
+        <button
+          onClick={onClose}
+          style={{
+            background: "none",
+            border: "none",
+            color: "var(--text-dim)",
+            cursor: "pointer",
+            fontSize: "20px",
+          }}
+        >
           <X size={20} />
         </button>
       </div>
