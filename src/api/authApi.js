@@ -238,6 +238,53 @@ export const unifiedLogin = async (email, password, tenantSlug = null) => {
   }
 };
 
+export const requestPasswordReset = async (email, tenantSlug = "") => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_BASE}/password/forgot`, {
+      email,
+      tenantSlug,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const verifyPasswordResetOtp = async (email, otp, tenantSlug = "") => {
+  try {
+    const response = await axiosInstance.post(
+      `${AUTH_BASE}/password/verify-otp`,
+      {
+        email,
+        otp,
+        tenantSlug,
+      },
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const resetPasswordWithOtp = async (
+  email,
+  otp,
+  newPassword,
+  tenantSlug = "",
+) => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_BASE}/password/reset`, {
+      email,
+      otp,
+      newPassword,
+      tenantSlug,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 /**
  * Change Tenant Password
  */
@@ -325,6 +372,9 @@ export default {
   tenantLogin,
   staffLogin,
   unifiedLogin,
+  requestPasswordReset,
+  verifyPasswordResetOtp,
+  resetPasswordWithOtp,
   changeTenantPassword,
   changeTenantEmail,
   changeStaffPassword,
