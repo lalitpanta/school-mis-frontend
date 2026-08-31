@@ -64,11 +64,14 @@ const SuperAdminTenants = () => {
 
   const fetchPackages = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/v1/super-admin/packages", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(
+        "http://localhost:5000/v1/super-admin/packages",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       if (res.data.success) {
-        setPackages(res.data.data.filter(p => p.is_active));
+        setPackages(res.data.data.filter((p) => p.is_active));
       }
     } catch (err) {
       console.error("Failed to fetch packages", err);
@@ -246,7 +249,9 @@ const SuperAdminTenants = () => {
   };
 
   const handleDeleteTenant = async (tenant) => {
-    const confirmed = window.confirm(`Soft delete tenant ${tenant.name}? This will disable login and hide the tenant from the active list.`);
+    const confirmed = window.confirm(
+      `Soft delete tenant ${tenant.name}? This will disable login and hide the tenant from the active list.`,
+    );
     if (!confirmed) return;
 
     try {
@@ -279,7 +284,7 @@ const SuperAdminTenants = () => {
   };
 
   const handleConfirmDelete = () => {
-    if (deleteConfirmationText !== "delete") {
+    if (String(deleteConfirmationText).trim().toLowerCase() !== "delete") {
       toast.error('Please type "delete" to confirm');
       return;
     }
@@ -627,11 +632,15 @@ const SuperAdminTenants = () => {
                     value={formData.packageId}
                     onChange={(e) => {
                       const pkgId = e.target.value;
-                      const selectedPkg = packages.find(p => p.id === pkgId);
+                      const selectedPkg = packages.find((p) => p.id === pkgId);
                       setFormData({
                         ...formData,
                         packageId: pkgId,
-                        modules: selectedPkg ? (typeof selectedPkg.accessed_modules === 'string' ? JSON.parse(selectedPkg.accessed_modules) : selectedPkg.accessed_modules) : ["dashboard", "calendar", "attendance", "settings"]
+                        modules: selectedPkg
+                          ? typeof selectedPkg.accessed_modules === "string"
+                            ? JSON.parse(selectedPkg.accessed_modules)
+                            : selectedPkg.accessed_modules
+                          : ["dashboard", "calendar", "attendance", "settings"],
                       });
                     }}
                     className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none mb-4"
@@ -641,12 +650,14 @@ const SuperAdminTenants = () => {
                     }}
                   >
                     <option value="">-- Custom Modules (No Package) --</option>
-                    {packages.map(pkg => (
-                      <option key={pkg.id} value={pkg.id}>{pkg.package_name}</option>
+                    {packages.map((pkg) => (
+                      <option key={pkg.id} value={pkg.id}>
+                        {pkg.package_name}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 {!formData.packageId ? (
                   <div>
                     <label className="block text-sm font-medium mb-2">
@@ -693,7 +704,7 @@ const SuperAdminTenants = () => {
                     </p>
                   </div>
                 )}
-                
+
                 <div className="flex gap-2 mt-6">
                   <button
                     type="submit"
@@ -843,17 +854,26 @@ const SuperAdminTenants = () => {
               </button>
               <button
                 onClick={handleConfirmDelete}
-                disabled={deleteConfirmationText !== "delete"}
+                disabled={
+                  String(deleteConfirmationText).trim().toLowerCase() !==
+                  "delete"
+                }
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white"
                 style={{
                   background:
-                    deleteConfirmationText === "delete"
+                    String(deleteConfirmationText).trim().toLowerCase() ===
+                    "delete"
                       ? "rgba(220,38,38,0.8)"
                       : "rgba(220,38,38,0.3)",
                   border: "1px solid rgba(220,38,38,0.5)",
-                  opacity: deleteConfirmationText === "delete" ? 1 : 0.5,
+                  opacity:
+                    String(deleteConfirmationText).trim().toLowerCase() ===
+                    "delete"
+                      ? 1
+                      : 0.5,
                   cursor:
-                    deleteConfirmationText === "delete"
+                    String(deleteConfirmationText).trim().toLowerCase() ===
+                    "delete"
                       ? "pointer"
                       : "not-allowed",
                 }}

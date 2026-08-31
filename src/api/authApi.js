@@ -192,12 +192,15 @@ export const permanentlyDeleteTenant = async (id, token) => {
 
 export const backupTenant = async (id, token) => {
   try {
-    const response = await axiosInstance.get(`${AUTH_BASE}/tenant/${id}/backup`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await axiosInstance.get(
+      `${AUTH_BASE}/tenant/${id}/backup`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
       },
-      responseType: "blob",
-    });
+    );
 
     const contentDisposition = response.headers?.["content-disposition"] || "";
     const match = contentDisposition.match(/filename="?([^";]+)"?/i);

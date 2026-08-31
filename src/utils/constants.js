@@ -112,6 +112,93 @@ export const AVAILABLE_MODULES = [
     label: "Leave Management",
     description: "Manage teacher and staff leaves",
   },
+  {
+    key: "school",
+    label: "School Profile",
+    description: "School profile and institutional details",
+  },
+  {
+    key: "academic",
+    label: "Academic Calendar",
+    description: "Academic year and calendar settings",
+  },
+  {
+    key: "calendarSettings",
+    label: "Calendar Settings",
+    description: "Event and calendar configuration",
+  },
+  {
+    key: "users",
+    label: "Users & Staff",
+    description: "Staff and user management",
+  },
+  {
+    key: "roles",
+    label: "Roles & Permissions",
+    description: "Role-based access control",
+  },
+  { key: "fees", label: "Fees", description: "Fee structures and notices" },
+  {
+    key: "notices",
+    label: "Notices & SMS",
+    description: "Communication and SMS setup",
+  },
+  {
+    key: "integrations",
+    label: "Integrations",
+    description: "Third-party platform integrations",
+  },
+  {
+    key: "devices",
+    label: "Device Integration",
+    description: "Device and access integration management",
+  },
+  {
+    key: "security",
+    label: "Security",
+    description: "Security and account controls",
+  },
+  {
+    key: "departments",
+    label: "Departments",
+    description: "Department management",
+  },
+  {
+    key: "classrooms",
+    label: "Classrooms",
+    description: "Classroom configuration",
+  },
+  {
+    key: "courses",
+    label: "Courses",
+    description: "Academic course management",
+  },
+  { key: "rooms", label: "Rooms", description: "Room and facility management" },
+  {
+    key: "students",
+    label: "Students",
+    description: "Student configuration and management",
+  },
+  {
+    key: "theme",
+    label: "Theme",
+    description: "Branding and visual preferences",
+  },
+  {
+    key: "profile",
+    label: "Profile",
+    description: "School profile and personal settings",
+  },
+  {
+    key: "resultFormat",
+    label: "Exam Setup",
+    description: "Exam format and grading configuration",
+  },
+  {
+    key: "resultSubject",
+    label: "Course & Marks",
+    description: "Marks and subject configuration",
+  },
 ];
 
 export const MODULE_ROUTE_MAP = {
