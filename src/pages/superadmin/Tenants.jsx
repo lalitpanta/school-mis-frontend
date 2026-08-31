@@ -233,14 +233,21 @@ const SuperAdminTenants = () => {
   };
 
   const handleToggleTenantStatus = async (tenant) => {
+    const nextState = !Boolean(tenant.is_active);
+    const actionText = nextState ? "activate" : "deactivate";
+
+    const confirmed = window.confirm(
+      `${actionText === "activate" ? "Activate" : "Deactivate"} tenant ${tenant.name}? This will ${actionText === "activate" ? "allow login access again" : "disable login access for this tenant"}.`,
+    );
+
+    if (!confirmed) return;
+
     try {
-      const response = await updateTenantStatus(
-        tenant.id,
-        !tenant.is_active,
-        token,
-      );
+      const response = await updateTenantStatus(tenant.id, nextState, token);
       if (response.success) {
-        toast.success("Tenant status updated");
+        toast.success(
+          `Tenant ${nextState ? "activated" : "deactivated"} successfully`,
+        );
         fetchTenants();
       }
     } catch (err) {
@@ -452,6 +459,25 @@ const SuperAdminTenants = () => {
                         </td>
                         <td className="py-4 px-4 align-top">
                           <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => handleToggleTenantStatus(tenant)}
+                              className={`p-2 rounded-lg transition ${
+                                tenant.is_active
+                                  ? "bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
+                                  : "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                              }`}
+                              title={
+                                tenant.is_active
+                                  ? "Deactivate tenant"
+                                  : "Activate tenant"
+                              }
+                            >
+                              {tenant.is_active ? (
+                                <EyeOff size={16} />
+                              ) : (
+                                <Eye size={16} />
+                              )}
+                            </button>
                             <button
                               onClick={() => handleEditTenant(tenant)}
                               className="p-2 rounded-lg bg-indigo-600/10 text-indigo-300 hover:bg-indigo-600/20 transition"
