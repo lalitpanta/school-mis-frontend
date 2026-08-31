@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  Eye,
-  EyeOff,
-  Building2,
-  Users,
-  AlertCircle,
-} from "lucide-react";
+import { Eye, EyeOff, Building2, Users, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { unifiedLogin } from "../api/authApi";
 import { MODULE_ROUTE_MAP } from "../utils/constants";
@@ -34,7 +28,11 @@ const TenantStaffLoginPage = () => {
     setError("");
 
     try {
-      const response = await unifiedLogin(data.email, data.password, data.tenantSlug);
+      const response = await unifiedLogin(
+        data.email,
+        data.password,
+        data.tenantSlug,
+      );
 
       if (response.success) {
         const userType = response.userType;
@@ -48,7 +46,9 @@ const TenantStaffLoginPage = () => {
         }
 
         loginUser(userData, token, userType);
-        toast.success(`${userType.charAt(0).toUpperCase() + userType.slice(1)} login successful!`);
+        toast.success(
+          `${userType.charAt(0).toUpperCase() + userType.slice(1)} login successful!`,
+        );
 
         const modules = userData?.modules || [];
         const moduleOrder = [
@@ -114,14 +114,20 @@ const TenantStaffLoginPage = () => {
 
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex gap-3">
-            <AlertCircle size={18} className="text-red-400 mt-0.5 flex-shrink-0" />
+            <AlertCircle
+              size={18}
+              className="text-red-400 mt-0.5 flex-shrink-0"
+            />
             <p className="text-sm text-red-400">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: "#94a3b8" }}>
+            <label
+              className="block text-sm font-medium mb-1.5"
+              style={{ color: "#94a3b8" }}
+            >
               Tenant Name / Slug
             </label>
             <input
@@ -137,18 +143,29 @@ const TenantStaffLoginPage = () => {
               className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200"
               style={{
                 background: "#1e293b",
-                border: errors.tenantSlug ? "1px solid #f87171" : "1px solid rgba(255,255,255,0.08)",
+                border: errors.tenantSlug
+                  ? "1px solid #f87171"
+                  : "1px solid rgba(255,255,255,0.08)",
               }}
               onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
               onBlur={(e) =>
-                (e.target.style.borderColor = errors.tenantSlug ? "#f87171" : "rgba(255,255,255,0.08)")
+                (e.target.style.borderColor = errors.tenantSlug
+                  ? "#f87171"
+                  : "rgba(255,255,255,0.08)")
               }
             />
-            {errors.tenantSlug && <p className="text-xs mt-1 text-red-400">{errors.tenantSlug.message}</p>}
+            {errors.tenantSlug && (
+              <p className="text-xs mt-1 text-red-400">
+                {errors.tenantSlug.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: "#94a3b8" }}>
+            <label
+              className="block text-sm font-medium mb-1.5"
+              style={{ color: "#94a3b8" }}
+            >
               Email
             </label>
             <input
@@ -161,18 +178,29 @@ const TenantStaffLoginPage = () => {
               className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200"
               style={{
                 background: "#1e293b",
-                border: errors.email ? "1px solid #f87171" : "1px solid rgba(255,255,255,0.08)",
+                border: errors.email
+                  ? "1px solid #f87171"
+                  : "1px solid rgba(255,255,255,0.08)",
               }}
               onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
               onBlur={(e) =>
-                (e.target.style.borderColor = errors.email ? "#f87171" : "rgba(255,255,255,0.08)")
+                (e.target.style.borderColor = errors.email
+                  ? "#f87171"
+                  : "rgba(255,255,255,0.08)")
               }
             />
-            {errors.email && <p className="text-xs mt-1 text-red-400">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-xs mt-1 text-red-400">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: "#94a3b8" }}>
+            <label
+              className="block text-sm font-medium mb-1.5"
+              style={{ color: "#94a3b8" }}
+            >
               Password
             </label>
             <div className="relative">
@@ -186,11 +214,15 @@ const TenantStaffLoginPage = () => {
                 className="w-full px-4 py-3 pr-12 rounded-xl text-sm text-white outline-none transition-all duration-200"
                 style={{
                   background: "#1e293b",
-                  border: errors.password ? "1px solid #f87171" : "1px solid rgba(255,255,255,0.08)",
+                  border: errors.password
+                    ? "1px solid #f87171"
+                    : "1px solid rgba(255,255,255,0.08)",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
                 onBlur={(e) =>
-                  (e.target.style.borderColor = errors.password ? "#f87171" : "rgba(255,255,255,0.08)")
+                  (e.target.style.borderColor = errors.password
+                    ? "#f87171"
+                    : "rgba(255,255,255,0.08)")
                 }
               />
               <button
@@ -201,7 +233,11 @@ const TenantStaffLoginPage = () => {
                 {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
             </div>
-            {errors.password && <p className="text-xs mt-1 text-red-400">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-xs mt-1 text-red-400">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <button
@@ -238,7 +274,8 @@ const TenantStaffLoginPage = () => {
       </div>
 
       <p className="mt-8 text-xs" style={{ color: "#334155" }}>
-        Copyright © {new Date().getFullYear()} School Management System. All rights reserved.
+        Copyright © {new Date().getFullYear()} School Management System. All
+        rights reserved.
       </p>
     </div>
   );

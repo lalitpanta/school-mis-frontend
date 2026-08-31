@@ -190,6 +190,35 @@ export const permanentlyDeleteTenant = async (id, token) => {
   }
 };
 
+export const backupTenant = async (id, token) => {
+  try {
+    const response = await axiosInstance.get(`${AUTH_BASE}/tenant/${id}/backup`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    });
+
+    const contentDisposition = response.headers?.["content-disposition"] || "";
+    const match = contentDisposition.match(/filename="?([^";]+)"?/i);
+    const fileName = match?.[1] || `tenant-${id}-backup.json`;
+
+    const blob = new Blob([response.data], { type: "application/json" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    return { success: true, fileName };
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 /**
  * Unified Login (Admin, Tenant, or Staff)
  */

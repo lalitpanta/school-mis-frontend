@@ -8,6 +8,7 @@ import {
   updateTenant,
   deleteTenant,
   permanentlyDeleteTenant,
+  backupTenant,
 } from "../../api/authApi";
 import {
   Plus,
@@ -17,6 +18,7 @@ import {
   Eye,
   EyeOff,
   Edit2,
+  Download,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { AVAILABLE_MODULES } from "../../utils/constants";
@@ -244,17 +246,28 @@ const SuperAdminTenants = () => {
   };
 
   const handleDeleteTenant = async (tenant) => {
-    const confirmed = window.confirm(`Delete tenant ${tenant.name}?`);
+    const confirmed = window.confirm(`Soft delete tenant ${tenant.name}? This will disable login and hide the tenant from the active list.`);
     if (!confirmed) return;
 
     try {
       const response = await deleteTenant(tenant.id, token);
       if (response.success) {
-        toast.success("Tenant deleted");
+        toast.success("Tenant soft deleted successfully");
         fetchTenants();
       }
     } catch (err) {
       toast.error(err.message || "Failed to delete tenant");
+    }
+  };
+
+  const handleBackupTenant = async (tenant) => {
+    try {
+      const response = await backupTenant(tenant.id, token);
+      if (response.success) {
+        toast.success(`Backup downloaded for ${tenant.name}`);
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to download tenant backup");
     }
   };
 
@@ -442,9 +455,16 @@ const SuperAdminTenants = () => {
                               <Edit2 size={16} />
                             </button>
                             <button
+                              onClick={() => handleBackupTenant(tenant)}
+                              className="p-2 rounded-lg bg-emerald-600/10 text-emerald-300 hover:bg-emerald-600/20 transition"
+                              title="Download tenant backup as JSON"
+                            >
+                              <Download size={16} />
+                            </button>
+                            <button
                               onClick={() => handleDeleteTenant(tenant)}
                               className="p-2 rounded-lg bg-slate-700/70 text-slate-200 hover:bg-slate-700 transition"
-                              title="Delete tenant"
+                              title="Soft delete tenant"
                             >
                               <Trash2 size={16} />
                             </button>
