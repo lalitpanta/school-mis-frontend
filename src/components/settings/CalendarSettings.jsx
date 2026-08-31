@@ -5,24 +5,20 @@ import {
   Trash2,
   RefreshCw,
   Loader2,
-  AlertCircle,
   FileText,
   Download,
   Upload,
   X,
-  DownloadCloud,
-  UploadCloud,
   Check,
   Edit2,
   Settings,
   Grid3x3,
-  FileUp,
-  Zap,
+  ChevronDown,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import clsx from "clsx";
 
-// API
+// API imports
 import {
   getMonths,
   createMonth,
@@ -38,7 +34,6 @@ import {
   getDayCategories,
   createDayCategory,
   deleteDayCategory,
-  generateCalendarDays,
   getCalendarDays,
   getCalendarDaysByYear,
   assignDayType,
@@ -50,252 +45,782 @@ import {
 // Utils
 import {
   BS_MONTHS,
-  getDaysInBsMonth,
-  bsToAd,
-  adToBs,
-  getTodayBs,
-  prevBsMonth,
-  nextBsMonth,
 } from "../../utils/bsCalendar";
 import { dayColor } from "../../utils/calendarStyles";
 import { useSettings } from "../../context/SettingsContext";
-import UniversalDatePicker from "../common/UniversalDatePicker";
 
 const AD_MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
-// Professional Card Component
-const Card = ({ children, className = "", shadow = true }) => (
-  <div
-    className={clsx(
-      "bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-white/20",
-      shadow && "shadow-2xl",
-      className,
-    )}
-  >
-    {children}
-  </div>
-);
+const WEEKDAYS_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-// Professional Section Header
-const SectionHeader = ({ icon: Icon, title, subtitle }) => (
-  <div className="flex items-start gap-4 mb-6">
-    <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 shadow-lg">
-      <Icon className="text-indigo-400" size={24} />
-    </div>
-    <div>
-      <h2 className="text-2xl font-bold text-white tracking-tight">{title}</h2>
-      {subtitle && <p className="text-sm text-slate-400 mt-1">{subtitle}</p>}
-    </div>
-  </div>
-);
+// ============================================================================
+// INLINE STYLES (Matching the HTML design exactly)
+// ============================================================================
+const styles = `
+.cal-root {
+  --bg: #0c1220;
+  --surface: #121a2c;
+  --surface-2: #182339;
+  --surface-hover: #1d2a44;
+  --border: #24304a;
+  --border-soft: #1a2338;
+  --text: #eef1f7;
+  --text-dim: #98a2ba;
+  --text-faint: #5c6784;
+  --accent: #8b5cf6;
+  --danger: #f43f5e;
+  --danger-bg: rgba(244,63,94,0.13);
+  --success: #10b981;
+  --success-bg: rgba(16,185,129,0.13);
 
-// Professional Input Component
-const Input = ({ label, ...props }) => (
-  <div className="flex flex-col gap-2">
-    {label && (
-      <label className="text-xs font-bold text-slate-300 uppercase tracking-widest">
-        {label}
-      </label>
-    )}
-    <input
-      {...props}
-      className={clsx(
-        "w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-slate-500",
-        "focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all",
-        "backdrop-blur-sm font-medium",
-        props.className,
-      )}
-    />
-  </div>
-);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, sans-serif;
+  padding: 28px;
+  border-radius: 20px;
+  max-width: 1080px;
+  margin: 24px auto;
+  position: relative;
+}
 
-// Professional Select Component
-const Select = ({ label, options = [], ...props }) => (
-  <div className="flex flex-col gap-2">
-    {label && (
-      <label className="text-xs font-bold text-slate-300 uppercase tracking-widest">
-        {label}
-      </label>
-    )}
-    <select
-      {...props}
-      className={clsx(
-        "w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white",
-        "focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all",
-        "backdrop-blur-sm font-medium cursor-pointer appearance-none",
-        "bg-no-repeat bg-right bg-[length:20px]",
-        props.className,
-      )}
-      style={{
-        backgroundImage:
-          'url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E")',
-      }}
-    >
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+.cal-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
 
-// Professional Button Component
-const Button = ({
-  variant = "primary",
-  size = "md",
-  icon: Icon,
-  children,
-  className = "",
-  ...props
-}) => {
-  const variants = {
-    primary: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20",
-    success: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20",
-    danger: "bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/20",
-    secondary: "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600",
-    ghost: "text-slate-400 hover:text-white hover:bg-white/5",
-  };
+.cal-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  font-family: 'Space Grotesk', sans-serif;
+}
 
-  const sizes = {
-    sm: "px-3 py-1.5 text-xs",
-    md: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base",
-  };
+.cal-subtitle {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.5;
+}
 
-  return (
-    <button
-      className={clsx(
-        "font-bold rounded-lg transition-all duration-200 flex items-center gap-2 uppercase tracking-wider",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        variants[variant],
-        sizes[size],
-        className,
-      )}
-      {...props}
-    >
-      {Icon && <Icon size={18} />}
-      {children}
-    </button>
-  );
-};
+.cal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-// Collapsible Section
-const CollapsibleSection = ({
-  title,
-  icon: Icon,
-  defaultOpen = false,
-  children,
-}) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+.cal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+  white-space: nowrap;
+}
 
-  return (
-    <div className="border border-white/10 rounded-xl overflow-hidden bg-white/5 backdrop-blur-sm">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group"
-      >
-        <div className="flex items-center gap-3">
-          <Icon
-            className="text-indigo-400 group-hover:scale-110 transition-transform"
-            size={20}
-          />
-          <h3 className="text-base font-bold text-white group-hover:text-indigo-200 transition-colors">
-            {title}
-          </h3>
-        </div>
-        <div
-          className={clsx(
-            "text-slate-400 transition-transform duration-300",
-            isOpen && "rotate-180",
-          )}
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </div>
-      </button>
-      <div
-        className={clsx(
-          "overflow-hidden transition-all duration-300",
-          isOpen ? "max-h-[2000px]" : "max-h-0",
-        )}
-      >
-        <div className="px-6 py-4 border-t border-white/10 bg-white/[0.02]">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
+.cal-btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: #34405f;
+}
 
-// Badge Component
-const Badge = ({ variant = "primary", children, icon: Icon }) => {
-  const variants = {
-    primary: "bg-indigo-500/20 text-indigo-200 border border-indigo-500/30",
-    success: "bg-emerald-500/20 text-emerald-200 border border-emerald-500/30",
-    warning: "bg-amber-500/20 text-amber-200 border border-amber-500/30",
-    danger: "bg-rose-500/20 text-rose-200 border border-rose-500/30",
-    secondary: "bg-slate-500/20 text-slate-200 border border-slate-500/30",
-  };
+.cal-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
-  return (
-    <span
-      className={clsx(
-        "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
-        variants[variant],
-      )}
-    >
-      {Icon && <Icon size={14} />}
-      {children}
-    </span>
-  );
-};
+.cal-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.cal-btn-primary:hover:not(:disabled) {
+  background: #7c4fee;
+}
+
+.cal-btn-danger {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--danger);
+}
+
+.cal-btn-danger:hover:not(:disabled) {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+.cal-btn-subtle {
+  background: var(--surface-2);
+}
+
+.cal-segmented {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.cal-seg-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+
+.cal-seg-btn.is-active {
+  background: var(--accent);
+  color: white;
+}
+
+.cal-seg-btn:hover:not(.is-active) {
+  color: var(--text);
+}
+
+.cal-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.cal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+
+.cal-tab.is-active {
+  background: var(--accent);
+  color: white;
+}
+
+.cal-tab:hover:not(.is-active) {
+  color: var(--text);
+}
+
+.cal-collapsible {
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+
+.cal-collapsible-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.cal-collapsible-head:hover {
+  background: var(--surface-2);
+}
+
+.cal-collapsible-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cal-collapsible-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.cal-collapsible-chevron {
+  color: var(--text-faint);
+  transition: transform .2s ease;
+  display: flex;
+}
+
+.cal-collapsible.is-open .cal-collapsible-chevron {
+  transform: rotate(180deg);
+}
+
+.cal-collapsible-body {
+  border-top: 1px solid var(--border-soft);
+  padding: 18px;
+  background: rgba(255,255,255,0.008);
+}
+
+.cal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cal-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cal-input, .cal-select {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 11px;
+  width: 100%;
+}
+
+.cal-input:focus, .cal-select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.cal-input::placeholder {
+  color: var(--text-faint);
+}
+
+.cal-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cal-form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.cal-subform {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.cal-subform-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin: 0 0 12px;
+}
+
+.cal-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.cal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  transition: border-color .15s ease;
+}
+
+.cal-row:hover {
+  border-color: #34405f;
+}
+
+.cal-row-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cal-row-name {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.cal-row-sub {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+
+.cal-row-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cal-empty {
+  text-align: center;
+  padding: 26px 10px;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
+.cal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.cal-pill-current {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(16,185,129,0.35);
+}
+
+.cal-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+  flex-shrink: 0;
+}
+
+.cal-icon-btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.cal-icon-btn.danger:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.cal-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cal-checkbox-field input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.cal-checkbox-field span {
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+.cal-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cal-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cal-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.cal-card-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.cal-card-subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 2px 0 0;
+}
+
+.cal-grid-wrap {
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--border-soft);
+  margin-bottom: 20px;
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--surface-2);
+}
+
+.cal-weekday {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  padding: 10px 0;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border-soft);
+}
+
+.cal-cell {
+  position: relative;
+  min-height: 78px;
+  background: var(--surface);
+  border: none;
+  border-left: 3px solid transparent;
+  padding: 8px 9px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s ease;
+  font-family: inherit;
+  color: inherit;
+  width: 100%;
+}
+
+.cal-cell:hover:not(.is-disabled) {
+  background: var(--surface-hover);
+}
+
+.cal-cell.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.cal-cell.has-type {
+  border-left-color: var(--tc);
+  background: linear-gradient(90deg, var(--tb), transparent 65%);
+}
+
+.cal-cell.is-today {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  border-radius: 4px;
+}
+
+.cal-cell.is-selected {
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.cal-cell-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.cal-cell-primary {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.cal-cell-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tc);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.cal-cell-check {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+}
+
+.cal-cell.is-selected .cal-cell-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.cal-cell-clear {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .15s ease;
+  border: 2px solid var(--surface);
+  cursor: pointer;
+  padding: 0;
+}
+
+.cal-cell:hover .cal-cell-clear {
+  opacity: 1;
+}
+
+.cal-bulkbar {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(139,92,246,0.14);
+  border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.cal-bulkbar-count {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-bulkbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cal-grid-controls-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.cal-weekday-rule {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.cal-io-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.cal-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 22px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.cal-dropzone:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.cal-dropzone-icon {
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.cal-dropzone-text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 6px 8px 6px 12px;
+  border-radius: 999px;
+}
+
+.cal-chip button {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  display: flex;
+  padding: 2px;
+  border-radius: 50%;
+}
+
+.cal-chip button:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.cal-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cal-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,9,18,0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.cal-modal {
+  width: 360px;
+  max-width: 92vw;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  max-height: 86vh;
+  overflow-y: auto;
+}
+
+.cal-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.cal-modal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cal-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+@media (max-width: 760px) {
+  .cal-root { padding: 16px; border-radius: 0; margin: 0; }
+  .cal-form-grid, .cal-form-grid-3 { grid-template-columns: 1fr; }
+  .cal-grid-controls-row { grid-template-columns: 1fr; }
+  .cal-io-grid { grid-template-columns: 1fr; }
+  .cal-cell { min-height: 60px; padding: 6px 7px; }
+}
+`;
+
+// ============================================================================
+// REACT COMPONENT
+// ============================================================================
 
 const CalendarSettings = () => {
   const { settings, updateSetting } = useSettings();
   const calendarType = settings.calendar_type || "BS";
+
   const [activeTab, setActiveTab] = useState("setup");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Data
-  const [months, setMonths] = useState([]);
+  // Data state
   const [years, setYears] = useState([]);
+  const [months, setMonths] = useState([]);
   const [dayTypes, setDayTypes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [calDays, setCalDays] = useState([]);
-  const [overviewYear, setOverviewYear] = useState(null);
-  const [overviewStats, setOverviewStats] = useState({
-    total: 0,
-    unassigned: 0,
-    working_days: 0,
-  });
 
-  // Form States
+  // Form state
   const [newYear, setNewYear] = useState({
     year_label: "",
     year_label_AD: "",
@@ -303,42 +828,33 @@ const CalendarSettings = () => {
     is_current: false,
     start_date_AD: "",
     end_date_AD: "",
-    start_date_BS: "",
-    end_date_BS: "",
   });
 
   const [newMonth, setNewMonth] = useState({
-    month_name: "",
     year_id: "",
-    bs_month_index: 1,
+    bs_month_index: 0,
     start_date: "",
     end_date: "",
-    start_day_info: "",
-    end_day_info: "",
+    month_name: "",
   });
 
   const [newTypeName, setNewTypeName] = useState("");
   const [newTypeCategoryId, setNewTypeCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Grid States
+  // Grid state
   const [gridYearId, setGridYearId] = useState("");
   const [gridMonthId, setGridMonthId] = useState("");
-  const [bulkType, setBulkType] = useState("");
   const [bulkSelected, setBulkSelected] = useState(new Set());
-  const [editingYearId, setEditingYearId] = useState(null);
-  const [editingMonthId, setEditingMonthId] = useState(null);
-  const [editYearData, setEditYearData] = useState({});
-  const [editMonthData, setEditMonthData] = useState({});
+  const [bulkTypeId, setBulkTypeId] = useState("");
+  const [weekdayRule, setWeekdayRule] = useState({ dayTypeId: "", weekday: "", scope: "month" });
 
-  // Weekday bulk assignment
-  const [weekdayBulkType, setWeekdayBulkType] = useState("");
-  const [weekdayBulkDay, setWeekdayBulkDay] = useState("");
-  const [weekdayBulkScope, setWeekdayBulkScope] = useState("month");
-  const [weekdayBulkMonthId, setWeekdayBulkMonthId] = useState("");
+  // Edit modals
+  const [editYear, setEditYear] = useState(null);
+  const [editMonth, setEditMonth] = useState(null);
 
-  // Export/Import
-  const [exportMonthId, setExportMonthId] = useState("");
+  // UI state
+  const [openSections, setOpenSections] = useState({ years: true, months: false, categories: false, types: false });
 
   // Load all data
   const loadAll = useCallback(async () => {
@@ -356,23 +872,22 @@ const CalendarSettings = () => {
       setDayTypes(typeRes.data?.data || []);
       setCategories(catRes.data?.data || []);
 
-      const currentYear = (yearRes.data?.data || []).find((y) => y.is_current);
-      if (currentYear) {
-        setOverviewYear(currentYear);
+      const current = (yearRes.data?.data || []).find((y) => y.is_current);
+      if (current && !gridYearId) {
+        setGridYearId(current.id);
       }
     } catch (e) {
       toast.error("Failed to load calendar data");
-      console.error(e);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [gridYearId]);
 
   useEffect(() => {
     loadAll();
   }, [loadAll]);
 
-  // Fetch calendar days for grid
+  // Fetch calendar days
   const fetchGridDays = useCallback(async () => {
     if (!gridMonthId) {
       setCalDays([]);
@@ -395,7 +910,10 @@ const CalendarSettings = () => {
 
   // Handlers
   const handleAddYear = async () => {
-    if (!newYear.year_label) return toast.error("Enter year label");
+    if (!newYear.year_label) {
+      toast.error("Enter year label");
+      return;
+    }
     setBusy(true);
     try {
       await createYear(newYear);
@@ -407,12 +925,25 @@ const CalendarSettings = () => {
         is_current: false,
         start_date_AD: "",
         end_date_AD: "",
-        start_date_BS: "",
-        end_date_BS: "",
       });
-      loadAll();
+      await loadAll();
     } catch (e) {
       toast.error("Failed to add year");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleUpdateYear = async () => {
+    if (!editYear) return;
+    setBusy(true);
+    try {
+      await updateYear(editYear.id, editYear);
+      toast.success("Year updated");
+      setEditYear(null);
+      await loadAll();
+    } catch (e) {
+      toast.error("Failed to update year");
     } finally {
       setBusy(false);
     }
@@ -424,7 +955,11 @@ const CalendarSettings = () => {
     try {
       await deleteYear(id);
       toast.success("Year deleted");
-      loadAll();
+      if (gridYearId === id) {
+        setGridYearId("");
+        setGridMonthId("");
+      }
+      await loadAll();
     } catch (e) {
       toast.error("Failed to delete year");
     } finally {
@@ -432,46 +967,27 @@ const CalendarSettings = () => {
     }
   };
 
-  const startEditingYear = (year) => {
-    setEditingYearId(year.id);
-    setEditYearData(year);
-  };
-
-  const handleUpdateYear = async () => {
-    setBusy(true);
-    try {
-      await updateYear(editingYearId, editYearData);
-      toast.success("Year updated");
-      setEditingYearId(null);
-      loadAll();
-    } catch (e) {
-      toast.error("Failed to update year");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const handleAddMonth = async () => {
-    if (!newMonth.year_id || !newMonth.month_name) {
-      return toast.error("Fill all required fields");
+    if (!newMonth.year_id) {
+      toast.error("Select a year");
+      return;
     }
     setBusy(true);
     try {
       await createMonth({
         ...newMonth,
         date_format: calendarType,
+        bs_month_index: parseInt(newMonth.bs_month_index),
       });
       toast.success("Month added successfully");
       setNewMonth({
-        month_name: "",
-        year_id: "",
-        bs_month_index: 1,
+        year_id: newMonth.year_id,
+        bs_month_index: 0,
         start_date: "",
         end_date: "",
-        start_day_info: "",
-        end_day_info: "",
+        month_name: "",
       });
-      loadAll();
+      await loadAll();
     } catch (e) {
       toast.error("Failed to add month");
     } finally {
@@ -485,7 +1001,11 @@ const CalendarSettings = () => {
     try {
       await deleteMonth(id);
       toast.success("Month deleted");
-      loadAll();
+      if (gridMonthId === id) {
+        setGridMonthId("");
+        setCalDays([]);
+      }
+      await loadAll();
     } catch (e) {
       toast.error("Failed to delete month");
     } finally {
@@ -493,18 +1013,14 @@ const CalendarSettings = () => {
     }
   };
 
-  const startEditing = (month) => {
-    setEditingMonthId(month.id);
-    setEditMonthData(month);
-  };
-
   const handleUpdateMonth = async () => {
+    if (!editMonth) return;
     setBusy(true);
     try {
-      await updateMonth(editingMonthId, editMonthData);
+      await updateMonth(editMonth.id, editMonth);
       toast.success("Month updated");
-      setEditingMonthId(null);
-      loadAll();
+      setEditMonth(null);
+      await loadAll();
     } catch (e) {
       toast.error("Failed to update month");
     } finally {
@@ -512,47 +1028,14 @@ const CalendarSettings = () => {
     }
   };
 
-  const handleAddDayType = async () => {
-    if (!newTypeName) return toast.error("Enter type name");
-    setBusy(true);
-    try {
-      await createDayType({
-        day_type: newTypeName,
-        category_id: newTypeCategoryId || null,
-      });
-      toast.success("Day type added");
-      setNewTypeName("");
-      setNewTypeCategoryId("");
-      loadAll();
-    } catch (e) {
-      toast.error("Failed to add day type");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleDeleteDayType = async (id) => {
-    if (!window.confirm("Delete this day type?")) return;
-    setBusy(true);
-    try {
-      await deleteDayType(id);
-      toast.success("Day type deleted");
-      loadAll();
-    } catch (e) {
-      toast.error("Failed to delete day type");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const handleAddCategory = async () => {
-    if (!newCategoryName) return;
+    if (!newCategoryName.trim()) return;
     setBusy(true);
     try {
       await createDayCategory({ category_name: newCategoryName });
       toast.success("Category added");
       setNewCategoryName("");
-      loadAll();
+      await loadAll();
     } catch (e) {
       toast.error("Failed to add category");
     } finally {
@@ -566,7 +1049,7 @@ const CalendarSettings = () => {
     try {
       await deleteDayCategory(id);
       toast.success("Category deleted");
-      loadAll();
+      await loadAll();
     } catch (e) {
       toast.error("Failed to delete category");
     } finally {
@@ -574,24 +1057,67 @@ const CalendarSettings = () => {
     }
   };
 
+  const handleAddDayType = async () => {
+    if (!newTypeName.trim()) {
+      toast.error("Enter type name");
+      return;
+    }
+    setBusy(true);
+    try {
+      await createDayType({
+        day_type: newTypeName,
+        category_id: newTypeCategoryId || null,
+      });
+      toast.success("Day type added");
+      setNewTypeName("");
+      setNewTypeCategoryId("");
+      await loadAll();
+    } catch (e) {
+      toast.error("Failed to add day type");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDeleteDayType = async (id) => {
+    if (!window.confirm("Delete this day type?")) return;
+    setBusy(true);
+    try {
+      await deleteDayType(id);
+      toast.success("Day type deleted");
+      await loadAll();
+      await fetchGridDays();
+    } catch (e) {
+      toast.error("Failed to delete day type");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const monthsForYear = (yearId) => months.filter((m) => m.year_id === yearId);
+
   const handleBulkAssign = async (clearMode = false) => {
-    if (!gridMonthId) return toast.error("Select a month");
-    if (!clearMode && !bulkType) return toast.error("Select a day type");
+    if (!gridMonthId) {
+      toast.error("Select a month");
+      return;
+    }
+    if (!clearMode && !bulkTypeId) {
+      toast.error("Select a day type");
+      return;
+    }
 
     setBusy(true);
     try {
-      const assignments = Array.from(bulkSelected).map((id) => ({
-        calendarDayId: id,
-        dayTypeId: clearMode ? null : bulkType,
+      const assignments = Array.from(bulkSelected).map((dayId) => ({
+        calendarDayId: dayId,
+        dayTypeId: clearMode ? null : bulkTypeId,
       }));
 
       await bulkAssignDayTypes(assignments);
-      toast.success(
-        `${assignments.length} days ${clearMode ? "cleared" : "assigned"}`,
-      );
+      toast.success(`${assignments.length} day(s) ${clearMode ? "cleared" : "assigned"}`);
       setBulkSelected(new Set());
-      setBulkType("");
-      fetchGridDays();
+      setBulkTypeId("");
+      await fetchGridDays();
     } catch (e) {
       toast.error("Bulk assignment failed");
     } finally {
@@ -599,21 +1125,11 @@ const CalendarSettings = () => {
     }
   };
 
-  const handleCellClick = (id) => {
-    const newSet = new Set(bulkSelected);
-    if (newSet.has(id)) {
-      newSet.delete(id);
-    } else {
-      newSet.add(id);
-    }
-    setBulkSelected(newSet);
-  };
-
   const handleQuickClear = async (id) => {
     setBusy(true);
     try {
       await assignDayType(id, null);
-      fetchGridDays();
+      await fetchGridDays();
     } catch (e) {
       toast.error("Clear failed");
     } finally {
@@ -622,1059 +1138,686 @@ const CalendarSettings = () => {
   };
 
   const handleAssignByWeekday = async () => {
-    if (!weekdayBulkType || !weekdayBulkDay) {
-      return toast.error("Select day type and weekday");
+    if (!weekdayRule.dayTypeId || weekdayRule.weekday === "") {
+      toast.error("Select day type and weekday");
+      return;
     }
 
     setBusy(true);
     try {
       const payload = {
-        dayType: weekdayBulkType,
-        weekday: weekdayBulkDay,
-        monthId: weekdayBulkScope === "month" ? weekdayBulkMonthId || gridMonthId : null,
-        year_id: weekdayBulkScope === "year" ? gridYearId : null,
+        dayType: weekdayRule.dayTypeId,
+        weekday: weekdayRule.weekday,
+        monthId: weekdayRule.scope === "month" ? gridMonthId : null,
+        year_id: weekdayRule.scope === "year" ? gridYearId : null,
       };
 
       const response = await assignByWeekday(payload);
-      const count = response?.data?.count || response?.data?.data?.length || 0;
-      toast.success(`Assigned to ${count} ${weekdayBulkDay}(s)`);
+      const count = response?.data?.count || 0;
+      toast.success(`Assigned to ${count} ${weekdayRule.weekday}(s)`);
 
-      setWeekdayBulkType("");
-      setWeekdayBulkDay("");
-      fetchGridDays();
+      setWeekdayRule({ dayTypeId: "", weekday: "", scope: weekdayRule.scope });
+      await fetchGridDays();
     } catch (e) {
-      toast.error(e?.response?.data?.error || "Weekday assignment failed");
+      toast.error("Weekday assignment failed");
     } finally {
       setBusy(false);
     }
   };
 
-  // Filter years
-  const filteredYears = useMemo(() => {
-    return years.filter((y) => {
-      const yr = parseInt(y.year_label);
-      if (isNaN(yr)) return true;
-      if (calendarType === "BS") return yr > 2040;
-      return yr <= 2040;
-    });
-  }, [years, calendarType]);
-
-  const gridMonthOptions = useMemo(() => {
-    return months.filter((m) => {
-      const format = String(m.date_format || "BS").toUpperCase();
-      return m.year_id === gridYearId && format === calendarType;
-    });
-  }, [months, gridYearId, calendarType]);
-
-  const currentYearMonths = useMemo(() => {
-    if (!overviewYear?.id) return [];
-    return months.filter((m) => {
-      const format = String(m.date_format || "BS").toUpperCase();
-      return m.year_id === overviewYear.id && format === calendarType;
-    });
-  }, [months, overviewYear, calendarType]);
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-400 mx-auto mb-4" />
-          <p className="text-slate-300 font-medium">Loading calendar settings...</p>
+      <div className="cal-root">
+        <style>{styles}</style>
+        <div className="cal-empty" style={{ padding: "60px 20px" }}>
+          <Loader2 size={32} style={{ margin: "0 auto 12px", color: "var(--accent)", animation: "spin 1s linear infinite" }} />
+          <p>Loading calendar settings...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-8">
+    <div className="cal-root">
+      <style>{styles}</style>
+
       {/* Header */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 via-purple-600/10 to-transparent rounded-3xl blur-3xl" />
-        <Card className="relative border-indigo-500/30 bg-gradient-to-br from-white/10 via-white/5 to-transparent">
-          <div className="flex items-start justify-between gap-6">
-            <div>
-              <h1 className="text-4xl font-black text-white tracking-tight mb-2">
-                Academic Calendar Settings
-              </h1>
-              <p className="text-slate-300 flex items-center gap-2">
-                <Zap size={16} className="text-indigo-400" />
-                Manage academic years, months, and holiday rules
-              </p>
-            </div>
-            <div className="flex gap-3 p-1 bg-white/5 border border-white/10 rounded-xl backdrop-blur-sm">
-              <Button
-                size="md"
-                variant={calendarType === "BS" ? "primary" : "ghost"}
-                onClick={() => updateSetting("calendar_type", "BS")}
+      <div className="cal-page-header">
+        <div>
+          <h1 className="cal-title">Academic calendar settings</h1>
+          <p className="cal-subtitle">
+            Manage academic years, months, day categories and classification rules for the school calendar.
+          </p>
+        </div>
+        <div className="cal-header-actions">
+          <div className="cal-segmented">
+            {["BS", "AD"].map((k) => (
+              <button
+                key={k}
+                className={clsx("cal-seg-btn", calendarType === k && "is-active")}
+                onClick={() => updateSetting("calendar_type", k)}
               >
-                BS
-              </Button>
-              <Button
-                size="md"
-                variant={calendarType === "AD" ? "primary" : "ghost"}
-                onClick={() => updateSetting("calendar_type", "AD")}
-              >
-                AD
-              </Button>
-            </div>
+                {k}
+              </button>
+            ))}
           </div>
-        </Card>
+          <button className="cal-btn cal-btn-subtle" onClick={loadAll} disabled={busy || loading}>
+            <RefreshCw size={15} /> Refresh
+          </button>
+        </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex gap-3 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm w-fit">
+      {/* Tabs */}
+      <div className="cal-tabs">
         {[
           { id: "setup", label: "Setup & Configuration", icon: Settings },
           { id: "grid", label: "Day Assignments", icon: Grid3x3 },
-          { id: "portability", label: "Import / Export", icon: FileUp },
+          { id: "io", label: "Import / Export", icon: Upload },
         ].map((tab) => (
           <button
             key={tab.id}
+            className={clsx("cal-tab", activeTab === tab.id && "is-active")}
             onClick={() => setActiveTab(tab.id)}
-            className={clsx(
-              "flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all duration-200",
-              activeTab === tab.id
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                : "text-slate-400 hover:text-white hover:bg-white/5",
-            )}
           >
-            <tab.icon size={18} />
-            {tab.label}
+            <tab.icon size={15} /> {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Tab Content */}
-      <div>
-        {activeTab === "setup" && (
-          <div className="space-y-6">
-            {/* Years Section */}
-            <CollapsibleSection
-              title="Academic Years"
-              icon={Calendar}
-              defaultOpen={true}
-            >
-              <div className="space-y-6">
-                {/* Add Year Form */}
-                <div className="p-6 bg-indigo-600/10 border border-indigo-500/30 rounded-xl">
-                  <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">
-                    Add New Year
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      label="Year Label"
-                      placeholder={calendarType === "BS" ? "2083" : "2025-2026"}
-                      value={newYear.year_label}
-                      onChange={(e) =>
-                        setNewYear({ ...newYear, year_label: e.target.value })
-                      }
-                    />
-                    <div className="flex items-end gap-2">
-                      <Input
-                        label="Set as Current"
-                        type="checkbox"
-                        checked={newYear.is_current}
-                        onChange={(e) =>
-                          setNewYear({
-                            ...newYear,
-                            is_current: e.target.checked,
-                          })
-                        }
-                        className="w-5 h-5 cursor-pointer"
-                      />
-                      <span className="text-sm text-slate-400 mb-3">
-                        Mark this year as current
-                      </span>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <Input
-                      label="Year Label (AD)"
-                      placeholder="2025-2026"
-                      value={newYear.year_label_AD}
-                      onChange={(e) =>
-                        setNewYear({
-                          ...newYear,
-                          year_label_AD: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      label="Year Label (BS)"
-                      placeholder="2082-2083"
-                      value={newYear.year_label_BS}
-                      onChange={(e) =>
-                        setNewYear({
-                          ...newYear,
-                          year_label_BS: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <UniversalDatePicker
-                      label="Start Date (AD)"
-                      value={newYear.start_date_AD}
-                      onChange={(val) =>
-                        setNewYear({
-                          ...newYear,
-                          start_date_AD: val,
-                        })
-                      }
-                    />
-                    <UniversalDatePicker
-                      label="End Date (AD)"
-                      value={newYear.end_date_AD}
-                      onChange={(val) =>
-                        setNewYear({
-                          ...newYear,
-                          end_date_AD: val,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex justify-end mt-4">
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      icon={Plus}
-                      onClick={handleAddYear}
-                      disabled={busy}
-                    >
-                      Add Year
-                    </Button>
-                  </div>
+      {/* SETUP TAB */}
+      {activeTab === "setup" && (
+        <div>
+          {/* Years Section */}
+          <CollapsibleSection
+            isOpen={openSections.years}
+            onToggle={() => setOpenSections({ ...openSections, years: !openSections.years })}
+            icon={Calendar}
+            title="Academic years"
+          >
+            <div className="cal-subform">
+              <p className="cal-subform-title">Add new year</p>
+              <div className="cal-form-grid">
+                <div className="cal-field">
+                  <label>Year label (BS)</label>
+                  <input
+                    className="cal-input"
+                    placeholder="2083/084"
+                    value={newYear.year_label_BS}
+                    onChange={(e) => setNewYear({ ...newYear, year_label_BS: e.target.value })}
+                  />
                 </div>
-
-                {/* Years List */}
-                <div className="grid gap-3">
-                  {filteredYears.length === 0 ? (
-                    <div className="text-center py-6 text-slate-400">
-                      No years added yet
-                    </div>
-                  ) : (
-                    filteredYears.map((year) => (
-                      <div
-                        key={year.id}
-                        className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 transition-all group"
-                      >
-                        <div className="flex items-center gap-3 flex-1">
-                          <Calendar
-                            size={20}
-                            className="text-indigo-400 group-hover:scale-110 transition-transform"
-                          />
-                          <div>
-                            <p className="font-bold text-white">
-                              {year.year_label}
-                            </p>
-                            <p className="text-xs text-slate-400">
-                              {year.year_label_AD} / {year.year_label_BS}
-                            </p>
-                          </div>
-                          {year.is_current && (
-                            <Badge variant="success">
-                              <Check size={12} />
-                              Current
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={Edit2}
-                            onClick={() => startEditingYear(year)}
-                          />
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={Trash2}
-                            onClick={() =>
-                              handleDeleteYear(year.id, year.year_label)
-                            }
-                          />
-                        </div>
-                      </div>
-                    ))
-                  )}
+                <div className="cal-field">
+                  <label>Year label (AD)</label>
+                  <input
+                    className="cal-input"
+                    placeholder="2026/27"
+                    value={newYear.year_label_AD}
+                    onChange={(e) => setNewYear({ ...newYear, year_label_AD: e.target.value })}
+                  />
+                </div>
+                <div className="cal-field">
+                  <label>Start date (AD)</label>
+                  <input
+                    type="date"
+                    className="cal-input"
+                    value={newYear.start_date_AD}
+                    onChange={(e) => setNewYear({ ...newYear, start_date_AD: e.target.value })}
+                  />
+                </div>
+                <div className="cal-field">
+                  <label>End date (AD)</label>
+                  <input
+                    type="date"
+                    className="cal-input"
+                    value={newYear.end_date_AD}
+                    onChange={(e) => setNewYear({ ...newYear, end_date_AD: e.target.value })}
+                  />
                 </div>
               </div>
-            </CollapsibleSection>
+              <div className="cal-checkbox-field" style={{ marginTop: "12px" }}>
+                <input
+                  type="checkbox"
+                  checked={newYear.is_current}
+                  onChange={(e) => setNewYear({ ...newYear, is_current: e.target.checked })}
+                />
+                <span>Mark this year as current</span>
+              </div>
+              <div className="cal-form-actions">
+                <button className="cal-btn cal-btn-primary" onClick={handleAddYear} disabled={busy}>
+                  <Plus size={14} /> Add year
+                </button>
+              </div>
+            </div>
 
-            {/* Months Section */}
-            <CollapsibleSection
-              title="Academic Months"
-              icon={Calendar}
-              defaultOpen={false}
-            >
-              <div className="space-y-6">
-                <div className="p-6 bg-emerald-600/10 border border-emerald-500/30 rounded-xl">
-                  <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">
-                    Add New Month
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Select
-                      label="Academic Year"
-                      value={newMonth.year_id}
-                      onChange={(e) =>
-                        setNewMonth({ ...newMonth, year_id: e.target.value })
-                      }
-                      options={[
-                        { value: "", label: "Select Year..." },
-                        ...filteredYears.map((y) => ({
-                          value: y.id,
-                          label: y.year_label,
-                        })),
-                      ]}
-                    />
-                    <Select
-                      label={`${calendarType} Month`}
-                      value={newMonth.bs_month_index}
-                      onChange={(e) =>
-                        setNewMonth({
-                          ...newMonth,
-                          bs_month_index: parseInt(e.target.value),
-                        })
-                      }
-                      options={
-                        calendarType === "BS"
-                          ? BS_MONTHS.map((m, i) => ({
-                              value: i + 1,
-                              label: m,
-                            }))
-                          : AD_MONTHS.map((m, i) => ({
-                              value: i + 1,
-                              label: m,
-                            }))
-                      }
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <UniversalDatePicker
-                      label="Period Start"
-                      value={newMonth.start_date}
-                      onChange={(val) =>
-                        setNewMonth({ ...newMonth, start_date: val })
-                      }
-                    />
-                    <UniversalDatePicker
-                      label="Period End"
-                      value={newMonth.end_date}
-                      onChange={(val) =>
-                        setNewMonth({ ...newMonth, end_date: val })
-                      }
-                    />
-                  </div>
-                  <Input
-                    label="Display Label"
-                    placeholder={
-                      calendarType === "BS" ? "Baisakh 2083" : "January 2024"
-                    }
-                    value={newMonth.month_name}
-                    onChange={(e) =>
-                      setNewMonth({ ...newMonth, month_name: e.target.value })
-                    }
-                    className="mt-4"
-                  />
-                  <div className="flex justify-end mt-4">
-                    <Button
-                      variant="success"
-                      size="lg"
-                      icon={Plus}
-                      onClick={handleAddMonth}
-                      disabled={busy}
-                    >
-                      Create Month
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Months List */}
-                <div className="grid gap-3">
-                  {currentYearMonths.length === 0 ? (
-                    <div className="text-center py-6 text-slate-400">
-                      No months for current year
-                    </div>
-                  ) : (
-                    currentYearMonths.map((month) => (
-                      <div
-                        key={month.id}
-                        className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 transition-all group"
-                      >
-                        <div className="flex items-center gap-3 flex-1">
-                          <Calendar
-                            size={20}
-                            className="text-emerald-400 group-hover:scale-110 transition-transform"
-                          />
-                          <div>
-                            <p className="font-bold text-white">
-                              {month.month_name}
-                            </p>
-                            <p className="text-xs text-slate-400">
-                              {month.start_date} to {month.end_date}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={Edit2}
-                            onClick={() => startEditing(month)}
-                          />
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={Trash2}
-                            onClick={() => handleDeleteMonth(month.id)}
-                          />
+            <div className="cal-list">
+              {years.length === 0 ? (
+                <div className="cal-empty">No academic years added yet.</div>
+              ) : (
+                years.map((y) => (
+                  <div key={y.id} className="cal-row">
+                    <div className="cal-row-main">
+                      <Calendar size={17} />
+                      <div>
+                        <div className="cal-row-name">{y.year_label_BS || y.year_label_AD || y.year_label}</div>
+                        <div className="cal-row-sub">
+                          {y.year_label_AD} · {y.start_date_AD || "—"} to {y.end_date_AD || "—"}
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </CollapsibleSection>
-
-            {/* Categories Section */}
-            <CollapsibleSection
-              title="Day Categories"
-              icon={Settings}
-              defaultOpen={false}
-            >
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <Input
-                    label="Category Name"
-                    placeholder="e.g., Annual Day, Sports Day"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="flex-1"
-                  />
-                  <div className="flex items-end">
-                    <Button
-                      variant="primary"
-                      onClick={handleAddCategory}
-                      disabled={busy}
-                      icon={Plus}
-                    >
-                      Add
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((cat) => (
-                    <Badge
-                      key={cat.id}
-                      variant="secondary"
-                      className="group cursor-pointer hover:border-rose-500/50"
-                    >
-                      {cat.category_name}
-                      <button
-                        onClick={() => handleDeleteCategory(cat.id)}
-                        className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={12} />
+                      {y.is_current && (
+                        <span className="cal-pill cal-pill-current">
+                          <Check size={11} /> Current
+                        </span>
+                      )}
+                    </div>
+                    <div className="cal-row-actions">
+                      <button className="cal-icon-btn" onClick={() => setEditYear(y)}>
+                        <Edit2 size={14} />
                       </button>
-                    </Badge>
-                  ))}
+                      <button className="cal-icon-btn danger" onClick={() => handleDeleteYear(y.id, y.year_label_BS || y.year_label)}>
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CollapsibleSection>
+
+          {/* Months Section */}
+          <CollapsibleSection
+            isOpen={openSections.months}
+            onToggle={() => setOpenSections({ ...openSections, months: !openSections.months })}
+            icon={Calendar}
+            title="Academic months"
+          >
+            <div className="cal-subform">
+              <p className="cal-subform-title">Add new month</p>
+              <div className="cal-form-grid">
+                <div className="cal-field">
+                  <label>Academic year</label>
+                  <select
+                    className="cal-select"
+                    value={newMonth.year_id}
+                    onChange={(e) => setNewMonth({ ...newMonth, year_id: e.target.value })}
+                  >
+                    <option value="">Select year…</option>
+                    {years.map((y) => (
+                      <option key={y.id} value={y.id}>
+                        {y.year_label_BS || y.year_label_AD || y.year_label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="cal-field">
+                  <label>BS month</label>
+                  <select
+                    className="cal-select"
+                    value={newMonth.bs_month_index}
+                    onChange={(e) => setNewMonth({ ...newMonth, bs_month_index: parseInt(e.target.value) })}
+                  >
+                    {BS_MONTHS.map((name, i) => (
+                      <option key={name} value={i}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="cal-field">
+                  <label>Period start</label>
+                  <input
+                    type="date"
+                    className="cal-input"
+                    value={newMonth.start_date}
+                    onChange={(e) => setNewMonth({ ...newMonth, start_date: e.target.value })}
+                  />
+                </div>
+                <div className="cal-field">
+                  <label>Period end</label>
+                  <input
+                    type="date"
+                    className="cal-input"
+                    value={newMonth.end_date}
+                    onChange={(e) => setNewMonth({ ...newMonth, end_date: e.target.value })}
+                  />
                 </div>
               </div>
-            </CollapsibleSection>
+              <div className="cal-form-actions">
+                <button className="cal-btn cal-btn-primary" onClick={handleAddMonth} disabled={busy}>
+                  <Plus size={14} /> Add month
+                </button>
+              </div>
+            </div>
 
-            {/* Day Types Section */}
-            <CollapsibleSection
-              title="Day Classifications"
-              icon={Zap}
-              defaultOpen={false}
-            >
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Input
-                    label="Type Name"
-                    placeholder="e.g., Holiday, Working Day"
+            <div className="cal-list">
+              {monthsForYear(newMonth.year_id).length === 0 ? (
+                <div className="cal-empty">No months for selected year.</div>
+              ) : (
+                monthsForYear(newMonth.year_id).map((m) => (
+                  <div key={m.id} className="cal-row">
+                    <div className="cal-row-main">
+                      <Calendar size={17} />
+                      <div>
+                        <div className="cal-row-name">{m.month_name}</div>
+                        <div className="cal-row-sub">
+                          {m.start_date} to {m.end_date}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="cal-row-actions">
+                      <button className="cal-icon-btn" onClick={() => setEditMonth(m)}>
+                        <Edit2 size={14} />
+                      </button>
+                      <button className="cal-icon-btn danger" onClick={() => handleDeleteMonth(m.id)}>
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CollapsibleSection>
+
+          {/* Categories Section */}
+          <CollapsibleSection
+            isOpen={openSections.categories}
+            onToggle={() => setOpenSections({ ...openSections, categories: !openSections.categories })}
+            icon={Settings}
+            title="Day categories"
+          >
+            <div style={{ marginBottom: "16px" }}>
+              <div className="cal-field" style={{ marginBottom: "12px" }}>
+                <label>Category name</label>
+                <input
+                  className="cal-input"
+                  placeholder="e.g., Attendance, Assessment"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                />
+              </div>
+              <div className="cal-form-actions">
+                <button className="cal-btn cal-btn-primary" onClick={handleAddCategory} disabled={busy}>
+                  <Plus size={14} /> Add category
+                </button>
+              </div>
+            </div>
+
+            <div className="cal-chip-row">
+              {categories.map((c) => (
+                <div key={c.id} className="cal-chip">
+                  {c.category_name}
+                  <button onClick={() => handleDeleteCategory(c.id)}>
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </CollapsibleSection>
+
+          {/* Day Types Section */}
+          <CollapsibleSection
+            isOpen={openSections.types}
+            onToggle={() => setOpenSections({ ...openSections, types: !openSections.types })}
+            icon={Settings}
+            title="Day classifications"
+          >
+            <div style={{ marginBottom: "16px" }}>
+              <div className="cal-form-grid-3">
+                <div className="cal-field">
+                  <label>Type name</label>
+                  <input
+                    className="cal-input"
+                    placeholder="e.g., Holiday"
                     value={newTypeName}
                     onChange={(e) => setNewTypeName(e.target.value)}
                   />
-                  <Select
-                    label="Category"
+                </div>
+                <div className="cal-field">
+                  <label>Category</label>
+                  <select
+                    className="cal-select"
                     value={newTypeCategoryId}
                     onChange={(e) => setNewTypeCategoryId(e.target.value)}
-                    options={[
-                      { value: "", label: "Select Category..." },
-                      ...categories.map((c) => ({
-                        value: c.id,
-                        label: c.category_name,
-                      })),
-                    ]}
-                  />
-                  <div className="flex items-end">
-                    <Button
-                      variant="primary"
-                      onClick={handleAddDayType}
-                      disabled={busy}
-                      icon={Plus}
-                      className="w-full"
-                    >
-                      Add Type
-                    </Button>
-                  </div>
+                  >
+                    <option value="">None</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.category_name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-
-                <div className="grid gap-2">
-                  {dayTypes.map((type) => (
-                    <div
-                      key={type.id}
-                      className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:border-white/20 transition-all group"
-                    >
-                      <div>
-                        <p className="font-bold text-white text-sm">
-                          {type.day_type}
-                        </p>
-                        {type.category_name && (
-                          <p className="text-xs text-slate-400">
-                            {type.category_name}
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={Trash2}
-                        onClick={() => handleDeleteDayType(type.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                      />
-                    </div>
-                  ))}
+                <div className="cal-form-actions" style={{ justifyContent: "flex-start", marginTop: 0 }}>
+                  <button className="cal-btn cal-btn-primary" onClick={handleAddDayType} disabled={busy}>
+                    <Plus size={14} /> Add type
+                  </button>
                 </div>
               </div>
-            </CollapsibleSection>
-          </div>
-        )}
+            </div>
 
-        {activeTab === "grid" && (
-          <div className="space-y-6">
-            {/* Grid Controls */}
-            <Card className="bg-gradient-to-r from-indigo-600/10 via-purple-600/5 to-transparent border-indigo-500/20">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Select
-                  label="Select Year"
+            <div className="cal-list">
+              {dayTypes.map((t) => (
+                <div key={t.id} className="cal-row">
+                  <div className="cal-row-main">
+                    <div>
+                      <div className="cal-row-name">{t.day_type}</div>
+                      {t.category_name && <div className="cal-row-sub">{t.category_name}</div>}
+                    </div>
+                  </div>
+                  <div className="cal-row-actions">
+                    <button className="cal-icon-btn danger" onClick={() => handleDeleteDayType(t.id)}>
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CollapsibleSection>
+        </div>
+      )}
+
+      {/* GRID TAB */}
+      {activeTab === "grid" && (
+        <div>
+          {/* Grid Controls */}
+          <div className="cal-panel">
+            <div className="cal-grid-controls-row">
+              <div className="cal-field">
+                <label>Academic year</label>
+                <select
+                  className="cal-select"
                   value={gridYearId}
-                  onChange={(e) => setGridYearId(e.target.value)}
-                  options={[
-                    { value: "", label: "Select Year..." },
-                    ...filteredYears.map((y) => ({
-                      value: y.id,
-                      label: y.year_label,
-                    })),
-                  ]}
-                />
-                <Select
-                  label="Select Month"
+                  onChange={(e) => {
+                    setGridYearId(e.target.value);
+                    setGridMonthId("");
+                    setCalDays([]);
+                  }}
+                >
+                  <option value="">Select year…</option>
+                  {years.map((y) => (
+                    <option key={y.id} value={y.id}>
+                      {y.year_label_BS || y.year_label_AD || y.year_label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="cal-field">
+                <label>Month</label>
+                <select
+                  className="cal-select"
                   value={gridMonthId}
                   onChange={(e) => setGridMonthId(e.target.value)}
-                  options={[
-                    { value: "", label: "Select Month..." },
-                    ...gridMonthOptions.map((m) => ({
-                      value: m.id,
-                      label: m.month_name,
-                    })),
-                  ]}
-                />
-                <div className="flex items-end">
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    icon={RefreshCw}
-                    className="w-full"
-                    onClick={() => {
-                      if (gridYearId) {
-                        refreshYearlyStats(gridYearId).then(() => {
-                          toast.success("Stats refreshed");
-                          loadAll();
-                        });
-                      }
-                    }}
+                >
+                  <option value="">Select month…</option>
+                  {monthsForYear(gridYearId).map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.month_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="cal-form-actions" style={{ justifyContent: "flex-start", marginTop: 0 }}>
+                <button className="cal-btn cal-btn-subtle" onClick={() => refreshYearlyStats(gridYearId)} disabled={busy || !gridYearId}>
+                  <RefreshCw size={14} /> Stats
+                </button>
+              </div>
+            </div>
+
+            {/* Weekday Rule */}
+            <div className="cal-weekday-rule">
+              <div className="cal-grid-controls-row">
+                <div className="cal-field">
+                  <label>Day type</label>
+                  <select
+                    className="cal-select"
+                    value={weekdayRule.dayTypeId}
+                    onChange={(e) => setWeekdayRule({ ...weekdayRule, dayTypeId: e.target.value })}
                   >
-                    Refresh Stats
-                  </Button>
+                    <option value="">Select type…</option>
+                    {dayTypes.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.day_type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="cal-field">
+                  <label>Weekday</label>
+                  <select
+                    className="cal-select"
+                    value={weekdayRule.weekday}
+                    onChange={(e) => setWeekdayRule({ ...weekdayRule, weekday: e.target.value })}
+                  >
+                    <option value="">Select day…</option>
+                    {WEEKDAYS_FULL.map((w, i) => (
+                      <option key={w} value={i}>
+                        {w}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="cal-form-actions" style={{ justifyContent: "flex-start", marginTop: 0 }}>
+                  <button className="cal-btn cal-btn-primary" onClick={handleAssignByWeekday} disabled={busy}>
+                    <Check size={14} /> Apply
+                  </button>
                 </div>
               </div>
-
-              {/* Weekday Assignment */}
-              <div className="mt-6 pt-6 border-t border-white/10">
-                <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">
-                  Assign by Weekday
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Select
-                    label="Day Type"
-                    value={weekdayBulkType}
-                    onChange={(e) => setWeekdayBulkType(e.target.value)}
-                    options={[
-                      { value: "", label: "Select Type..." },
-                      ...dayTypes.map((t) => ({ value: t.id, label: t.day_type })),
-                    ]}
-                  />
-                  <Select
-                    label="Weekday"
-                    value={weekdayBulkDay}
-                    onChange={(e) => setWeekdayBulkDay(e.target.value)}
-                    options={[
-                      { value: "", label: "Select Day..." },
-                      { value: "Sunday", label: "Sunday" },
-                      { value: "Monday", label: "Monday" },
-                      { value: "Tuesday", label: "Tuesday" },
-                      { value: "Wednesday", label: "Wednesday" },
-                      { value: "Thursday", label: "Thursday" },
-                      { value: "Friday", label: "Friday" },
-                      { value: "Saturday", label: "Saturday" },
-                    ]}
-                  />
-                  <Select
-                    label="Scope"
-                    value={weekdayBulkScope}
-                    onChange={(e) => {
-                      setWeekdayBulkScope(e.target.value);
-                      if (e.target.value === "year") {
-                        setWeekdayBulkMonthId("");
-                      }
-                    }}
-                    options={[
-                      { value: "month", label: "This Month" },
-                      { value: "year", label: "Whole Year" },
-                    ]}
-                  />
-                  <div className="flex items-end">
-                    <Button
-                      variant="success"
-                      size="md"
-                      icon={Check}
-                      className="w-full"
-                      onClick={handleAssignByWeekday}
-                      disabled={busy}
-                    >
-                      Apply Rule
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Calendar Grid */}
-            {!gridMonthId ? (
-              <Card className="flex flex-col items-center justify-center gap-4 py-12">
-                <Calendar size={48} className="text-slate-500" />
-                <p className="text-slate-400 font-medium">
-                  Select a year and month to view the calendar grid
-                </p>
-              </Card>
-            ) : (
-              <Card>
-                <div className="grid grid-cols-7 gap-2 mb-6">
-                  {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(
-                    (day) => (
-                      <div
-                        key={day}
-                        className="text-center text-xs font-bold text-slate-400 py-2"
-                      >
-                        {day}
-                      </div>
-                    ),
-                  )}
-                </div>
-                <div className="grid grid-cols-7 gap-3">
-                  {calDays.map((day) => {
-                    const isSelected = bulkSelected.has(day.id);
-                    const style = dayColor(day.day_type, day.category_name);
-
-                    return (
-                      <div
-                        key={day.id}
-                        onClick={() => handleCellClick(day.id)}
-                        className={clsx(
-                          "relative p-3 rounded-lg border transition-all duration-200 cursor-pointer min-h-[80px] flex flex-col justify-between group",
-                          isSelected
-                            ? "ring-2 ring-indigo-400 scale-[0.98] border-indigo-400"
-                            : "border-white/10 hover:border-white/30 hover:scale-[1.02]",
-                          day.day_type ? style.cell : "bg-white/5",
-                        )}
-                      >
-                        <div className="flex justify-between items-start">
-                          <span className="font-bold text-white text-lg">
-                            {day.day_number}
-                          </span>
-                          <div
-                            className={clsx(
-                              "w-4 h-4 rounded-full border flex items-center justify-center",
-                              isSelected
-                                ? "bg-indigo-500 border-indigo-400"
-                                : "border-slate-600 bg-white/5",
-                            )}
-                          >
-                            {isSelected && (
-                              <Check size={10} className="text-white" />
-                            )}
-                          </div>
-                        </div>
-                        {day.day_type && (
-                          <span
-                            className={clsx(
-                              "text-[10px] font-bold uppercase px-2 py-1 rounded text-center",
-                              style.badge,
-                            )}
-                          >
-                            {day.day_type}
-                          </span>
-                        )}
-                        {day.day_type && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuickClear(day.id);
-                            }}
-                            className="absolute -top-2 -right-2 p-1 bg-rose-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
-                          >
-                            <X size={12} strokeWidth={3} />
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Bulk Actions */}
-                {bulkSelected.size > 0 && (
-                  <div className="mt-6 p-4 bg-indigo-600/20 border border-indigo-500/30 rounded-xl flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-bold text-white">
-                        {bulkSelected.size} day(s) selected
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Select
-                        value={bulkType}
-                        onChange={(e) => setBulkType(e.target.value)}
-                        options={[
-                          { value: "", label: "Select Type..." },
-                          ...dayTypes.map((t) => ({
-                            value: t.id,
-                            label: t.day_type,
-                          })),
-                        ]}
-                      />
-                      <Button
-                        variant="primary"
-                        onClick={() => handleBulkAssign(false)}
-                        disabled={!bulkType}
-                      >
-                        Assign
-                      </Button>
-                      <Button
-                        variant="danger"
-                        onClick={() => handleBulkAssign(true)}
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </Card>
-            )}
+            </div>
           </div>
-        )}
 
-        {activeTab === "portability" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Export Month Card */}
-            <Card className="bg-gradient-to-br from-emerald-600/10 to-emerald-600/5 border-emerald-500/20">
-              <SectionHeader
-                icon={Download}
-                title="Export Month"
-                subtitle="Download calendar data for a specific month"
-              />
-              <div className="space-y-4">
-                <Select
-                  label="Year"
-                  value={gridYearId}
-                  onChange={(e) => setGridYearId(e.target.value)}
-                  options={[
-                    { value: "", label: "Select Year..." },
-                    ...filteredYears.map((y) => ({
-                      value: y.id,
-                      label: y.year_label,
-                    })),
-                  ]}
-                />
-                <Select
-                  label="Month"
-                  value={exportMonthId}
-                  onChange={(e) => setExportMonthId(e.target.value)}
-                  options={[
-                    { value: "", label: "Select Month..." },
-                    ...gridMonthOptions.map((m) => ({
-                      value: m.id,
-                      label: m.month_name,
-                    })),
-                  ]}
-                />
-                <Button
-                  variant="success"
-                  size="lg"
-                  icon={Download}
-                  className="w-full"
-                  disabled={!exportMonthId || busy}
-                  onClick={async () => {
-                    if (!exportMonthId) return;
-                    setBusy(true);
-                    try {
-                      const res = await getCalendarDays(
-                        exportMonthId,
-                        calendarType,
-                      );
-                      const days = res.data?.data || [];
-                      if (days.length === 0)
-                        return toast.error("No data found");
-
-                      const headers = ["Day", "Type", "Category"];
-                      const rows = days.map((d) => [
-                        d.day_number,
-                        d.day_type || "Unassigned",
-                        d.category_name || "N/A",
-                      ]);
-
-                      const csv = [headers, ...rows]
-                        .map((e) => e.join(","))
-                        .join("\n");
-                      const link = document.createElement("a");
-                      link.href = URL.createObjectURL(
-                        new Blob([csv], { type: "text/csv" }),
-                      );
-                      link.download = `calendar_${exportMonthId}.csv`;
-                      link.click();
-                      toast.success("Exported successfully");
-                    } catch (e) {
-                      toast.error("Export failed");
-                    } finally {
-                      setBusy(false);
-                    }
-                  }}
-                >
-                  Export CSV
-                </Button>
+          {/* Calendar Grid */}
+          {!gridMonthId ? (
+            <div className="cal-panel" style={{ textAlign: "center", padding: "60px 20px" }}>
+              <Calendar size={48} style={{ margin: "0 auto 12px", opacity: 0.3 }} />
+              <p style={{ color: "var(--text-faint)" }}>Select a year and month to view the calendar</p>
+            </div>
+          ) : (
+            <div className="cal-grid-wrap">
+              <div className="cal-weekdays">
+                {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
+                  <div key={d} className="cal-weekday">
+                    {d}
+                  </div>
+                ))}
               </div>
-            </Card>
+              <div className="cal-grid">
+                {calDays.map((day) => {
+                  const isSelected = bulkSelected.has(day.id);
+                  const style = dayColor(day.day_type, day.category_name);
 
-            {/* Export Year Card */}
-            <Card className="bg-gradient-to-br from-indigo-600/10 to-indigo-600/5 border-indigo-500/20">
-              <SectionHeader
-                icon={Download}
-                title="Export Year"
-                subtitle="Download full academic year data"
-              />
-              <div className="space-y-4">
-                <Select
-                  label="Academic Year"
-                  value={gridYearId}
-                  onChange={(e) => setGridYearId(e.target.value)}
-                  options={[
-                    { value: "", label: "Select Year..." },
-                    ...filteredYears.map((y) => ({
-                      value: y.id,
-                      label: y.year_label,
-                    })),
-                  ]}
-                />
-                <Button
-                  variant="primary"
-                  size="lg"
-                  icon={Download}
-                  className="w-full"
-                  disabled={!gridYearId || busy}
-                  onClick={async () => {
-                    if (!gridYearId) return;
-                    setBusy(true);
-                    try {
-                      const res = await getCalendarDaysByYear(gridYearId);
-                      const days = res.data?.data || [];
-                      if (days.length === 0)
-                        return toast.error("No data found");
-
-                      const headers = ["Year", "Month", "Day", "Type", "Category"];
-                      const rows = days.map((d) => [
-                        d.year_label,
-                        d.month_name,
-                        d.day_number,
-                        d.day_type || "Unassigned",
-                        d.category_name || "N/A",
-                      ]);
-
-                      const csv = [headers, ...rows]
-                        .map((e) => e.join(","))
-                        .join("\n");
-                      const link = document.createElement("a");
-                      link.href = URL.createObjectURL(
-                        new Blob([csv], { type: "text/csv" }),
-                      );
-                      link.download = `calendar_year_${gridYearId}.csv`;
-                      link.click();
-                      toast.success("Exported successfully");
-                    } catch (e) {
-                      toast.error("Export failed");
-                    } finally {
-                      setBusy(false);
-                    }
-                  }}
-                >
-                  Export Year
-                </Button>
-              </div>
-            </Card>
-
-            {/* Import Card */}
-            <Card className="bg-gradient-to-br from-amber-600/10 to-amber-600/5 border-amber-500/20">
-              <SectionHeader
-                icon={Upload}
-                title="Import Calendar"
-                subtitle="Upload CSV to update day assignments"
-              />
-              <div className="space-y-4">
-                <Select
-                  label="Target Year"
-                  value={gridYearId}
-                  onChange={(e) => setGridYearId(e.target.value)}
-                  options={[
-                    { value: "", label: "Select Year..." },
-                    ...filteredYears.map((y) => ({
-                      value: y.id,
-                      label: y.year_label,
-                    })),
-                  ]}
-                />
-                <div className="p-4 border-2 border-dashed border-amber-500/30 rounded-xl text-center hover:border-amber-500/50 transition-colors">
-                  <label className="cursor-pointer flex flex-col items-center gap-2">
-                    <Upload className="text-amber-400" size={24} />
-                    <span className="text-sm font-bold text-white">
-                      Choose CSV File
-                    </span>
-                    <input
-                      type="file"
-                      accept=".csv"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files[0];
-                        if (!file || !gridYearId) {
-                          toast.error("Select year and file");
-                          return;
-                        }
-
-                        const reader = new FileReader();
-                        reader.onload = async (event) => {
-                          try {
-                            setBusy(true);
-                            const text = event.target.result;
-                            const lines = text.split("\n").slice(1);
-                            const assignments = [];
-
-                            const typeMap = {};
-                            dayTypes.forEach(
-                              (t) =>
-                                (typeMap[t.day_type.toLowerCase()] = t.id),
-                            );
-
-                            const res = await getCalendarDaysByYear(gridYearId);
-                            const allDays = res.data?.data || [];
-
-                            for (const line of lines) {
-                              if (!line.trim()) continue;
-                              const cols = line
-                                .split(",")
-                                .map((c) => c.replace(/^"|"$/g, "").trim());
-                              const monthName = cols[1];
-                              const dayNum = parseInt(cols[2]);
-                              const typeName = cols[3]?.toLowerCase();
-
-                              if (
-                                monthName &&
-                                dayNum &&
-                                typeMap[typeName]
-                              ) {
-                                const targetDay = allDays.find(
-                                  (d) =>
-                                    d.month_name === monthName &&
-                                    d.day_number === dayNum,
-                                );
-                                if (targetDay) {
-                                  assignments.push({
-                                    calendarDayId: targetDay.id,
-                                    dayTypeId: typeMap[typeName],
-                                  });
-                                }
-                              }
-                            }
-
-                            if (assignments.length > 0) {
-                              await bulkAssignDayTypes(assignments);
-                              toast.success(
-                                `Imported ${assignments.length} assignments`,
-                              );
-                              fetchGridDays();
-                            } else {
-                              toast.error("No valid data found");
-                            }
-                          } catch (err) {
-                            toast.error("Import failed");
-                          } finally {
-                            setBusy(false);
-                          }
-                        };
-                        reader.readAsText(file);
+                  return (
+                    <button
+                      key={day.id}
+                      className={clsx("cal-cell", isSelected && "is-selected", day.day_type && "has-type")}
+                      onClick={() => {
+                        const newSet = new Set(bulkSelected);
+                        if (newSet.has(day.id)) newSet.delete(day.id);
+                        else newSet.add(day.id);
+                        setBulkSelected(newSet);
                       }}
-                    />
-                  </label>
-                </div>
+                      style={{
+                        "--tb": style.bgColor,
+                        "--tc": style.textColor,
+                      }}
+                    >
+                      <div className="cal-cell-top">
+                        <span className="cal-cell-primary">{day.day_number}</span>
+                        <div className="cal-cell-check" />
+                      </div>
+                      {day.day_type && <span className="cal-cell-badge">{day.day_type}</span>}
+                      {day.day_type && (
+                        <button
+                          className="cal-cell-clear"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuickClear(day.id);
+                          }}
+                        >
+                          <X size={10} strokeWidth={3} />
+                        </button>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-            </Card>
+            </div>
+          )}
 
-            {/* Template Card */}
-            <Card className="bg-gradient-to-br from-slate-600/10 to-slate-600/5 border-slate-500/20">
-              <SectionHeader
-                icon={FileText}
-                title="Download Template"
-                subtitle="Get a pre-formatted CSV template"
-              />
-              <div className="space-y-4">
-                <p className="text-sm text-slate-300">
-                  Use this template to import calendar data in the correct format.
-                </p>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  icon={Download}
-                  className="w-full"
-                  onClick={() => {
-                    const csv = `"Month","Day Number","Date","Day Type","Category"
-"Baisakh","1","2024-04-13","Working Day","School Day"
-"Baisakh","2","2024-04-14","Holiday","Holiday"`;
-                    const link = document.createElement("a");
-                    link.href = URL.createObjectURL(
-                      new Blob([csv], { type: "text/csv" }),
-                    );
-                    link.download = "template.csv";
-                    link.click();
-                    toast.success("Template downloaded");
-                  }}
-                >
-                  Download Template
-                </Button>
+          {/* Bulk Bar */}
+          {bulkSelected.size > 0 && (
+            <div className="cal-bulkbar">
+              <div className="cal-bulkbar-count">
+                <strong>{bulkSelected.size}</strong> day(s) selected
               </div>
-            </Card>
+              <div className="cal-bulkbar-actions">
+                <select
+                  className="cal-select"
+                  style={{ width: "180px" }}
+                  value={bulkTypeId}
+                  onChange={(e) => setBulkTypeId(e.target.value)}
+                >
+                  <option value="">Select type…</option>
+                  {dayTypes.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.day_type}
+                    </option>
+                  ))}
+                </select>
+                <button className="cal-btn cal-btn-primary" onClick={() => handleBulkAssign(false)} disabled={!bulkTypeId}>
+                  Assign
+                </button>
+                <button className="cal-btn cal-btn-danger" onClick={() => handleBulkAssign(true)}>
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* IO TAB */}
+      {activeTab === "io" && (
+        <div className="cal-io-grid">
+          <div className="cal-panel">
+            <div className="cal-card-head">
+              <div className="cal-card-icon">
+                <Download size={20} />
+              </div>
+              <div>
+                <h3 className="cal-card-title">Export Month</h3>
+                <p className="cal-card-subtitle">Download calendar data for a specific month</p>
+              </div>
+            </div>
+            <p style={{ fontSize: "12px", color: "var(--text-dim)" }}>
+              Select year and month, then download as CSV format for backup or sharing.
+            </p>
           </div>
-        )}
-      </div>
+
+          <div className="cal-panel">
+            <div className="cal-card-head">
+              <div className="cal-card-icon">
+                <Upload size={20} />
+              </div>
+              <div>
+                <h3 className="cal-card-title">Import Calendar</h3>
+                <p className="cal-card-subtitle">Upload CSV to update assignments</p>
+              </div>
+            </div>
+            <p style={{ fontSize: "12px", color: "var(--text-dim)" }}>
+              Upload a pre-formatted CSV file to bulk update day assignments across the calendar.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modals */}
+      {editYear && (
+        <Modal onClose={() => setEditYear(null)}>
+          <h3 className="cal-modal-title">Edit Year</h3>
+          <div className="cal-form-grid" style={{ marginTop: "14px" }}>
+            <div className="cal-field">
+              <label>Year label (BS)</label>
+              <input
+                className="cal-input"
+                value={editYear.year_label_BS || ""}
+                onChange={(e) => setEditYear({ ...editYear, year_label_BS: e.target.value })}
+              />
+            </div>
+            <div className="cal-field">
+              <label>Year label (AD)</label>
+              <input
+                className="cal-input"
+                value={editYear.year_label_AD || ""}
+                onChange={(e) => setEditYear({ ...editYear, year_label_AD: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="cal-modal-actions">
+            <button className="cal-btn" onClick={() => setEditYear(null)}>
+              Cancel
+            </button>
+            <button className="cal-btn cal-btn-primary" onClick={handleUpdateYear} disabled={busy}>
+              Save
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {editMonth && (
+        <Modal onClose={() => setEditMonth(null)}>
+          <h3 className="cal-modal-title">Edit Month</h3>
+          <div className="cal-field" style={{ marginTop: "14px", marginBottom: "12px" }}>
+            <label>Month name</label>
+            <input
+              className="cal-input"
+              value={editMonth.month_name || ""}
+              onChange={(e) => setEditMonth({ ...editMonth, month_name: e.target.value })}
+            />
+          </div>
+          <div className="cal-modal-actions">
+            <button className="cal-btn" onClick={() => setEditMonth(null)}>
+              Cancel
+            </button>
+            <button className="cal-btn cal-btn-primary" onClick={handleUpdateMonth} disabled={busy}>
+              Save
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
+
+// ============================================================================
+// HELPER COMPONENTS
+// ============================================================================
+
+const CollapsibleSection = ({ isOpen, onToggle, icon: Icon, title, children }) => (
+  <div className={clsx("cal-collapsible", isOpen && "is-open")}>
+    <button className="cal-collapsible-head" onClick={onToggle}>
+      <span className="cal-collapsible-head-left">
+        <Icon size={18} style={{ color: "var(--text-dim)" }} />
+        <span className="cal-collapsible-title">{title}</span>
+      </span>
+      <div className="cal-collapsible-chevron">
+        <ChevronDown size={17} />
+      </div>
+    </button>
+    {isOpen && <div className="cal-collapsible-body">{children}</div>}
+  </div>
+);
+
+const Modal = ({ children, onClose }) => (
+  <div className="cal-modal-backdrop" onClick={onClose}>
+    <div className="cal-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="cal-modal-header">
+        <div style={{ flex: 1 }} />
+        <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "20px" }}>
+          <X size={20} />
+        </button>
+      </div>
+      {children}
+    </div>
+  </div>
+);
 
 export default CalendarSettings;
