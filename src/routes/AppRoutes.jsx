@@ -3,6 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/layout/MainLayout";
 import SuperAdminLayout from "../components/layout/SuperAdminLayout";
 import LoginPage from "../pages/LoginPage";
+import SystemLoginPage from "../pages/SystemLoginPage";
+import TenantStaffLoginPage from "../pages/TenantStaffLoginPage";
 import AdminDashboard from "../pages/AdminDashboard";
 import SuperAdminDashboardPage from "../pages/superadmin/Dashboard";
 import SuperAdminTenantsPage from "../pages/superadmin/Tenants";
@@ -46,7 +48,7 @@ const AdminRoute = ({ element }) => {
   return isAuthenticated && isAdmin() ? (
     element
   ) : (
-    <Navigate to="/login" replace />
+    <Navigate to="/system/login" replace />
   );
 };
 
@@ -70,7 +72,7 @@ const SuperAdminRoute = ({ element }) => {
   return isAuthenticated && user?.type === "super_admin" ? (
     element
   ) : (
-    <Navigate to="/login" replace />
+    <Navigate to="/system/login" replace />
   );
 };
 
@@ -161,8 +163,9 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* Login page */}
-      <Route path="/login" element={<LoginPage />} />
+      {/* Login pages */}
+      <Route path="/system/login" element={<SystemLoginPage />} />
+      <Route path="/login" element={<TenantStaffLoginPage />} />
       <Route path="/result-portal" element={<ResultPortalPage />} />
       <Route
         path={ROUTES.RESULT_PORTAL}
@@ -459,11 +462,11 @@ const AppRoutes = () => {
               <Navigate to={getFirstModuleRoute()} replace />
             )
           ) : (
-            <Navigate to="/login" replace />
+            <Navigate to="/system/login" replace />
           )
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/system/login" replace />} />
     </Routes>
   );
 };

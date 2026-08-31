@@ -70,11 +70,13 @@ axiosInstance.interceptors.response.use(
       // Let components handle 401 errors appropriately
       // Only redirect if user is NOT already being redirected
       const currentPath = window.location.pathname;
-      if (currentPath !== "/login" && currentPath !== "/") {
+      const isLoginPath = ["/login", "/system/login", "/"].includes(currentPath);
+      if (!isLoginPath) {
         // Only redirect for actual auth failures, not for API endpoint failures
         // Check if error is from login endpoint specifically
         if (error.config?.url?.includes("auth")) {
-          window.location.href = "/login";
+          const redirectPath = currentPath.startsWith("/system") ? "/system/login" : "/login";
+          window.location.href = redirectPath;
         }
       }
     }
