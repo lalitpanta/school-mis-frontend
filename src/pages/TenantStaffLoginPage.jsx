@@ -298,16 +298,6 @@ const TenantStaffLoginPage = () => {
                 </button>
               </form>
 
-              <div className="mt-6 flex items-center justify-between gap-2 border-t border-white/10 pt-5 text-sm text-slate-300">
-                <span>Need system access?</span>
-                <button
-                  type="button"
-                  onClick={() => navigate("/system/login")}
-                  className="font-semibold text-indigo-300 transition-colors hover:text-indigo-200"
-                >
-                  System admin login
-                </button>
-              </div>
             </div>
           </div>
         </div>
