@@ -137,20 +137,20 @@ const EXAM_TABS = [
 // ICONS
 // ─────────────────────────────────────────────────────────────────────────────
 const IconSettings = () => (
-  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" style={{ flexShrink: 0 }}>
     <circle cx="12" cy="12" r="3"/>
     <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2.06 2.06 0 1 1-2.92 2.92l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2.06 2.06 0 1 1-4.12 0v-.09A1.7 1.7 0 0 0 8.7 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2.06 2.06 0 1 1-2.92-2.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H2.6a2.06 2.06 0 1 1 0-4.12h.09A1.7 1.7 0 0 0 4.24 8.7a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.06 2.06 0 1 1 2.92-2.92l.06.06a1.7 1.7 0 0 0 1.87.34H8.7a1.7 1.7 0 0 0 1-1.55V2.6a2.06 2.06 0 1 1 4.12 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2.06 2.06 0 1 1 2.92 2.92l-.06.06a1.7 1.7 0 0 0-.34 1.87V8.7a1.7 1.7 0 0 0 1.55 1h.09a2.06 2.06 0 1 1 0 4.12h-.09a1.7 1.7 0 0 0-1.55 1Z"/>
   </svg>
 );
 
 const IconExam = () => (
-  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" style={{ flexShrink: 0 }}>
     <path d="M4 20V10M12 20V4M20 20v-7"/>
   </svg>
 );
 
 const IconChevronDown = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginLeft: "auto" }}>
     <path d="m6 9 6 6 6-6"/>
   </svg>
 );
@@ -378,15 +378,21 @@ const css = `
   border-radius: 0 3px 3px 0;
 }
 
-/* Chevron */
+/* Chevron — targets the last SVG in the accordion trigger */
 .sb-item-chev {
   width: 14px; height: 14px;
-  margin-left: auto; flex-shrink: 0;
+  flex-shrink: 0;
   transition: transform .22s;
   color: var(--sb-low);
   stroke: currentColor;
 }
-.sb-group.sb-open .sb-item-chev { transform: rotate(180deg); }
+.sb-group .sb-item > svg:last-of-type {
+  transition: transform .22s;
+}
+.sb-group.sb-open .sb-item > svg:last-of-type { transform: rotate(180deg); }
+
+/* Hide chevron SVG in collapsed mode */
+.mis-sidebar.sb-collapsed .sb-item > svg:last-of-type { display: none; }
 
 /* Dot (submenu items) */
 .sb-dot {
@@ -496,6 +502,19 @@ const Sidebar = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [examOpen,     setExamOpen]     = useState(false);
   const [search,       setSearch]       = useState("");
+  const searchRef = useRef(null);
+
+  // ⌘K / Ctrl+K focuses the search box
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (!collapsed) searchRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [collapsed]);
 
   const onSettings = location.pathname === ROUTES.SETTINGS;
   const activeTab  = new URLSearchParams(location.search).get("tab") || "school";
@@ -527,6 +546,21 @@ const Sidebar = () => {
   const name = user?.name || user?.firstName || user?.email || "User";
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   const roleLabel = user?.type === "super_admin" ? "Super Admin" : isTenant() ? "Administrator" : "Admin";
+
+  // Search filtering
+  const q = search.trim().toLowerCase();
+  const filteredNav = q
+    ? visibleNav.filter((i) => i.label.toLowerCase().includes(q))
+    : visibleNav;
+  const filteredSettings = q
+    ? SETTINGS_TABS.filter((t) => t.label.toLowerCase().includes(q))
+    : SETTINGS_TABS;
+  const filteredExam = q
+    ? EXAM_TABS.filter((t) => t.label.toLowerCase().includes(q))
+    : EXAM_TABS;
+  // Auto-expand accordions when search has results inside them
+  const settingsHasMatch = q ? filteredSettings.length > 0 : settingsOpen;
+  const examHasMatch = q ? filteredExam.length > 0 : examOpen;
 
   const toggleSettings = () => {
     if (collapsed) {
@@ -583,6 +617,7 @@ const Sidebar = () => {
           <div className="sb-search-box">
             <IconSearch />
             <input
+              ref={searchRef}
               className="sb-search-input"
               type="text"
               placeholder="Search…"
@@ -598,7 +633,7 @@ const Sidebar = () => {
 
           <div className="sb-section-label">Main</div>
 
-          {visibleNav.map(({ label, to, icon }) => {
+          {filteredNav.map(({ label, to, icon }) => {
             const active = isNavActive(to);
             return (
               <button
@@ -629,13 +664,20 @@ const Sidebar = () => {
             </button>
           )}
 
+          {/* Empty search state */}
+          {q && filteredNav.length === 0 && filteredSettings.length === 0 && filteredExam.length === 0 && (
+            <div style={{ padding: "20px 12px", textAlign: "center", color: "var(--sb-low)", fontSize: 13 }}>
+              No results for &ldquo;{search}&rdquo;
+            </div>
+          )}
+
           {/* ── Configuration section ── */}
           {showSettings && (
             <>
               <div className="sb-section-label">Configuration</div>
 
               {/* Settings accordion */}
-              <div className={`sb-group${settingsOpen ? " sb-open" : ""}`}>
+              <div className={`sb-group${settingsOpen || settingsHasMatch ? " sb-open" : ""}`}>
                 <button
                   className={`sb-item${onSettings && !isExamTab ? " sb-active" : ""}`}
                   onClick={toggleSettings}
@@ -646,7 +688,7 @@ const Sidebar = () => {
                   <span className="sb-tooltip">Settings</span>
                 </button>
                 <div className="sb-submenu">
-                  {SETTINGS_TABS.map(({ key, label }) => {
+                  {filteredSettings.map(({ key, label }) => {
                     const active = onSettings && activeTab === key;
                     return (
                       <button
@@ -663,7 +705,7 @@ const Sidebar = () => {
               </div>
 
               {/* Exam & Result accordion */}
-              <div className={`sb-group${examOpen ? " sb-open" : ""}`}>
+              <div className={`sb-group${examOpen || examHasMatch ? " sb-open" : ""}`}>
                 <button
                   className={`sb-item${onSettings && isExamTab ? " sb-active" : ""}`}
                   onClick={toggleExam}
@@ -674,7 +716,7 @@ const Sidebar = () => {
                   <span className="sb-tooltip">Exam &amp; Result</span>
                 </button>
                 <div className="sb-submenu">
-                  {EXAM_TABS.map(({ key, label }) => {
+                  {filteredExam.map(({ key, label }) => {
                     const active = onSettings && activeTab === key;
                     return (
                       <button
