@@ -1,83 +1,488 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Calendar,
-  ClipboardList,
-  GraduationCap,
-  Users,
-  Settings,
-  ChevronDown,
-  LogOut,
-  BarChart3,
-  Briefcase,
-  FileText,
-  CreditCard,
-  Clock,
-  ChevronRight,
-  ChevronLeft,
-  Building,
-  BookOpen,
-  ShieldCheck,
-  Bell,
-  Plug,
-  Smartphone,
-  Lock,
-  Palette,
-  Building2,
-  DoorOpen,
-  UserCog,
-  ClipboardCheck,
-  User,
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import clsx from "clsx";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 import { ROUTES } from "../../utils/constants";
 import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingsContext";
 
-// ── Navigation items ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// NAVIGATION DATA
+// ─────────────────────────────────────────────────────────────────────────────
 const MAIN_NAV = [
-  { label: "Dashboard",      icon: LayoutDashboard, to: ROUTES.DASHBOARD,      module: "dashboard"       },
-  { label: "Calendar",       icon: Calendar,        to: ROUTES.CALENDAR,        module: "calendar"        },
-  { label: "Attendance",     icon: ClipboardList,   to: ROUTES.ATTENDANCE,      module: "attendance"      },
-  { label: "Teachers",       icon: Users,           to: ROUTES.TEACHER,         module: "teacher"         },
-  { label: "Students",       icon: GraduationCap,   to: ROUTES.STUDENT,         module: "student"         },
-  { label: "Employees",      icon: Briefcase,       to: ROUTES.EMPLOYEE,        module: "employee"        },
-  { label: "Results",        icon: BarChart3,       to: ROUTES.RESULTS,         module: "results"         },
-  { label: "Result Portal",  icon: FileText,        to: ROUTES.RESULT_PORTAL,   module: "result_portal"   },
-  { label: "Daily Reports",  icon: FileText,        to: ROUTES.DAILY_REPORTS,   module: "daily_reports"   },
-  { label: "Fees",           icon: CreditCard,      to: ROUTES.FEES,            module: "fee_management"  },
-  { label: "Leave",          icon: Clock,           to: ROUTES.LEAVE_MANAGEMENT,module: "leave_management"},
+  {
+    label: "Dashboard", to: ROUTES.DASHBOARD, module: "dashboard",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/>
+        <rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Calendar", to: ROUTES.CALENDAR, module: "calendar",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Attendance", to: ROUTES.ATTENDANCE, module: "attendance",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="3" width="14" height="18" rx="2"/>
+        <path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Teachers", to: ROUTES.TEACHER, module: "teacher",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="8" r="3.2"/>
+        <path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/>
+        <circle cx="17.5" cy="8.5" r="2.4"/>
+        <path d="M17 13.7c2.7.4 4.5 2.7 4.5 5.6"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Students", to: ROUTES.STUDENT, module: "student",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 10L12 5 2 10l10 5 10-5Z"/>
+        <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Employees", to: ROUTES.EMPLOYEE, module: "employee",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="7.5" width="18" height="12.5" rx="2"/>
+        <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Results", to: ROUTES.RESULTS, module: "results",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 20V10M12 20V4M20 20v-7"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Result Portal", to: ROUTES.RESULT_PORTAL, module: "result_portal",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/>
+        <path d="M14 3v5h5M9 13h6M9 17h6"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Daily Reports", to: ROUTES.DAILY_REPORTS, module: "daily_reports",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/>
+        <path d="M14 3v5h5M9 12h6M9 16h4"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Fees", to: ROUTES.FEES, module: "fee_management",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/>
+        <path d="M2.5 10h19"/>
+      </svg>
+    ),
+  },
+  {
+    label: "Leave", to: ROUTES.LEAVE_MANAGEMENT, module: "leave_management",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 7v5l3.3 3.3"/>
+      </svg>
+    ),
+  },
 ];
 
-// Settings sub-tabs with Lucide icons for a cleaner look
 const SETTINGS_TABS = [
-  { key: "school",            label: "School Profile",     icon: Building2     },
-  { key: "academic",          label: "Academic Calendar",  icon: Calendar      },
-  { key: "calendarSettings",  label: "Calendar Settings",  icon: ClipboardCheck},
-  { key: "users",             label: "Users & Staff",      icon: Users         },
-  { key: "roles",             label: "Roles & Permissions",icon: ShieldCheck   },
-  { key: "fees",              label: "Fees",               icon: CreditCard    },
-  { key: "notices",           label: "Notices & SMS",      icon: Bell          },
-  { key: "integrations",      label: "Integrations",       icon: Plug          },
-  { key: "devices",           label: "Device Integration", icon: Smartphone    },
-  { key: "security",          label: "Security",           icon: Lock          },
-  { key: "theme",             label: "Theme",              icon: Palette       },
-  { key: "departments",       label: "Departments",        icon: Building      },
-  { key: "classrooms",        label: "Classrooms",         icon: BookOpen      },
-  { key: "courses",           label: "Courses",            icon: BookOpen      },
-  { key: "rooms",             label: "Rooms",              icon: DoorOpen      },
-  { key: "students",          label: "Students",           icon: GraduationCap },
+  { key: "school",           label: "School Profile"      },
+  { key: "academic",         label: "Academic Calendar"   },
+  { key: "calendarSettings", label: "Calendar Settings"   },
+  { key: "users",            label: "Users & Staff"       },
+  { key: "roles",            label: "Roles & Permissions" },
+  { key: "fees",             label: "Fees"                },
+  { key: "notices",          label: "Notices & SMS"       },
+  { key: "integrations",     label: "Integrations"        },
+  { key: "devices",          label: "Device Integration"  },
+  { key: "security",         label: "Security"            },
+  { key: "theme",            label: "Theme"               },
+  { key: "departments",      label: "Departments"         },
+  { key: "classrooms",       label: "Classrooms"          },
+  { key: "courses",          label: "Courses"             },
+  { key: "rooms",            label: "Rooms"               },
+  { key: "students",         label: "Students"            },
 ];
 
 const EXAM_TABS = [
-  { key: "resultFormat",  label: "Exam Setup",     icon: ClipboardCheck },
-  { key: "resultSubject", label: "Course & Marks", icon: BookOpen       },
+  { key: "resultFormat",  label: "Exam Setup"      },
+  { key: "resultSubject", label: "Course & Marks"  },
 ];
 
-// ── Sidebar component ─────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// ICONS
+// ─────────────────────────────────────────────────────────────────────────────
+const IconSettings = () => (
+  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2.06 2.06 0 1 1-2.92 2.92l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2.06 2.06 0 1 1-4.12 0v-.09A1.7 1.7 0 0 0 8.7 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2.06 2.06 0 1 1-2.92-2.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H2.6a2.06 2.06 0 1 1 0-4.12h.09A1.7 1.7 0 0 0 4.24 8.7a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.06 2.06 0 1 1 2.92-2.92l.06.06a1.7 1.7 0 0 0 1.87.34H8.7a1.7 1.7 0 0 0 1-1.55V2.6a2.06 2.06 0 1 1 4.12 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2.06 2.06 0 1 1 2.92 2.92l-.06.06a1.7 1.7 0 0 0-.34 1.87V8.7a1.7 1.7 0 0 0 1.55 1h.09a2.06 2.06 0 1 1 0 4.12h-.09a1.7 1.7 0 0 0-1.55 1Z"/>
+  </svg>
+);
+
+const IconExam = () => (
+  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 20V10M12 20V4M20 20v-7"/>
+  </svg>
+);
+
+const IconChevronDown = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m6 9 6 6 6-6"/>
+  </svg>
+);
+
+const IconChevronLeft = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 18l-6-6 6-6"/>
+  </svg>
+);
+
+const IconSignOut = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <path d="M16 17l5-5-5-5M21 12H9"/>
+  </svg>
+);
+
+const IconSearch = () => (
+  <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor">
+    <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+  </svg>
+);
+
+const IconGradCap = () => (
+  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor">
+    <path d="M22 10L12 5 2 10l10 5 10-5Z"/>
+    <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+  </svg>
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSS (injected via <style> tag — same technique as HTML reference)
+// ─────────────────────────────────────────────────────────────────────────────
+const css = `
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+.mis-sidebar {
+  --sb-bg:         #0d0f1e;
+  --sb-panel:      #11141f;
+  --sb-panel-2:    #151827;
+  --sb-hover:      #1b1f30;
+  --sb-active:     #201a3d;
+  --sb-border:     #212537;
+  --sb-border-s:   #1a1d2c;
+  --sb-v500:       #7c6cf6;
+  --sb-v400:       #9b8dfa;
+  --sb-vglow:      rgba(124,108,246,0.35);
+  --sb-hi:         #eef0fa;
+  --sb-mid:        #a6acc4;
+  --sb-low:        #6b7290;
+  --sb-section:    #4d5375;
+  --sb-danger:     #f0607a;
+  --sb-w:          296px;
+  --sb-wc:         76px;
+
+  width: var(--sb-w);
+  min-width: var(--sb-w);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(180deg, var(--sb-panel) 0%, var(--sb-bg) 100%);
+  border-right: 1px solid var(--sb-border-s);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width .28s cubic-bezier(.4,0,.2,1), min-width .28s cubic-bezier(.4,0,.2,1);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.mis-sidebar.sb-collapsed {
+  width: var(--sb-wc);
+  min-width: var(--sb-wc);
+}
+
+/* ── Brand ─────────────────────────────────── */
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--sb-border-s);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sb-brand-mark {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--sb-v500), #4d3ff0);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px var(--sb-vglow);
+  flex-shrink: 0;
+}
+.sb-brand-mark svg { width: 20px; height: 20px; stroke: #fff; }
+
+.sb-brand-text {
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity .18s, width .18s;
+  min-width: 0;
+}
+.mis-sidebar.sb-collapsed .sb-brand-text { opacity: 0; width: 0; }
+
+.sb-brand-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--sb-hi); letter-spacing: .1px;
+}
+.sb-brand-sub {
+  font-size: 10.5px; font-weight: 600;
+  color: var(--sb-v400);
+  letter-spacing: 1.3px; text-transform: uppercase; margin-top: 2px;
+}
+
+.sb-collapse-btn {
+  position: absolute; right: -13px; top: 26px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--sb-panel-2); border: 1px solid var(--sb-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--sb-mid);
+  transition: background .15s, color .15s;
+  z-index: 5;
+  flex-shrink: 0;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-hi); }
+.sb-collapse-btn svg {
+  width: 13px; height: 13px;
+  transition: transform .28s cubic-bezier(.4,0,.2,1);
+}
+.mis-sidebar.sb-collapsed .sb-collapse-btn svg { transform: rotate(180deg); }
+
+/* ── Search ─────────────────────────────────── */
+.sb-search-wrap {
+  padding: 14px 16px 6px;
+  flex-shrink: 0;
+  transition: opacity .15s;
+}
+.mis-sidebar.sb-collapsed .sb-search-wrap { display: none; }
+
+.sb-search-box {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--sb-panel-2);
+  border: 1px solid var(--sb-border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  color: var(--sb-low);
+  transition: border-color .15s;
+}
+.sb-search-box:focus-within { border-color: var(--sb-v500); }
+.sb-search-box svg { width: 15px; height: 15px; flex-shrink: 0; stroke: var(--sb-low); }
+.sb-search-input {
+  background: none; border: none; outline: none;
+  width: 100%; font-size: 13px; color: var(--sb-hi);
+  font-family: 'Inter', sans-serif;
+}
+.sb-search-input::placeholder { color: var(--sb-low); }
+.sb-kbd {
+  font-size: 10px; color: var(--sb-low);
+  background: #0a0c16; border: 1px solid var(--sb-border);
+  border-radius: 4px; padding: 1px 5px; flex-shrink: 0;
+}
+
+/* ── Nav scroll ─────────────────────────────── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 12px 12px;
+}
+.sb-nav::-webkit-scrollbar { width: 4px; }
+.sb-nav::-webkit-scrollbar-thumb { background: var(--sb-border); border-radius: 6px; }
+.sb-nav::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Section label ──────────────────────────── */
+.sb-section-label {
+  font-size: 11.5px; font-weight: 700;
+  letter-spacing: 1.2px; color: var(--sb-section);
+  text-transform: uppercase;
+  padding: 16px 12px 7px;
+  white-space: nowrap; overflow: hidden;
+  transition: opacity .15s;
+}
+.mis-sidebar.sb-collapsed .sb-section-label {
+  opacity: 0; height: 8px; padding: 8px 0 0;
+}
+
+/* ── Nav item ───────────────────────────────── */
+.sb-item {
+  display: flex; align-items: center; gap: 13px;
+  padding: 10.5px 12px;
+  border-radius: 9px;
+  color: var(--sb-mid);
+  text-decoration: none;
+  font-size: 14.5px; font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+  margin-bottom: 2px;
+  border: none; background: transparent;
+  width: 100%; text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.sb-item:hover { background: var(--sb-hover); color: var(--sb-hi); }
+
+.sb-item svg:first-child { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; }
+
+.sb-item-label { overflow: hidden; text-overflow: ellipsis; flex: 1; }
+.mis-sidebar.sb-collapsed .sb-item-label { display: none; }
+.mis-sidebar.sb-collapsed .sb-item-chev { display: none; }
+.mis-sidebar.sb-collapsed .sb-item { justify-content: center; padding: 11px 0; }
+
+/* Active state */
+.sb-item.sb-active {
+  background: linear-gradient(90deg, var(--sb-active), rgba(124,108,246,0.08));
+  color: #fff;
+}
+.sb-item.sb-active::before {
+  content: '';
+  position: absolute; left: -12px; top: 6px; bottom: 6px; width: 3px;
+  background: linear-gradient(180deg, var(--sb-v400), var(--sb-v500));
+  border-radius: 0 3px 3px 0;
+}
+
+/* Chevron */
+.sb-item-chev {
+  width: 14px; height: 14px;
+  margin-left: auto; flex-shrink: 0;
+  transition: transform .22s;
+  color: var(--sb-low);
+  stroke: currentColor;
+}
+.sb-group.sb-open .sb-item-chev { transform: rotate(180deg); }
+
+/* Dot (submenu items) */
+.sb-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sb-v400); flex-shrink: 0;
+  box-shadow: 0 0 6px var(--sb-vglow);
+}
+
+/* ── Submenu ─────────────────────────────────── */
+.sb-submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .28s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
+  padding-left: 15px;
+  position: relative;
+}
+.sb-group.sb-open .sb-submenu { max-height: 900px; }
+
+.sb-submenu::before {
+  content: '';
+  position: absolute; left: 26px; top: 2px; bottom: 10px; width: 1px;
+  background: var(--sb-border);
+}
+.mis-sidebar.sb-collapsed .sb-submenu { display: none; }
+
+.sb-submenu .sb-item {
+  padding: 8.5px 12px 8.5px 22px;
+  font-size: 13.5px;
+  font-weight: 450;
+}
+.sb-submenu .sb-item svg:first-child { width: 15px; height: 15px; }
+.sb-submenu .sb-item.sb-active::before { left: -3px; }
+
+/* ── Tooltip (collapsed mode) ───────────────── */
+.sb-tooltip {
+  display: none;
+  position: absolute;
+  left: calc(100% + 12px); top: 50%;
+  transform: translateY(-50%);
+  background: #1c2032; border: 1px solid var(--sb-border);
+  padding: 7px 12px; border-radius: 7px;
+  font-size: 13.5px; font-weight: 500;
+  color: var(--sb-hi); white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity .12s, transform .12s;
+  box-shadow: 0 8px 20px rgba(0,0,0,.4);
+  z-index: 100;
+}
+.mis-sidebar.sb-collapsed .sb-item .sb-tooltip { display: block; }
+.mis-sidebar.sb-collapsed .sb-item:hover .sb-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(2px);
+}
+
+/* ── Footer ─────────────────────────────────── */
+.sb-footer {
+  border-top: 1px solid var(--sb-border-s);
+  padding: 12px;
+  flex-shrink: 0;
+}
+.sb-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 8px; border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s;
+  background: transparent; border: none;
+  width: 100%; text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.sb-user-card:hover { background: var(--sb-hover); }
+
+.sb-avatar {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, #8b7ffa, #5b4bd6);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif; font-weight: 700;
+  font-size: 13px; color: #fff;
+  flex-shrink: 0;
+}
+.sb-user-meta { overflow: hidden; white-space: nowrap; flex: 1; }
+.mis-sidebar.sb-collapsed .sb-user-meta { display: none; }
+.mis-sidebar.sb-collapsed .sb-signout { display: none; }
+
+.sb-user-name { font-size: 13.5px; font-weight: 600; color: var(--sb-hi); }
+.sb-user-role { font-size: 12px; color: var(--sb-low); }
+
+.sb-signout { color: var(--sb-low); flex-shrink: 0; }
+.sb-signout svg { width: 16px; height: 16px; }
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
 const Sidebar = () => {
-  const location = useLocation();
+  const location  = useLocation();
   const navigate  = useNavigate();
   const { hasModule, isTenant, logout, user } = useAuth();
   const { settings } = useSettings();
@@ -87,52 +492,27 @@ const Sidebar = () => {
   const brandTagline = settings?.platform_tagline || schoolProfile.motto || "Management System";
   const brandLogo = settings?.platform_logo || schoolProfile.logo || null;
 
-  const [collapsed,     setCollapsed]     = useState(false);
-  const [settingsOpen,  setSettingsOpen]  = useState(false);
-  const [examOpen,      setExamOpen]      = useState(false);
+  const [collapsed,    setCollapsed]    = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [examOpen,     setExamOpen]     = useState(false);
+  const [search,       setSearch]       = useState("");
 
-  const onSettings  = location.pathname === ROUTES.SETTINGS;
-  const activeTab   = new URLSearchParams(location.search).get("tab") || "school";
-  const isExamTab   = EXAM_TABS.some((t) => t.key === activeTab);
+  const onSettings = location.pathname === ROUTES.SETTINGS;
+  const activeTab  = new URLSearchParams(location.search).get("tab") || "school";
+  const isExamTab  = EXAM_TABS.some((t) => t.key === activeTab);
 
-  // Auto-open correct accordion when landing on /settings
+  // Auto-open correct accordion when on /settings
   useEffect(() => {
     if (onSettings) {
-      if (isExamTab) { setExamOpen(true); setSettingsOpen(false); }
-      else            { setSettingsOpen(true); setExamOpen(false); }
+      if (isExamTab) { setExamOpen(true);  setSettingsOpen(false); }
+      else           { setSettingsOpen(true); setExamOpen(false);  }
     }
   }, [onSettings, isExamTab]);
-
-  const toggleSettings = () => {
-    if (collapsed) {
-      setCollapsed(false);
-      setSettingsOpen(true);
-      setExamOpen(false);
-      navigate(`${ROUTES.SETTINGS}?tab=school`);
-      return;
-    }
-    const next = !settingsOpen;
-    setSettingsOpen(next);
-    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
-  };
-
-  const toggleExam = () => {
-    if (collapsed) {
-      setCollapsed(false);
-      setExamOpen(true);
-      setSettingsOpen(false);
-      navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
-      return;
-    }
-    const next = !examOpen;
-    setExamOpen(next);
-    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
-  };
 
   const isNavActive = (to) =>
     to === "/" ? location.pathname === "/" : location.pathname === to;
 
-  // Determine which nav items to show
+  // Determine visible nav items
   const visibleNav = (() => {
     if (user?.type === "super_admin")
       return MAIN_NAV.filter((i) => i.module === "dashboard");
@@ -143,283 +523,198 @@ const Sidebar = () => {
 
   const showSettings = user?.type !== "super_admin" && (!isTenant() || hasModule("settings"));
 
-  // ── Shared styles ──────────────────────────────────────────────────────────
-  const navItemBase = clsx(
-    "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 w-full",
-  );
-  const navItemActive = "text-white";
-  const navItemInactive = "text-slate-400 hover:text-white hover:bg-white/5";
+  // Initials from user name
+  const name = user?.name || user?.firstName || user?.email || "User";
+  const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const roleLabel = user?.type === "super_admin" ? "Super Admin" : isTenant() ? "Administrator" : "Admin";
 
-  const activeStyle = {
-    background: "rgba(99,102,241,0.15)",
-    border: "1px solid rgba(99,102,241,0.25)",
-    color: "white",
+  const toggleSettings = () => {
+    if (collapsed) {
+      setCollapsed(false);
+      setTimeout(() => { setSettingsOpen(true); setExamOpen(false); }, 50);
+      if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
+      return;
+    }
+    const next = !settingsOpen;
+    setSettingsOpen(next);
+    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
   };
-  const inactiveStyle = { border: "1px solid transparent" };
+
+  const toggleExam = () => {
+    if (collapsed) {
+      setCollapsed(false);
+      setTimeout(() => { setExamOpen(true); setSettingsOpen(false); }, 50);
+      if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
+      return;
+    }
+    const next = !examOpen;
+    setExamOpen(next);
+    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
+  };
 
   return (
-    <aside
-      style={{
-        background: "#08091a",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
-        width: collapsed ? 60 : 220,
-        minWidth: collapsed ? 60 : 220,
-      }}
-      className="relative flex flex-col h-screen shrink-0 transition-all duration-300 ease-in-out select-none z-20"
-    >
-      {/* ── Brand ─────────────────────────────────────────────────────────── */}
-      <div
-        className="flex items-center gap-3 px-3.5 py-4 shrink-0"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div
-          className="w-8 h-8 shrink-0 rounded-xl flex items-center justify-center shadow-lg overflow-hidden"
-          style={{ background: "var(--accent)", minWidth: 32 }}
-        >
-          {brandLogo
-            ? <img src={brandLogo} alt="logo" className="w-full h-full object-cover" />
-            : <GraduationCap size={16} className="text-white" />
-          }
-        </div>
-        {!collapsed && (
-          <div className="min-w-0 leading-tight">
-            <p className="text-white font-bold text-[13px] truncate">{brandName}</p>
-            <p className="text-[10px] text-slate-500 truncate uppercase tracking-wider">{brandTagline}</p>
-          </div>
-        )}
-      </div>
+    <>
+      <style>{css}</style>
+      <aside className={`mis-sidebar${collapsed ? " sb-collapsed" : ""}`}>
 
-      {/* ── Scrollable nav ────────────────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 flex flex-col gap-0.5">
-
-        {/* Section label */}
-        {!collapsed && (
-          <p className="px-2 pb-1.5 pt-0.5 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
-            Main
-          </p>
-        )}
-
-        {/* Main nav items */}
-        {visibleNav.map(({ label, icon: Icon, to }) => {
-          const active = isNavActive(to);
-          return (
-            <NavLink
-              key={to}
-              to={to}
-              title={collapsed ? label : undefined}
-              className={clsx(navItemBase, active ? navItemActive : navItemInactive)}
-              style={active ? activeStyle : inactiveStyle}
-            >
-              <Icon size={15} className="shrink-0" />
-              {!collapsed && <span className="truncate">{label}</span>}
-            </NavLink>
-          );
-        })}
-
-        {/* Tenants link for non-tenant users */}
-        {!isTenant() && (
-          <NavLink
-            to={user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants"}
-            title={collapsed ? "Tenants" : undefined}
-            className={clsx(
-              navItemBase,
-              isNavActive(user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants")
-                ? navItemActive : navItemInactive,
-            )}
-            style={
-              isNavActive(user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants")
-                ? activeStyle : inactiveStyle
+        {/* ── Brand ── */}
+        <div className="sb-brand">
+          <div className="sb-brand-mark">
+            {brandLogo
+              ? <img src={brandLogo} alt="logo" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 11 }} />
+              : <IconGradCap />
             }
-          >
-            <Building size={15} className="shrink-0" />
-            {!collapsed && <span className="truncate">Tenants</span>}
-          </NavLink>
-        )}
-
-        {/* ── Settings section ────────────────────────────────────────────── */}
-        {showSettings && (
-          <>
-            {!collapsed && (
-              <p className="px-2 pb-1.5 pt-3 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
-                Configuration
-              </p>
-            )}
-
-            {/* Settings accordion trigger */}
-            <AccordionTrigger
-              icon={Settings}
-              label="Settings"
-              collapsed={collapsed}
-              isOpen={settingsOpen}
-              isHighlighted={onSettings && !isExamTab}
-              onClick={toggleSettings}
-            />
-
-            {/* Settings sub-items */}
-            {!collapsed && settingsOpen && (
-              <div className="mt-0.5 mb-1 ml-2 pl-2 border-l border-slate-800 flex flex-col gap-0.5 settings-sub">
-                {SETTINGS_TABS.map(({ key, label, icon: Icon }) => {
-                  const active = onSettings && activeTab === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
-                      className={clsx(
-                        "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-left w-full transition-all duration-100",
-                        active
-                          ? "text-white"
-                          : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]",
-                      )}
-                      style={active ? { background: "rgba(99,102,241,0.12)", color: "white" } : {}}
-                    >
-                      <Icon
-                        size={13}
-                        className="shrink-0"
-                        style={{ color: active ? "var(--accent)" : undefined }}
-                      />
-                      <span className="truncate">{label}</span>
-                      {active && (
-                        <span
-                          className="ml-auto w-1 h-1 rounded-full shrink-0"
-                          style={{ background: "var(--accent)" }}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Exam & Result accordion trigger */}
-            <AccordionTrigger
-              icon={BarChart3}
-              label="Exam & Result"
-              collapsed={collapsed}
-              isOpen={examOpen}
-              isHighlighted={onSettings && isExamTab}
-              onClick={toggleExam}
-            />
-
-            {/* Exam sub-items */}
-            {!collapsed && examOpen && (
-              <div className="mt-0.5 mb-1 ml-2 pl-2 border-l border-slate-800 flex flex-col gap-0.5 settings-sub">
-                {EXAM_TABS.map(({ key, label, icon: Icon }) => {
-                  const active = onSettings && activeTab === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
-                      className={clsx(
-                        "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-left w-full transition-all duration-100",
-                        active
-                          ? "text-white"
-                          : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]",
-                      )}
-                      style={active ? { background: "rgba(99,102,241,0.12)", color: "white" } : {}}
-                    >
-                      <Icon
-                        size={13}
-                        className="shrink-0"
-                        style={{ color: active ? "var(--accent)" : undefined }}
-                      />
-                      <span className="truncate">{label}</span>
-                      {active && (
-                        <span
-                          className="ml-auto w-1 h-1 rounded-full shrink-0"
-                          style={{ background: "var(--accent)" }}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ── Account section ─────────────────────────────────────────────── */}
-        <div className="mt-auto pt-3">
-          {!collapsed && (
-            <p className="px-2 pb-1.5 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
-              Account
-            </p>
-          )}
+          </div>
+          <div className="sb-brand-text">
+            <div className="sb-brand-title">{brandName}</div>
+            <div className="sb-brand-sub">{brandTagline}</div>
+          </div>
           <button
-            title={collapsed ? "Profile" : undefined}
-            onClick={() => navigate("/settings?tab=profile")}
-            className={clsx(navItemBase, navItemInactive)}
-            style={inactiveStyle}
+            className="sb-collapse-btn"
+            onClick={() => setCollapsed((c) => !c)}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <User size={15} className="shrink-0" />
-            {!collapsed && <span className="truncate">Profile</span>}
-          </button>
-          <button
-            title={collapsed ? "Sign Out" : undefined}
-            onClick={() => { logout(); navigate("/login"); }}
-            className={clsx(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 w-full",
-              "text-rose-500 hover:text-rose-400 hover:bg-rose-500/8",
-            )}
-            style={inactiveStyle}
-          >
-            <LogOut size={15} className="shrink-0" />
-            {!collapsed && <span className="truncate">Sign Out</span>}
+            <IconChevronLeft />
           </button>
         </div>
-      </nav>
 
-      {/* ── Collapse toggle ───────────────────────────────────────────────── */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="absolute -right-3 top-[72px] w-6 h-6 rounded-full flex items-center justify-center shadow-lg transition-all z-30 hover:scale-110"
-        style={{
-          background: "#1e2a3a",
-          border: "1px solid rgba(255,255,255,0.12)",
-          color: "#94a3b8",
-        }}
-      >
-        {collapsed ? <ChevronRight size={11} /> : <ChevronLeft size={11} />}
-      </button>
-    </aside>
+        {/* ── Search ── */}
+        <div className="sb-search-wrap">
+          <div className="sb-search-box">
+            <IconSearch />
+            <input
+              className="sb-search-input"
+              type="text"
+              placeholder="Search…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <span className="sb-kbd">⌘K</span>
+          </div>
+        </div>
+
+        {/* ── Scrollable nav ── */}
+        <nav className="sb-nav">
+
+          <div className="sb-section-label">Main</div>
+
+          {visibleNav.map(({ label, to, icon }) => {
+            const active = isNavActive(to);
+            return (
+              <button
+                key={to}
+                className={`sb-item${active ? " sb-active" : ""}`}
+                onClick={() => navigate(to)}
+                title={collapsed ? label : undefined}
+              >
+                {icon}
+                <span className="sb-item-label">{label}</span>
+                <span className="sb-tooltip">{label}</span>
+              </button>
+            );
+          })}
+
+          {/* Tenants (non-tenant users only) */}
+          {!isTenant() && (
+            <button
+              className="sb-item"
+              onClick={() => navigate(user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants")}
+            >
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="7.5" width="18" height="12.5" rx="2"/>
+                <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18"/>
+              </svg>
+              <span className="sb-item-label">Tenants</span>
+              <span className="sb-tooltip">Tenants</span>
+            </button>
+          )}
+
+          {/* ── Configuration section ── */}
+          {showSettings && (
+            <>
+              <div className="sb-section-label">Configuration</div>
+
+              {/* Settings accordion */}
+              <div className={`sb-group${settingsOpen ? " sb-open" : ""}`}>
+                <button
+                  className={`sb-item${onSettings && !isExamTab ? " sb-active" : ""}`}
+                  onClick={toggleSettings}
+                >
+                  <IconSettings />
+                  <span className="sb-item-label">Settings</span>
+                  <IconChevronDown />
+                  <span className="sb-tooltip">Settings</span>
+                </button>
+                <div className="sb-submenu">
+                  {SETTINGS_TABS.map(({ key, label }) => {
+                    const active = onSettings && activeTab === key;
+                    return (
+                      <button
+                        key={key}
+                        className={`sb-item${active ? " sb-active" : ""}`}
+                        onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                      >
+                        <span className="sb-dot" />
+                        <span className="sb-item-label">{label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Exam & Result accordion */}
+              <div className={`sb-group${examOpen ? " sb-open" : ""}`}>
+                <button
+                  className={`sb-item${onSettings && isExamTab ? " sb-active" : ""}`}
+                  onClick={toggleExam}
+                >
+                  <IconExam />
+                  <span className="sb-item-label">Exam &amp; Result</span>
+                  <IconChevronDown />
+                  <span className="sb-tooltip">Exam &amp; Result</span>
+                </button>
+                <div className="sb-submenu">
+                  {EXAM_TABS.map(({ key, label }) => {
+                    const active = onSettings && activeTab === key;
+                    return (
+                      <button
+                        key={key}
+                        className={`sb-item${active ? " sb-active" : ""}`}
+                        onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                      >
+                        <span className="sb-dot" />
+                        <span className="sb-item-label">{label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+        </nav>
+
+        {/* ── Footer / Account ── */}
+        <div className="sb-footer">
+          <button
+            className="sb-user-card"
+            onClick={() => { logout(); navigate("/login"); }}
+            title="Sign out"
+          >
+            <div className="sb-avatar">{initials}</div>
+            <div className="sb-user-meta">
+              <div className="sb-user-name">{name.split(" ").slice(0, 2).join(" ")}</div>
+              <div className="sb-user-role">{roleLabel}</div>
+            </div>
+            <div className="sb-signout">
+              <IconSignOut />
+            </div>
+          </button>
+        </div>
+
+      </aside>
+    </>
   );
 };
-
-// ── AccordionTrigger sub-component ────────────────────────────────────────────
-const AccordionTrigger = ({ icon: Icon, label, collapsed, isOpen, isHighlighted, onClick }) => (
-  <button
-    onClick={onClick}
-    title={collapsed ? label : undefined}
-    className={clsx(
-      "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 w-full",
-      isHighlighted || isOpen
-        ? "text-white"
-        : "text-slate-400 hover:text-white hover:bg-white/5",
-    )}
-    style={
-      isHighlighted || isOpen
-        ? {
-            background: "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.06) 100%)",
-            border: "1px solid rgba(99,102,241,0.25)",
-          }
-        : { border: "1px solid transparent" }
-    }
-  >
-    <Icon size={15} className="shrink-0" />
-    {!collapsed && (
-      <>
-        <span className="flex-1 text-left truncate">{label}</span>
-        <ChevronDown
-          size={12}
-          style={{
-            transform: isOpen ? "rotate(180deg)" : "none",
-            transition: "transform .2s ease",
-            flexShrink: 0,
-          }}
-        />
-      </>
-    )}
-  </button>
-);
 
 export default Sidebar;
