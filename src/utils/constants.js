@@ -199,6 +199,11 @@ export const AVAILABLE_MODULES = [
     label: "Course & Marks",
     description: "Marks and subject configuration",
   },
+  {
+    key: "accounts",
+    label: "Accounts",
+    description: "Financial overview, transactions, fees and payroll",
+  },
 ];
 
 export const MODULE_ROUTE_MAP = {

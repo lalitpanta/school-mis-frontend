@@ -17,6 +17,7 @@ import NoticesSms from "../components/settings/NoticesSms";
 import DeviceIntegration from "./settings/DeviceIntegration";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import Theme from "../components/settings/Theme";
+import Accounts from "../components/settings/Accounts";
 
 // Map tab keys to rendered panels
 const PANEL_MAP = {
@@ -39,6 +40,7 @@ const PANEL_MAP = {
   resultSubject:    <ResultManagementModule moduleType="subject" />,
   theme:            <Theme />,
   profile:          <UserProfile />,
+  accounts:         <Accounts />,
 };
 
 // Human-readable labels for the active tab header
@@ -62,6 +64,7 @@ const TAB_LABELS = {
   resultSubject:    "Course & Marks",
   theme:            "Theme",
   profile:          "My Profile",
+  accounts:         "Accounts",
 };
 
 const SettingsPage = () => {
