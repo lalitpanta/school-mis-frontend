@@ -4,148 +4,104 @@ import {
   Calendar,
   ClipboardList,
   GraduationCap,
-  User,
+  Users,
   Settings,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
   ChevronDown,
   LogOut,
   BarChart3,
-  Users,
   Briefcase,
   FileText,
-  IndianRupee,
-  Activity,
-  Menu,
-  X,
   CreditCard,
   Clock,
+  ChevronRight,
+  ChevronLeft,
+  Building,
+  BookOpen,
+  ShieldCheck,
+  Bell,
+  Plug,
+  Smartphone,
+  Lock,
+  Palette,
+  Building2,
+  DoorOpen,
+  UserCog,
+  ClipboardCheck,
+  User,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { ROUTES } from "../../utils/constants";
 import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingsContext";
+
+// ── Navigation items ──────────────────────────────────────────────────────────
+const MAIN_NAV = [
+  { label: "Dashboard",      icon: LayoutDashboard, to: ROUTES.DASHBOARD,      module: "dashboard"       },
+  { label: "Calendar",       icon: Calendar,        to: ROUTES.CALENDAR,        module: "calendar"        },
+  { label: "Attendance",     icon: ClipboardList,   to: ROUTES.ATTENDANCE,      module: "attendance"      },
+  { label: "Teachers",       icon: Users,           to: ROUTES.TEACHER,         module: "teacher"         },
+  { label: "Students",       icon: GraduationCap,   to: ROUTES.STUDENT,         module: "student"         },
+  { label: "Employees",      icon: Briefcase,       to: ROUTES.EMPLOYEE,        module: "employee"        },
+  { label: "Results",        icon: BarChart3,       to: ROUTES.RESULTS,         module: "results"         },
+  { label: "Result Portal",  icon: FileText,        to: ROUTES.RESULT_PORTAL,   module: "result_portal"   },
+  { label: "Daily Reports",  icon: FileText,        to: ROUTES.DAILY_REPORTS,   module: "daily_reports"   },
+  { label: "Fees",           icon: CreditCard,      to: ROUTES.FEES,            module: "fee_management"  },
+  { label: "Leave",          icon: Clock,           to: ROUTES.LEAVE_MANAGEMENT,module: "leave_management"},
+];
+
+// Settings sub-tabs with Lucide icons for a cleaner look
 const SETTINGS_TABS = [
-  { key: "school", label: "School Profile", emoji: "🏛️" },
-  { key: "academic", label: "Academic & Calendar", emoji: "📅" },
-  { key: "calendarSettings", label: "Calendar Settings", emoji: "📆" },
-  { key: "users", label: "Users & Staff", emoji: "👥" },
-  { key: "roles", label: "Roles & Permissions", emoji: "🛡️" },
-  { key: "fees", label: "Fees", emoji: "💳" },
-  { key: "notices", label: "Notices & SMS", emoji: "📢" },
-  { key: "integrations", label: "Integrations", emoji: "🔌" },
-  { key: "devices", label: "Device Integration", emoji: "📱" },
-  { key: "security", label: "Security", emoji: "🔒" },
-  { key: "theme", label: "Theme", emoji: "🌙" },
-  { key: "departments", label: "Departments", emoji: "🏦" },
-  { key: "classrooms", label: "Classrooms", emoji: "🏫" },
-  { key: "courses", label: "Courses", emoji: "📚" },
-  { key: "rooms", label: "Rooms", emoji: "🚪" },
-  { key: "students", label: "Students", emoji: "🎓" },
+  { key: "school",            label: "School Profile",     icon: Building2     },
+  { key: "academic",          label: "Academic Calendar",  icon: Calendar      },
+  { key: "calendarSettings",  label: "Calendar Settings",  icon: ClipboardCheck},
+  { key: "users",             label: "Users & Staff",      icon: Users         },
+  { key: "roles",             label: "Roles & Permissions",icon: ShieldCheck   },
+  { key: "fees",              label: "Fees",               icon: CreditCard    },
+  { key: "notices",           label: "Notices & SMS",      icon: Bell          },
+  { key: "integrations",      label: "Integrations",       icon: Plug          },
+  { key: "devices",           label: "Device Integration", icon: Smartphone    },
+  { key: "security",          label: "Security",           icon: Lock          },
+  { key: "theme",             label: "Theme",              icon: Palette       },
+  { key: "departments",       label: "Departments",        icon: Building      },
+  { key: "classrooms",        label: "Classrooms",         icon: BookOpen      },
+  { key: "courses",           label: "Courses",            icon: BookOpen      },
+  { key: "rooms",             label: "Rooms",              icon: DoorOpen      },
+  { key: "students",          label: "Students",           icon: GraduationCap },
 ];
 
 const EXAM_TABS = [
-  { key: "resultFormat", label: "Exam Setup", emoji: "📋" },
-  { key: "resultSubject", label: "Course & Marks", emoji: "📚" },
+  { key: "resultFormat",  label: "Exam Setup",     icon: ClipboardCheck },
+  { key: "resultSubject", label: "Course & Marks", icon: BookOpen       },
 ];
-const MAIN_NAV = [
-  {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    to: ROUTES.DASHBOARD,
-    module: "dashboard",
-  },
-  {
-    label: "Calendar",
-    icon: Calendar,
-    to: ROUTES.CALENDAR,
-    module: "calendar",
-  },
-  {
-    label: "Attendance",
-    icon: ClipboardList,
-    to: ROUTES.ATTENDANCE,
-    module: "attendance",
-  },
-  { label: "Teachers", icon: Users, to: ROUTES.TEACHER, module: "teacher" },
-  {
-    label: "Students",
-    icon: GraduationCap,
-    to: ROUTES.STUDENT,
-    module: "student",
-  },
-  {
-    label: "Employees",
-    icon: Briefcase,
-    to: ROUTES.EMPLOYEE,
-    module: "employee",
-  },
-  { label: "Results", icon: BarChart3, to: ROUTES.RESULTS, module: "results" },
-  {
-    label: "Result Portal",
-    icon: FileText,
-    to: ROUTES.RESULT_PORTAL,
-    module: "result_portal",
-  },
-  {
-    label: "Daily Reports",
-    icon: FileText,
-    to: ROUTES.DAILY_REPORTS,
-    module: "daily_reports",
-  },
-  {
-    label: "Fee Management",
-    icon: CreditCard,
-    to: ROUTES.FEES,
-    module: "fee_management",
-  },
-  {
-    label: "Leave Management",
-    icon: Clock,
-    to: ROUTES.LEAVE_MANAGEMENT,
-    module: "leave_management",
-  },
-];
+
+// ── Sidebar component ─────────────────────────────────────────────────────────
 const Sidebar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
   const { hasModule, isTenant, logout, user } = useAuth();
   const { settings } = useSettings();
 
   const schoolProfile = settings?.school_profile || {};
-  const brandName =
-    settings?.platform_name ||
-    settings?.system_name ||
-    schoolProfile.name ||
-    "EduSphere";
-  const brandTagline =
-    settings?.platform_tagline || schoolProfile.motto || "School ERP";
+  const brandName = settings?.platform_name || settings?.system_name || schoolProfile.name || "School MIS";
+  const brandTagline = settings?.platform_tagline || schoolProfile.motto || "Management System";
   const brandLogo = settings?.platform_logo || schoolProfile.logo || null;
 
-  const [collapsed, setCollapsed] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [examOpen, setExamOpen] = useState(false);
+  const [collapsed,     setCollapsed]     = useState(false);
+  const [settingsOpen,  setSettingsOpen]  = useState(false);
+  const [examOpen,      setExamOpen]      = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  const onSettings  = location.pathname === ROUTES.SETTINGS;
+  const activeTab   = new URLSearchParams(location.search).get("tab") || "school";
+  const isExamTab   = EXAM_TABS.some((t) => t.key === activeTab);
 
-  const onSettings = location.pathname === ROUTES.SETTINGS;
-  const activeTab = new URLSearchParams(location.search).get("tab") || "school";
-
-  /* Auto-open accordion when entering /settings */
+  // Auto-open correct accordion when landing on /settings
   useEffect(() => {
     if (onSettings) {
-      if (EXAM_TABS.some((t) => t.key === activeTab)) {
-        setExamOpen(true);
-      } else {
-        setSettingsOpen(true);
-      }
+      if (isExamTab) { setExamOpen(true); setSettingsOpen(false); }
+      else            { setSettingsOpen(true); setExamOpen(false); }
     }
-  }, [onSettings, activeTab]);
+  }, [onSettings, isExamTab]);
 
   const toggleSettings = () => {
     if (collapsed) {
@@ -160,7 +116,7 @@ const Sidebar = () => {
     if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
   };
 
-  const toggleExamSetup = () => {
+  const toggleExam = () => {
     if (collapsed) {
       setCollapsed(false);
       setExamOpen(true);
@@ -176,319 +132,294 @@ const Sidebar = () => {
   const isNavActive = (to) =>
     to === "/" ? location.pathname === "/" : location.pathname === to;
 
+  // Determine which nav items to show
+  const visibleNav = (() => {
+    if (user?.type === "super_admin")
+      return MAIN_NAV.filter((i) => i.module === "dashboard");
+    if (isTenant())
+      return MAIN_NAV.filter((i) => hasModule(i.module));
+    return MAIN_NAV;
+  })();
+
+  const showSettings = user?.type !== "super_admin" && (!isTenant() || hasModule("settings"));
+
+  // ── Shared styles ──────────────────────────────────────────────────────────
+  const navItemBase = clsx(
+    "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 w-full",
+  );
+  const navItemActive = "text-white";
+  const navItemInactive = "text-slate-400 hover:text-white hover:bg-white/5";
+
+  const activeStyle = {
+    background: "rgba(99,102,241,0.15)",
+    border: "1px solid rgba(99,102,241,0.25)",
+    color: "white",
+  };
+  const inactiveStyle = { border: "1px solid transparent" };
+
   return (
     <aside
       style={{
-        background: "#07090f",
+        background: "#08091a",
         borderRight: "1px solid rgba(255,255,255,0.06)",
+        width: collapsed ? 60 : 220,
+        minWidth: collapsed ? 60 : 220,
       }}
-      className={clsx(
-        "relative flex flex-col h-screen shrink-0 transition-all duration-300 ease-in-out select-none z-20",
-        collapsed ? "w-15" : "w-55",
-      )}
+      className="relative flex flex-col h-screen shrink-0 transition-all duration-300 ease-in-out select-none z-20"
     >
-      {/* ── Logo ── */}
+      {/* ── Brand ─────────────────────────────────────────────────────────── */}
       <div
-        className="flex items-center gap-2.5 px-4 py-5"
+        className="flex items-center gap-3 px-3.5 py-4 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
-        <div className="w-9 h-9 shrink-0 rounded-xl bg-linear-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg overflow-hidden">
-          {brandLogo ? (
-            <img
-              src={brandLogo}
-              alt="Platform logo"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <GraduationCap size={18} className="text-white" />
-          )}
+        <div
+          className="w-8 h-8 shrink-0 rounded-xl flex items-center justify-center shadow-lg overflow-hidden"
+          style={{ background: "var(--accent)", minWidth: 32 }}
+        >
+          {brandLogo
+            ? <img src={brandLogo} alt="logo" className="w-full h-full object-cover" />
+            : <GraduationCap size={16} className="text-white" />
+          }
         </div>
         {!collapsed && (
-          <div className="leading-tight min-w-0">
-            <p className="text-white font-bold text-sm">{brandName}</p>
-            <p className="text-[10px] text-slate-500 tracking-widest uppercase">
-              {brandTagline}
-            </p>
+          <div className="min-w-0 leading-tight">
+            <p className="text-white font-bold text-[13px] truncate">{brandName}</p>
+            <p className="text-[10px] text-slate-500 truncate uppercase tracking-wider">{brandTagline}</p>
           </div>
         )}
       </div>
 
-      {/* ── Scrollable nav ── */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
-        {/* MAIN section */}
+      {/* ── Scrollable nav ────────────────────────────────────────────────── */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 flex flex-col gap-0.5">
+
+        {/* Section label */}
         {!collapsed && (
-          <p className="text-[10px] font-semibold tracking-widest text-slate-600 px-3 pt-1 pb-2">
-            MAIN
+          <p className="px-2 pb-1.5 pt-0.5 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
+            Main
           </p>
         )}
-        <div className="space-y-0.5">
-          {/* Filter navigation items based on user type */}
-          {(() => {
-            // Super Admin: Show only Dashboard and Tenants
-            if (user?.type === "super_admin") {
-              return MAIN_NAV.filter((item) => item.module === "dashboard").map(
-                ({ label, icon: Icon, to }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    title={collapsed ? label : undefined}
-                    className={clsx(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all",
-                      isNavActive(to)
-                        ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25"
-                        : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                    )}
-                  >
-                    <Icon size={16} className="shrink-0" />
-                    {!collapsed && label}
-                  </NavLink>
-                ),
-              );
+
+        {/* Main nav items */}
+        {visibleNav.map(({ label, icon: Icon, to }) => {
+          const active = isNavActive(to);
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              title={collapsed ? label : undefined}
+              className={clsx(navItemBase, active ? navItemActive : navItemInactive)}
+              style={active ? activeStyle : inactiveStyle}
+            >
+              <Icon size={15} className="shrink-0" />
+              {!collapsed && <span className="truncate">{label}</span>}
+            </NavLink>
+          );
+        })}
+
+        {/* Tenants link for non-tenant users */}
+        {!isTenant() && (
+          <NavLink
+            to={user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants"}
+            title={collapsed ? "Tenants" : undefined}
+            className={clsx(
+              navItemBase,
+              isNavActive(user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants")
+                ? navItemActive : navItemInactive,
+            )}
+            style={
+              isNavActive(user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants")
+                ? activeStyle : inactiveStyle
             }
+          >
+            <Building size={15} className="shrink-0" />
+            {!collapsed && <span className="truncate">Tenants</span>}
+          </NavLink>
+        )}
 
-            // Tenant: Show modules they have access to
-            if (isTenant()) {
-              return MAIN_NAV.filter((item) => hasModule(item.module)).map(
-                ({ label, icon: Icon, to }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    title={collapsed ? label : undefined}
-                    className={clsx(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all",
-                      isNavActive(to)
-                        ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25"
-                        : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                    )}
-                  >
-                    <Icon size={16} className="shrink-0" />
-                    {!collapsed && label}
-                  </NavLink>
-                ),
-              );
-            }
+        {/* ── Settings section ────────────────────────────────────────────── */}
+        {showSettings && (
+          <>
+            {!collapsed && (
+              <p className="px-2 pb-1.5 pt-3 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
+                Configuration
+              </p>
+            )}
 
-            // Regular Admin: Show all main nav items
-            return MAIN_NAV.map(({ label, icon: Icon, to }) => (
-              <NavLink
-                key={to}
-                to={to}
-                title={collapsed ? label : undefined}
-                className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all",
-                  isNavActive(to)
-                    ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25"
-                    : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                )}
-              >
-                <Icon size={16} className="shrink-0" />
-                {!collapsed && label}
-              </NavLink>
-            ));
-          })()}
+            {/* Settings accordion trigger */}
+            <AccordionTrigger
+              icon={Settings}
+              label="Settings"
+              collapsed={collapsed}
+              isOpen={settingsOpen}
+              isHighlighted={onSettings && !isExamTab}
+              onClick={toggleSettings}
+            />
 
-          {/* Tenants section - Only show for non-tenant users */}
-          {!isTenant() && (
-            <>
-              <NavLink
-                to={
-                  user?.type === "super_admin"
-                    ? "/superadmin/tenants"
-                    : "/admin/tenants"
-                }
-                title={collapsed ? "Tenants" : undefined}
-                className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all",
-                  isNavActive(
-                    user?.type === "super_admin"
-                      ? "/superadmin/tenants"
-                      : "/admin/tenants",
-                  )
-                    ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25"
-                    : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                )}
-              >
-                <Users size={16} className="shrink-0" />
-                {!collapsed && "Tenants"}
-              </NavLink>
-            </>
-          )}
-        </div>
+            {/* Settings sub-items */}
+            {!collapsed && settingsOpen && (
+              <div className="mt-0.5 mb-1 ml-2 pl-2 border-l border-slate-800 flex flex-col gap-0.5 settings-sub">
+                {SETTINGS_TABS.map(({ key, label, icon: Icon }) => {
+                  const active = onSettings && activeTab === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                      className={clsx(
+                        "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-left w-full transition-all duration-100",
+                        active
+                          ? "text-white"
+                          : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]",
+                      )}
+                      style={active ? { background: "rgba(99,102,241,0.12)", color: "white" } : {}}
+                    >
+                      <Icon
+                        size={13}
+                        className="shrink-0"
+                        style={{ color: active ? "var(--accent)" : undefined }}
+                      />
+                      <span className="truncate">{label}</span>
+                      {active && (
+                        <span
+                          className="ml-auto w-1 h-1 rounded-full shrink-0"
+                          style={{ background: "var(--accent)" }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
-        {/* SETTINGS section - Only show for non-super_admin users */}
-        {user?.type !== "super_admin" &&
-          (!isTenant() || hasModule("settings")) && (
-            <div className="mt-4">
-              {!collapsed && (
-                <p className="text-[10px] font-semibold tracking-widest text-slate-600 px-3 pb-2">
-                  SETTINGS
-                </p>
-              )}
+            {/* Exam & Result accordion trigger */}
+            <AccordionTrigger
+              icon={BarChart3}
+              label="Exam & Result"
+              collapsed={collapsed}
+              isOpen={examOpen}
+              isHighlighted={onSettings && isExamTab}
+              onClick={toggleExam}
+            />
 
-              {/* Settings trigger button */}
-              <button
-                onClick={toggleSettings}
-                title={collapsed ? "Settings" : undefined}
-                className={clsx(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all",
-                  onSettings || settingsOpen
-                    ? "text-amber-300"
-                    : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                )}
-                style={
-                  onSettings || settingsOpen
-                    ? {
-                        background:
-                          "linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(180,83,9,0.10) 100%)",
-                        border: "1px solid rgba(245,158,11,0.22)",
-                      }
-                    : {}
-                }
-              >
-                <Settings size={16} className="shrink-0" />
-                {!collapsed && (
-                  <>
-                    <span className="flex-1 text-left">Settings</span>
-                    {settingsOpen ? (
-                      <ChevronUp size={13} />
-                    ) : (
-                      <ChevronDown size={13} />
-                    )}
-                  </>
-                )}
-              </button>
+            {/* Exam sub-items */}
+            {!collapsed && examOpen && (
+              <div className="mt-0.5 mb-1 ml-2 pl-2 border-l border-slate-800 flex flex-col gap-0.5 settings-sub">
+                {EXAM_TABS.map(({ key, label, icon: Icon }) => {
+                  const active = onSettings && activeTab === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                      className={clsx(
+                        "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-left w-full transition-all duration-100",
+                        active
+                          ? "text-white"
+                          : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]",
+                      )}
+                      style={active ? { background: "rgba(99,102,241,0.12)", color: "white" } : {}}
+                    >
+                      <Icon
+                        size={13}
+                        className="shrink-0"
+                        style={{ color: active ? "var(--accent)" : undefined }}
+                      />
+                      <span className="truncate">{label}</span>
+                      {active && (
+                        <span
+                          className="ml-auto w-1 h-1 rounded-full shrink-0"
+                          style={{ background: "var(--accent)" }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
 
-              {/* Dropdown sub-items */}
-              {!collapsed && settingsOpen && (
-                <div className="settings-sub mt-1 ml-1 border-l-2 border-[#1e293b] pl-2 space-y-0.5">
-                  {SETTINGS_TABS.map(({ key, label, emoji }) => {
-                    const active = onSettings && activeTab === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() =>
-                          navigate(`${ROUTES.SETTINGS}?tab=${key}`)
-                        }
-                        className={clsx(
-                          "w-full flex items-center gap-2.5 px-3 py-1.75 rounded-xl text-[12.5px] font-medium text-left transition-all",
-                          active
-                            ? "bg-[#1a2235] text-white"
-                            : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                        )}
-                      >
-                        <span className="text-sm leading-none w-4 text-center shrink-0">
-                          {emoji}
-                        </span>
-                        <span className={active ? "font-semibold" : ""}>
-                          {label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Exam Setup trigger button */}
-              <button
-                onClick={toggleExamSetup}
-                title={collapsed ? "Exam and Result" : undefined}
-                className={clsx(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all mt-1",
-                  (onSettings && EXAM_TABS.some((t) => t.key === activeTab)) ||
-                    examOpen
-                    ? "text-amber-300"
-                    : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                )}
-                style={
-                  (onSettings && EXAM_TABS.some((t) => t.key === activeTab)) ||
-                  examOpen
-                    ? {
-                        background:
-                          "linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(180,83,9,0.10) 100%)",
-                        border: "1px solid rgba(245,158,11,0.22)",
-                      }
-                    : {}
-                }
-              >
-                <ClipboardList size={16} className="shrink-0" />
-                {!collapsed && (
-                  <>
-                    <span className="flex-1 text-left">Exam and Result</span>
-                    {examOpen ? (
-                      <ChevronUp size={13} />
-                    ) : (
-                      <ChevronDown size={13} />
-                    )}
-                  </>
-                )}
-              </button>
-
-              {/* Exam Dropdown sub-items */}
-              {!collapsed && examOpen && (
-                <div className="settings-sub mt-1 ml-1 border-l-2 border-[#1e293b] pl-2 space-y-0.5">
-                  {EXAM_TABS.map(({ key, label, emoji }) => {
-                    const active = onSettings && activeTab === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() =>
-                          navigate(`${ROUTES.SETTINGS}?tab=${key}`)
-                        }
-                        className={clsx(
-                          "w-full flex items-center gap-2.5 px-3 py-1.75 rounded-xl text-[12.5px] font-medium text-left transition-all",
-                          active
-                            ? "bg-[#1a2235] text-white"
-                            : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
-                        )}
-                      >
-                        <span className="text-sm leading-none w-4 text-center shrink-0">
-                          {emoji}
-                        </span>
-                        <span className={active ? "font-semibold" : ""}>
-                          {label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-
-        {/* ACCOUNT section */}
-        <div className="mt-4">
+        {/* ── Account section ─────────────────────────────────────────────── */}
+        <div className="mt-auto pt-3">
           {!collapsed && (
-            <p className="text-[10px] font-semibold tracking-widest text-slate-600 px-3 pb-2">
-              ACCOUNT
+            <p className="px-2 pb-1.5 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
+              Account
             </p>
           )}
           <button
             title={collapsed ? "Profile" : undefined}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-400 hover:text-white hover:bg-[#ffffff]/5 transition-all"
+            onClick={() => navigate("/settings?tab=profile")}
+            className={clsx(navItemBase, navItemInactive)}
+            style={inactiveStyle}
           >
-            <User size={16} className="shrink-0" />
-            {!collapsed && "Profile"}
+            <User size={15} className="shrink-0" />
+            {!collapsed && <span className="truncate">Profile</span>}
           </button>
           <button
-            onClick={handleLogout}
-            title={collapsed ? "Logout" : undefined}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all mt-1"
+            title={collapsed ? "Sign Out" : undefined}
+            onClick={() => { logout(); navigate("/login"); }}
+            className={clsx(
+              "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 w-full",
+              "text-rose-500 hover:text-rose-400 hover:bg-rose-500/8",
+            )}
+            style={inactiveStyle}
           >
-            <LogOut size={16} className="shrink-0" />
-            {!collapsed && "Logout"}
+            <LogOut size={15} className="shrink-0" />
+            {!collapsed && <span className="truncate">Sign Out</span>}
           </button>
         </div>
       </nav>
 
-      {/* ── Collapse toggle ── */}
+      {/* ── Collapse toggle ───────────────────────────────────────────────── */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#1e293b] border border-[#334155] flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-600 transition-all z-30 shadow-lg"
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="absolute -right-3 top-[72px] w-6 h-6 rounded-full flex items-center justify-center shadow-lg transition-all z-30 hover:scale-110"
+        style={{
+          background: "#1e2a3a",
+          border: "1px solid rgba(255,255,255,0.12)",
+          color: "#94a3b8",
+        }}
       >
         {collapsed ? <ChevronRight size={11} /> : <ChevronLeft size={11} />}
       </button>
     </aside>
   );
 };
+
+// ── AccordionTrigger sub-component ────────────────────────────────────────────
+const AccordionTrigger = ({ icon: Icon, label, collapsed, isOpen, isHighlighted, onClick }) => (
+  <button
+    onClick={onClick}
+    title={collapsed ? label : undefined}
+    className={clsx(
+      "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 w-full",
+      isHighlighted || isOpen
+        ? "text-white"
+        : "text-slate-400 hover:text-white hover:bg-white/5",
+    )}
+    style={
+      isHighlighted || isOpen
+        ? {
+            background: "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.06) 100%)",
+            border: "1px solid rgba(99,102,241,0.25)",
+          }
+        : { border: "1px solid transparent" }
+    }
+  >
+    <Icon size={15} className="shrink-0" />
+    {!collapsed && (
+      <>
+        <span className="flex-1 text-left truncate">{label}</span>
+        <ChevronDown
+          size={12}
+          style={{
+            transform: isOpen ? "rotate(180deg)" : "none",
+            transition: "transform .2s ease",
+            flexShrink: 0,
+          }}
+        />
+      </>
+    )}
+  </button>
+);
 
 export default Sidebar;

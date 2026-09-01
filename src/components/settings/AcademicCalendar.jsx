@@ -33,6 +33,7 @@ import {
   getDayTypes,
   createDayType,
   deleteDayType,
+  updateDayType,
   getYears,
   createYear,
   deleteYear,
@@ -85,36 +86,41 @@ const SetupSection = ({
   onToggle,
   children,
 }) => (
-  <div className="border-b border-slate-800/50 last:border-b-0 overflow-hidden transition-all duration-300">
+  <div
+    className="rounded-xl overflow-hidden transition-all"
+    style={{ border: "1px solid var(--border-dim)", background: "var(--bg-card)" }}
+  >
     <button
       onClick={onToggle}
-      className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors group"
+      className="w-full px-5 py-3.5 flex items-center justify-between transition-colors"
+      style={{ background: "transparent" }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = "var(--bg-hover)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
     >
-      <div className="flex items-center gap-4">
-        <Icon
-          size={16}
-          className="text-slate-500 group-hover:text-indigo-400 transition-colors"
-        />
-        <h3 className="text-base font-black text-white tracking-tight">
+      <div className="flex items-center gap-3">
+        <Icon size={15} style={{ color: "var(--accent)", flexShrink: 0 }} />
+        <h3 className="text-sm font-bold" style={{ color: "var(--text-1)" }}>
           {title}
         </h3>
       </div>
-      <div
-        className={clsx(
-          "text-slate-400 transition-transform duration-300",
-          isExpanded ? "rotate-180" : "rotate-0",
-        )}
-      >
-        <Filter size={16} className="stroke-[3]" />
-      </div>
+      <Filter
+        size={14}
+        style={{
+          color: "var(--text-3)",
+          transform: isExpanded ? "rotate(180deg)" : "none",
+          transition: "transform .2s ease",
+          flexShrink: 0,
+        }}
+      />
     </button>
     <div
       className={clsx(
-        "px-14 pb-6 flex flex-col gap-4 overflow-hidden transition-all duration-300",
+        "px-5 pb-5 flex flex-col gap-4 overflow-hidden transition-all duration-300",
         isExpanded ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0 pb-0",
       )}
+      style={isExpanded ? { borderTop: "1px solid var(--border-dim)" } : {}}
     >
-      {children}
+      {isExpanded && children}
     </div>
   </div>
 );
@@ -188,6 +194,7 @@ const AcademicCalendar = () => {
   const [editMonthData, setEditMonthData] = useState(null);
   const [editingYearId, setEditingYearId] = useState(null);
   const [editYearData, setEditYearData] = useState(null);
+  const [editDayType, setEditDayType] = useState(null); // { id, day_type, category_id }
 
   const [overviewStats, setOverviewStats] = useState({
     total: 0,
@@ -428,6 +435,7 @@ const AcademicCalendar = () => {
   };
 
   const handleDeleteDayType = async (id) => {
+    if (!window.confirm("Delete this day type? Calendar days using it will be unassigned.")) return;
     setBusy(true);
     try {
       await deleteDayType(id);
@@ -435,6 +443,24 @@ const AcademicCalendar = () => {
       loadAll();
     } catch (e) {
       toast.error("Failed to remove type");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleUpdateDayType = async () => {
+    if (!editDayType) return;
+    setBusy(true);
+    try {
+      await updateDayType(editDayType.id, {
+        day_type: editDayType.day_type,
+        category_id: editDayType.category_id || null,
+      });
+      toast.success("Day type updated");
+      setEditDayType(null);
+      loadAll();
+    } catch (e) {
+      toast.error("Failed to update day type");
     } finally {
       setBusy(false);
     }
@@ -1091,71 +1117,67 @@ const AcademicCalendar = () => {
 
   /* ── Render Tabs ── */
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#0f141e] rounded-2xl border border-slate-800/50">
+    <div className="flex flex-col h-full overflow-hidden" style={{ background: "var(--bg-card)", color: "var(--text-1)" }}>
       {/* ── Header with Stats ── */}
-      <div className="p-6 pb-0">
-        <div className="flex items-start justify-between mb-6">
+      <div className="p-5 pb-0">
+        <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
           <div>
-            <h1 className="text-xl font-black text-white flex items-center gap-3">
-              <Calendar className="text-indigo-500" size={24} />
-              Academic Calendar Configuration
+            <h1 className="text-lg font-bold flex items-center gap-2.5" style={{ color: "var(--text-1)" }}>
+              <Calendar style={{ color: "var(--accent)" }} size={20} />
+              Academic Calendar
             </h1>
-            <p className="text-slate-500 mt-1 font-medium text-[11px]">
-              Configure your school year, months, and holiday rules.
+            <p className="mt-0.5 text-xs" style={{ color: "var(--text-3)" }}>
+              Configure school years, months and holiday rules.
               {overviewYearLabel && (
-                <span className="ml-2 text-emerald-400 font-black uppercase tracking-widest text-[9px]">
-                  Current Year: {overviewYearLabel}
+                <span className="ml-2 font-bold" style={{ color: "#10b981" }}>
+                  Current: {overviewYearLabel}
                 </span>
               )}
             </p>
           </div>
-          <div className="flex items-center gap-3 bg-slate-900/60 p-1 rounded-xl border border-slate-800/50">
-            <button
-              onClick={() => updateSetting("calendar_type", "BS")}
-              className={clsx(
-                "px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all",
-                calendarType === "BS"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                  : "text-slate-400 hover:text-white",
-              )}
-            >
-              Bikram Sambat (BS)
-            </button>
-            <button
-              onClick={() => updateSetting("calendar_type", "AD")}
-              className={clsx(
-                "px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all",
-                calendarType === "AD"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                  : "text-slate-400 hover:text-white",
-              )}
-            >
-              Gregorian (AD)
-            </button>
+          <div
+            className="flex items-center gap-1 p-1 rounded-lg shrink-0"
+            style={{ background: "var(--bg-hover)", border: "1px solid var(--border-dim)" }}
+          >
+            {["BS", "AD"].map((k) => (
+              <button
+                key={k}
+                onClick={() => updateSetting("calendar_type", k)}
+                className="px-3 py-1 rounded-md text-[11px] font-bold transition-all"
+                style={
+                  calendarType === k
+                    ? { background: "var(--accent)", color: "white" }
+                    : { color: "var(--text-3)" }
+                }
+              >
+                {k === "BS" ? "Bikram Sambat" : "Gregorian (AD)"}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-5 gap-3 mb-6">
+        {/* Stats Cards — responsive grid */}
+        <div
+          className="grid gap-2 mb-4"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}
+        >
           {statsConfig.map((s) => (
             <div
               key={s.label}
-              className="bg-slate-900/20 border border-slate-800/40 p-4 rounded-2xl flex items-center gap-4 group hover:border-indigo-500/30 transition-all"
+              className="flex items-center gap-3 p-3 rounded-xl transition-all"
+              style={{
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-dim)",
+              }}
             >
-              <div
-                className={clsx(
-                  "p-2.5 rounded-xl transition-all group-hover:scale-110",
-                  s.bg,
-                  s.color,
-                )}
-              >
-                <s.icon size={18} />
+              <div className={clsx("p-2 rounded-lg shrink-0", s.bg, s.color)}>
+                <s.icon size={15} />
               </div>
-              <div>
-                <div className="text-2xl font-black text-white leading-none">
-                  {overviewStats[s.key]}
+              <div className="min-w-0">
+                <div className="text-lg font-black leading-none" style={{ color: "var(--text-1)" }}>
+                  {overviewStats[s.key] ?? 0}
                 </div>
-                <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1.5">
+                <div className="text-[9px] font-bold uppercase tracking-wider mt-1 truncate" style={{ color: "var(--text-3)" }}>
                   {s.label}
                 </div>
               </div>
@@ -1164,58 +1186,87 @@ const AcademicCalendar = () => {
         </div>
       </div>
 
-      {/* ── Navigation ── */}
-      <div className="flex items-center gap-1 p-2 bg-slate-900/40 border-y border-slate-800/50">
+      {/* ── Navigation tabs ── */}
+      <div
+        className="flex items-center gap-1 px-4 py-2 shrink-0"
+        style={{
+          borderTop: "1px solid var(--border-dim)",
+          borderBottom: "1px solid var(--border-dim)",
+          background: "var(--bg-surface)",
+        }}
+      >
         {[
-          { id: "setup", label: "Structure & Setup", icon: Plus },
-          { id: "grid", label: "Day Assignments", icon: Calendar },
-          { id: "portability", label: "Import / Export", icon: DownloadCloud },
+          { id: "setup",       label: "Structure & Setup", icon: Plus         },
+          { id: "grid",        label: "Day Assignments",   icon: Calendar      },
+          { id: "portability", label: "Import / Export",   icon: DownloadCloud },
         ].map((t) => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
-            className={clsx(
-              "flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all"
+            style={
               activeTab === t.id
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                : "text-slate-500 hover:text-white hover:bg-white/5",
-            )}
+                ? { background: "var(--accent)", color: "white" }
+                : { color: "var(--text-3)" }
+            }
+            onMouseEnter={(e) => {
+              if (activeTab !== t.id) {
+                e.currentTarget.style.background = "var(--bg-hover)";
+                e.currentTarget.style.color = "var(--text-1)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeTab !== t.id) {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--text-3)";
+              }
+            }}
           >
-            <t.icon size={14} />
+            <t.icon size={13} />
             {t.label}
           </button>
         ))}
 
         <div className="flex-1" />
-
         {busy && (
-          <div className="flex items-center gap-2 px-4 text-[9px] font-black text-indigo-400 animate-pulse tracking-widest">
-            <Loader2 size={12} className="animate-spin" />
-            PROCESSING...
+          <div className="flex items-center gap-1.5 text-[10px] font-semibold animate-pulse" style={{ color: "var(--accent)" }}>
+            <Loader2 size={11} className="animate-spin" />
+            Processing…
           </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
         {activeTab === "setup" && (
-          <div className="flex flex-col bg-slate-900/10 rounded-[40px] border border-slate-800/40 overflow-hidden shadow-2xl">
+          <div
+            className="flex flex-col rounded-xl overflow-hidden"
+            style={{ border: "1px solid var(--border-dim)", background: "var(--bg-surface)" }}
+          >
             {/* Accordion Controls */}
-            <div className="px-10 py-6 border-b border-slate-800/50 flex justify-start gap-3 bg-slate-950/20">
+            <div
+              className="px-5 py-3 flex items-center gap-2"
+              style={{ borderBottom: "1px solid var(--border-dim)", background: "var(--bg-hover)" }}
+            >
+              <span className="text-xs font-semibold mr-2" style={{ color: "var(--text-3)" }}>
+                Sections:
+              </span>
               <button
                 onClick={() => toggleAll(false)}
-                className="px-6 py-2.5 bg-slate-800/50 text-white text-[11px] font-bold rounded-xl border border-slate-700 hover:bg-slate-700 transition-all"
+                className="px-3 py-1 rounded-md text-xs font-semibold transition-all"
+                style={{ background: "var(--bg-card)", border: "1px solid var(--border-dim)", color: "var(--text-2)" }}
               >
                 Collapse All
               </button>
               <button
                 onClick={() => toggleAll(true)}
-                className="px-6 py-2.5 bg-slate-800/50 text-white text-[11px] font-bold rounded-xl border border-slate-700 hover:bg-slate-700 transition-all"
+                className="px-3 py-1 rounded-md text-xs font-semibold transition-all"
+                style={{ background: "var(--bg-card)", border: "1px solid var(--border-dim)", color: "var(--text-2)" }}
               >
                 Expand All
               </button>
             </div>
-            <div className="flex flex-col lg:flex-row gap-6 px-10 py-6">
-              <div className="flex-1 flex flex-col gap-4">
+            <div className="flex flex-col lg:flex-row gap-5 p-5">
+              <div className="flex-1 flex flex-col gap-3">
                 <SetupSection
                   title="Academic Years"
                   icon={Check}
@@ -1315,7 +1366,7 @@ const AcademicCalendar = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-2">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            Start Date (BS)
+                            Start Date (AD) — Auto-converts to BS
                           </label>
                           <UniversalDatePicker
                             value={newYear.start_date_AD}
@@ -1331,11 +1382,11 @@ const AcademicCalendar = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            Start Date (AD)
+                            Start Date (BS) — Auto-calculated
                           </label>
                           <input
-                            type="date"
-                            value={newYear.start_date_AD}
+                            type="text"
+                            value={newYear.start_date_BS || "Select AD date →"}
                             readOnly
                             className={yearDateReadonlyClass}
                           />
@@ -1378,7 +1429,7 @@ const AcademicCalendar = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-2">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            End Date (BS)
+                            End Date (AD) — Auto-converts to BS
                           </label>
                           <UniversalDatePicker
                             value={newYear.end_date_AD}
@@ -1394,11 +1445,11 @@ const AcademicCalendar = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            End Date (AD)
+                            End Date (BS) — Auto-calculated
                           </label>
                           <input
-                            type="date"
-                            value={newYear.end_date_AD}
+                            type="text"
+                            value={newYear.end_date_BS || "Select AD date →"}
                             readOnly
                             className={yearDateReadonlyClass}
                           />
@@ -1761,6 +1812,9 @@ const AcademicCalendar = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-3 custom-scrollbar">
+                    {dayTypes.length === 0 && (
+                      <div className="text-xs text-slate-500 italic px-2 py-4 text-center">No day classifications added yet.</div>
+                    )}
                     {dayTypes.map((t) => (
                       <div
                         key={t.id}
@@ -1776,12 +1830,22 @@ const AcademicCalendar = () => {
                             </span>
                           )}
                         </div>
-                        <button
-                          onClick={() => handleDeleteDayType(t.id)}
-                          className="text-rose-500 hover:text-rose-400 p-2"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => setEditDayType({ id: t.id, day_type: t.day_type, category_id: t.category_id || "" })}
+                            className="text-slate-400 hover:text-indigo-400 p-2 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDayType(t.id)}
+                            className="text-rose-500 hover:text-rose-400 p-2 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -2109,32 +2173,26 @@ const AcademicCalendar = () => {
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
                                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                                    BS Start Date
+                                    BS Start Date (auto-calc)
                                   </label>
-                                  <UniversalDatePicker
-                                    value={editYearData.start_date_BS}
-                                    onChange={(val) =>
-                                      setEditYearData({
-                                        ...editYearData,
-                                        start_date_BS: val,
-                                      })
-                                    }
-                                    className="!bg-slate-900 !border-slate-800 !rounded-xl !px-4 !py-2.5 !text-xs !text-white"
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    value={editYearData.start_date_BS || (editYearData.start_date_AD ? formatBsDate(editYearData.start_date_AD) : "")}
+                                    placeholder="Set AD date above"
+                                    className="bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-500 cursor-not-allowed outline-none"
                                   />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                                    BS End Date
+                                    BS End Date (auto-calc)
                                   </label>
-                                  <UniversalDatePicker
-                                    value={editYearData.end_date_BS}
-                                    onChange={(val) =>
-                                      setEditYearData({
-                                        ...editYearData,
-                                        end_date_BS: val,
-                                      })
-                                    }
-                                    className="!bg-slate-900 !border-slate-800 !rounded-xl !px-4 !py-2.5 !text-xs !text-white"
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    value={editYearData.end_date_BS || (editYearData.end_date_AD ? formatBsDate(editYearData.end_date_AD) : "")}
+                                    placeholder="Set AD date above"
+                                    className="bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-500 cursor-not-allowed outline-none"
                                   />
                                 </div>
                               </div>
@@ -2201,18 +2259,22 @@ const AcademicCalendar = () => {
         )}
 
         {activeTab === "grid" && (
-          <div className="flex flex-col gap-8 h-full min-h-[800px]">
+          <div className="flex flex-col gap-5 h-full min-h-[800px]">
             {/* Grid Filters & Actions */}
-            <div className="flex items-end justify-between gap-6 flex-wrap bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60">
-              <div className="flex items-center gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+            <div
+              className="flex items-end justify-between gap-4 flex-wrap p-4 rounded-xl"
+              style={{ background: "var(--bg-surface)", border: "1px solid var(--border-dim)" }}
+            >
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
                     Academic Year
                   </label>
                   <select
                     value={gridYearId}
                     onChange={(e) => setGridYearId(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-5 py-3 text-xs text-white min-w-[140px]"
+                    className="rounded-lg px-3 py-2 text-xs min-w-[140px] outline-none"
+                    style={{ background: "var(--bg-input)", border: "1px solid var(--border-card)", color: "var(--text-1)" }}
                   >
                     <option value="">Select Year</option>
                     {filteredYears.map((y) => (
@@ -2222,14 +2284,15 @@ const AcademicCalendar = () => {
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
                     Month
                   </label>
                   <select
                     value={gridMonthId}
                     onChange={(e) => setGridMonthId(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-5 py-3 text-xs text-white min-w-[180px]"
+                    className="rounded-lg px-3 py-2 text-xs min-w-[180px] outline-none"
+                    style={{ background: "var(--bg-input)", border: "1px solid var(--border-card)", color: "var(--text-1)" }}
                   >
                     <option value="">Select Month</option>
                     {gridMonthOptions.map((m) => (
@@ -2291,13 +2354,21 @@ const AcademicCalendar = () => {
 
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() =>
-                    refreshYearlyStats(gridYearId).then(() => {
-                      toast.success("Stats Refreshed");
-                      loadAll();
-                    })
-                  }
-                  className="flex items-center gap-2 px-5 py-3 bg-slate-800 text-slate-400 rounded-2xl text-xs font-bold hover:text-white transition-all border border-slate-700"
+                  onClick={async () => {
+                    if (!gridYearId) return toast.error("Select a year first");
+                    setBusy(true);
+                    try {
+                      await refreshYearlyStats(gridYearId);
+                      toast.success("Stats refreshed");
+                      await loadAll();
+                    } catch (e) {
+                      toast.error("Failed to refresh stats");
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                  disabled={busy || !gridYearId}
+                  className="flex items-center gap-2 px-5 py-3 bg-slate-800 text-slate-400 rounded-2xl text-xs font-bold hover:text-white transition-all border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <RefreshCw size={14} /> Refresh Stats
                 </button>
@@ -2326,16 +2397,20 @@ const AcademicCalendar = () => {
             </div>
 
             {/* Weekday Assignment */}
-            <div className="flex items-end justify-between gap-6 flex-wrap bg-slate-900/30 p-6 rounded-3xl border border-slate-800/60">
-              <div className="flex items-center gap-6 flex-wrap">
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+            <div
+              className="flex items-end justify-between gap-4 flex-wrap p-4 rounded-xl"
+              style={{ background: "var(--bg-surface)", border: "1px solid var(--border-dim)" }}
+            >
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
                     Day Classification
                   </label>
                   <select
                     value={weekdayBulkType}
                     onChange={(e) => setWeekdayBulkType(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-5 py-3 text-xs text-white min-w-[180px]"
+                    className="rounded-lg px-3 py-2 text-xs min-w-[180px] outline-none"
+                    style={{ background: "var(--bg-input)", border: "1px solid var(--border-card)", color: "var(--text-1)" }}
                   >
                     <option value="">Select Day Type</option>
                     {dayTypes.map((t) => (
@@ -2346,14 +2421,15 @@ const AcademicCalendar = () => {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
                     Weekday
                   </label>
                   <select
                     value={weekdayBulkDay}
                     onChange={(e) => setWeekdayBulkDay(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-5 py-3 text-xs text-white min-w-[160px]"
+                    className="rounded-lg px-3 py-2 text-xs min-w-[160px] outline-none"
+                    style={{ background: "var(--bg-input)", border: "1px solid var(--border-card)", color: "var(--text-1)" }}
                   >
                     <option value="">Select Day</option>
                     {[
@@ -2372,8 +2448,8 @@ const AcademicCalendar = () => {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
                     Scope
                   </label>
                   <select
@@ -2385,7 +2461,8 @@ const AcademicCalendar = () => {
                         setWeekdayBulkMonthId("");
                       }
                     }}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-5 py-3 text-xs text-white min-w-[140px]"
+                    className="rounded-lg px-3 py-2 text-xs min-w-[140px] outline-none"
+                    style={{ background: "var(--bg-input)", border: "1px solid var(--border-card)", color: "var(--text-1)" }}
                   >
                     <option value="month">This Month</option>
                     <option value="year">Whole Year</option>
@@ -2393,8 +2470,8 @@ const AcademicCalendar = () => {
                 </div>
 
                 {weekdayBulkScope === "month" && (
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
                       Target Month
                     </label>
                     <select
@@ -2404,7 +2481,8 @@ const AcademicCalendar = () => {
                           : gridMonthId || ""
                       }
                       onChange={(e) => setWeekdayBulkMonthId(e.target.value)}
-                      className="bg-slate-950 border border-slate-800 rounded-xl px-5 py-3 text-xs text-white min-w-[180px]"
+                      className="rounded-lg px-3 py-2 text-xs min-w-[180px] outline-none"
+                      style={{ background: "var(--bg-input)", border: "1px solid var(--border-card)", color: "var(--text-1)" }}
                     >
                       <option value="">Use Selected Month</option>
                       {gridMonthOptions.map((m) => (
@@ -2420,7 +2498,8 @@ const AcademicCalendar = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleAssignByWeekday}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20 uppercase tracking-widest"
+                  className="px-5 py-2.5 text-white rounded-lg text-xs font-semibold transition-all"
+                  style={{ background: "var(--accent)" }}
                 >
                   Apply Weekday Rule
                 </button>
@@ -2429,20 +2508,24 @@ const AcademicCalendar = () => {
 
             {/* Visual Grid Editor */}
             {!gridMonthId ? (
-              <div className="flex-1 flex flex-col items-center justify-center gap-4 text-slate-600">
-                <Calendar size={48} className="opacity-10" />
-                <p className="text-sm font-medium italic">
+              <div
+                className="flex-1 flex flex-col items-center justify-center gap-3 rounded-xl p-12"
+                style={{ border: "1px dashed var(--border-dim)" }}
+              >
+                <Calendar size={36} style={{ color: "var(--text-3)", opacity: 0.4 }} />
+                <p className="text-sm" style={{ color: "var(--text-3)" }}>
                   Select a year and month to start assigning days
                 </p>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col gap-4">
+              <div className="flex-1 flex flex-col gap-3">
                 <div className="grid grid-cols-7 gap-2">
                   {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(
                     (d) => (
                       <div
                         key={d}
-                        className="py-2 text-center text-[10px] font-black text-slate-600 uppercase tracking-widest"
+                        className="py-2 text-center text-[10px] font-bold uppercase tracking-widest"
+                        style={{ color: "var(--text-3)" }}
                       >
                         {d}
                       </div>
@@ -2578,19 +2661,21 @@ const AcademicCalendar = () => {
                   })}
 
                   {calDays.length === 0 && !busy && (
-                    <div className="col-span-7 bg-slate-900/60 border border-dashed border-slate-800 rounded-3xl p-10 flex flex-col items-center justify-center gap-4">
-                      <AlertCircle size={32} className="text-slate-600" />
+                    <div
+                      className="col-span-7 p-10 flex flex-col items-center justify-center gap-4 rounded-xl"
+                      style={{ border: "1px dashed var(--border-dim)", background: "var(--bg-surface)" }}
+                    >
+                      <AlertCircle size={28} style={{ color: "var(--text-3)" }} />
                       <div className="text-center">
-                        <p className="text-sm font-bold text-slate-400">
+                        <p className="text-sm font-semibold" style={{ color: "var(--text-2)" }}>
                           No days generated for this month yet.
                         </p>
                         <button
                           onClick={() =>
-                            generateCalendarDays(gridMonthId).then(
-                              fetchGridDays,
-                            )
+                            generateCalendarDays(gridMonthId).then(fetchGridDays)
                           }
-                          className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-500 transition-all"
+                          className="mt-4 px-5 py-2 text-white rounded-lg text-xs font-semibold transition-all"
+                          style={{ background: "var(--accent)" }}
                         >
                           Generate Calendar Days
                         </button>
@@ -3068,6 +3153,66 @@ const AcademicCalendar = () => {
           </div>
         )}
       </div>
+
+      {/* ── Edit Day Type Modal ── */}
+      {editDayType && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(4,7,18,0.7)", backdropFilter: "blur(6px)" }}
+          onClick={() => setEditDayType(null)}
+        >
+          <div
+            className="w-96 max-w-[94vw] rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base font-black text-white">Edit Day Classification</h3>
+              <button onClick={() => setEditDayType(null)} className="text-slate-500 hover:text-white p-1">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Type Name</label>
+                <input
+                  type="text"
+                  value={editDayType.day_type}
+                  onChange={(e) => setEditDayType((p) => ({ ...p, day_type: e.target.value }))}
+                  className="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Category</label>
+                <select
+                  value={editDayType.category_id || ""}
+                  onChange={(e) => setEditDayType((p) => ({ ...p, category_id: e.target.value || null }))}
+                  className="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <option value="">None</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.category_name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setEditDayType(null)}
+                className="px-5 py-2.5 text-sm font-bold text-slate-400 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateDayType}
+                disabled={busy}
+                className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-black hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-40"
+              >
+                {busy ? "Saving…" : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

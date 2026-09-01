@@ -18,37 +18,91 @@ import DeviceIntegration from "./settings/DeviceIntegration";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import Theme from "../components/settings/Theme";
 
-const panelMap = {
-  school: <SchoolProfile />,
-  academic: <AcademicCalendar />,
+// Map tab keys to rendered panels
+const PANEL_MAP = {
+  school:           <SchoolProfile />,
+  academic:         <AcademicCalendar />,
   calendarSettings: <CalendarSettings />,
-  users: <UsersStaff />,
-  roles: <RolesPermissions />,
-  fees: <FeesNotifications />,
-  notices: <NoticesSms />,
-  integrations: <Integrations />,
-  devices: <DeviceIntegration />,
-  security: <Security />,
-  departments: <Departments />,
-  classrooms: <Classrooms />,
-  courses: <Courses />,
-  rooms: <Rooms />,
-  students: <Students />,
-  resultFormat: <ResultManagementModule moduleType="format" />,
-  resultSubject: <ResultManagementModule moduleType="subject" />,
-  theme: <Theme />,
-  profile: <UserProfile />,
+  users:            <UsersStaff />,
+  roles:            <RolesPermissions />,
+  fees:             <FeesNotifications />,
+  notices:          <NoticesSms />,
+  integrations:     <Integrations />,
+  devices:          <DeviceIntegration />,
+  security:         <Security />,
+  departments:      <Departments />,
+  classrooms:       <Classrooms />,
+  courses:          <Courses />,
+  rooms:            <Rooms />,
+  students:         <Students />,
+  resultFormat:     <ResultManagementModule moduleType="format" />,
+  resultSubject:    <ResultManagementModule moduleType="subject" />,
+  theme:            <Theme />,
+  profile:          <UserProfile />,
+};
+
+// Human-readable labels for the active tab header
+const TAB_LABELS = {
+  school:           "School Profile",
+  academic:         "Academic & Calendar",
+  calendarSettings: "Calendar Settings",
+  users:            "Users & Staff",
+  roles:            "Roles & Permissions",
+  fees:             "Fees",
+  notices:          "Notices & SMS",
+  integrations:     "Integrations",
+  devices:          "Device Integration",
+  security:         "Security",
+  departments:      "Departments",
+  classrooms:       "Classrooms",
+  courses:          "Courses",
+  rooms:            "Rooms",
+  students:         "Students",
+  resultFormat:     "Exam Setup",
+  resultSubject:    "Course & Marks",
+  theme:            "Theme",
+  profile:          "My Profile",
 };
 
 const SettingsPage = () => {
   const [params] = useSearchParams();
   const tab = params.get("tab") || "school";
+  const label = TAB_LABELS[tab] ?? "Settings";
 
   return (
-    <div className="w-full px-4 py-6 md:px-6">
-      <div className="mx-auto w-full max-w-7xl rounded-3xl border border-slate-700/70 bg-[#0f172a] shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-        <div className="max-h-[calc(100vh-9rem)] overflow-y-auto p-4 md:p-6">
-          {panelMap[tab] ?? panelMap.school}
+    <div className="h-full flex flex-col">
+      {/* ── Page header ── */}
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <div>
+          <p
+            className="text-[10px] font-semibold uppercase tracking-widest mb-1"
+            style={{ color: "var(--text-3)" }}
+          >
+            Settings
+          </p>
+          <h1
+            className="text-lg font-bold tracking-tight"
+            style={{ color: "var(--text-1)" }}
+          >
+            {label}
+          </h1>
+        </div>
+      </div>
+
+      {/* ── Content card ── */}
+      <div
+        className="flex-1 min-h-0 rounded-2xl overflow-hidden"
+        style={{
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-card)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <div
+          className="h-full overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 9.5rem)" }}
+        >
+          {PANEL_MAP[tab] ?? PANEL_MAP.school}
         </div>
       </div>
     </div>
