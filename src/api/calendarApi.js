@@ -95,28 +95,29 @@ export const bulkAssignDayTypes = (assignments) =>
  * POST /v1/calendar-days/assign-by-weekday
  * Assigns a day type to every occurrence of a weekday in a month or year.
  * 
- * @param {string|null} month_id - Month UUID (null for year-wide assignment)
- * @param {string} day_of_week - Day name (Sunday, Monday, etc.)
- * @param {string} day_type_id - Day type/classification UUID
- * @param {string|null} year_id - Year UUID (null for month-specific assignment)
+ * @param {Object} payload - Assignment configuration
+ * @param {string} payload.day_of_week - Day name (Sunday, Monday, etc.)
+ * @param {string} payload.day_type_id - Day type/classification UUID
+ * @param {string|null} [payload.month_id] - Month UUID (null for year-wide assignment)
+ * @param {string|null} [payload.year_id] - Year UUID (null for month-specific assignment)
  * 
  * NOTE: Either month_id or year_id must be provided (month takes priority)
  */
-export const assignByWeekday = (month_id, day_of_week, day_type_id, year_id) => {
-  // Build payload with explicit values to ensure proper null handling
-  const payload = {
-    day_of_week,
-    day_type_id,
+export const assignByWeekday = (payload) => {
+  // Ensure payload has the correct structure with explicit null handling
+  const requestPayload = {
+    day_of_week: payload.day_of_week,
+    day_type_id: payload.day_type_id,
   };
   
   // Add the appropriate scope identifier
-  if (month_id) {
-    payload.month_id = month_id;
-  } else if (year_id) {
-    payload.year_id = year_id;
+  if (payload.month_id) {
+    requestPayload.month_id = payload.month_id;
+  } else if (payload.year_id) {
+    requestPayload.year_id = payload.year_id;
   }
   
-  return axiosInstance.post(`${CD}/assign-by-weekday`, payload);
+  return axiosInstance.post(`${CD}/assign-by-weekday`, requestPayload);
 };
 
 /**

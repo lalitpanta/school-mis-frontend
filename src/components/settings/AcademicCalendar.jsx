@@ -743,7 +743,7 @@ const AcademicCalendar = () => {
 
     setBusy(true);
     try {
-      // Build payload with explicit null values
+      // Build payload with correct field names
       const payload = {
         day_of_week: weekdayBulkDay,
         day_type_id: weekdayBulkType,
@@ -755,12 +755,7 @@ const AcademicCalendar = () => {
         payload.month_id = targetMonthId;
       }
 
-      const response = await assignByWeekday(
-        payload.month_id || null,
-        weekdayBulkDay,
-        weekdayBulkType,
-        payload.year_id || null,
-      );
+      const response = await assignByWeekday(payload);
 
       const count = response?.data?.count || response?.data?.data?.length || 0;
       toast.success(

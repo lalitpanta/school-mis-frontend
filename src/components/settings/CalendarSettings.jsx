@@ -1172,21 +1172,43 @@ const CalendarSettings = () => {
 
     setBusy(true);
     try {
+      // Get the weekday name based on index (0-6 = Sunday-Saturday)
+      const WEEKDAYS = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const weekdayName = WEEKDAYS[parseInt(weekdayRule.weekday)];
+
       const payload = {
-        dayType: weekdayRule.dayTypeId,
-        weekday: weekdayRule.weekday,
-        monthId: weekdayRule.scope === "month" ? gridMonthId : null,
-        year_id: weekdayRule.scope === "year" ? gridYearId : null,
+        day_of_week: weekdayName,
+        day_type_id: weekdayRule.dayTypeId,
       };
+
+      // Add the appropriate scope
+      if (weekdayRule.scope === "month" && gridMonthId) {
+        payload.month_id = gridMonthId;
+      } else if (weekdayRule.scope === "year" && gridYearId) {
+        payload.year_id = gridYearId;
+      } else {
+        toast.error("Please select a year or month first");
+        setBusy(false);
+        return;
+      }
 
       const response = await assignByWeekday(payload);
       const count = response?.data?.count || 0;
-      toast.success(`Assigned to ${count} ${weekdayRule.weekday}(s)`);
+      toast.success(`Assigned to ${count} ${weekdayName}(s)`);
 
       setWeekdayRule({ dayTypeId: "", weekday: "", scope: weekdayRule.scope });
       await fetchGridDays();
     } catch (e) {
       toast.error("Weekday assignment failed");
+      console.error(e);
     } finally {
       setBusy(false);
     }
