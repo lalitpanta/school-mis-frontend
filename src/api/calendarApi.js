@@ -33,6 +33,8 @@ export const createYear = (data) =>
 export const deleteYear = (id) =>
   axiosInstance.delete(`/v1/year/deleteyear/${id}`);
 export const updateYear = (id, data) =>
+export const seedNepaliYear = (data) =>
+  axiosInstance.post("/v1/year/seed-nepali-year", data);
   axiosInstance.patch(`/v1/year/updateyear/${id}`, data);
 
 // ── Day Category ───────────────────────────────────────────────────
