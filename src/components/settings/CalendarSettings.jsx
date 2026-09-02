@@ -188,6 +188,7 @@ const CalendarSettings = () => {
   const [academicDateTarget, setAcademicDateTarget] = useState("academicStart");
 
   // Grid state
+  const [gridYearId, setGridYearId] = useState("");
   const [gridMonthId, setGridMonthId] = useState("");
   const [calDays, setCalDays] = useState([]);
   const [bulkSelected, setBulkSelected] = useState(new Set());
@@ -317,18 +318,33 @@ const CalendarSettings = () => {
 
     try {
       setLoading(true);
-      const yearData = {
-        year_label: yearLabel,
-        year_label_AD: mode === "AD" ? String(selectedYear) : "",
-        year_label_BS: mode === "BS" ? `${selectedYear}/${String(selectedYear + 1).slice(-2)}` : "",
-        start_date_AD: fmtAD(start),
-        end_date_AD: fmtAD(end),
-        start_date: fmtAD(start),
-        end_date: fmtAD(end),
-        is_current: isCurrentYear,
-      };
-      const res = await createYear(yearData);
-      const savedYear = res.data?.data;
+      let savedYear;
+      
+      if (mode === "BS") {
+        // Use seedNepaliYear for BS - automatically creates year + 12 months
+        const res = await seedNepaliYear({
+          bs_year: selectedYear,
+          set_as_current: isCurrentYear,
+        });
+        savedYear = res.data?.data?.year;
+      } else {
+        // Use createYear for AD
+        const yearData = {
+          year_label: yearLabel,
+          year_label_AD: String(selectedYear),
+          year_label_BS: `${selectedYear}/${String(selectedYear + 1).slice(-2)}`,
+          start_date_AD: fmtAD(start),
+          end_date_AD: fmtAD(end),
+          start_date_BS: fmtAD(start),
+          end_date_BS: fmtAD(end),
+          start_date: fmtAD(start),
+          end_date: fmtAD(end),
+          is_current: isCurrentYear,
+        };
+        const res = await createYear(yearData);
+        savedYear = res.data?.data;
+      }
+      
       if (!savedYear) throw new Error("Failed to save year");
       const newYear = {
         id: savedYear.id,
@@ -350,7 +366,11 @@ const CalendarSettings = () => {
       setYears((prevYears) => [...prevYears, newYear]);
       setYearLabel("");
       setIsCurrentYear(false);
-      alert("Year saved!");
+      
+      // Reload months to include newly created months
+      await loadGridData();
+      
+      alert("Year saved successfully! Months auto-created.");
     } catch (err) {
       console.error("Failed to save year:", err);
       alert("Failed to save year: " + (err.response?.data?.error || err.message));
@@ -428,7 +448,7 @@ const CalendarSettings = () => {
       setLoading(true);
       const data = {
         day_type: name,
-        day_category_id: classificationCategory || null,
+        category_id: classificationCategory || null,
       };
       const res = await createDayType(data);
       const saved = res.data?.data;
@@ -1078,15 +1098,33 @@ const CalendarSettings = () => {
             </div>
           </div>
 
-          <div className="grid-2" style={{ marginBottom: "14px" }}>
+          <div className="grid-3" style={{ marginBottom: "14px" }}>
+            <div className="field">
+              <label>Select Year</label>
+              <select
+                value={gridYearId}
+                onChange={(e) => {
+                  setGridYearId(e.target.value);
+                  setGridMonthId("");
+                }}
+              >
+                <option value="">Choose a year</option>
+                {years.filter(y => y.mode === mode).map((y) => (
+                  <option key={y.id} value={y.id}>
+                    {y.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="field">
               <label>Select Month</label>
               <select
                 value={gridMonthId}
                 onChange={(e) => handleLoadGridMonth(e.target.value)}
+                disabled={!gridYearId}
               >
                 <option value="">Choose a month</option>
-                {months.map((m) => (
+                {months.filter(m => m.year_id === gridYearId).map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.month_name}
                   </option>
