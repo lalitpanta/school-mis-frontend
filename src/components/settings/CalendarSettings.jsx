@@ -1598,7 +1598,7 @@ const CalendarSettings = () => {
         </Modal>
       )}
 
-      {editMonth && (
+            {editMonth && (
         <Modal onClose={() => setEditMonth(null)}>
           <div className="cal-modal-header">
             <h3 className="cal-modal-title">Edit Month</h3>
@@ -1612,20 +1612,20 @@ const CalendarSettings = () => {
               <input className="cal-input" value={editMonth.month_name || ""}
                 onChange={(e) => setEditMonth((p) => ({ ...p, month_name: e.target.value }))} />
             </div>
-            <div className="cal-form-grid">              <div className="cal-field">
+            <div className="cal-form-grid">
+              <div className="cal-field">
                 <label>Start Date</label>
                 <UniversalDatePicker
                   value={editMonth.start_date || editMonth.month_start_date_AD || ""}
                   onChange={(val) => setEditMonth((p) => ({ ...p, start_date: val, month_start_date_AD: val }))}
                 />
               </div>
-              </div>              <div className="cal-field">
+              <div className="cal-field">
                 <label>End Date</label>
                 <UniversalDatePicker
                   value={editMonth.end_date || editMonth.month_end_date_AD || ""}
                   onChange={(val) => setEditMonth((p) => ({ ...p, end_date: val, month_end_date_AD: val }))}
                 />
-              </div>
               </div>
             </div>
             <div className="cal-field">
