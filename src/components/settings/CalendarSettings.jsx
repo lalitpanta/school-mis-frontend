@@ -51,6 +51,7 @@ import {
 import { BS_MONTHS } from "../../utils/bsCalendar";
 import { dayColor } from "../../utils/calendarStyles";
 import { useSettings } from "../../context/SettingsContext";
+import UniversalDatePicker from "../common/UniversalDatePicker";
 
 const AD_MONTHS = [
   "January", "February", "March", "April", "May", "June",
@@ -1121,88 +1122,7 @@ const CalendarSettings = () => {
               title="Academic Years"
               badge={years.length}
             >
-              <div className="cal-subform">
-                <p className="cal-subform-title">Add New Year</p>
-                <div className="cal-form-grid-4" style={{ gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
-                  <div className="cal-field">
-                    <label>System Label</label>
-                    <input className="cal-input" placeholder="2083" value={newYear.year_label}
-                      onChange={(e) => setNewYear({ ...newYear, year_label: e.target.value })} />
-                  </div>
-                  <div className="cal-field">
-                    <label>BS Label</label>
-                    <input className="cal-input" placeholder="2083/084" value={newYear.year_label_BS}
-                      onChange={(e) => setNewYear({ ...newYear, year_label_BS: e.target.value })} />
-                  </div>
-                  <div className="cal-field">
-                    <label>AD Label</label>
-                    <input className="cal-input" placeholder="2026/27" value={newYear.year_label_AD}
-                      onChange={(e) => setNewYear({ ...newYear, year_label_AD: e.target.value })} />
-                  </div>
-                  <div className="cal-field">
-                    <label>Start Date (AD)</label>
-                    <input type="date" className="cal-input" value={newYear.start_date_AD}
-                      onChange={(e) => setNewYear({ ...newYear, start_date_AD: e.target.value })} />
-                  </div>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, marginTop: 10, alignItems: "flex-end" }}>
-                  <div className="cal-field">
-                    <label>End Date (AD)</label>
-                    <input type="date" className="cal-input" value={newYear.end_date_AD}
-                      onChange={(e) => setNewYear({ ...newYear, end_date_AD: e.target.value })} />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, paddingBottom: 1 }}>
-                    <label className="cal-checkbox-field">
-                      <input type="checkbox" checked={newYear.is_current}
-                        onChange={(e) => setNewYear({ ...newYear, is_current: e.target.checked })} />
-                      <span>Set as current</span>
-                    </label>
-                    <button className="cal-btn cal-btn-primary" onClick={handleAddYear} disabled={busy}>
-                      <Plus size={13} /> Add Year
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="cal-list">
-                {years.length === 0
-                  ? <div className="cal-empty">No academic years added yet.</div>
-                  : years.map((y) => (
-                    <div key={y.id} className="cal-row">
-                      <div className="cal-row-main">
-                        <Calendar size={16} style={{ color: "var(--text-faint)", flexShrink: 0 }} />
-                        <div style={{ flex: 1 }}>
-                          <div className="cal-row-name">{y.year_label_BS || y.year_label_AD || y.year_label}</div>
-                          <div className="cal-row-sub">
-                            {y.year_label_AD && `AD: ${y.year_label_AD}`}
-                            {y.start_date_AD && ` · ${y.start_date_AD} → ${y.end_date_AD || "?"}`}
-                          </div>
-                        </div>
-                        {y.is_current && (
-                          <span className="cal-pill cal-pill-current"><Check size={10} /> Current</span>
-                        )}
-                      </div>
-                      <div className="cal-row-actions">
-                        <button className="cal-icon-btn" onClick={() => setEditYear({ ...y })} title="Edit">
-                          <Edit2 size={13} />
-                        </button>
-                        <button className="cal-icon-btn danger" onClick={() => handleDeleteYear(y.id, y.year_label_BS || y.year_label)} title="Delete">
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </CollapsibleSection>
-
-            {/* Academic Months */}
-            <CollapsibleSection
-              isOpen={openSections.months}
-              onToggle={() => setOpenSections((p) => ({ ...p, months: !p.months }))}
-              icon={Calendar}
-              title="Academic Months"
-              badge={months.length}
-            >
-              <div className="cal-subform">
+                                          <div className="cal-subform">
                 <p className="cal-subform-title">Add New Month</p>
                 <div className="cal-form-grid">
                   <div className="cal-field">
@@ -1230,14 +1150,18 @@ const CalendarSettings = () => {
                     </select>
                   </div>
                   <div className="cal-field">
-                    <label>Start Date (AD)</label>
-                    <input type="date" className="cal-input" value={newMonth.start_date}
-                      onChange={(e) => setNewMonth({ ...newMonth, start_date: e.target.value })} />
+                    <label>Start Date</label>
+                    <UniversalDatePicker
+                      value={newMonth.start_date}
+                      onChange={(val) => setNewMonth({ ...newMonth, start_date: val })}
+                    />
                   </div>
                   <div className="cal-field">
-                    <label>End Date (AD)</label>
-                    <input type="date" className="cal-input" value={newMonth.end_date}
-                      onChange={(e) => setNewMonth({ ...newMonth, end_date: e.target.value })} />
+                    <label>End Date</label>
+                    <UniversalDatePicker
+                      value={newMonth.end_date}
+                      onChange={(val) => setNewMonth({ ...newMonth, end_date: val })}
+                    />
                   </div>
                   <div className="cal-form-actions" style={{ alignItems: "flex-end", justifyContent: "flex-start" }}>
                     <button className="cal-btn cal-btn-primary" onClick={handleAddMonth} disabled={busy}>
@@ -1643,16 +1567,18 @@ const CalendarSettings = () => {
               <label>AD Label</label>
               <input className="cal-input" value={editYear.year_label_AD || ""}
                 onChange={(e) => setEditYear((p) => ({ ...p, year_label_AD: e.target.value }))} />
-            </div>
-            <div className="cal-field">
-              <label>Start Date (AD)</label>
-              <input type="date" className="cal-input" value={editYear.start_date_AD || ""}
-                onChange={(e) => setEditYear((p) => ({ ...p, start_date_AD: e.target.value }))} />
-            </div>
-            <div className="cal-field">
-              <label>End Date (AD)</label>
-              <input type="date" className="cal-input" value={editYear.end_date_AD || ""}
-                onChange={(e) => setEditYear((p) => ({ ...p, end_date_AD: e.target.value }))} />
+            </div>            <div className="cal-field">
+              <label>Start Date</label>
+              <UniversalDatePicker
+                value={editYear.start_date_AD || ""}
+                onChange={(val) => setEditYear((p) => ({ ...p, start_date_AD: val }))}
+              />
+            </div>            <div className="cal-field">
+              <label>End Date</label>
+              <UniversalDatePicker
+                value={editYear.end_date_AD || ""}
+                onChange={(val) => setEditYear((p) => ({ ...p, end_date_AD: val }))}
+              />
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <label className="cal-checkbox-field">
@@ -1686,18 +1612,20 @@ const CalendarSettings = () => {
               <input className="cal-input" value={editMonth.month_name || ""}
                 onChange={(e) => setEditMonth((p) => ({ ...p, month_name: e.target.value }))} />
             </div>
-            <div className="cal-form-grid">
-              <div className="cal-field">
-                <label>Start Date (AD)</label>
-                <input type="date" className="cal-input"
+            <div className="cal-form-grid">              <div className="cal-field">
+                <label>Start Date</label>
+                <UniversalDatePicker
                   value={editMonth.start_date || editMonth.month_start_date_AD || ""}
-                  onChange={(e) => setEditMonth((p) => ({ ...p, start_date: e.target.value, month_start_date_AD: e.target.value }))} />
+                  onChange={(val) => setEditMonth((p) => ({ ...p, start_date: val, month_start_date_AD: val }))}
+                />
               </div>
-              <div className="cal-field">
-                <label>End Date (AD)</label>
-                <input type="date" className="cal-input"
+              </div>              <div className="cal-field">
+                <label>End Date</label>
+                <UniversalDatePicker
                   value={editMonth.end_date || editMonth.month_end_date_AD || ""}
-                  onChange={(e) => setEditMonth((p) => ({ ...p, end_date: e.target.value, month_end_date_AD: e.target.value }))} />
+                  onChange={(val) => setEditMonth((p) => ({ ...p, end_date: val, month_end_date_AD: val }))}
+                />
+              </div>
               </div>
             </div>
             <div className="cal-field">
