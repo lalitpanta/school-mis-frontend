@@ -45,6 +45,8 @@ import {
   bulkAssignDayTypes,
   generateCalendarDays,
   refreshYearlyStats,
+  getYearOptions,
+  getMonthAuto,
 } from "../../api/calendarApi";
 
 // Utils
@@ -545,6 +547,94 @@ const styles = `
 .cal-badge-purple { background: rgba(99,102,241,0.15); color: var(--accent-2); }
 .cal-badge-green { background: var(--success-bg); color: var(--success); }
 
+.cal-auto-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: rgba(16,185,129,0.12);
+  color: var(--success);
+  border: 1px solid rgba(16,185,129,0.25);
+  white-space: nowrap;
+}
+
+.cal-preview-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cal-preview-text {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text);
+  flex: 1;
+}
+
+.cal-skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border-soft) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  height: 1em;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.cal-auto-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: rgba(16,185,129,0.12);
+  color: var(--success);
+  border: 1px solid rgba(16,185,129,0.25);
+  white-space: nowrap;
+}
+
+.cal-preview-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cal-preview-text {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text);
+  flex: 1;
+}
+
+.cal-skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border-soft) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  height: 1em;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .cal-scope-row { display: flex; gap: 6px; margin-bottom: 10px; }
 .cal-scope-btn {
   font-size: 11px; font-weight: 700;
@@ -628,6 +718,12 @@ const CalendarSettings = () => {
     years: true, months: false, categories: false, types: false,
   });
 
+  // Auto-setup state
+  const [yearOptions, setYearOptions] = useState([]);
+  const [monthPreview, setMonthPreview] = useState(null);
+  const [monthPreviewLoading, setMonthPreviewLoading] = useState(false);
+  const [autoSetupError, setAutoSetupError] = useState(null);
+
   // Load all data
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -683,6 +779,50 @@ const CalendarSettings = () => {
   }, []);
 
   useEffect(() => { if (gridYearId) fetchYearStats(gridYearId); }, [gridYearId, fetchYearStats]);
+
+  // ── Auto-setup handlers ──
+  const fetchYearOptions = useCallback(async () => {
+    try {
+      const mode = calendarType === "BS" ? "BS" : "AD";
+      const res = await getYearOptions(mode);
+      const opts = res.data?.data?.years || [];
+      setYearOptions(opts);
+    } catch (e) {
+      console.error("Failed to fetch year options:", e);
+      setYearOptions([]);
+    }
+  }, [calendarType]);
+
+  useEffect(() => {
+    fetchYearOptions();
+  }, [fetchYearOptions]);
+
+  const fetchMonthPreview = useCallback(async (yearId, monthIndex) => {
+    if (!yearId || monthIndex === undefined) {
+      setMonthPreview(null);
+      return;
+    }
+    setMonthPreviewLoading(true);
+    setAutoSetupError(null);
+    try {
+      const res = await getMonthAuto(yearId, monthIndex);
+      const data = res.data?.data || {};
+      setMonthPreview(data);
+    } catch (e) {
+      console.error("Failed to fetch month preview:", e);
+      setAutoSetupError("Could not auto-calculate month dates");
+      setMonthPreview(null);
+    } finally {
+      setMonthPreviewLoading(false);
+    }
+  }, []);
+
+  // Auto-fetch month preview when year or month index changes
+  useEffect(() => {
+    if (newMonth.year_id && newMonth.bs_month_index) {
+      fetchMonthPreview(newMonth.year_id, newMonth.bs_month_index);
+    }
+  }, [newMonth.year_id, newMonth.bs_month_index, fetchMonthPreview]);
 
   // ── Handlers ──
   const handleAddYear = async () => {
@@ -1122,13 +1262,104 @@ const CalendarSettings = () => {
               title="Academic Years"
               badge={years.length}
             >
-                                          <div className="cal-subform">
-                <p className="cal-subform-title">Add New Month</p>
+              <div className="cal-subform">
+                <p className="cal-subform-title">Add New Year</p>
                 <div className="cal-form-grid">
+                  <div className="cal-field">
+                    <label>
+                      Select Year
+                      <span className="cal-auto-badge" style={{ marginLeft: 6 }}>Auto</span>
+                    </label>
+                    <select 
+                      className="cal-select" 
+                      value={newYear.year_label}
+                      onChange={(e) => {
+                        const selectedYear = e.target.value;
+                        if (calendarType === "BS") {
+                          // For BS, format is "2082" -> derive AD range
+                          const bsYear = parseInt(selectedYear);
+                          const adStart = 2025 + (bsYear - 2082);
+                          const adEnd = adStart + 1;
+                          setNewYear({
+                            year_label: selectedYear,
+                            year_label_BS: selectedYear,
+                            year_label_AD: `${adStart}-${adEnd}`,
+                            is_current: false,
+                            start_date_AD: "",
+                            end_date_AD: "",
+                          });
+                        } else {
+                          // For AD, format is "2025" -> derive BS range
+                          const adYear = parseInt(selectedYear);
+                          const bsYear = 2082 + (adYear - 2025);
+                          setNewYear({
+                            year_label: selectedYear,
+                            year_label_AD: selectedYear,
+                            year_label_BS: `${bsYear}`,
+                            is_current: false,
+                            start_date_AD: "",
+                            end_date_AD: "",
+                          });
+                        }
+                      }}
+                    >
+                      <option value="">Select {calendarType} year…</option>
+                      {yearOptions.map((year) => {
+                        if (calendarType === "BS") {
+                          const adStart = 2025 + (year - 2082);
+                          const adEnd = adStart + 1;
+                          return (
+                            <option key={year} value={year}>
+                              {year} BS ({adStart}-{adEnd} AD)
+                            </option>
+                          );
+                        } else {
+                          const bsYear = 2082 + (year - 2025);
+                          return (
+                            <option key={year} value={year}>
+                              {year} AD ({bsYear} BS)
+                            </option>
+                          );
+                        }
+                      })}
+                    </select>
+                  </div>
+                  <div className="cal-field">
+                    <label>System Label (Custom)</label>
+                    <input 
+                      className="cal-input" 
+                      placeholder="e.g., AY 2024-25" 
+                      value={newYear.year_label}
+                      onChange={(e) => setNewYear({ ...newYear, year_label: e.target.value })}
+                    />
+                  </div>
+                  <div className="cal-field">
+                    <label>
+                      Current Year
+                    </label>
+                    <label className="cal-checkbox-field">
+                      <input 
+                        type="checkbox" 
+                        checked={newYear.is_current || false}
+                        onChange={(e) => setNewYear({ ...newYear, is_current: e.target.checked })}
+                      />
+                      <span>Mark as current</span>
+                    </label>
+                  </div>
+                  <div className="cal-form-actions" style={{ gridColumn: "1 / -1", alignItems: "flex-end", justifyContent: "flex-start" }}>
+                    <button className="cal-btn cal-btn-primary" onClick={handleAddYear} disabled={busy}>
+                      <Plus size={13} /> Add Year
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="cal-subform">
+                <p className="cal-subform-title">Add New Month</p>
+                <div className="cal-form-grid" style={{ gap: 10 }}>
                   <div className="cal-field">
                     <label>Academic Year</label>
                     <select className="cal-select" value={newMonth.year_id}
-                      onChange={(e) => setNewMonth({ ...newMonth, year_id: e.target.value })}>
+                      onChange={(e) => setNewMonth({ ...newMonth, year_id: e.target.value, bs_month_index: 1 })}>
                       <option value="">Select year…</option>
                       {years.map((y) => (
                         <option key={y.id} value={y.id}>{y.year_label_BS || y.year_label_AD || y.year_label}</option>
@@ -1149,22 +1380,84 @@ const CalendarSettings = () => {
                       ))}
                     </select>
                   </div>
-                  <div className="cal-field">
-                    <label>Start Date</label>
-                    <UniversalDatePicker
-                      value={newMonth.start_date}
-                      onChange={(val) => setNewMonth({ ...newMonth, start_date: val })}
-                    />
+                  
+                  {/* Auto-calculated month preview */}
+                  <div className="cal-field" style={{ gridColumn: "1 / -1" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      Auto-Calculated Dates
+                      <span className="cal-auto-badge">Auto-calculated</span>
+                    </label>
+                    {monthPreviewLoading ? (
+                      <div className="cal-preview-box">
+                        <div style={{ flex: 1, height: 14, marginRight: 8 }} className="cal-skeleton" />
+                      </div>
+                    ) : monthPreview ? (
+                      <div className="cal-preview-box">
+                        <div className="cal-preview-text">
+                          Start: {monthPreview.month_start_date_ad} · End: {monthPreview.month_end_date_ad} · Days: {monthPreview.days || "?"}
+                        </div>
+                      </div>
+                    ) : autoSetupError ? (
+                      <div style={{ padding: "10px 12px", background: "rgba(244,63,94,0.1)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: 8, fontSize: 12, color: "var(--danger)" }}>
+                        {autoSetupError}
+                      </div>
+                    ) : (
+                      <div className="cal-preview-box">
+                        <span style={{ color: "var(--text-faint)" }}>Select a month to preview dates</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="cal-field">
-                    <label>End Date</label>
-                    <UniversalDatePicker
-                      value={newMonth.end_date}
-                      onChange={(val) => setNewMonth({ ...newMonth, end_date: val })}
-                    />
+
+                  {/* Manual override option */}
+                  <div style={{ gridColumn: "1 / -1", marginTop: 4 }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12 }}>
+                      <input 
+                        type="checkbox" 
+                        checked={newMonth.start_date || newMonth.end_date ? true : false}
+                        onChange={(e) => {
+                          if (!e.target.checked) {
+                            setNewMonth({ ...newMonth, start_date: "", end_date: "" });
+                          }
+                        }}
+                        style={{ accentColor: "var(--accent)" }}
+                      />
+                      <span>Override with manual dates</span>
+                    </label>
                   </div>
-                  <div className="cal-form-actions" style={{ alignItems: "flex-end", justifyContent: "flex-start" }}>
-                    <button className="cal-btn cal-btn-primary" onClick={handleAddMonth} disabled={busy}>
+
+                  {/* Manual date inputs - only shown if override is checked */}
+                  {(newMonth.start_date || newMonth.end_date) && (
+                    <>
+                      <div className="cal-field">
+                        <label>Start Date (override)</label>
+                        <UniversalDatePicker
+                          value={newMonth.start_date}
+                          onChange={(val) => setNewMonth({ ...newMonth, start_date: val })}
+                        />
+                      </div>
+                      <div className="cal-field">
+                        <label>End Date (override)</label>
+                        <UniversalDatePicker
+                          value={newMonth.end_date}
+                          onChange={(val) => setNewMonth({ ...newMonth, end_date: val })}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  <div className="cal-form-actions" style={{ gridColumn: "1 / -1", alignItems: "flex-end", justifyContent: "space-between" }}>
+                    <button className="cal-btn cal-btn-subtle" onClick={() => {
+                      if (monthPreview) {
+                        setNewMonth({
+                          ...newMonth,
+                          start_date: monthPreview.month_start_date_ad,
+                          end_date: monthPreview.month_end_date_ad
+                        });
+                      }
+                    }} disabled={!monthPreview || monthPreviewLoading} style={{ marginRight: "auto" }}>
+                      <Check size={13} /> Use Calculated Dates
+                    </button>
+                    <button className="cal-btn cal-btn-primary" onClick={handleAddMonth} disabled={busy || !newMonth.year_id || !newMonth.month_name}>
                       <Plus size={13} /> Add Month
                     </button>
                   </div>
@@ -1559,26 +1852,25 @@ const CalendarSettings = () => {
                 onChange={(e) => setEditYear((p) => ({ ...p, year_label: e.target.value }))} />
             </div>
             <div className="cal-field">
-              <label>BS Label</label>
-              <input className="cal-input" value={editYear.year_label_BS || ""}
-                onChange={(e) => setEditYear((p) => ({ ...p, year_label_BS: e.target.value }))} />
+              <label>
+                BS Label
+                <span className="cal-auto-badge" style={{ marginLeft: 6 }}>Auto</span>
+              </label>
+              <input className="cal-input" value={editYear.year_label_BS || ""} disabled
+                style={{ opacity: 0.6, cursor: "not-allowed" }}
+                title="Auto-calculated from dropdown selection" />
             </div>
             <div className="cal-field">
-              <label>AD Label</label>
-              <input className="cal-input" value={editYear.year_label_AD || ""}
-                onChange={(e) => setEditYear((p) => ({ ...p, year_label_AD: e.target.value }))} />
-            </div>            <div className="cal-field">
-              <label>Start Date</label>
-              <UniversalDatePicker
-                value={editYear.start_date_AD || ""}
-                onChange={(val) => setEditYear((p) => ({ ...p, start_date_AD: val }))}
-              />
-            </div>            <div className="cal-field">
-              <label>End Date</label>
-              <UniversalDatePicker
-                value={editYear.end_date_AD || ""}
-                onChange={(val) => setEditYear((p) => ({ ...p, end_date_AD: val }))}
-              />
+              <label>
+                AD Label
+                <span className="cal-auto-badge" style={{ marginLeft: 6 }}>Auto</span>
+              </label>
+              <input className="cal-input" value={editYear.year_label_AD || ""} disabled
+                style={{ opacity: 0.6, cursor: "not-allowed" }}
+                title="Auto-calculated from dropdown selection" />
+            </div>
+            <div style={{ gridColumn: "1 / -1", padding: 10, background: "rgba(99,102,241,0.08)", borderRadius: 8, fontSize: 12, color: "var(--text-dim)", border: "1px solid rgba(99,102,241,0.2)" }}>
+              <strong style={{ color: "var(--text)" }}>Tip:</strong> BS and AD labels are automatically calculated. To change them, update through the Add New Year dropdown.
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <label className="cal-checkbox-field">

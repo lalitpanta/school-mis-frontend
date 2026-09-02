@@ -168,3 +168,20 @@ export const getCalendarMonth = (month_id, date_format = "BS") =>
  */
 export const refreshYearlyStats = (year_id) =>
   axiosInstance.post(`${CD}/refresh-stats/${year_id}`);
+
+// ── Auto-setup helpers ──────────────────────────────────────────────────────
+/**
+ * GET /v1/year/options?mode=BS|AD
+ * Returns available year options for the given calendar mode
+ * BS: 2082-2086
+ * AD: 2025-2050
+ */
+export const getYearOptions = (mode = "BS") =>
+  axiosInstance.get("/v1/year/options", { params: { mode } });
+
+/**
+ * GET /v1/year/month-auto?year_id=xxx&month_index=1
+ * Returns auto-calculated month boundaries based on BS calendar
+ */
+export const getMonthAuto = (year_id, month_index) =>
+  axiosInstance.get("/v1/year/month-auto", { params: { year_id, month_index } });
