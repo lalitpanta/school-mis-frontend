@@ -1033,10 +1033,6 @@ const AcademicCalendar = () => {
     return config;
   }, [categories]);
 
-  const yearDateInputClass =
-    "bg-slate-950 border border-slate-800 rounded-2xl px-6 py-3 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 outline-none placeholder:text-slate-500 [color-scheme:dark]";
-  const yearDateReadonlyClass =
-    "bg-slate-950/60 border border-slate-800 rounded-2xl px-6 py-3 text-sm text-slate-300 cursor-not-allowed outline-none [color-scheme:dark]";
 
   useEffect(() => {
     const loadOverviewStats = async () => {
@@ -1362,131 +1358,37 @@ const AcademicCalendar = () => {
                       </div>
                     </div>
 
-                    {calendarType === "BS" ? (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            Start Date (AD) — Auto-converts to BS
-                          </label>
-                          <UniversalDatePicker
-                            value={newYear.start_date_AD}
-                            onChange={(val) =>
-                              setNewYear((prev) => ({
-                                ...prev,
-                                start_date_AD: val,
-                                start_date_BS: formatBsDate(val),
-                              }))
-                            }
-                            className="!bg-slate-950 !border-slate-800 !rounded-2xl !px-6 !py-3 !text-sm !text-white"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            Start Date (BS) — Auto-calculated
-                          </label>
-                          <input
-                            type="text"
-                            value={newYear.start_date_BS || "Select AD date →"}
-                            readOnly
-                            className={yearDateReadonlyClass}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            Start Date (AD)
-                          </label>
-                          <input
-                            type="date"
-                            value={newYear.start_date_AD}
-                            onChange={(e) =>
-                              setNewYear((prev) => ({
-                                ...prev,
-                                start_date_AD: e.target.value,
-                                start_date_BS: formatBsDate(e.target.value),
-                              }))
-                            }
-                            className={yearDateInputClass}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            Start Date (BS)
-                          </label>
-                          <input
-                            type="text"
-                            value={newYear.start_date_BS}
-                            readOnly
-                            className="bg-slate-950/60 border border-slate-800 rounded-2xl px-6 py-3 text-sm text-slate-400 cursor-not-allowed outline-none"
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
+                        Start Date {calendarType === "BS" ? "(BS — auto-converts to AD)" : "(AD)"}
+                      </label>
+                      <UniversalDatePicker
+                        value={newYear.start_date_AD}
+                        onChange={(val) =>
+                          setNewYear((prev) => ({
+                            ...prev,
+                            start_date_AD: val,
+                            start_date_BS: formatBsDate(val),
+                          }))
+                        }
+                      />
+                    </div>
 
-                    {calendarType === "BS" ? (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            End Date (AD) — Auto-converts to BS
-                          </label>
-                          <UniversalDatePicker
-                            value={newYear.end_date_AD}
-                            onChange={(val) =>
-                              setNewYear((prev) => ({
-                                ...prev,
-                                end_date_AD: val,
-                                end_date_BS: formatBsDate(val),
-                              }))
-                            }
-                            className="!bg-slate-950 !border-slate-800 !rounded-2xl !px-6 !py-3 !text-sm !text-white"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            End Date (BS) — Auto-calculated
-                          </label>
-                          <input
-                            type="text"
-                            value={newYear.end_date_BS || "Select AD date →"}
-                            readOnly
-                            className={yearDateReadonlyClass}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            End Date (AD)
-                          </label>
-                          <input
-                            type="date"
-                            value={newYear.end_date_AD}
-                            onChange={(e) =>
-                              setNewYear((prev) => ({
-                                ...prev,
-                                end_date_AD: e.target.value,
-                                end_date_BS: formatBsDate(e.target.value),
-                              }))
-                            }
-                            className={yearDateInputClass}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
-                            End Date (BS)
-                          </label>
-                          <input
-                            type="text"
-                            value={newYear.end_date_BS}
-                            readOnly
-                            className="bg-slate-950/60 border border-slate-800 rounded-2xl px-6 py-3 text-sm text-slate-400 cursor-not-allowed outline-none"
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
+                        End Date {calendarType === "BS" ? "(BS — auto-converts to AD)" : "(AD)"}
+                      </label>
+                      <UniversalDatePicker
+                        value={newYear.end_date_AD}
+                        onChange={(val) =>
+                          setNewYear((prev) => ({
+                            ...prev,
+                            end_date_AD: val,
+                            end_date_BS: formatBsDate(val),
+                          }))
+                        }
+                      />
+                    </div>
 
                     <div className="flex items-center justify-end">
                       <button
