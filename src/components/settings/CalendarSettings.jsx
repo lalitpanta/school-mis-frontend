@@ -113,7 +113,9 @@ function addDays(date, n) {
 }
 
 function fmtAD(date) {
-  if (!date || typeof date === "string") return date || "";
+  if (!date) return "";
+  if (typeof date === "string") return date;
+  if (isNaN(date.getTime())) return "";
   return date.toISOString().slice(0, 10);
 }
 
@@ -233,29 +235,52 @@ const CalendarSettings = () => {
 
   const loadSetupData = async () => {
     try {
+      // Load years
       const yearsRes = await getYears();
       const dbYears = yearsRes.data?.data || [];
-      const transformedYears = dbYears.map((y) => ({
-        id: y.id,
-        mode: y.year_label_BS ? "BS" : "AD",
-        value: y.year_label_BS ? parseInt(y.year_label_BS.split('/')[0]) : parseInt(y.year_label_AD),
-        label: y.year_label,
-        start: new Date(y.start_date_AD || y.start_date),
-        end: new Date(y.end_date_AD || y.end_date),
-        days: Math.ceil((new Date(y.end_date_AD || y.end_date) - new Date(y.start_date_AD || y.start_date)) / (1000 * 60 * 60 * 24)) + 1,
-        isCurrent: y.is_current || false,
-      }));
+      const transformedYears = dbYears.map((y) => {
+        // DB columns can be lowercase (year_label_bs) or mixed (year_label_BS)
+        const bsLabel = y.year_label_bs || y.year_label_BS || "";
+        const adLabel = y.year_label_ad || y.year_label_AD || "";
+        const startDate = y.start_date_ad || y.start_date_AD || y.start_date;
+        const endDate   = y.end_date_ad   || y.end_date_AD   || y.end_date;
+        const isBS = !!bsLabel && bsLabel.trim() !== "";
+        let value = 0;
+        if (isBS) {
+          // bsLabel like "2082/83" → 2082, or just "2082"
+          value = parseInt(bsLabel.split("/")[0]) || 0;
+        } else {
+          value = parseInt(adLabel.split("/")[0]) || parseInt(y.year_label) || 0;
+        }
+        return {
+          id: y.id,
+          mode: isBS ? "BS" : "AD",
+          value,
+          label: y.year_label || bsLabel || adLabel,
+          start: startDate ? new Date(startDate) : null,
+          end:   endDate   ? new Date(endDate)   : null,
+          days: (startDate && endDate)
+            ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) + 1
+            : 0,
+          isCurrent: y.is_current || false,
+        };
+      });
       setYears(transformedYears);
+
+      // Load categories
       const catsRes = await getDayCategories();
       const dbCategories = catsRes.data?.data || [];
-      setCategories(dbCategories.map(c => ({ id: c.id, name: c.category_name })));
+      setCategories(dbCategories.map(c => ({ id: c.id, name: c.category_name || c.name || "" })));
+
+      // Load classifications (day types)
       const typesRes = await getDayTypes();
       const dbTypes = typesRes.data?.data || [];
-      setClassifications(dbTypes.map(t => ({ 
-        id: t.id, 
-        name: t.day_type,
-        categoryId: t.day_category_id || ""
+      setClassifications(dbTypes.map(t => ({
+        id: t.id,
+        name: t.day_type || t.name || "",
+        categoryId: t.category_id || t.day_category_id || "",
       })));
+
     } catch (err) {
       console.error("Failed to load setup data:", err);
     }
@@ -263,14 +288,12 @@ const CalendarSettings = () => {
 
   const loadGridData = async () => {
     try {
-      const [monthRes, typesRes, catsRes] = await Promise.all([
+      const [monthRes, typesRes] = await Promise.all([
         getMonths(),
         getDayTypes(),
-        getDayCategories(),
       ]);
       setMonths(monthRes.data?.data || []);
       setDayTypes(typesRes.data?.data || []);
-      setCategories(catsRes.data?.data || []);
     } catch (err) {
       console.error("Failed to load grid data:", err);
     }
@@ -289,10 +312,15 @@ const CalendarSettings = () => {
 
   const refreshYearPreview = () => {
     if (!selectedYear || !academicStart || !academicEnd) return null;
-    const start = dateStateToAD(academicStart, mode);
-    const end = dateStateToAD(academicEnd, mode);
-    const days = inclusiveDays(start, end);
-    return { start, end, days };
+    try {
+      const start = dateStateToAD(academicStart, mode);
+      const end = dateStateToAD(academicEnd, mode);
+      if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+      const days = inclusiveDays(start, end);
+      return { start, end, days };
+    } catch {
+      return null;
+    }
   };
 
   const handleAddYear = async () => {
@@ -363,13 +391,11 @@ const CalendarSettings = () => {
           )
         );
       }
-      setYears((prevYears) => [...prevYears, newYear]);
+      // Reload everything from DB to get accurate data
+      await loadSetupData();
+      await loadGridData();
       setYearLabel("");
       setIsCurrentYear(false);
-      
-      // Reload months to include newly created months
-      await loadGridData();
-      
       alert("Year saved successfully! Months auto-created.");
     } catch (err) {
       console.error("Failed to save year:", err);
@@ -668,7 +694,8 @@ const CalendarSettings = () => {
   };
 
   const preview = refreshYearPreview();
-  const tableYears = years.filter((y) => y.mode === mode);
+  const tableYears = years.filter((y) => y.mode === mode || years.length === 0);
+  const allYears = years;
   const gridMonthOptions = months.filter((m) => m.year_id === years[0]?.id);
 
   return (
@@ -1109,9 +1136,9 @@ const CalendarSettings = () => {
                 }}
               >
                 <option value="">Choose a year</option>
-                {years.filter(y => y.mode === mode).map((y) => (
+                {years.map((y) => (
                   <option key={y.id} value={y.id}>
-                    {y.label}
+                    {y.label} ({y.mode === "BS" ? "BS " + y.value : "AD " + y.value})
                   </option>
                 ))}
               </select>
@@ -1124,11 +1151,14 @@ const CalendarSettings = () => {
                 disabled={!gridYearId}
               >
                 <option value="">Choose a month</option>
-                {months.filter(m => m.year_id === gridYearId).map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.month_name}
-                  </option>
-                ))}
+                {months
+                  .filter(m => String(m.year_id) === String(gridYearId))
+                  .sort((a, b) => (a.bs_month_index || 0) - (b.bs_month_index || 0))
+                  .map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.month_name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="field">
