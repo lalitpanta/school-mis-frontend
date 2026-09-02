@@ -107,6 +107,15 @@ const MAIN_NAV = [
       </svg>
     ),
   },
+  {
+    label: "Accounts", to: "/settings?tab=accounts", module: "settings",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/>
+        <path d="M2.5 10h19M7 15h2M12 15h2"/>
+      </svg>
+    ),
+  },
 ];
 
 const SETTINGS_TABS = [
@@ -133,9 +142,6 @@ const EXAM_TABS = [
   { key: "resultSubject", label: "Course & Marks"  },
 ];
 
-const ACCOUNTS_TABS = [
-  { key: "accounts", label: "Accounts" },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ICONS
@@ -505,7 +511,6 @@ const Sidebar = () => {
   const [collapsed,    setCollapsed]    = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [examOpen,     setExamOpen]     = useState(false);
-  const [accountsOpen, setAccountsOpen] = useState(false);
   const [search,       setSearch]       = useState("");
   const searchRef = useRef(null);
 
@@ -524,16 +529,13 @@ const Sidebar = () => {
   const onSettings = location.pathname === ROUTES.SETTINGS;
   const activeTab  = new URLSearchParams(location.search).get("tab") || "school";
   const isExamTab  = EXAM_TABS.some((t) => t.key === activeTab);
-  const isAccountsTab = ACCOUNTS_TABS.some((t) => t.key === activeTab);
-
   // Auto-open correct accordion when on /settings
   useEffect(() => {
     if (onSettings) {
-      if (isAccountsTab)    { setAccountsOpen(true); setExamOpen(false); setSettingsOpen(false); }
-      else if (isExamTab)   { setExamOpen(true);  setSettingsOpen(false); setAccountsOpen(false); }
-      else                  { setSettingsOpen(true); setExamOpen(false);  setAccountsOpen(false); }
+      if (isExamTab) { setExamOpen(true); setSettingsOpen(false); }
+      else           { setSettingsOpen(true); setExamOpen(false); }
     }
-  }, [onSettings, isExamTab, isAccountsTab]);
+  }, [onSettings, isExamTab]);
 
   const isNavActive = (to) =>
     to === "/" ? location.pathname === "/" : location.pathname === to;
@@ -565,13 +567,9 @@ const Sidebar = () => {
   const filteredExam = q
     ? EXAM_TABS.filter((t) => t.label.toLowerCase().includes(q))
     : EXAM_TABS;
-  const filteredAccounts = q
-    ? ACCOUNTS_TABS.filter((t) => t.label.toLowerCase().includes(q))
-    : ACCOUNTS_TABS;
   // Auto-expand accordions when search has results inside them
   const settingsHasMatch = q ? filteredSettings.length > 0 : settingsOpen;
   const examHasMatch = q ? filteredExam.length > 0 : examOpen;
-  const accountsHasMatch = q ? filteredAccounts.length > 0 : accountsOpen;
 
   const toggleSettings = () => {
     if (collapsed) {
@@ -597,17 +595,6 @@ const Sidebar = () => {
     if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
   };
 
-  const toggleAccounts = () => {
-    if (collapsed) {
-      setCollapsed(false);
-      setTimeout(() => { setAccountsOpen(true); setSettingsOpen(false); setExamOpen(false); }, 50);
-      if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=accounts`);
-      return;
-    }
-    const next = !accountsOpen;
-    setAccountsOpen(next);
-    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=accounts`);
-  };
 
   return (
     <>
@@ -657,7 +644,11 @@ const Sidebar = () => {
           <div className="sb-section-label">Main</div>
 
           {filteredNav.map(({ label, to, icon }) => {
-            const active = isNavActive(to);
+            // Special active check for items whose `to` includes a query string (e.g. Accounts)
+            const active = to.includes("?")
+              ? location.pathname === to.split("?")[0] &&
+                new URLSearchParams(to.split("?")[1]).get("tab") === activeTab
+              : isNavActive(to);
             return (
               <button
                 key={to}
@@ -702,7 +693,7 @@ const Sidebar = () => {
               {/* Settings accordion */}
               <div className={`sb-group${settingsOpen || settingsHasMatch ? " sb-open" : ""}`}>
                 <button
-                  className={`sb-item${onSettings && !isExamTab && !isAccountsTab ? " sb-active" : ""}`}
+                  className={`sb-item${onSettings && !isExamTab ? " sb-active" : ""}`}
                   onClick={toggleSettings}
                 >
                   <IconSettings />
@@ -755,36 +746,6 @@ const Sidebar = () => {
                 </div>
               </div>
 
-              {/* Accounts accordion */}
-              <div className={`sb-group${accountsOpen || accountsHasMatch ? " sb-open" : ""}`}>
-                <button
-                  className={`sb-item${onSettings && isAccountsTab ? " sb-active" : ""}`}
-                  onClick={toggleAccounts}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" style={{ flexShrink: 0 }}>
-                    <rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/>
-                    <path d="M2.5 10h19M7 15h2M12 15h2"/>
-                  </svg>
-                  <span className="sb-item-label">Accounts</span>
-                  <IconChevronDown />
-                  <span className="sb-tooltip">Accounts</span>
-                </button>
-                <div className="sb-submenu">
-                  {filteredAccounts.map(({ key, label }) => {
-                    const active = onSettings && activeTab === key;
-                    return (
-                      <button
-                        key={key}
-                        className={`sb-item${active ? " sb-active" : ""}`}
-                        onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
-                      >
-                        <span className="sb-dot" />
-                        <span className="sb-item-label">{label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
             </>
           )}
 
