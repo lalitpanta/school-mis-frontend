@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
+  createYear,
+  deleteYear,
+  createDayCategory,
+  deleteDayCategory,
+  createDayType,
+  deleteDayType,
   getYearOptions,
   getMonthAuto,
   seedNepaliYear,
@@ -202,6 +208,7 @@ const CalendarSettings = () => {
 
   useEffect(() => {
     loadYearOptions();
+    loadSetupData();
     loadGridData();
   }, [mode]);
 
@@ -219,6 +226,37 @@ const CalendarSettings = () => {
       console.error("Failed to load year options:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+
+  const loadSetupData = async () => {
+    try {
+      const yearsRes = await getYears();
+      const dbYears = yearsRes.data?.data || [];
+      const transformedYears = dbYears.map((y) => ({
+        id: y.id,
+        mode: y.year_label_BS ? "BS" : "AD",
+        value: y.year_label_BS ? parseInt(y.year_label_BS.split('/')[0]) : parseInt(y.year_label_AD),
+        label: y.year_label,
+        start: new Date(y.start_date_AD || y.start_date),
+        end: new Date(y.end_date_AD || y.end_date),
+        days: Math.ceil((new Date(y.end_date_AD || y.end_date) - new Date(y.start_date_AD || y.start_date)) / (1000 * 60 * 60 * 24)) + 1,
+        isCurrent: y.is_current || false,
+      }));
+      setYears(transformedYears);
+      const catsRes = await getDayCategories();
+      const dbCategories = catsRes.data?.data || [];
+      setCategories(dbCategories.map(c => ({ id: c.id, name: c.category_name })));
+      const typesRes = await getDayTypes();
+      const dbTypes = typesRes.data?.data || [];
+      setClassifications(dbTypes.map(t => ({ 
+        id: t.id, 
+        name: t.day_type,
+        categoryId: t.day_category_id || ""
+      })));
+    } catch (err) {
+      console.error("Failed to load setup data:", err);
     }
   };
 
@@ -277,36 +315,62 @@ const CalendarSettings = () => {
       return;
     }
 
-    const newYear = {
-      id: nextId,
-      mode,
-      value: selectedYear,
-      label: yearLabel,
-      start,
-      end,
-      days,
-      isCurrent: isCurrentYear,
-    };
-
-    if (isCurrentYear) {
-      setYears((prevYears) =>
-        prevYears.map((y) =>
-          y.mode === mode ? { ...y, isCurrent: false } : y
-        )
-      );
+    try {
+      setLoading(true);
+      const yearData = {
+        year_label: yearLabel,
+        year_label_AD: mode === "AD" ? String(selectedYear) : "",
+        year_label_BS: mode === "BS" ? `${selectedYear}/${String(selectedYear + 1).slice(-2)}` : "",
+        start_date_AD: fmtAD(start),
+        end_date_AD: fmtAD(end),
+        start_date: fmtAD(start),
+        end_date: fmtAD(end),
+        is_current: isCurrentYear,
+      };
+      const res = await createYear(yearData);
+      const savedYear = res.data?.data;
+      if (!savedYear) throw new Error("Failed to save year");
+      const newYear = {
+        id: savedYear.id,
+        mode,
+        value: selectedYear,
+        label: yearLabel,
+        start,
+        end,
+        days,
+        isCurrent: isCurrentYear,
+      };
+      if (isCurrentYear) {
+        setYears((prevYears) =>
+          prevYears.map((y) =>
+            y.mode === mode ? { ...y, isCurrent: false } : y
+          )
+        );
+      }
+      setYears((prevYears) => [...prevYears, newYear]);
+      setYearLabel("");
+      setIsCurrentYear(false);
+      alert("Year saved!");
+    } catch (err) {
+      console.error("Failed to save year:", err);
+      alert("Failed to save year: " + (err.response?.data?.error || err.message));
+    } finally {
+      setLoading(false);
     }
-
-    setYears((prevYears) => [...prevYears, newYear]);
-    setNextId((prev) => prev + 1);
-    setYearLabel("");
-    setIsCurrentYear(false);
   };
 
-  const handleDeleteYear = (id) => {
-    setYears((prevYears) => prevYears.filter((y) => y.id !== id));
+  const handleDeleteYear = async (id) => {
+    try {
+      await deleteYear(id);
+      setYears((prevYears) => prevYears.filter((y) => y.id !== id));
+      alert("Year deleted!");
+    } catch (err) {
+      console.error("Failed to delete year:", err);
+      alert("Failed to delete year");
+    }
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     const name = categoryName.trim();
     if (!name) {
       alert("Enter a category name.");
@@ -316,21 +380,39 @@ const CalendarSettings = () => {
       alert("That category already exists.");
       return;
     }
-    setCategories((prev) => [...prev, { id: nextId, name }]);
-    setNextId((prev) => prev + 1);
-    setCategoryName("");
+    try {
+      setLoading(true);
+      const res = await createDayCategory({ category_name: name });
+      const saved = res.data?.data;
+      if (!saved) throw new Error("Failed");
+      setCategories((prev) => [...prev, { id: saved.id, name }]);
+      setCategoryName("");
+      alert("Category saved!");
+    } catch (err) {
+      console.error("Failed to save category:", err);
+      alert("Failed to save category");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteCategory = (id) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
-    setClassifications((prev) =>
-      prev.map((cl) =>
-        cl.categoryId === id ? { ...cl, categoryId: "" } : cl
-      )
-    );
+  const handleDeleteCategory = async (id) => {
+    try {
+      await deleteDayCategory(id);
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+      setClassifications((prev) =>
+        prev.map((cl) =>
+          cl.categoryId === id ? { ...cl, categoryId: "" } : cl
+        )
+      );
+      alert("Category deleted!");
+    } catch (err) {
+      console.error("Failed to delete category:", err);
+      alert("Failed to delete category");
+    }
   };
 
-  const handleAddClassification = () => {
+  const handleAddClassification = async () => {
     const name = classificationName.trim();
     if (!name) {
       alert("Enter a classification name.");
@@ -342,17 +424,39 @@ const CalendarSettings = () => {
       alert("That classification already exists.");
       return;
     }
-    setClassifications((prev) => [
-      ...prev,
-      { id: nextId, name, categoryId: classificationCategory },
-    ]);
-    setNextId((prev) => prev + 1);
-    setClassificationName("");
-    setClassificationCategory("");
+    try {
+      setLoading(true);
+      const data = {
+        day_type: name,
+        day_category_id: classificationCategory || null,
+      };
+      const res = await createDayType(data);
+      const saved = res.data?.data;
+      if (!saved) throw new Error("Failed");
+      setClassifications((prev) => [
+        ...prev,
+        { id: saved.id, name, categoryId: classificationCategory },
+      ]);
+      setClassificationName("");
+      setClassificationCategory("");
+      alert("Classification saved!");
+    } catch (err) {
+      console.error("Failed to save classification:", err);
+      alert("Failed to save classification");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteClassification = (id) => {
-    setClassifications((prev) => prev.filter((c) => c.id !== id));
+  const handleDeleteClassification = async (id) => {
+    try {
+      await deleteDayType(id);
+      setClassifications((prev) => prev.filter((c) => c.id !== id));
+      alert("Classification deleted!");
+    } catch (err) {
+      console.error("Failed to delete classification:", err);
+      alert("Failed to delete classification");
+    }
   };
 
   const handleOpenAcademicDatePicker = (target) => {
