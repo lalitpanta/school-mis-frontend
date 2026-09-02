@@ -120,7 +120,6 @@ const MAIN_NAV = [
 
 const SETTINGS_TABS = [
   { key: "school",           label: "School Profile"      },
-  { key: "academic",         label: "Academic Calendar"   },
   { key: "calendarSettings", label: "Calendar Settings"   },
   { key: "users",            label: "Users & Staff"       },
   { key: "roles",            label: "Roles & Permissions" },

@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router-dom";
 import SchoolProfile from "../components/settings/SchoolProfile";
-import AcademicCalendar from "../components/settings/AcademicCalendar";
 import CalendarSettings from "../components/settings/CalendarSettings";
 import UsersStaff from "../components/settings/UsersStaff";
 import RolesPermissions from "../components/settings/RolesPermissions";
@@ -22,7 +21,6 @@ import Accounts from "../components/settings/Accounts";
 // Map tab keys to rendered panels
 const PANEL_MAP = {
   school:           <SchoolProfile />,
-  academic:         <AcademicCalendar />,
   calendarSettings: <CalendarSettings />,
   users:            <UsersStaff />,
   roles:            <RolesPermissions />,
@@ -46,7 +44,6 @@ const PANEL_MAP = {
 // Human-readable labels for the active tab header
 const TAB_LABELS = {
   school:           "School Profile",
-  academic:         "Academic & Calendar",
   calendarSettings: "Calendar Settings",
   users:            "Users & Staff",
   roles:            "Roles & Permissions",
