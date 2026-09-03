@@ -21,6 +21,7 @@ import {
   manualAssignDayTypes,
 } from "../../api/calendarApi";
 import "./CalendarSettings.css";
+import DayAssignmentBuilder from "./DayAssignmentBuilder";
 
 // Constants
 const BS_YEAR_MIN = 2082,
@@ -1481,6 +1482,35 @@ const CalendarSettings = () => {
 
       {/* TAB: DAY ASSIGNMENTS */}
       {activeTab === "grid" && (
+        <DayAssignmentBuilder
+          years={years}
+          months={months}
+          dayTypes={dayTypes}
+          calDays={calDays}
+          gridYearId={gridYearId}
+          gridMonthId={gridMonthId}
+          assignmentMode={advancedAssignmentMode}
+          selectedWeekdays={advancedSelectedWeekdays}
+          selectedDates={advancedSelectedDates}
+          selectedClassification={advancedSelectedClassification}
+          message={advancedMessage}
+          isAssigning={advancedIsAssigning}
+          onYearChange={(yearId) => {
+            setGridYearId(yearId);
+            setGridMonthId("");
+            setCalDays([]);
+            setAdvancedSelectedWeekdays(new Set());
+            setAdvancedSelectedDates(new Set());
+          }}
+          onMonthChange={handleLoadGridMonth}
+          onModeChange={handleAdvancedModeChange}
+          onWeekdayToggle={handleAdvancedWeekdayToggle}
+          onDateToggle={handleAdvancedDateToggle}
+          onClassificationChange={handleAdvancedClassificationChange}
+          onAssign={handleAdvancedAssignClick}
+        />
+      )}
+      {false && activeTab === "grid" && (
         <>
           {/* Existing Bulk Grid Assignment Interface */}
           <div className="panel">

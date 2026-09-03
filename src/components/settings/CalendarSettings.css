@@ -186,6 +186,288 @@ body {
   color: #fff;
 }
 
+.assignment-workspace {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.assignment-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.assignment-stat,
+.assignment-shell,
+.mini-calendar,
+.assignment-legend {
+  background: #0f0f18;
+  border: 1px solid #1e1e29;
+  border-radius: 14px;
+}
+.assignment-stat {
+  padding: 15px 17px;
+}
+.assignment-stat span,
+.assignment-stat small,
+.assignment-preview-label,
+.assignment-choice-group p,
+.assignment-legend p {
+  display: block;
+  color: #8b899c;
+  font-size: 12px;
+  margin: 0;
+}
+.assignment-stat strong {
+  display: block;
+  color: #f4f3f8;
+  font-size: 25px;
+  line-height: 1;
+  margin: 8px 0 6px;
+}
+.assignment-stat small {
+  color: #5b596b;
+  font-size: 11px;
+}
+.assignment-shell {
+  padding: 24px;
+}
+.assignment-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.assignment-mode-badge {
+  background: #f0b429;
+  color: #3a2a05;
+  border-radius: 7px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.assignment-columns {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+.assignment-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.assignment-title-row h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.assignment-indent {
+  margin-left: 32px;
+  margin-bottom: 18px;
+}
+.assignment-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.assignment-choice-group {
+  margin-bottom: 18px;
+}
+.assignment-choice-group p {
+  margin-bottom: 8px;
+}
+.weekday-choice-grid,
+.classification-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.weekday-choice-grid button,
+.classification-grid button {
+  padding: 10px 8px;
+  border: 1px solid #24242f;
+  border-radius: 9px;
+  background: #12121c;
+  color: #d8d6e3;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.weekday-choice-grid button {
+  display: flex;
+  justify-content: space-between;
+}
+.weekday-choice-grid button small {
+  color: #6b6a7c;
+}
+.weekday-choice-grid button.selected,
+.classification-grid button.selected {
+  border-color: var(--accent);
+  background: #1e1b3d;
+  color: #cfc9fe;
+}
+.date-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.date-choice-grid button {
+  position: relative;
+  min-height: 42px;
+  border: 1px solid #24242f;
+  border-radius: 8px;
+  background: #12121c;
+  color: #d8d6e3;
+  cursor: pointer;
+  font: inherit;
+}
+.date-choice-grid button small {
+  display: block;
+  color: #6b6a7c;
+  font-size: 9px;
+}
+.date-choice-grid button.selected {
+  border-color: var(--accent);
+  background: #1e1b3d;
+  color: #cfc9fe;
+}
+.date-choice-grid button.assigned::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--success);
+  transform: translateX(-50%);
+}
+.classification-group {
+  margin-top: 12px;
+}
+.classification-group > label {
+  display: block;
+  color: #8b899c;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.classification-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+.classification-grid button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-align: left;
+}
+.classification-grid button span {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--classification-color);
+}
+.assignment-submit {
+  width: 100%;
+  margin-top: 18px;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.assignment-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.assignment-message {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  color: var(--success);
+  background: var(--success-bg);
+  font-size: 12px;
+}
+.assignment-message.error {
+  color: #f3897e;
+  background: var(--danger-bg);
+}
+.assignment-empty {
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: 9px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+.assignment-preview-label {
+  margin-bottom: 8px;
+}
+.mini-calendar {
+  padding: 16px;
+}
+.mini-weekdays,
+.mini-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.mini-weekdays {
+  margin-bottom: 8px;
+}
+.mini-weekdays span {
+  text-align: center;
+  color: #5b596b;
+  font-size: 10px;
+  font-weight: 700;
+}
+.mini-days i,
+.mini-days span {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #8b899c;
+  font-size: 11px;
+  font-style: normal;
+}
+.mini-days span.assigned {
+  background: #2a1717;
+  border: 1px solid #e2574c66;
+  color: #f3897e;
+  font-weight: 700;
+}
+.assignment-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 14px;
+}
+.assignment-legend p {
+  margin-bottom: 2px;
+}
+.assignment-legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d8d6e3;
+  font-size: 12px;
+}
+.assignment-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.assignment-legend .unassigned-dot {
+  border: 1px solid #3a3a46;
+  background: transparent !important;
+}
+
 @media (max-width: 680px) {
   .cal-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -194,6 +476,15 @@ body {
 
   .cal-grid-item {
     font-size: 11px;
+  }
+
+  .assignment-stats,
+  .assignment-columns,
+  .assignment-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .assignment-shell {
+    padding: 16px;
   }
 }
 
