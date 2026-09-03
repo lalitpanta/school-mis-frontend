@@ -28,6 +28,8 @@ const DayAssignmentBuilder = ({
   selectedClassification,
   message,
   isAssigning,
+  isLoading,
+  loadError,
   onYearChange,
   onMonthChange,
   onModeChange,
@@ -175,6 +177,12 @@ const DayAssignmentBuilder = ({
             {!gridMonthId ? (
               <div className="assignment-empty">
                 Select a year and month to load available days.
+              </div>
+            ) : isLoading ? (
+              <div className="assignment-empty">Loading calendar days...</div>
+            ) : loadError ? (
+              <div className="assignment-empty assignment-error">
+                {loadError}
               </div>
             ) : assignmentMode === "weekday" ? (
               <div className="assignment-choice-group">

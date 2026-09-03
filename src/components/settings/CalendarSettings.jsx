@@ -192,6 +192,8 @@ const CalendarSettings = () => {
   const [gridYearId, setGridYearId] = useState("");
   const [gridMonthId, setGridMonthId] = useState("");
   const [calDays, setCalDays] = useState([]);
+  const [gridLoading, setGridLoading] = useState(false);
+  const [gridLoadError, setGridLoadError] = useState("");
   const [bulkSelected, setBulkSelected] = useState(new Set());
   const [bulkType, setBulkType] = useState("");
   const [dayTypes, setDayTypes] = useState([]);
@@ -941,6 +943,8 @@ const CalendarSettings = () => {
   const handleLoadGridMonth = async (monthId) => {
     if (!monthId) return;
     setGridMonthId(monthId);
+    setGridLoading(true);
+    setGridLoadError("");
     setAdvancedSelectedWeekdays(new Set());
     setAdvancedSelectedDates(new Set());
     setAdvancedMessage({ type: null, text: "", timestamp: null });
@@ -949,7 +953,7 @@ const CalendarSettings = () => {
       try {
         res = await getCalendarDays(monthId, mode);
       } catch (err) {
-        if (err.response?.status !== 404) throw err;
+        if (![404, 500].includes(err.response?.status)) throw err;
         await generateCalendarDays(monthId);
         res = await getCalendarDays(monthId, mode);
       }
@@ -957,6 +961,14 @@ const CalendarSettings = () => {
       setBulkSelected(new Set());
     } catch (err) {
       console.error("Failed to load grid:", err);
+      setCalDays([]);
+      setGridLoadError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Unable to load calendar days for this month.",
+      );
+    } finally {
+      setGridLoading(false);
     }
   };
 
@@ -1487,6 +1499,8 @@ const CalendarSettings = () => {
           months={months}
           dayTypes={dayTypes}
           calDays={calDays}
+          isLoading={gridLoading}
+          loadError={gridLoadError}
           gridYearId={gridYearId}
           gridMonthId={gridMonthId}
           assignmentMode={advancedAssignmentMode}
