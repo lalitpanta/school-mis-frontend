@@ -1530,6 +1530,291 @@ const CalendarSettings = () => {
               </div>
             </>
           )}
+
+        {/* -- ADVANCED DAY ASSIGNMENTS SECTION -- */}
+        <div className="panel" style={{ marginTop: '20px' }}>
+          <div className="panel-head">
+            <div>
+              <p className="panel-title">
+                <span className="num">3</span>Advanced Day Assignments
+              </p>
+              <p className="panel-desc">
+                Select weekdays and/or specific dates, then assign a classification in one step.
+              </p>
+            </div>
+            <span className="badge badge-auto">New Workflow</span>
+          </div>
+
+          {/* Year + Month selectors — reuse existing gridYearId/gridMonthId */}
+          <div className="grid-2" style={{ marginBottom: '14px' }}>
+            <div className="field">
+              <label>Select Year</label>
+              <select
+                value={gridYearId}
+                onChange={(e) => {
+                  setGridYearId(e.target.value);
+                  setGridMonthId('');
+                  setAdvancedSelectedDates(new Set());
+                  setAdvancedSelectedWeekday(null);
+                }}
+              >
+                <option value="">Choose a year</option>
+                {years.map(y => (
+                  <option key={y.id} value={y.id}>
+                    {y.label} ({y.mode === 'BS' ? 'BS ' + y.value : 'AD ' + y.value})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>Select Month</label>
+              <select
+                value={gridMonthId}
+                onChange={(e) => {
+                  handleLoadGridMonth(e.target.value);
+                  setAdvancedSelectedDates(new Set());
+                  setAdvancedSelectedWeekday(null);
+                }}
+                disabled={!gridYearId}
+              >
+                <option value="">{gridYearId ? 'Choose a month' : 'Select year first'}</option>
+                {months
+                  .filter(m => String(m.year_id) === String(gridYearId))
+                  .sort((a, b) => (a.bs_month_index || 0) - (b.bs_month_index || 0))
+                  .map(m => (
+                    <option key={m.id} value={m.id}>{m.month_name}</option>
+                  ))}
+              </select>
+            </div>
+          </div>
+
+          {gridMonthId && (
+            <>
+              {/* Step 1: Select Days */}
+              <div className="info-strip" style={{ marginBottom: '12px' }}>
+                <strong>Step 1:</strong> Select days — choose a weekday (assigns all occurrences in the month) and/or pick specific dates.
+              </div>
+
+              <div className="grid-2" style={{ marginBottom: '16px', alignItems: 'start' }}>
+                {/* Weekday Dropdown */}
+                <div className="field">
+                  <label htmlFor="adv-weekday-select">
+                    Weekday Selection
+                    {advancedSelectedWeekday && (
+                      <span style={{ marginLeft: '8px', color: 'var(--accent)', fontSize: '11px' }}>
+                        ({countWeekdayOccurrences()} occurrence{countWeekdayOccurrences() !== 1 ? 's' : ''} this month)
+                      </span>
+                    )}
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select
+                      id="adv-weekday-select"
+                      value={advancedSelectedWeekday || ''}
+                      onChange={handleAdvancedWeekdayChange}
+                      aria-label="Select weekday to assign"
+                      aria-describedby="adv-weekday-help"
+                      style={{ flex: 1 }}
+                    >
+                      <option value="">— No weekday selected —</option>
+                      {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(wd => {
+                        const count = getWeekdayOccurrenceCount(wd);
+                        return (
+                          <option key={wd} value={wd}>
+                            {wd} {count > 0 ? `(${count} days)` : '(0 days)'}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    {advancedSelectedWeekday && (
+                      <button
+                        className="btn"
+                        type="button"
+                        onClick={handleClearAdvancedWeekday}
+                        title="Clear weekday selection"
+                        style={{ padding: '0 10px', fontSize: '13px' }}
+                      >
+                        ?
+                      </button>
+                    )}
+                  </div>
+                  <small id="adv-weekday-help" style={{ color: 'var(--text-dim)', fontSize: '11px' }}>
+                    Assigns the selected classification to all occurrences of this weekday in the month.
+                  </small>
+                </div>
+
+                {/* Specific Dates */}
+                <div className="field">
+                  <label>
+                    Specific Dates
+                    {advancedSelectedDates.size > 0 && (
+                      <span style={{ marginLeft: '8px', color: 'var(--accent)', fontSize: '11px' }}>
+                        ({advancedSelectedDates.size} selected)
+                      </span>
+                    )}
+                  </label>
+                  <div
+                    className="adv-date-grid"
+                    role="group"
+                    aria-label="Select specific dates"
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(7, 1fr)',
+                      gap: '4px',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {Array.from({ length: calDays.length > 0 ? Math.max(...calDays.map(d => d.day_number)) : 30 }, (_, i) => i + 1).map(dayNum => (
+                      <button
+                        key={dayNum}
+                        type="button"
+                        className={`cal-grid-item${advancedSelectedDates.has(dayNum) ? ' selected' : ''}`}
+                        onClick={() => handleAdvancedDateToggle(dayNum)}
+                        aria-pressed={advancedSelectedDates.has(dayNum)}
+                        aria-label={`Day ${dayNum}${advancedSelectedDates.has(dayNum) ? ', selected' : ''}`}
+                        style={{
+                          padding: '6px 2px',
+                          fontSize: '12px',
+                          minHeight: '32px',
+                          background: advancedSelectedDates.has(dayNum) ? 'var(--accent)' : undefined,
+                          color: advancedSelectedDates.has(dayNum) ? '#fff' : undefined,
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {dayNum}
+                      </button>
+                    ))}
+                  </div>
+                  {advancedSelectedDates.size > 0 && (
+                    <button
+                      className="btn"
+                      type="button"
+                      onClick={handleClearAdvancedDates}
+                      style={{ fontSize: '12px', padding: '4px 10px' }}
+                    >
+                      Clear all dates
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Step 2: Select Classification */}
+              <div className="info-strip" style={{ marginBottom: '12px' }}>
+                <strong>Step 2:</strong> Select the day classification to assign.
+              </div>
+              <div className="field" style={{ maxWidth: '340px', marginBottom: '16px' }}>
+                <label htmlFor="adv-classification-select">Classification</label>
+                <select
+                  id="adv-classification-select"
+                  value={advancedSelectedClassification || ''}
+                  onChange={handleAdvancedClassificationChange}
+                  disabled={advancedSelectedDates.size === 0 && !advancedSelectedWeekday}
+                  aria-label="Select day classification"
+                >
+                  <option value="">
+                    {dayTypes.length === 0
+                      ? 'No classifications available'
+                      : 'Select a classification'}
+                  </option>
+                  {dayTypes.map(t => (
+                    <option key={t.id} value={t.id}>{t.day_type}</option>
+                  ))}
+                </select>
+                {dayTypes.length === 0 && (
+                  <small style={{ color: 'var(--text-dim)', fontSize: '11px' }}>
+                    Go to Setup tab to add day classifications first.
+                  </small>
+                )}
+              </div>
+
+              {/* Preview Box */}
+              <div className="preview-box" style={{ marginBottom: '16px' }}>
+                <div>
+                  <div className="preview-line">
+                    {generateAssignmentSummary()}
+                  </div>
+                  {advancedSelectedClassification && (
+                    <div className="preview-sub">
+                      Classification: <strong>{dayTypes.find(t => t.id === advancedSelectedClassification)?.day_type || '—'}</strong>
+                    </div>
+                  )}
+                  {advancedSelectedDates.size > 0 && (
+                    <div className="preview-sub">
+                      Specific dates: {Array.from(advancedSelectedDates).sort((a,b)=>a-b).join(', ')}
+                    </div>
+                  )}
+                </div>
+                <span className={`badge ${canAssign() ? 'badge-auto' : 'badge-purple'}`}>
+                  {canAssign() ? 'Ready to assign' : 'Select days + classification'}
+                </span>
+              </div>
+
+              {/* Assign Button */}
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleAdvancedAssignClick}
+                  disabled={!canAssign()}
+                  aria-label={`Assign days: ${generateAssignmentSummary()}`}
+                  style={{ minWidth: '140px' }}
+                >
+                  {advancedIsAssigning ? (
+                    <>
+                      <span className="spinner" style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', marginRight: '6px' }} />
+                      Assigning...
+                    </>
+                  ) : (
+                    '? Assign Days'
+                  )}
+                </button>
+                {advancedMessage.type && (
+                  <button
+                    className="btn"
+                    type="button"
+                    onClick={() => setAdvancedMessage({ type: null, text: '', timestamp: null })}
+                    style={{ fontSize: '12px', padding: '4px 10px' }}
+                  >
+                    ? Dismiss
+                  </button>
+                )}
+              </div>
+
+              {/* Status Message */}
+              {advancedMessage.type && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  style={{
+                    marginTop: '12px',
+                    padding: '10px 14px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    background: advancedMessage.type === 'success' ? '#d4edda'
+                      : advancedMessage.type === 'error' ? '#f8d7da'
+                      : '#fff3cd',
+                    color: advancedMessage.type === 'success' ? '#155724'
+                      : advancedMessage.type === 'error' ? '#721c24'
+                      : '#856404',
+                    border: `1px solid ${advancedMessage.type === 'success' ? '#c3e6cb'
+                      : advancedMessage.type === 'error' ? '#f5c6cb'
+                      : '#ffeeba'}`,
+                  }}
+                >
+                  {advancedMessage.type === 'success' && '? '}
+                  {advancedMessage.type === 'error' && '? '}
+                  {advancedMessage.type === 'warning' && '?? '}
+                  {advancedMessage.text}
+                </div>
+              )}
+            </>
+          )}
+
+          {!gridMonthId && (
+            <div className="preview-box empty">
+              Select a year and month above to start assigning days.
+            </div>
+          )}
         </div>
         </>
       )}
