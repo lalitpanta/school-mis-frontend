@@ -35,7 +35,11 @@ body {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     sans-serif;
   padding: 32px 20px 80px;
 }
@@ -150,6 +154,38 @@ body {
   color: rgba(255, 255, 255, 0.8);
 }
 
+.assignment-mode-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.assignment-mode-toggle button {
+  flex: 1;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.assignment-mode-toggle button:hover {
+  color: var(--text);
+}
+
+.assignment-mode-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
 @media (max-width: 680px) {
   .cal-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -208,7 +244,9 @@ body {
   background: transparent;
   color: var(--text-dim);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .mode-btn.active {
@@ -404,7 +442,10 @@ select option {
   background: var(--surface-2);
   color: var(--text);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
 }
 
 .btn:hover {
@@ -449,7 +490,10 @@ select option {
   justify-content: center;
   cursor: pointer;
   font-size: 14px;
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .icon-btn:hover {
@@ -680,11 +724,7 @@ tr:last-child td {
 
 .cal-popup-topbar {
   height: 5px;
-  background: linear-gradient(
-    90deg,
-    var(--accent),
-    var(--accent-pink)
-  );
+  background: linear-gradient(90deg, var(--accent), var(--accent-pink));
 }
 
 .cal-popup-head {
@@ -711,7 +751,9 @@ tr:last-child td {
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .cal-popup-navbtn:hover {
@@ -782,7 +824,9 @@ tr:last-child td {
   color: var(--text);
   font-family: inherit;
   font-weight: 700;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .cal-day .num {
@@ -841,7 +885,9 @@ tr:last-child td {
   justify-content: center;
   gap: 5px;
   border-right: 1px solid var(--border-soft);
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .cal-popup-actions button:last-child {
@@ -1040,7 +1086,9 @@ input:focus-visible {
    ============================================================================ */
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Advanced date grid item selected state */

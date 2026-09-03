@@ -201,6 +201,8 @@ const CalendarSettings = () => {
   const [exportMonthId, setExportMonthId] = useState("");
 
   // ── ADVANCED ASSIGNMENT STATE ──
+  const [advancedAssignmentMode, setAdvancedAssignmentMode] =
+    useState("weekday");
 
   /**
    * Selected weekday for advanced assignment workflow
@@ -292,7 +294,9 @@ const CalendarSettings = () => {
    */
   const canAssign = () => {
     const hasDaysSelected =
-      advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
+      advancedAssignmentMode === "weekday"
+        ? advancedSelectedWeekdays.size > 0
+        : advancedSelectedDates.size > 0;
     const hasClassification = !!advancedSelectedClassification;
     return (
       hasDaysSelected &&
@@ -309,7 +313,9 @@ const CalendarSettings = () => {
   const getValidationErrors = () => {
     const errors = [];
     const hasDaysSelected =
-      advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
+      advancedAssignmentMode === "weekday"
+        ? advancedSelectedWeekdays.size > 0
+        : advancedSelectedDates.size > 0;
 
     if (!gridMonthId) {
       errors.push("Please select a month first");
@@ -375,6 +381,13 @@ const CalendarSettings = () => {
     });
   };
 
+  const handleAdvancedModeChange = (mode) => {
+    setAdvancedAssignmentMode(mode);
+    setAdvancedSelectedWeekdays(new Set());
+    setAdvancedSelectedDates(new Set());
+    setAdvancedMessage({ type: null, text: "", timestamp: null });
+  };
+
   /**
    * Clear the selected weekday
    */
@@ -428,8 +441,10 @@ const CalendarSettings = () => {
     let manualResult = null;
 
     try {
-      // Call assign-by-weekday if weekday selected
-      for (const weekday of advancedSelectedWeekdays) {
+      // Assign only the active mode, matching the reference workflow.
+      for (const weekday of advancedAssignmentMode === "weekday"
+        ? advancedSelectedWeekdays
+        : []) {
         try {
           await assignByWeekday({
             day_of_week: weekday,
@@ -448,7 +463,7 @@ const CalendarSettings = () => {
       }
 
       // Call manual-assign if specific dates selected
-      if (advancedSelectedDates.size > 0) {
+      if (advancedAssignmentMode === "date" && advancedSelectedDates.size > 0) {
         try {
           const assignments = Array.from(advancedSelectedDates).map(
             (dayNum) => ({
@@ -1551,61 +1566,88 @@ const CalendarSettings = () => {
                   </div>
                 </div>
 
-                <div className="field" style={{ marginBottom: "12px" }}>
-                  <label>Weekdays</label>
-                  <div className="grid-4">
-                    {WEEKDAYS_EN.map((shortName, index) => {
-                      const weekday = [
-                        "Sunday",
-                        "Monday",
-                        "Tuesday",
-                        "Wednesday",
-                        "Thursday",
-                        "Friday",
-                        "Saturday",
-                      ][index];
-                      const selected = advancedSelectedWeekdays.has(weekday);
-                      const count = getWeekdayOccurrenceCount(weekday);
-                      return (
-                        <button
-                          key={weekday}
-                          type="button"
-                          className={`btn ${selected ? "btn-primary" : ""}`}
-                          onClick={() => handleAdvancedWeekdayToggle(weekday)}
-                          style={{ justifyContent: "space-between" }}
-                        >
-                          <span>{shortName}</span>
-                          <small>{count}</small>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div className="assignment-mode-toggle">
+                  <button
+                    type="button"
+                    className={
+                      advancedAssignmentMode === "weekday" ? "active" : ""
+                    }
+                    onClick={() => handleAdvancedModeChange("weekday")}
+                  >
+                    By weekday
+                  </button>
+                  <button
+                    type="button"
+                    className={
+                      advancedAssignmentMode === "date" ? "active" : ""
+                    }
+                    onClick={() => handleAdvancedModeChange("date")}
+                  >
+                    By specific date
+                  </button>
                 </div>
 
-                <div className="field" style={{ marginBottom: "12px" }}>
-                  <label>Specific dates in selected month</label>
-                  <div className="cal-grid">
-                    {calDays.map((day) => {
-                      const selected = advancedSelectedDates.has(
-                        day.day_number,
-                      );
-                      return (
-                        <button
-                          key={day.id}
-                          type="button"
-                          className={`cal-grid-item ${selected ? "selected" : ""} ${day.day_type ? "assigned" : "unassigned"}`}
-                          onClick={() =>
-                            handleAdvancedDateToggle(day.day_number)
-                          }
-                          aria-pressed={selected}
-                        >
-                          <div className="day-number">{day.day_number}</div>
-                          <div className="day-type">{day.day_of_week}</div>
-                        </button>
-                      );
-                    })}
+                {advancedAssignmentMode === "weekday" ? (
+                  <div className="field" style={{ marginBottom: "12px" }}>
+                    <label>
+                      Select weekdays - applies to every matching day in the
+                      selected month
+                    </label>
+                    <div className="grid-4">
+                      {WEEKDAYS_EN.map((shortName, index) => {
+                        const weekday = [
+                          "Sunday",
+                          "Monday",
+                          "Tuesday",
+                          "Wednesday",
+                          "Thursday",
+                          "Friday",
+                          "Saturday",
+                        ][index];
+                        const selected = advancedSelectedWeekdays.has(weekday);
+                        const count = getWeekdayOccurrenceCount(weekday);
+                        return (
+                          <button
+                            key={weekday}
+                            type="button"
+                            className={`btn ${selected ? "btn-primary" : ""}`}
+                            onClick={() => handleAdvancedWeekdayToggle(weekday)}
+                            style={{ justifyContent: "space-between" }}
+                          >
+                            <span>{shortName}</span>
+                            <small>{count}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="field" style={{ marginBottom: "12px" }}>
+                    <label>Select exact dates in the selected month</label>
+                    <div className="cal-grid">
+                      {calDays.map((day) => {
+                        const selected = advancedSelectedDates.has(
+                          day.day_number,
+                        );
+                        return (
+                          <button
+                            key={day.id}
+                            type="button"
+                            className={`cal-grid-item ${selected ? "selected" : ""} ${day.day_type ? "assigned" : "unassigned"}`}
+                            onClick={() =>
+                              handleAdvancedDateToggle(day.day_number)
+                            }
+                            aria-pressed={selected}
+                            title={day.day_type || "Unassigned"}
+                          >
+                            <div className="day-number">{day.day_number}</div>
+                            <div className="day-type">{day.day_of_week}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid-2" style={{ alignItems: "end" }}>
                   <div className="field">
