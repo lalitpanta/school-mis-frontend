@@ -209,7 +209,7 @@ const CalendarSettings = () => {
    * Selected weekday for advanced assignment workflow
    * @type {string|null} - "Sunday"|"Monday"|...|"Saturday" or null
    */
-  const [advancedSelectedWeekday, setAdvancedSelectedWeekday] = useState(null);
+  const [advancedSelectedWeekdays, setAdvancedSelectedWeekdays] = useState(new Set());
   
   /**
    * Set of selected specific dates for advanced assignment workflow  
@@ -253,10 +253,8 @@ const CalendarSettings = () => {
    * @returns {number} Count of calendar days matching selected weekday
    */
   const countWeekdayOccurrences = () => {
-    if (!advancedSelectedWeekday || !gridMonthId) return 0;
-    return calDays.filter(
-      d => d.day_of_week === advancedSelectedWeekday
-    ).length;
+    if (advancedSelectedWeekdays.size === 0 || !gridMonthId) return 0;
+    return calDays.filter((d) => advancedSelectedWeekdays.has(d.day_of_week)).length;
   };
 
   /**
@@ -272,7 +270,7 @@ const CalendarSettings = () => {
     
     const parts = [];
     if (weekdayCount > 0) {
-      parts.push(`${weekdayCount} ${advancedSelectedWeekday}${weekdayCount > 1 ? 's' : ''}`);
+      parts.push(`${weekdayCount} selected weekday occurrence${weekdayCount !== 1 ? 's' : ''}`);
     }
     if (dateCount > 0) {
       parts.push(`${dateCount} specific date${dateCount > 1 ? 's' : ''}`);
@@ -290,7 +288,7 @@ const CalendarSettings = () => {
    * @returns {boolean} True if all prerequisites met for assignment
    */
   const canAssign = () => {
-    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekday;
+    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
     const hasClassification = !!advancedSelectedClassification;
     return hasDaysSelected && hasClassification && !advancedIsAssigning && !!gridMonthId;
   };
@@ -301,7 +299,7 @@ const CalendarSettings = () => {
    */
   const getValidationErrors = () => {
     const errors = [];
-    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekday;
+    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
     
     if (!gridMonthId) {
       errors.push("Please select a month first");
@@ -359,16 +357,19 @@ const CalendarSettings = () => {
    * Handle weekday selection change from dropdown
    * @param {Event} e - Select change event
    */
-  const handleAdvancedWeekdayChange = (e) => {
-    const value = e.target.value;
-    setAdvancedSelectedWeekday(value === "" ? null : value);
+  const handleAdvancedWeekdayToggle = (weekday) => {
+    setAdvancedSelectedWeekdays((prev) => {
+      const next = new Set(prev);
+      next.has(weekday) ? next.delete(weekday) : next.add(weekday);
+      return next;
+    });
   };
 
   /**
    * Clear the selected weekday
    */
   const handleClearAdvancedWeekday = () => {
-    setAdvancedSelectedWeekday(null);
+    setAdvancedSelectedWeekdays(new Set());
   };
 
   /**
@@ -418,18 +419,20 @@ const CalendarSettings = () => {
 
     try {
       // Call assign-by-weekday if weekday selected
-      if (advancedSelectedWeekday) {
+      for (const weekday of advancedSelectedWeekdays) {
         try {
-          const weekdayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-          const fullWeekday = weekdayNames.find(w => w.startsWith(advancedSelectedWeekday) || w === advancedSelectedWeekday) || advancedSelectedWeekday;
           await assignByWeekday({
-            day_of_week: fullWeekday,
+            day_of_week: weekday,
             day_type_id: advancedSelectedClassification,
             month_id: gridMonthId,
           });
-          weekdayResult = { success: true, count: countWeekdayOccurrences() };
+          weekdayResult = {
+            success: true,
+            count: (weekdayResult?.count || 0) + getWeekdayOccurrenceCount(weekday),
+          };
         } catch (err) {
           weekdayResult = { success: false, error: extractErrorMessage(err) };
+          break;
         }
       }
 
@@ -459,7 +462,7 @@ const CalendarSettings = () => {
           timestamp: Date.now(),
         });
         // Clear selections on success
-        setAdvancedSelectedWeekday(null);
+        setAdvancedSelectedWeekdays(new Set());
         setAdvancedSelectedDates(new Set());
         setAdvancedSelectedClassification(null);
         // Reload grid data
@@ -893,6 +896,9 @@ const CalendarSettings = () => {
   const handleLoadGridMonth = async (monthId) => {
     if (!monthId) return;
     setGridMonthId(monthId);
+    setAdvancedSelectedWeekdays(new Set());
+    setAdvancedSelectedDates(new Set());
+    setAdvancedMessage({ type: null, text: "", timestamp: null });
     try {
       const res = await getCalendarDays(monthId, mode);
       setCalDays(res.data?.data || []);
@@ -1436,6 +1442,9 @@ const CalendarSettings = () => {
                 onChange={(e) => {
                   setGridYearId(e.target.value);
                   setGridMonthId("");
+                  setCalDays([]);
+                  setAdvancedSelectedWeekdays(new Set());
+                  setAdvancedSelectedDates(new Set());
                 }}
               >
                 <option value="">Choose a year</option>
@@ -1606,6 +1615,103 @@ const CalendarSettings = () => {
           <div className="preview-box">
             <div>
               <div className="preview-line">📋 CSV Format</div>
+
+          {gridMonthId && (
+            <div className="panel" style={{ marginBottom: "14px" }}>
+              <div className="panel-head">
+                <div>
+                  <p className="panel-title">Select days to assign</p>
+                  <p className="panel-desc">
+                    Choose one or more weekdays, specific dates, or both.
+                  </p>
+                </div>
+              </div>
+
+              <div className="field" style={{ marginBottom: "12px" }}>
+                <label>Weekdays</label>
+                <div className="grid-4">
+                  {WEEKDAYS_EN.map((shortName, index) => {
+                    const weekday = [
+                      "Sunday",
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                    ][index];
+                    const selected = advancedSelectedWeekdays.has(weekday);
+                    const count = getWeekdayOccurrenceCount(weekday);
+                    return (
+                      <button
+                        key={weekday}
+                        type="button"
+                        className={`btn ${selected ? "btn-primary" : ""}`}
+                        onClick={() => handleAdvancedWeekdayToggle(weekday)}
+                        style={{ justifyContent: "space-between" }}
+                      >
+                        <span>{weekday}</span>
+                        <small>{count}</small>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="field" style={{ marginBottom: "12px" }}>
+                <label>Specific dates in selected month</label>
+                <div className="cal-grid">
+                  {calDays.map((day) => {
+                    const selected = advancedSelectedDates.has(day.day_number);
+                    return (
+                      <button
+                        key={day.id}
+                        type="button"
+                        className={`cal-grid-item ${selected ? "selected" : ""} ${day.day_type ? "assigned" : "unassigned"}`}
+                        onClick={() => handleAdvancedDateToggle(day.day_number)}
+                        aria-pressed={selected}
+                      >
+                        <div className="day-number">{day.day_number}</div>
+                        <div className="day-type">{day.day_of_week}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid-2" style={{ alignItems: "end" }}>
+                <div className="field">
+                  <label>Day classification</label>
+                  <select
+                    value={advancedSelectedClassification || ""}
+                    onChange={handleAdvancedClassificationChange}
+                  >
+                    <option value="">Select classification</option>
+                    {classifications.map((classification) => (
+                      <option key={classification.id} value={classification.id}>
+                        {classification.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleAdvancedAssignClick}
+                  disabled={!canAssign()}
+                >
+                  {advancedIsAssigning ? "Assigning..." : "Assign selected days"}
+                </button>
+              </div>
+
+              <div className="preview-box" style={{ marginTop: "12px" }}>
+                <div className="preview-line">{generateAssignmentSummary()}</div>
+                {advancedMessage.text && (
+                  <div className="preview-sub">{advancedMessage.text}</div>
+                )}
+              </div>
+            </div>
+          )}
               <div className="preview-sub" style={{ marginTop: "6px" }}>
                 Headers: Day Number, Day Type, Category
                 <br />
