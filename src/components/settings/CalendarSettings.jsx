@@ -200,6 +200,17 @@ const CalendarSettings = () => {
   const [months, setMonths] = useState([]);
   const [availableMonths, setAvailableMonths] = useState([]);
 
+  const handleCalendarModeChange = (nextMode) => {
+    setMode(nextMode);
+    setGridYearId("");
+    setGridMonthId("");
+    setCalDays([]);
+    setGridLoadError("");
+    setAdvancedSelectedWeekdays(new Set());
+    setAdvancedSelectedDates(new Set());
+    setAdvancedSelectedClassification(null);
+  };
+
   // Import/Export state
   const [exportMonthId, setExportMonthId] = useState("");
 
@@ -1082,13 +1093,13 @@ const CalendarSettings = () => {
         <div className="mode-toggle" role="tablist" aria-label="Calendar mode">
           <button
             className={`mode-btn ${mode === "BS" ? "active" : ""}`}
-            onClick={() => setMode("BS")}
+            onClick={() => handleCalendarModeChange("BS")}
           >
             Bikram Sambat
           </button>
           <button
             className={`mode-btn ${mode === "AD" ? "active" : ""}`}
-            onClick={() => setMode("AD")}
+            onClick={() => handleCalendarModeChange("AD")}
           >
             English (AD)
           </button>
@@ -1497,6 +1508,7 @@ const CalendarSettings = () => {
         <DayAssignmentBuilder
           years={years}
           months={months}
+          calendarMode={mode}
           dayTypes={dayTypes}
           calDays={calDays}
           isLoading={gridLoading}
@@ -1513,8 +1525,10 @@ const CalendarSettings = () => {
             setGridYearId(yearId);
             setGridMonthId("");
             setCalDays([]);
+            setGridLoadError("");
             setAdvancedSelectedWeekdays(new Set());
             setAdvancedSelectedDates(new Set());
+            setAdvancedSelectedClassification(null);
           }}
           onMonthChange={handleLoadGridMonth}
           onModeChange={handleAdvancedModeChange}

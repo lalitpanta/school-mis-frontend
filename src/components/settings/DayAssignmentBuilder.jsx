@@ -18,6 +18,7 @@ const getTypeName = (type) => type?.day_type || type?.name || "";
 const DayAssignmentBuilder = ({
   years,
   months,
+  calendarMode,
   dayTypes,
   calDays,
   gridYearId,
@@ -38,7 +39,8 @@ const DayAssignmentBuilder = ({
   onClassificationChange,
   onAssign,
 }) => {
-  const selectedYear = years.find(
+  const modeYears = years.filter((year) => year.mode === calendarMode);
+  const selectedYear = modeYears.find(
     (year) => String(year.id) === String(gridYearId),
   );
   const selectedMonth = months.find(
@@ -102,7 +104,9 @@ const DayAssignmentBuilder = ({
               Assign by recurring weekday or by exact date.
             </p>
           </div>
-          <span className="assignment-mode-badge">Bikram Sambat</span>
+          <span className="assignment-mode-badge">
+            {calendarMode === "BS" ? "Bikram Sambat" : "English (AD)"}
+          </span>
         </div>
 
         <div className="assignment-columns">
@@ -140,7 +144,7 @@ const DayAssignmentBuilder = ({
                   onChange={(event) => onYearChange(event.target.value)}
                 >
                   <option value="">Choose a year</option>
-                  {years.map((year) => (
+                  {modeYears.map((year) => (
                     <option key={year.id} value={year.id}>
                       {getYearLabel(year)} ({year.mode || "BS"}{" "}
                       {year.value || ""})
@@ -156,9 +160,9 @@ const DayAssignmentBuilder = ({
                   onChange={(event) => onMonthChange(event.target.value)}
                 >
                   <option value="">Choose a month</option>
-                  {months
+                    {months
                     .filter(
-                      (month) => String(month.year_id) === String(gridYearId),
+                        (month) => String(month.year_id) === String(gridYearId),
                     )
                     .sort(
                       (first, second) =>
@@ -271,8 +275,8 @@ const DayAssignmentBuilder = ({
           </div>
 
           <div className="assignment-preview">
-            <p className="assignment-preview-label">
-              Sidebar calendar preview - {monthName} {selectedYear?.value || ""}
+              <p className="assignment-preview-label">
+              {calendarMode === "BS" ? "BS" : "AD"} calendar preview - {monthName} {selectedYear?.value || ""}
             </p>
             <div className="mini-calendar">
               <div className="mini-weekdays">
