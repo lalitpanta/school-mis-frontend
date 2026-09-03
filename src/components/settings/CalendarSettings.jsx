@@ -14,6 +14,7 @@ import {
   getDayTypes,
   getDayCategories,
   getCalendarDays,
+  generateCalendarDays,
   assignDayType,
   bulkAssignDayTypes,
   assignByWeekday,
@@ -928,7 +929,14 @@ const CalendarSettings = () => {
     setAdvancedSelectedDates(new Set());
     setAdvancedMessage({ type: null, text: "", timestamp: null });
     try {
-      const res = await getCalendarDays(monthId, mode);
+      let res;
+      try {
+        res = await getCalendarDays(monthId, mode);
+      } catch (err) {
+        if (err.response?.status !== 404) throw err;
+        await generateCalendarDays(monthId);
+        res = await getCalendarDays(monthId, mode);
+      }
       setCalDays(res.data?.data || []);
       setBulkSelected(new Set());
     } catch (err) {
