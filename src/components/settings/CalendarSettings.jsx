@@ -63,15 +63,7 @@ const WEEKDAYS_NP = [
   ["शुक्र", "Fri"],
   ["शनि", "Sat"],
 ];
-const WEEKDAYS_EN = [
-  "Sun",
-  "Mon",
-  "Tue",
-  "Wed",
-  "Thu",
-  "Fri",
-  "Sat",
-];
+const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // BS 2082 Baisakh 1 = AD 2025-04-14
 const BS_EPOCH_AD = new Date(2025, 3, 14);
@@ -137,7 +129,7 @@ function inclusiveDays(start, end) {
     Math.floor(
       (Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()) -
         Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())) /
-        86400000
+        86400000,
     ) + 1
   );
 }
@@ -152,13 +144,17 @@ function dateStateToAD(state, mode) {
 }
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, (character) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "'": "&#39;",
-    '"': "&quot;",
-  }[character]));
+  return String(value).replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;",
+      })[character],
+  );
 }
 
 // ============================================================================
@@ -204,39 +200,42 @@ const CalendarSettings = () => {
   const [exportMonthId, setExportMonthId] = useState("");
 
   // ── ADVANCED ASSIGNMENT STATE ──
-  
+
   /**
    * Selected weekday for advanced assignment workflow
    * @type {string|null} - "Sunday"|"Monday"|...|"Saturday" or null
    */
-  const [advancedSelectedWeekdays, setAdvancedSelectedWeekdays] = useState(new Set());
-  
+  const [advancedSelectedWeekdays, setAdvancedSelectedWeekdays] = useState(
+    new Set(),
+  );
+
   /**
-   * Set of selected specific dates for advanced assignment workflow  
+   * Set of selected specific dates for advanced assignment workflow
    * @type {Set<number>} - Set containing 1..N day numbers for selected month
    */
   const [advancedSelectedDates, setAdvancedSelectedDates] = useState(new Set());
-  
+
   /**
    * Selected classification UUID for advanced assignment workflow
    * @type {string|null} - UUID string or null
    */
-  const [advancedSelectedClassification, setAdvancedSelectedClassification] = useState(null);
-  
+  const [advancedSelectedClassification, setAdvancedSelectedClassification] =
+    useState(null);
+
   /**
    * Loading state during advanced assignment API calls
    * @type {boolean} - true during API call, disables button and shows spinner
    */
   const [advancedIsAssigning, setAdvancedIsAssigning] = useState(false);
-  
+
   /**
    * Status message for advanced assignment operations
    * @type {Object} - { type: "success"|"error"|"warning"|null, text: string, timestamp: number|null }
    */
   const [advancedMessage, setAdvancedMessage] = useState({
-    type: null,       // null | "success" | "error" | "warning"
-    text: "",         // Human-readable message
-    timestamp: null   // For auto-dismiss logic
+    type: null, // null | "success" | "error" | "warning"
+    text: "", // Human-readable message
+    timestamp: null, // For auto-dismiss logic
   });
 
   // Stats
@@ -254,7 +253,8 @@ const CalendarSettings = () => {
    */
   const countWeekdayOccurrences = () => {
     if (advancedSelectedWeekdays.size === 0 || !gridMonthId) return 0;
-    return calDays.filter((d) => advancedSelectedWeekdays.has(d.day_of_week)).length;
+    return calDays.filter((d) => advancedSelectedWeekdays.has(d.day_of_week))
+      .length;
   };
 
   /**
@@ -265,22 +265,24 @@ const CalendarSettings = () => {
     const weekdayCount = countWeekdayOccurrences();
     const dateCount = advancedSelectedDates.size;
     const total = weekdayCount + dateCount;
-    
+
     if (total === 0) return "No days selected";
-    
+
     const parts = [];
     if (weekdayCount > 0) {
-      parts.push(`${weekdayCount} selected weekday occurrence${weekdayCount !== 1 ? 's' : ''}`);
+      parts.push(
+        `${weekdayCount} selected weekday occurrence${weekdayCount !== 1 ? "s" : ""}`,
+      );
     }
     if (dateCount > 0) {
-      parts.push(`${dateCount} specific date${dateCount > 1 ? 's' : ''}`);
+      parts.push(`${dateCount} specific date${dateCount > 1 ? "s" : ""}`);
     }
-    
+
     if (parts.length === 1) {
       return `${parts[0]} = ${total} total days`;
     }
-    
-    return `${parts.join(' + ')} = ${total} total days`;
+
+    return `${parts.join(" + ")} = ${total} total days`;
   };
 
   /**
@@ -288,9 +290,15 @@ const CalendarSettings = () => {
    * @returns {boolean} True if all prerequisites met for assignment
    */
   const canAssign = () => {
-    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
+    const hasDaysSelected =
+      advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
     const hasClassification = !!advancedSelectedClassification;
-    return hasDaysSelected && hasClassification && !advancedIsAssigning && !!gridMonthId;
+    return (
+      hasDaysSelected &&
+      hasClassification &&
+      !advancedIsAssigning &&
+      !!gridMonthId
+    );
   };
 
   /**
@@ -299,8 +307,9 @@ const CalendarSettings = () => {
    */
   const getValidationErrors = () => {
     const errors = [];
-    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
-    
+    const hasDaysSelected =
+      advancedSelectedDates.size > 0 || advancedSelectedWeekdays.size > 0;
+
     if (!gridMonthId) {
       errors.push("Please select a month first");
     }
@@ -310,7 +319,7 @@ const CalendarSettings = () => {
     if (!advancedSelectedClassification) {
       errors.push("Please select a classification");
     }
-    
+
     return errors;
   };
 
@@ -327,7 +336,7 @@ const CalendarSettings = () => {
     if (error.response?.data?.message) {
       return error.response.data.message;
     }
-    
+
     // Priority 2: HTTP status message
     if (error.response?.status) {
       const statusMap = {
@@ -337,16 +346,16 @@ const CalendarSettings = () => {
         404: "Resource not found.",
         409: "Conflict. The data may have changed.",
         500: "Server error. Please try again later.",
-        503: "Service unavailable. Please try again later."
+        503: "Service unavailable. Please try again later.",
       };
       return statusMap[error.response.status] || "Request failed.";
     }
-    
+
     // Priority 3: Network error
     if (!error.response) {
       return "Connection lost. Please check your internet and retry.";
     }
-    
+
     // Fallback
     return "An unexpected error occurred.";
   };
@@ -379,7 +388,7 @@ const CalendarSettings = () => {
    */
   const getWeekdayOccurrenceCount = (weekday) => {
     if (!gridMonthId || calDays.length === 0) return 0;
-    return calDays.filter(d => d.day_of_week === weekday).length;
+    return calDays.filter((d) => d.day_of_week === weekday).length;
   };
 
   /**
@@ -387,7 +396,7 @@ const CalendarSettings = () => {
    * @param {number} dayNum - 1-based day number
    */
   const handleAdvancedDateToggle = (dayNum) => {
-    setAdvancedSelectedDates(prev => {
+    setAdvancedSelectedDates((prev) => {
       const next = new Set(prev);
       next.has(dayNum) ? next.delete(dayNum) : next.add(dayNum);
       return next;
@@ -428,7 +437,8 @@ const CalendarSettings = () => {
           });
           weekdayResult = {
             success: true,
-            count: (weekdayResult?.count || 0) + getWeekdayOccurrenceCount(weekday),
+            count:
+              (weekdayResult?.count || 0) + getWeekdayOccurrenceCount(weekday),
           };
         } catch (err) {
           weekdayResult = { success: false, error: extractErrorMessage(err) };
@@ -439,10 +449,12 @@ const CalendarSettings = () => {
       // Call manual-assign if specific dates selected
       if (advancedSelectedDates.size > 0) {
         try {
-          const assignments = Array.from(advancedSelectedDates).map(dayNum => ({
-            day_number: dayNum,
-            day_type_id: advancedSelectedClassification,
-          }));
+          const assignments = Array.from(advancedSelectedDates).map(
+            (dayNum) => ({
+              day_number: dayNum,
+              day_type_id: advancedSelectedClassification,
+            }),
+          );
           await manualAssignDayTypes(gridMonthId, assignments);
           manualResult = { success: true, count: advancedSelectedDates.size };
         } catch (err) {
@@ -457,8 +469,8 @@ const CalendarSettings = () => {
       if (weekdayOk && manualOk) {
         const total = (weekdayResult?.count || 0) + (manualResult?.count || 0);
         setAdvancedMessage({
-          type: 'success',
-          text: `${total} day${total !== 1 ? 's' : ''} assigned successfully. ${generateAssignmentSummary()}`,
+          type: "success",
+          text: `${total} day${total !== 1 ? "s" : ""} assigned successfully. ${generateAssignmentSummary()}`,
           timestamp: Date.now(),
         });
         // Clear selections on success
@@ -469,19 +481,19 @@ const CalendarSettings = () => {
         handleLoadGridMonth(gridMonthId);
       } else if (!weekdayOk && !manualOk) {
         setAdvancedMessage({
-          type: 'error',
-          text: `Assignment failed. Weekday: ${weekdayResult?.error || 'unknown error'}. Dates: ${manualResult?.error || 'unknown error'}.`,
+          type: "error",
+          text: `Assignment failed. Weekday: ${weekdayResult?.error || "unknown error"}. Dates: ${manualResult?.error || "unknown error"}.`,
           timestamp: Date.now(),
         });
       } else {
         const successPart = weekdayOk
-          ? `Assigned ${weekdayResult.count} weekday occurrence${weekdayResult.count !== 1 ? 's' : ''}`
-          : `Assigned ${manualResult.count} specific date${manualResult.count !== 1 ? 's' : ''}`;
+          ? `Assigned ${weekdayResult.count} weekday occurrence${weekdayResult.count !== 1 ? "s" : ""}`
+          : `Assigned ${manualResult.count} specific date${manualResult.count !== 1 ? "s" : ""}`;
         const failPart = !weekdayOk
           ? `Failed to assign weekday occurrences: ${weekdayResult.error}`
           : `Failed to assign specific dates: ${manualResult.error}`;
         setAdvancedMessage({
-          type: 'warning',
+          type: "warning",
           text: `Partial success — ${successPart}. ${failPart}. Please retry.`,
           timestamp: Date.now(),
         });
@@ -498,7 +510,11 @@ const CalendarSettings = () => {
   const handleAdvancedAssignClick = () => {
     const errors = getValidationErrors();
     if (errors.length > 0) {
-      setAdvancedMessage({ type: 'error', text: errors.join(' • '), timestamp: Date.now() });
+      setAdvancedMessage({
+        type: "error",
+        text: errors.join(" • "),
+        timestamp: Date.now(),
+      });
       return;
     }
     performAdvancedAssignment();
@@ -511,9 +527,9 @@ const CalendarSettings = () => {
   }, [mode]);
   // Auto-dismiss success/warning messages after 5 seconds
   useEffect(() => {
-    if (advancedMessage.type && advancedMessage.type !== 'error') {
+    if (advancedMessage.type && advancedMessage.type !== "error") {
       const timer = setTimeout(() => {
-        setAdvancedMessage({ type: null, text: '', timestamp: null });
+        setAdvancedMessage({ type: null, text: "", timestamp: null });
       }, 5000);
       return () => clearTimeout(timer);
     }
@@ -536,7 +552,6 @@ const CalendarSettings = () => {
     }
   };
 
-
   const loadSetupData = async () => {
     try {
       // Load years
@@ -547,14 +562,15 @@ const CalendarSettings = () => {
         const bsLabel = y.year_label_bs || y.year_label_BS || "";
         const adLabel = y.year_label_ad || y.year_label_AD || "";
         const startDate = y.start_date_ad || y.start_date_AD || y.start_date;
-        const endDate   = y.end_date_ad   || y.end_date_AD   || y.end_date;
+        const endDate = y.end_date_ad || y.end_date_AD || y.end_date;
         const isBS = !!bsLabel && bsLabel.trim() !== "";
         let value = 0;
         if (isBS) {
           // bsLabel like "2082/83" → 2082, or just "2082"
           value = parseInt(bsLabel.split("/")[0]) || 0;
         } else {
-          value = parseInt(adLabel.split("/")[0]) || parseInt(y.year_label) || 0;
+          value =
+            parseInt(adLabel.split("/")[0]) || parseInt(y.year_label) || 0;
         }
         return {
           id: y.id,
@@ -562,10 +578,13 @@ const CalendarSettings = () => {
           value,
           label: y.year_label || bsLabel || adLabel,
           start: startDate ? new Date(startDate) : null,
-          end:   endDate   ? new Date(endDate)   : null,
-          days: (startDate && endDate)
-            ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) + 1
-            : 0,
+          end: endDate ? new Date(endDate) : null,
+          days:
+            startDate && endDate
+              ? Math.ceil(
+                  (new Date(endDate) - new Date(startDate)) / 86400000,
+                ) + 1
+              : 0,
           isCurrent: y.is_current || false,
         };
       });
@@ -574,17 +593,23 @@ const CalendarSettings = () => {
       // Load categories
       const catsRes = await getDayCategories();
       const dbCategories = catsRes.data?.data || [];
-      setCategories(dbCategories.map(c => ({ id: c.id, name: c.category_name || c.name || "" })));
+      setCategories(
+        dbCategories.map((c) => ({
+          id: c.id,
+          name: c.category_name || c.name || "",
+        })),
+      );
 
       // Load classifications (day types)
       const typesRes = await getDayTypes();
       const dbTypes = typesRes.data?.data || [];
-      setClassifications(dbTypes.map(t => ({
-        id: t.id,
-        name: t.day_type || t.name || "",
-        categoryId: t.category_id || t.day_category_id || "",
-      })));
-
+      setClassifications(
+        dbTypes.map((t) => ({
+          id: t.id,
+          name: t.day_type || t.name || "",
+          categoryId: t.category_id || t.day_category_id || "",
+        })),
+      );
     } catch (err) {
       console.error("Failed to load setup data:", err);
     }
@@ -619,7 +644,8 @@ const CalendarSettings = () => {
     try {
       const start = dateStateToAD(academicStart, mode);
       const end = dateStateToAD(academicEnd, mode);
-      if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+      if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime()))
+        return null;
       const days = inclusiveDays(start, end);
       return { start, end, days };
     } catch {
@@ -651,7 +677,7 @@ const CalendarSettings = () => {
     try {
       setLoading(true);
       let savedYear;
-      
+
       if (mode === "BS") {
         // Use seedNepaliYear for BS - automatically creates year + 12 months
         const res = await seedNepaliYear({
@@ -676,7 +702,7 @@ const CalendarSettings = () => {
         const res = await createYear(yearData);
         savedYear = res.data?.data;
       }
-      
+
       if (!savedYear) throw new Error("Failed to save year");
       const newYear = {
         id: savedYear.id,
@@ -691,8 +717,8 @@ const CalendarSettings = () => {
       if (isCurrentYear) {
         setYears((prevYears) =>
           prevYears.map((y) =>
-            y.mode === mode ? { ...y, isCurrent: false } : y
-          )
+            y.mode === mode ? { ...y, isCurrent: false } : y,
+          ),
         );
       }
       // Reload everything from DB to get accurate data
@@ -703,7 +729,9 @@ const CalendarSettings = () => {
       alert("Year saved successfully! Months auto-created.");
     } catch (err) {
       console.error("Failed to save year:", err);
-      alert("Failed to save year: " + (err.response?.data?.error || err.message));
+      alert(
+        "Failed to save year: " + (err.response?.data?.error || err.message),
+      );
     } finally {
       setLoading(false);
     }
@@ -752,8 +780,8 @@ const CalendarSettings = () => {
       setCategories((prev) => prev.filter((c) => c.id !== id));
       setClassifications((prev) =>
         prev.map((cl) =>
-          cl.categoryId === id ? { ...cl, categoryId: "" } : cl
-        )
+          cl.categoryId === id ? { ...cl, categoryId: "" } : cl,
+        ),
       );
       alert("Category deleted!");
     } catch (err) {
@@ -875,7 +903,7 @@ const CalendarSettings = () => {
             setPopupMonth(m);
             handleSelectPopupDay(
               fmtAD(today),
-              Math.round((today - info.adStart) / 86400000) + 1
+              Math.round((today - info.adStart) / 86400000) + 1,
             );
             return;
           }
@@ -1032,9 +1060,8 @@ const CalendarSettings = () => {
       </div>
 
       <div className="mode-banner">
-        📅 Running in{" "}
-        <b>{mode === "BS" ? "Bikram Sambat" : "English (AD)"}</b> mode —
-        year list shows{" "}
+        📅 Running in <b>{mode === "BS" ? "Bikram Sambat" : "English (AD)"}</b>{" "}
+        mode — year list shows{" "}
         {mode === "BS"
           ? `${BS_YEAR_MIN}–${BS_YEAR_MAX}`
           : `${AD_YEAR_MIN}–${AD_YEAR_MAX}`}
@@ -1129,7 +1156,7 @@ const CalendarSettings = () => {
                   >
                     {academicStart
                       ? `${academicStart.year}-${pad2(academicStart.month)}-${pad2(
-                          academicStart.day
+                          academicStart.day,
                         )} · ${BS_MONTHS[academicStart.month - 1]}`
                       : "Select date"}
                   </button>
@@ -1157,7 +1184,7 @@ const CalendarSettings = () => {
                   >
                     {academicEnd
                       ? `${academicEnd.year}-${pad2(academicEnd.month)}-${pad2(
-                          academicEnd.day
+                          academicEnd.day,
                         )} · ${BS_MONTHS[academicEnd.month - 1]}`
                       : "Select date"}
                   </button>
@@ -1171,8 +1198,14 @@ const CalendarSettings = () => {
               </div>
             </div>
 
-            <div className="grid-2" style={{ marginTop: "12px", alignItems: "end" }}>
-              <div className="field" style={{ flexDirection: "row", gap: "8px" }}>
+            <div
+              className="grid-2"
+              style={{ marginTop: "12px", alignItems: "end" }}
+            >
+              <div
+                className="field"
+                style={{ flexDirection: "row", gap: "8px" }}
+              >
                 <input
                   type="checkbox"
                   id="isCurrentYear"
@@ -1208,15 +1241,20 @@ const CalendarSettings = () => {
                 <div>
                   <div className="preview-line">
                     <b>
-                      {mode === "BS" ? "BS " + selectedYear : "AD " + selectedYear}
+                      {mode === "BS"
+                        ? "BS " + selectedYear
+                        : "AD " + selectedYear}
                     </b>{" "}
                     — {preview.days > 0 ? preview.days : "Invalid"} total days
                   </div>
                   <div className="preview-sub">
-                    AD equivalent → {fmtAD(preview.start)} → {fmtAD(preview.end)}
+                    AD equivalent → {fmtAD(preview.start)} →{" "}
+                    {fmtAD(preview.end)}
                   </div>
                 </div>
-                <span className="badge badge-purple">Computed automatically</span>
+                <span className="badge badge-purple">
+                  Computed automatically
+                </span>
               </div>
             )}
 
@@ -1387,7 +1425,7 @@ const CalendarSettings = () => {
                   classifications.map((classification) => {
                     const category = categories.find(
                       (item) =>
-                        String(item.id) === String(classification.categoryId)
+                        String(item.id) === String(classification.categoryId),
                     );
                     return (
                       <div key={classification.id} className="setup-item">
@@ -1429,117 +1467,235 @@ const CalendarSettings = () => {
                   <span className="num">2</span>Day Assignments (Bulk Grid)
                 </p>
                 <p className="panel-desc">
-                  Select multiple days from the grid and assign a single day type.
+                  Select multiple days from the grid and assign a single day
+                  type.
                 </p>
               </div>
             </div>
 
-          <div className="grid-3" style={{ marginBottom: "14px" }}>
-            <div className="field">
-              <label>Select Year</label>
-              <select
-                value={gridYearId}
-                onChange={(e) => {
-                  setGridYearId(e.target.value);
-                  setGridMonthId("");
-                  setCalDays([]);
-                  setAdvancedSelectedWeekdays(new Set());
-                  setAdvancedSelectedDates(new Set());
-                }}
-              >
-                <option value="">Choose a year</option>
-                {years.map((y) => (
-                  <option key={y.id} value={y.id}>
-                    {y.label} ({y.mode === "BS" ? "BS " + y.value : "AD " + y.value})
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>Select Month</label>
-              <select
-                value={gridMonthId}
-                onChange={(e) => handleLoadGridMonth(e.target.value)}
-                disabled={!gridYearId}
-              >
-                <option value="">Choose a month</option>
-                {months
-                  .filter(m => String(m.year_id) === String(gridYearId))
-                  .sort((a, b) => (a.bs_month_index || 0) - (b.bs_month_index || 0))
-                  .map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.month_name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>Bulk Assign Type</label>
-              <select
-                value={bulkType}
-                onChange={(e) => setBulkType(e.target.value)}
-              >
-                <option value="">Select type</option>
-                {dayTypes.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.day_type}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {gridMonthId && (
-            <>
-              <div className="grid-2" style={{ marginBottom: "14px" }}>
-                <button className="btn btn-primary" onClick={handleBulkAssign}>
-                  ✓ Assign Selected to {bulkType ? "Type" : "..."}
-                </button>
-                <button
-                  className="btn"
-                  onClick={() => {
-                    setCalDays((prev) =>
-                      prev.map((d) =>
-                        bulkSelected.has(d.id) ? { ...d, day_type_id: null } : d
-                      )
-                    );
-                    setBulkSelected(new Set());
+            <div className="grid-3" style={{ marginBottom: "14px" }}>
+              <div className="field">
+                <label>Select Year</label>
+                <select
+                  value={gridYearId}
+                  onChange={(e) => {
+                    setGridYearId(e.target.value);
+                    setGridMonthId("");
+                    setCalDays([]);
+                    setAdvancedSelectedWeekdays(new Set());
+                    setAdvancedSelectedDates(new Set());
                   }}
                 >
-                  🗑 Clear Selected
-                </button>
+                  <option value="">Choose a year</option>
+                  {years.map((y) => (
+                    <option key={y.id} value={y.id}>
+                      {y.label} (
+                      {y.mode === "BS" ? "BS " + y.value : "AD " + y.value})
+                    </option>
+                  ))}
+                </select>
               </div>
-
-              <div className="cal-grid">
-                {calDays.map((day) => (
-                  <button
-                    key={day.id}
-                    className={`cal-grid-item ${
-                      bulkSelected.has(day.id) ? "selected" : ""
-                    } ${day.day_type ? "assigned" : "unassigned"}`}
-                    onClick={() => toggleBulk(day.id)}
-                  >
-                    <div className="day-number">{day.day_number}</div>
-                    <div className="day-type">
-                      {day.day_type ? day.day_type : "—"}
-                    </div>
-                  </button>
-                ))}
+              <div className="field">
+                <label>Select Month</label>
+                <select
+                  value={gridMonthId}
+                  onChange={(e) => handleLoadGridMonth(e.target.value)}
+                  disabled={!gridYearId}
+                >
+                  <option value="">Choose a month</option>
+                  {months
+                    .filter((m) => String(m.year_id) === String(gridYearId))
+                    .sort(
+                      (a, b) =>
+                        (a.bs_month_index || 0) - (b.bs_month_index || 0),
+                    )
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.month_name}
+                      </option>
+                    ))}
+                </select>
               </div>
+              <div className="field">
+                <label>Bulk Assign Type</label>
+                <select
+                  value={bulkType}
+                  onChange={(e) => setBulkType(e.target.value)}
+                >
+                  <option value="">Select type</option>
+                  {dayTypes.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.day_type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-              <div className="preview-box" style={{ marginTop: "14px" }}>
-                <div>
-                  <div className="preview-line">
-                    Selected: {bulkSelected.size} of {calDays.length} days
-                  </div>
-                  <div className="preview-sub">
-                    Click days to select, then choose a type to assign.
+            {gridMonthId && (
+              <div className="panel" style={{ marginBottom: "14px" }}>
+                <div className="panel-head">
+                  <div>
+                    <p className="panel-title">Select days to assign</p>
+                    <p className="panel-desc">
+                      Choose one or more weekdays, specific dates, or both.
+                    </p>
                   </div>
                 </div>
+
+                <div className="field" style={{ marginBottom: "12px" }}>
+                  <label>Weekdays</label>
+                  <div className="grid-4">
+                    {WEEKDAYS_EN.map((shortName, index) => {
+                      const weekday = [
+                        "Sunday",
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                      ][index];
+                      const selected = advancedSelectedWeekdays.has(weekday);
+                      const count = getWeekdayOccurrenceCount(weekday);
+                      return (
+                        <button
+                          key={weekday}
+                          type="button"
+                          className={`btn ${selected ? "btn-primary" : ""}`}
+                          onClick={() => handleAdvancedWeekdayToggle(weekday)}
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <span>{shortName}</span>
+                          <small>{count}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="field" style={{ marginBottom: "12px" }}>
+                  <label>Specific dates in selected month</label>
+                  <div className="cal-grid">
+                    {calDays.map((day) => {
+                      const selected = advancedSelectedDates.has(
+                        day.day_number,
+                      );
+                      return (
+                        <button
+                          key={day.id}
+                          type="button"
+                          className={`cal-grid-item ${selected ? "selected" : ""} ${day.day_type ? "assigned" : "unassigned"}`}
+                          onClick={() =>
+                            handleAdvancedDateToggle(day.day_number)
+                          }
+                          aria-pressed={selected}
+                        >
+                          <div className="day-number">{day.day_number}</div>
+                          <div className="day-type">{day.day_of_week}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid-2" style={{ alignItems: "end" }}>
+                  <div className="field">
+                    <label>Day classification</label>
+                    <select
+                      value={advancedSelectedClassification || ""}
+                      onChange={handleAdvancedClassificationChange}
+                    >
+                      <option value="">Select classification</option>
+                      {classifications.map((classification) => (
+                        <option
+                          key={classification.id}
+                          value={classification.id}
+                        >
+                          {classification.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleAdvancedAssignClick}
+                    disabled={!canAssign()}
+                  >
+                    {advancedIsAssigning
+                      ? "Assigning..."
+                      : "Assign selected days"}
+                  </button>
+                </div>
+
+                <div className="preview-box" style={{ marginTop: "12px" }}>
+                  <div className="preview-line">
+                    {generateAssignmentSummary()}
+                  </div>
+                  {advancedMessage.text && (
+                    <div className="preview-sub">{advancedMessage.text}</div>
+                  )}
+                </div>
               </div>
-            </>
-          )}
-        </div>
+            )}
+
+            {gridMonthId && (
+              <>
+                <div className="grid-2" style={{ marginBottom: "14px" }}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleBulkAssign}
+                  >
+                    ✓ Assign Selected to {bulkType ? "Type" : "..."}
+                  </button>
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      setCalDays((prev) =>
+                        prev.map((d) =>
+                          bulkSelected.has(d.id)
+                            ? { ...d, day_type_id: null }
+                            : d,
+                        ),
+                      );
+                      setBulkSelected(new Set());
+                    }}
+                  >
+                    🗑 Clear Selected
+                  </button>
+                </div>
+
+                <div className="cal-grid">
+                  {calDays.map((day) => (
+                    <button
+                      key={day.id}
+                      className={`cal-grid-item ${
+                        bulkSelected.has(day.id) ? "selected" : ""
+                      } ${day.day_type ? "assigned" : "unassigned"}`}
+                      onClick={() => toggleBulk(day.id)}
+                    >
+                      <div className="day-number">{day.day_number}</div>
+                      <div className="day-type">
+                        {day.day_type ? day.day_type : "—"}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="preview-box" style={{ marginTop: "14px" }}>
+                  <div>
+                    <div className="preview-line">
+                      Selected: {bulkSelected.size} of {calDays.length} days
+                    </div>
+                    <div className="preview-sub">
+                      Click days to select, then choose a type to assign.
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </>
       )}
 
@@ -1572,7 +1728,9 @@ const CalendarSettings = () => {
                 ))}
               </select>
             </div>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}>
+            <div
+              style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}
+            >
               <button
                 className="btn btn-primary"
                 onClick={() => {
@@ -1592,11 +1750,7 @@ const CalendarSettings = () => {
           <div className="grid-2" style={{ marginBottom: "14px" }}>
             <div className="field">
               <label>Import CSV for Selected Month</label>
-              <input
-                type="file"
-                accept=".csv"
-                onChange={handleImportCSV}
-              />
+              <input type="file" accept=".csv" onChange={handleImportCSV} />
             </div>
             <div style={{ display: "flex", alignItems: "flex-end" }}>
               <div
@@ -1616,102 +1770,6 @@ const CalendarSettings = () => {
             <div>
               <div className="preview-line">📋 CSV Format</div>
 
-          {gridMonthId && (
-            <div className="panel" style={{ marginBottom: "14px" }}>
-              <div className="panel-head">
-                <div>
-                  <p className="panel-title">Select days to assign</p>
-                  <p className="panel-desc">
-                    Choose one or more weekdays, specific dates, or both.
-                  </p>
-                </div>
-              </div>
-
-              <div className="field" style={{ marginBottom: "12px" }}>
-                <label>Weekdays</label>
-                <div className="grid-4">
-                  {WEEKDAYS_EN.map((shortName, index) => {
-                    const weekday = [
-                      "Sunday",
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                    ][index];
-                    const selected = advancedSelectedWeekdays.has(weekday);
-                    const count = getWeekdayOccurrenceCount(weekday);
-                    return (
-                      <button
-                        key={weekday}
-                        type="button"
-                        className={`btn ${selected ? "btn-primary" : ""}`}
-                        onClick={() => handleAdvancedWeekdayToggle(weekday)}
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <span>{weekday}</span>
-                        <small>{count}</small>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="field" style={{ marginBottom: "12px" }}>
-                <label>Specific dates in selected month</label>
-                <div className="cal-grid">
-                  {calDays.map((day) => {
-                    const selected = advancedSelectedDates.has(day.day_number);
-                    return (
-                      <button
-                        key={day.id}
-                        type="button"
-                        className={`cal-grid-item ${selected ? "selected" : ""} ${day.day_type ? "assigned" : "unassigned"}`}
-                        onClick={() => handleAdvancedDateToggle(day.day_number)}
-                        aria-pressed={selected}
-                      >
-                        <div className="day-number">{day.day_number}</div>
-                        <div className="day-type">{day.day_of_week}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="grid-2" style={{ alignItems: "end" }}>
-                <div className="field">
-                  <label>Day classification</label>
-                  <select
-                    value={advancedSelectedClassification || ""}
-                    onChange={handleAdvancedClassificationChange}
-                  >
-                    <option value="">Select classification</option>
-                    {classifications.map((classification) => (
-                      <option key={classification.id} value={classification.id}>
-                        {classification.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleAdvancedAssignClick}
-                  disabled={!canAssign()}
-                >
-                  {advancedIsAssigning ? "Assigning..." : "Assign selected days"}
-                </button>
-              </div>
-
-              <div className="preview-box" style={{ marginTop: "12px" }}>
-                <div className="preview-line">{generateAssignmentSummary()}</div>
-                {advancedMessage.text && (
-                  <div className="preview-sub">{advancedMessage.text}</div>
-                )}
-              </div>
-            </div>
-          )}
               <div className="preview-sub" style={{ marginTop: "6px" }}>
                 Headers: Day Number, Day Type, Category
                 <br />
@@ -1738,7 +1796,8 @@ const CalendarSettings = () => {
 
       <footer className="note">
         Configure categories and classifications before assigning day types to
-        calendar dates. Year range: {BS_YEAR_MIN}-{BS_YEAR_MAX} (BS) / {AD_YEAR_MIN}-{AD_YEAR_MAX} (AD)
+        calendar dates. Year range: {BS_YEAR_MIN}-{BS_YEAR_MAX} (BS) /{" "}
+        {AD_YEAR_MIN}-{AD_YEAR_MAX} (AD)
       </footer>
     </div>
   );
@@ -1762,20 +1821,14 @@ const PopupCalendar = ({
   const renderWeekRow = () => {
     if (mode === "BS") {
       return WEEKDAYS_NP.map((w, i) => (
-        <div
-          key={i}
-          className={`cal-weekcell ${i === 0 ? "weekend" : ""}`}
-        >
+        <div key={i} className={`cal-weekcell ${i === 0 ? "weekend" : ""}`}>
           <span className="np">{w[0]}</span>
           <span className="en">{w[1]}</span>
         </div>
       ));
     } else {
       return WEEKDAYS_EN.map((w, i) => (
-        <div
-          key={i}
-          className={`cal-weekcell ${i === 0 ? "weekend" : ""}`}
-        >
+        <div key={i} className={`cal-weekcell ${i === 0 ? "weekend" : ""}`}>
           <span className="np" style={{ color: "var(--text)" }}>
             {w}
           </span>
@@ -1794,9 +1847,7 @@ const PopupCalendar = ({
       title = `${pad2(month)} · ${BS_MONTHS[month - 1]} ${year}`;
 
       for (let i = 0; i < startWeekday; i++) {
-        cells.push(
-          <div key={`empty-${i}`} className="cal-day empty"></div>
-        );
+        cells.push(<div key={`empty-${i}`} className="cal-day empty"></div>);
       }
 
       const todayISO = fmtAD(new Date());
@@ -1819,7 +1870,7 @@ const PopupCalendar = ({
             <span className="sub">
               {adDate.getMonth() + 1}/{adDate.getDate()}
             </span>
-          </button>
+          </button>,
         );
       }
     } else {
@@ -1828,9 +1879,7 @@ const PopupCalendar = ({
       title = `${AD_MONTHS[month - 1]} ${year}`;
 
       for (let i = 0; i < startWeekday; i++) {
-        cells.push(
-          <div key={`empty-${i}`} className="cal-day empty"></div>
-        );
+        cells.push(<div key={`empty-${i}`} className="cal-day empty"></div>);
       }
 
       const todayISO = fmtAD(new Date());
@@ -1850,7 +1899,7 @@ const PopupCalendar = ({
             onClick={() => onSelectDay(iso, d)}
           >
             <span className="num">{d}</span>
-          </button>
+          </button>,
         );
       }
     }
@@ -1865,20 +1914,14 @@ const PopupCalendar = ({
       <div className="cal-popup" onClick={(e) => e.stopPropagation()}>
         <div className="cal-popup-topbar"></div>
         <div className="cal-popup-head">
-          <button
-            className="cal-popup-navbtn"
-            onClick={() => onShiftMonth(-1)}
-          >
+          <button className="cal-popup-navbtn" onClick={() => onShiftMonth(-1)}>
             ‹
           </button>
           <div className="cal-popup-title">
             {title}
             <small>{mode === "BS" ? "Bikram Sambat" : "English (AD)"}</small>
           </div>
-          <button
-            className="cal-popup-navbtn"
-            onClick={() => onShiftMonth(1)}
-          >
+          <button className="cal-popup-navbtn" onClick={() => onShiftMonth(1)}>
             ›
           </button>
         </div>
