@@ -17,6 +17,7 @@ import {
   assignDayType,
   bulkAssignDayTypes,
   assignByWeekday,
+  manualAssignDayTypes,
 } from "../../api/calendarApi";
 import "./CalendarSettings.css";
 
@@ -202,6 +203,42 @@ const CalendarSettings = () => {
   // Import/Export state
   const [exportMonthId, setExportMonthId] = useState("");
 
+  // ── ADVANCED ASSIGNMENT STATE ──
+  
+  /**
+   * Selected weekday for advanced assignment workflow
+   * @type {string|null} - "Sunday"|"Monday"|...|"Saturday" or null
+   */
+  const [advancedSelectedWeekday, setAdvancedSelectedWeekday] = useState(null);
+  
+  /**
+   * Set of selected specific dates for advanced assignment workflow  
+   * @type {Set<number>} - Set containing 1..N day numbers for selected month
+   */
+  const [advancedSelectedDates, setAdvancedSelectedDates] = useState(new Set());
+  
+  /**
+   * Selected classification UUID for advanced assignment workflow
+   * @type {string|null} - UUID string or null
+   */
+  const [advancedSelectedClassification, setAdvancedSelectedClassification] = useState(null);
+  
+  /**
+   * Loading state during advanced assignment API calls
+   * @type {boolean} - true during API call, disables button and shows spinner
+   */
+  const [advancedIsAssigning, setAdvancedIsAssigning] = useState(false);
+  
+  /**
+   * Status message for advanced assignment operations
+   * @type {Object} - { type: "success"|"error"|"warning"|null, text: string, timestamp: number|null }
+   */
+  const [advancedMessage, setAdvancedMessage] = useState({
+    type: null,       // null | "success" | "error" | "warning"
+    text: "",         // Human-readable message
+    timestamp: null   // For auto-dismiss logic
+  });
+
   // Stats
   const [overviewStats, setOverviewStats] = useState({
     total: 0,
@@ -209,11 +246,275 @@ const CalendarSettings = () => {
     unassigned: 0,
   });
 
+  // ── ADVANCED ASSIGNMENT HELPER FUNCTIONS ──
+
+  /**
+   * Count weekday occurrences in selected month
+   * @returns {number} Count of calendar days matching selected weekday
+   */
+  const countWeekdayOccurrences = () => {
+    if (!advancedSelectedWeekday || !gridMonthId) return 0;
+    return calDays.filter(
+      d => d.day_of_week === advancedSelectedWeekday
+    ).length;
+  };
+
+  /**
+   * Generate summary preview text for combined selections
+   * @returns {string} Formatted text like "4 Mondays + 3 specific dates = 7 total days"
+   */
+  const generateAssignmentSummary = () => {
+    const weekdayCount = countWeekdayOccurrences();
+    const dateCount = advancedSelectedDates.size;
+    const total = weekdayCount + dateCount;
+    
+    if (total === 0) return "No days selected";
+    
+    const parts = [];
+    if (weekdayCount > 0) {
+      parts.push(`${weekdayCount} ${advancedSelectedWeekday}${weekdayCount > 1 ? 's' : ''}`);
+    }
+    if (dateCount > 0) {
+      parts.push(`${dateCount} specific date${dateCount > 1 ? 's' : ''}`);
+    }
+    
+    if (parts.length === 1) {
+      return `${parts[0]} = ${total} total days`;
+    }
+    
+    return `${parts.join(' + ')} = ${total} total days`;
+  };
+
+  /**
+   * Check if assignment operation can proceed
+   * @returns {boolean} True if all prerequisites met for assignment
+   */
+  const canAssign = () => {
+    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekday;
+    const hasClassification = !!advancedSelectedClassification;
+    return hasDaysSelected && hasClassification && !advancedIsAssigning && !!gridMonthId;
+  };
+
+  /**
+   * Get validation error messages for current state
+   * @returns {string[]} Array of validation error messages
+   */
+  const getValidationErrors = () => {
+    const errors = [];
+    const hasDaysSelected = advancedSelectedDates.size > 0 || advancedSelectedWeekday;
+    
+    if (!gridMonthId) {
+      errors.push("Please select a month first");
+    }
+    if (!hasDaysSelected) {
+      errors.push("Please select at least one day (weekday or specific date)");
+    }
+    if (!advancedSelectedClassification) {
+      errors.push("Please select a classification");
+    }
+    
+    return errors;
+  };
+
+  /**
+   * Extract user-friendly error message from API response
+   * @param {Error} error - API error object
+   * @returns {string} User-friendly error message
+   */
+  const extractErrorMessage = (error) => {
+    // Priority 1: Backend error response
+    if (error.response?.data?.error) {
+      return error.response.data.error;
+    }
+    if (error.response?.data?.message) {
+      return error.response.data.message;
+    }
+    
+    // Priority 2: HTTP status message
+    if (error.response?.status) {
+      const statusMap = {
+        400: "Bad request. Check your input.",
+        401: "Unauthorized. Please log in again.",
+        403: "You don't have permission to perform this action.",
+        404: "Resource not found.",
+        409: "Conflict. The data may have changed.",
+        500: "Server error. Please try again later.",
+        503: "Service unavailable. Please try again later."
+      };
+      return statusMap[error.response.status] || "Request failed.";
+    }
+    
+    // Priority 3: Network error
+    if (!error.response) {
+      return "Connection lost. Please check your internet and retry.";
+    }
+    
+    // Fallback
+    return "An unexpected error occurred.";
+  };
+
+  // ── ADVANCED ASSIGNMENT EVENT HANDLERS ──
+
+  /**
+   * Handle weekday selection change from dropdown
+   * @param {Event} e - Select change event
+   */
+  const handleAdvancedWeekdayChange = (e) => {
+    const value = e.target.value;
+    setAdvancedSelectedWeekday(value === "" ? null : value);
+  };
+
+  /**
+   * Clear the selected weekday
+   */
+  const handleClearAdvancedWeekday = () => {
+    setAdvancedSelectedWeekday(null);
+  };
+
+  /**
+   * Get occurrence count for a specific weekday in the current month
+   * @param {string} weekday - Weekday name (e.g., "Monday")
+   * @returns {number} Count of occurrences
+   */
+  const getWeekdayOccurrenceCount = (weekday) => {
+    if (!gridMonthId || calDays.length === 0) return 0;
+    return calDays.filter(d => d.day_of_week === weekday).length;
+  };
+
+  /**
+   * Toggle a specific date in/out of advancedSelectedDates Set
+   * @param {number} dayNum - 1-based day number
+   */
+  const handleAdvancedDateToggle = (dayNum) => {
+    setAdvancedSelectedDates(prev => {
+      const next = new Set(prev);
+      next.has(dayNum) ? next.delete(dayNum) : next.add(dayNum);
+      return next;
+    });
+  };
+
+  /**
+   * Clear all selected specific dates
+   */
+  const handleClearAdvancedDates = () => {
+    setAdvancedSelectedDates(new Set());
+  };
+
+  /**
+   * Handle classification dropdown change
+   * @param {Event} e - Select change event
+   */
+  const handleAdvancedClassificationChange = (e) => {
+    setAdvancedSelectedClassification(e.target.value || null);
+  };
+
+  /**
+   * Perform the assignment API calls (weekday and/or manual)
+   */
+  const performAdvancedAssignment = async () => {
+    setAdvancedIsAssigning(true);
+    let weekdayResult = null;
+    let manualResult = null;
+
+    try {
+      // Call assign-by-weekday if weekday selected
+      if (advancedSelectedWeekday) {
+        try {
+          const weekdayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+          const fullWeekday = weekdayNames.find(w => w.startsWith(advancedSelectedWeekday) || w === advancedSelectedWeekday) || advancedSelectedWeekday;
+          await assignByWeekday({
+            day_of_week: fullWeekday,
+            day_type_id: advancedSelectedClassification,
+            month_id: gridMonthId,
+          });
+          weekdayResult = { success: true, count: countWeekdayOccurrences() };
+        } catch (err) {
+          weekdayResult = { success: false, error: extractErrorMessage(err) };
+        }
+      }
+
+      // Call manual-assign if specific dates selected
+      if (advancedSelectedDates.size > 0) {
+        try {
+          const assignments = Array.from(advancedSelectedDates).map(dayNum => ({
+            day_number: dayNum,
+            day_type_id: advancedSelectedClassification,
+          }));
+          await manualAssignDayTypes(gridMonthId, assignments);
+          manualResult = { success: true, count: advancedSelectedDates.size };
+        } catch (err) {
+          manualResult = { success: false, error: extractErrorMessage(err) };
+        }
+      }
+
+      // Determine outcome and set message
+      const weekdayOk = !weekdayResult || weekdayResult.success;
+      const manualOk = !manualResult || manualResult.success;
+
+      if (weekdayOk && manualOk) {
+        const total = (weekdayResult?.count || 0) + (manualResult?.count || 0);
+        setAdvancedMessage({
+          type: 'success',
+          text: `${total} day${total !== 1 ? 's' : ''} assigned successfully. ${generateAssignmentSummary()}`,
+          timestamp: Date.now(),
+        });
+        // Clear selections on success
+        setAdvancedSelectedWeekday(null);
+        setAdvancedSelectedDates(new Set());
+        setAdvancedSelectedClassification(null);
+        // Reload grid data
+        handleLoadGridMonth(gridMonthId);
+      } else if (!weekdayOk && !manualOk) {
+        setAdvancedMessage({
+          type: 'error',
+          text: `Assignment failed. Weekday: ${weekdayResult?.error || 'unknown error'}. Dates: ${manualResult?.error || 'unknown error'}.`,
+          timestamp: Date.now(),
+        });
+      } else {
+        const successPart = weekdayOk
+          ? `Assigned ${weekdayResult.count} weekday occurrence${weekdayResult.count !== 1 ? 's' : ''}`
+          : `Assigned ${manualResult.count} specific date${manualResult.count !== 1 ? 's' : ''}`;
+        const failPart = !weekdayOk
+          ? `Failed to assign weekday occurrences: ${weekdayResult.error}`
+          : `Failed to assign specific dates: ${manualResult.error}`;
+        setAdvancedMessage({
+          type: 'warning',
+          text: `Partial success — ${successPart}. ${failPart}. Please retry.`,
+          timestamp: Date.now(),
+        });
+        handleLoadGridMonth(gridMonthId);
+      }
+    } finally {
+      setAdvancedIsAssigning(false);
+    }
+  };
+
+  /**
+   * Handle the Assign button click with validation
+   */
+  const handleAdvancedAssignClick = () => {
+    const errors = getValidationErrors();
+    if (errors.length > 0) {
+      setAdvancedMessage({ type: 'error', text: errors.join(' • '), timestamp: Date.now() });
+      return;
+    }
+    performAdvancedAssignment();
+  };
+
   useEffect(() => {
     loadYearOptions();
     loadSetupData();
     loadGridData();
   }, [mode]);
+  // Auto-dismiss success/warning messages after 5 seconds
+  useEffect(() => {
+    if (advancedMessage.type && advancedMessage.type !== 'error') {
+      const timer = setTimeout(() => {
+        setAdvancedMessage({ type: null, text: '', timestamp: null });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [advancedMessage.timestamp]);
 
   const loadYearOptions = async () => {
     try {
@@ -1113,17 +1414,19 @@ const CalendarSettings = () => {
 
       {/* TAB: DAY ASSIGNMENTS */}
       {activeTab === "grid" && (
-        <div className="panel">
-          <div className="panel-head">
-            <div>
-              <p className="panel-title">
-                <span className="num">2</span>Day Assignments
-              </p>
-              <p className="panel-desc">
-                Assign day types to calendar days for the academic year.
-              </p>
+        <>
+          {/* Existing Bulk Grid Assignment Interface */}
+          <div className="panel">
+            <div className="panel-head">
+              <div>
+                <p className="panel-title">
+                  <span className="num">2</span>Day Assignments (Bulk Grid)
+                </p>
+                <p className="panel-desc">
+                  Select multiple days from the grid and assign a single day type.
+                </p>
+              </div>
             </div>
-          </div>
 
           <div className="grid-3" style={{ marginBottom: "14px" }}>
             <div className="field">
@@ -1227,7 +1530,11 @@ const CalendarSettings = () => {
               </div>
             </>
           )}
-        </div>
+
+        </>
+      )}
+
+        </>
       )}
 
       {/* TAB: IMPORT/EXPORT */}

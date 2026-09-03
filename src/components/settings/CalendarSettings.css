@@ -1034,3 +1034,18 @@ input:focus-visible {
     --text: #e8edf5;
   }
 }
+
+/* ============================================================================
+   SPINNER ANIMATION FOR ADVANCED ASSIGNMENT BUTTON
+   ============================================================================ */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Advanced date grid item selected state */
+.adv-date-grid .cal-grid-item.selected {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
