@@ -107,7 +107,10 @@ const ResultPortalPage = () => {
   }, [resultData]);
 
   return (
-    <div className="min-h-screen px-4 py-10 text-[var(--text-1)]" style={{ background: "var(--bg-main)" }}>
+    <div
+      className="min-h-screen px-4 py-10 text-[var(--text-1)]"
+      style={{ background: "var(--bg-main)" }}
+    >
       <div className="mis-card mx-auto max-w-6xl p-6">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>

@@ -124,9 +124,15 @@
 :root:not(.dark) [class*="bg-[#050816]"] {
   background-color: var(--bg-card) !important;
 }
-:root:not(.dark) [class*="hover:bg-white\/"]:hover { background-color: var(--bg-hover) !important; }
-:root:not(.dark) [class*="hover:bg-[#ffffff]"]:hover { background-color: var(--bg-hover) !important; }
-:root:not(.dark) [class*="hover:text-white"]:hover { color: var(--text-1) !important; }
+:root:not(.dark) [class*="hover:bg-white\/"]:hover {
+  background-color: var(--bg-hover) !important;
+}
+:root:not(.dark) [class*="hover:bg-[#ffffff]"]:hover {
+  background-color: var(--bg-hover) !important;
+}
+:root:not(.dark) [class*="hover:text-white"]:hover {
+  color: var(--text-1) !important;
+}
 :root:not(.dark) [class*="bg-indigo-"][class*="text-white"],
 :root:not(.dark) [class*="bg-blue-"][class*="text-white"],
 :root:not(.dark) [class*="bg-emerald-"][class*="text-white"],
@@ -238,7 +244,10 @@ textarea {
 }
 
 /* react-big-calendar is injected at runtime, so its surface contract lives here. */
-.rbc-calendar { color: var(--text-1); font-size: 0.9375rem; }
+.rbc-calendar {
+  color: var(--text-1);
+  font-size: 0.9375rem;
+}
 .rbc-toolbar button,
 .rbc-month-view,
 .rbc-time-view,
@@ -248,18 +257,55 @@ textarea {
 .rbc-day-bg,
 .rbc-time-content,
 .rbc-time-header-content,
-.rbc-agenda-table { border-color: var(--border-dim); }
-.rbc-toolbar button { color: var(--text-1); background: var(--bg-card); border-color: var(--border-card); font-weight: 600; }
+.rbc-agenda-table {
+  border-color: var(--border-dim);
+}
+.rbc-toolbar button {
+  color: var(--text-1);
+  background: var(--bg-card);
+  border-color: var(--border-card);
+  font-weight: 600;
+}
 .rbc-toolbar button:hover,
 .rbc-toolbar button:focus,
-.rbc-toolbar button.rbc-active { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
-.rbc-month-view, .rbc-time-view, .rbc-agenda-view { background: var(--bg-card); }
-.rbc-off-range-bg { background: var(--bg-main); }
-.rbc-today { background: var(--accent-dim); }
-.rbc-header { color: var(--text-2); background: var(--bg-surface); font-weight: 700; padding: 0.65rem 0.25rem; }
-.rbc-date-cell { color: var(--text-1); padding: 0.35rem 0.5rem; font-weight: 600; }
-.rbc-event { background: var(--accent); color: var(--accent-text); font-weight: 600; }
-.rbc-show-more, .rbc-agenda-date-cell, .rbc-agenda-time-cell { color: var(--accent); font-weight: 600; }
+.rbc-toolbar button.rbc-active {
+  color: var(--accent-text);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view {
+  background: var(--bg-card);
+}
+.rbc-off-range-bg {
+  background: var(--bg-main);
+}
+.rbc-today {
+  background: var(--accent-dim);
+}
+.rbc-header {
+  color: var(--text-2);
+  background: var(--bg-surface);
+  font-weight: 700;
+  padding: 0.65rem 0.25rem;
+}
+.rbc-date-cell {
+  color: var(--text-1);
+  padding: 0.35rem 0.5rem;
+  font-weight: 600;
+}
+.rbc-event {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.rbc-show-more,
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+  color: var(--accent);
+  font-weight: 600;
+}
 
 /* ── Themed utility classes ── */
 .mis-card {
@@ -423,8 +469,15 @@ input[type="radio"]:disabled::after {
   background: var(--bg-hover);
 }
 
-table th { font-size: 0.8125rem; font-weight: 700; color: var(--text-2); }
-table td { font-size: 0.875rem; color: var(--text-1); }
+table th {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-2);
+}
+table td {
+  font-size: 0.875rem;
+  color: var(--text-1);
+}
 
 .mis-label {
   display: block;

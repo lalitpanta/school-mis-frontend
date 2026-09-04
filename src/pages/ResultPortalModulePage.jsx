@@ -99,7 +99,10 @@ const ResultPortalModulePage = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 text-[var(--text-1)]" style={{ background: "var(--bg-main)" }}>
+    <div
+      className="min-h-screen px-4 py-8 text-[var(--text-1)]"
+      style={{ background: "var(--bg-main)" }}
+    >
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="mis-card p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
