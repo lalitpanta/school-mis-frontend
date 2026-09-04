@@ -23,6 +23,7 @@ import {
   exportAccountsCsv,
 } from "../../api/accountsApi";
 import FeeStructure from "./FeeStructurePro";
+import AccountSettings from "./AccountSettings";
 
 // ── tiny helpers ─────────────────────────────────────────────────────────────
 
@@ -51,6 +52,7 @@ const TYPE_LABEL = { income: "Income", expense: "Expense" };
 const TABS = [
   "Overview",
   "Fee Structure",
+  "Account Settings",
   "Fee Collection",
   "Expenses",
   "Payroll",
@@ -124,6 +126,16 @@ const CSS = `
 
 /* ── body ── */
 .acc-body { padding: 24px 28px 32px; }
+.acc-settings { max-width: 980px; }
+.acc-settings-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px; background:var(--ac-panel); border:1px solid var(--ac-border); border-radius:10px; padding:18px; }
+.acc-settings-grid label { display:flex; flex-direction:column; gap:6px; color:var(--ac-mid); font-size:12px; font-weight:600; }
+.acc-settings-grid label.full { grid-column:1/-1; }
+.acc-settings-grid input,.acc-settings-grid textarea { width:100%; box-sizing:border-box; border:1px solid var(--ac-border); border-radius:7px; background:var(--ac-panel2); color:var(--ac-hi); padding:10px; outline:0; font:inherit; }
+.acc-settings-grid textarea { min-height:78px; resize:vertical; }
+.acc-settings-grid input:focus,.acc-settings-grid textarea:focus { border-color:var(--ac-v500); }
+.acc-settings-grid .toggle { flex-direction:row; align-items:center; grid-column:1/-1; }
+.acc-settings-message { margin-bottom:14px; padding:10px 12px; border:1px solid var(--ac-border); border-radius:8px; color:var(--ac-mid); }
+@media (max-width:700px) { .acc-settings-grid { grid-template-columns:1fr; } .acc-settings-grid label.full,.acc-settings-grid .toggle { grid-column:auto; } }
 
 /* ── stat card ── */
 .acc-stat-grid {
@@ -1742,16 +1754,15 @@ export default function Accounts() {
                   onNewTxn={openNewTxn}
                 />
               )}
-              {activeTab === 1 && (
-                <FeeStructure />
-              )}
-              {activeTab === 2 && (
+              {activeTab === 1 && <FeeStructure />}
+              {activeTab === 2 && <AccountSettings />}
+              {activeTab === 3 && (
                 <FeeCollectionTab
                   collections={collections}
                   overview={overview}
                 />
               )}
-              {activeTab === 3 && (
+              {activeTab === 4 && (
                 <ExpensesTab
                   expenses={expenses}
                   transactions={transactions}
@@ -1761,7 +1772,7 @@ export default function Accounts() {
                   }}
                 />
               )}
-              {activeTab === 4 && (
+              {activeTab === 5 && (
                 <PayrollTab
                   payroll={payroll}
                   loading={payLoading}
@@ -1769,7 +1780,7 @@ export default function Accounts() {
                   onStatus={handlePayrollStatus}
                 />
               )}
-              {activeTab === 5 && (
+              {activeTab === 6 && (
                 <TransactionsTab
                   transactions={transactions}
                   total={txnTotal}
