@@ -57,13 +57,13 @@ const AD_MONTHS = [
   "December",
 ];
 const WEEKDAYS_NP = [
-  ["आइत", "Sun"],
-  ["सोम", "Mon"],
-  ["मंगल", "Tue"],
-  ["बुध", "Wed"],
-  ["बिही", "Thu"],
-  ["शुक्र", "Fri"],
-  ["शनि", "Sat"],
+  ["à¤†à¤‡à¤¤", "Sun"],
+  ["à¤¸à¥‹à¤®", "Mon"],
+  ["à¤®à¤‚à¤—à¤²", "Tue"],
+  ["à¤¬à¥à¤§", "Wed"],
+  ["à¤¬à¤¿à¤¹à¥€", "Thu"],
+  ["à¤¶à¥à¤•à¥à¤°", "Fri"],
+  ["à¤¶à¤¨à¤¿", "Sat"],
 ];
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -115,7 +115,18 @@ function fmtAD(date) {
 }
 
 function toNepaliNum(n) {
-  const map = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+  const map = [
+    "à¥¦",
+    "à¥§",
+    "à¥¨",
+    "à¥©",
+    "à¥ª",
+    "à¥«",
+    "à¥¬",
+    "à¥­",
+    "à¥®",
+    "à¥¯",
+  ];
   return String(n)
     .split("")
     .map((c) => (/\d/.test(c) ? map[+c] : c))
@@ -214,9 +225,11 @@ const CalendarSettings = () => {
   // Import/Export state
   const [exportMonthId, setExportMonthId] = useState("");
 
-  // ── ADVANCED ASSIGNMENT STATE ──
+  // â”€â”€ ADVANCED ASSIGNMENT STATE â”€â”€
   const [advancedAssignmentMode, setAdvancedAssignmentMode] =
     useState("weekday");
+  const [advancedAssignmentScope, setAdvancedAssignmentScope] =
+    useState("month");
 
   /**
    * Selected weekday for advanced assignment workflow
@@ -262,7 +275,7 @@ const CalendarSettings = () => {
     unassigned: 0,
   });
 
-  // ── ADVANCED ASSIGNMENT HELPER FUNCTIONS ──
+  // â”€â”€ ADVANCED ASSIGNMENT HELPER FUNCTIONS â”€â”€
 
   /**
    * Count weekday occurrences in selected month
@@ -381,7 +394,7 @@ const CalendarSettings = () => {
     return "An unexpected error occurred.";
   };
 
-  // ── ADVANCED ASSIGNMENT EVENT HANDLERS ──
+  // â”€â”€ ADVANCED ASSIGNMENT EVENT HANDLERS â”€â”€
 
   /**
    * Handle weekday selection change from dropdown
@@ -400,6 +413,46 @@ const CalendarSettings = () => {
     setAdvancedSelectedWeekdays(new Set());
     setAdvancedSelectedDates(new Set());
     setAdvancedMessage({ type: null, text: "", timestamp: null });
+  };
+
+  const handleAdvancedClear = async () => {
+    try {
+      if (advancedAssignmentMode === "weekday") {
+        for (const weekday of advancedSelectedWeekdays) {
+          await assignByWeekday({
+            day_of_week: weekday,
+            day_type_id: null,
+            ...(advancedAssignmentScope === "year"
+              ? { year_id: gridYearId }
+              : { month_id: gridMonthId }),
+          });
+        }
+      } else {
+        await bulkAssignDayTypes(
+          Array.from(advancedSelectedDates)
+            .map((dayNumber) => ({
+              calendarDayId: calDays.find((day) => day.day_number === dayNumber)
+                ?.id,
+              dayTypeId: null,
+            }))
+            .filter((assignment) => assignment.calendarDayId),
+        );
+      }
+      await handleLoadGridMonth(gridMonthId);
+      setAdvancedSelectedWeekdays(new Set());
+      setAdvancedSelectedDates(new Set());
+      setAdvancedMessage({
+        type: "success",
+        text: "Selected assignments cleared.",
+        timestamp: Date.now(),
+      });
+    } catch (err) {
+      setAdvancedMessage({
+        type: "error",
+        text: extractErrorMessage(err),
+        timestamp: Date.now(),
+      });
+    }
   };
 
   /**
@@ -463,7 +516,9 @@ const CalendarSettings = () => {
           await assignByWeekday({
             day_of_week: weekday,
             day_type_id: advancedSelectedClassification,
-            month_id: gridMonthId,
+            ...(advancedAssignmentScope === "year"
+              ? { year_id: gridYearId }
+              : { month_id: gridMonthId }),
           });
           weekdayResult = {
             success: true,
@@ -524,7 +579,7 @@ const CalendarSettings = () => {
           : `Failed to assign specific dates: ${manualResult.error}`;
         setAdvancedMessage({
           type: "warning",
-          text: `Partial success — ${successPart}. ${failPart}. Please retry.`,
+          text: `Partial success â€” ${successPart}. ${failPart}. Please retry.`,
           timestamp: Date.now(),
         });
         handleLoadGridMonth(gridMonthId);
@@ -542,7 +597,7 @@ const CalendarSettings = () => {
     if (errors.length > 0) {
       setAdvancedMessage({
         type: "error",
-        text: errors.join(" • "),
+        text: errors.join(" â€¢ "),
         timestamp: Date.now(),
       });
       return;
@@ -596,7 +651,7 @@ const CalendarSettings = () => {
         const isBS = !!bsLabel && bsLabel.trim() !== "";
         let value = 0;
         if (isBS) {
-          // bsLabel like "2082/83" → 2082, or just "2082"
+          // bsLabel like "2082/83" â†’ 2082, or just "2082"
           value = parseInt(bsLabel.split("/")[0]) || 0;
         } else {
           value =
@@ -684,28 +739,7 @@ const CalendarSettings = () => {
   };
 
   const handleAddYear = async () => {
-    if (!yearLabel.trim()) {
-      alert("Enter a year label.");
-      return;
-    }
-    if (!academicStart || !academicEnd) {
-      alert("Select both academic dates.");
-      return;
-    }
-    const start = dateStateToAD(academicStart, mode);
-    const end = dateStateToAD(academicEnd, mode);
-    const days = inclusiveDays(start, end);
-    if (days <= 0) {
-      alert("Academic end date must be on or after the start date.");
-      return;
-    }
-    if (years.some((y) => y.mode === mode && y.value === selectedYear)) {
-      alert(`${mode} year ${selectedYear} has already been added.`);
-      return;
-    }
-
     try {
-      setLoading(true);
       let savedYear;
 
       if (mode === "BS") {
@@ -843,7 +877,7 @@ const CalendarSettings = () => {
       if (!saved) throw new Error("Failed");
       setClassifications((prev) => [
         ...prev,
-        { id: saved.id, name, categoryId: classificationCategory },
+        { id: saved.id, name, categoryId: classificationCategory || "" },
       ]);
       setClassificationName("");
       setClassificationCategory("");
@@ -853,17 +887,6 @@ const CalendarSettings = () => {
       alert("Failed to save classification");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDeleteClassification = async (id) => {
-    try {
-      await deleteDayType(id);
-      setClassifications((prev) => prev.filter((c) => c.id !== id));
-      alert("Classification deleted!");
-    } catch (err) {
-      console.error("Failed to delete classification:", err);
-      alert("Failed to delete classification");
     }
   };
 
@@ -1107,11 +1130,12 @@ const CalendarSettings = () => {
       </div>
 
       <div className="mode-banner">
-        📅 Running in <b>{mode === "BS" ? "Bikram Sambat" : "English (AD)"}</b>{" "}
-        mode — year list shows{" "}
+        ðŸ“… Running in{" "}
+        <b>{mode === "BS" ? "Bikram Sambat" : "English (AD)"}</b> mode â€” year
+        list shows{" "}
         {mode === "BS"
-          ? `${BS_YEAR_MIN}–${BS_YEAR_MAX}`
-          : `${AD_YEAR_MIN}–${AD_YEAR_MAX}`}
+          ? `${BS_YEAR_MIN}â€“${BS_YEAR_MAX}`
+          : `${AD_YEAR_MIN}â€“${AD_YEAR_MAX}`}
         , and date pickers use the{" "}
         {mode === "BS" ? "Nepali calendar" : "Gregorian calendar"}.
       </div>
@@ -1149,8 +1173,8 @@ const CalendarSettings = () => {
                 </p>
                 <p className="panel-desc">
                   {mode === "BS"
-                    ? "Pick a BS year from the range 2082-2120 — nothing is typed by hand."
-                    : "Pick an AD year from the range 2025-2050 — nothing is typed by hand."}
+                    ? "Pick a BS year from the range 2082-2120 â€” nothing is typed by hand."
+                    : "Pick an AD year from the range 2025-2050 â€” nothing is typed by hand."}
                 </p>
               </div>
               <span className="badge badge-auto">Auto-calculated</span>
@@ -1204,7 +1228,7 @@ const CalendarSettings = () => {
                     {academicStart
                       ? `${academicStart.year}-${pad2(academicStart.month)}-${pad2(
                           academicStart.day,
-                        )} · ${BS_MONTHS[academicStart.month - 1]}`
+                        )} Â· ${BS_MONTHS[academicStart.month - 1]}`
                       : "Select date"}
                   </button>
                 ) : (
@@ -1232,7 +1256,7 @@ const CalendarSettings = () => {
                     {academicEnd
                       ? `${academicEnd.year}-${pad2(academicEnd.month)}-${pad2(
                           academicEnd.day,
-                        )} · ${BS_MONTHS[academicEnd.month - 1]}`
+                        )} Â· ${BS_MONTHS[academicEnd.month - 1]}`
                       : "Select date"}
                   </button>
                 ) : (
@@ -1292,10 +1316,10 @@ const CalendarSettings = () => {
                         ? "BS " + selectedYear
                         : "AD " + selectedYear}
                     </b>{" "}
-                    — {preview.days > 0 ? preview.days : "Invalid"} total days
+                    â€” {preview.days > 0 ? preview.days : "Invalid"} total days
                   </div>
                   <div className="preview-sub">
-                    AD equivalent → {fmtAD(preview.start)} →{" "}
+                    AD equivalent â†’ {fmtAD(preview.start)} â†’{" "}
                     {fmtAD(preview.end)}
                   </div>
                 </div>
@@ -1336,7 +1360,7 @@ const CalendarSettings = () => {
                         </div>
                       </td>
                       <td style={{ color: "var(--text-dim)" }}>
-                        {fmtAD(y.start)} → {fmtAD(y.end)}
+                        {fmtAD(y.start)} â†’ {fmtAD(y.end)}
                       </td>
                       <td>{y.days}</td>
                       <td>
@@ -1349,7 +1373,7 @@ const CalendarSettings = () => {
                               fontSize: "11.5px",
                             }}
                           >
-                            —
+                            â€”
                           </span>
                         )}
                       </td>
@@ -1359,7 +1383,7 @@ const CalendarSettings = () => {
                           onClick={() => handleDeleteYear(y.id)}
                           title="Delete"
                         >
-                          ✕
+                          âœ•
                         </button>
                       </td>
                     </tr>
@@ -1371,14 +1395,14 @@ const CalendarSettings = () => {
 
           <section className="setup-section">
             <div className="setup-section-head">
-              <span className="section-icon">◇</span>
+              <span className="section-icon">â—‡</span>
               <h2>Day Categories</h2>
               <span className="count-badge">{categories.length}</span>
-              <span className="section-chevron">⌃</span>
+              <span className="section-chevron">âŒƒ</span>
             </div>
             <div className="setup-section-body">
               <div className="info-strip">
-                ⓘ Categories group day types (e.g., "Holiday" contains "Public
+                â“˜ Categories group day types (e.g., "Holiday" contains "Public
                 Holiday", "Saturday", etc.).
               </div>
               <div className="inline-form">
@@ -1411,7 +1435,7 @@ const CalendarSettings = () => {
                         onClick={() => handleDeleteCategory(category.id)}
                         title="Delete"
                       >
-                        ✕
+                        âœ•
                       </button>
                     </div>
                   ))
@@ -1422,10 +1446,10 @@ const CalendarSettings = () => {
 
           <section className="setup-section">
             <div className="setup-section-head">
-              <span className="section-icon">⚙</span>
+              <span className="section-icon">âš™</span>
               <h2>Day Classifications</h2>
               <span className="count-badge">{classifications.length}</span>
-              <span className="section-chevron">⌃</span>
+              <span className="section-chevron">âŒƒ</span>
             </div>
             <div className="setup-section-body">
               <div className="field" style={{ marginBottom: "14px" }}>
@@ -1491,7 +1515,7 @@ const CalendarSettings = () => {
                           }
                           title="Delete"
                         >
-                          ✕
+                          âœ•
                         </button>
                       </div>
                     );
@@ -1516,6 +1540,7 @@ const CalendarSettings = () => {
           gridYearId={gridYearId}
           gridMonthId={gridMonthId}
           assignmentMode={advancedAssignmentMode}
+          assignmentScope={advancedAssignmentScope}
           selectedWeekdays={advancedSelectedWeekdays}
           selectedDates={advancedSelectedDates}
           selectedClassification={advancedSelectedClassification}
@@ -1532,10 +1557,12 @@ const CalendarSettings = () => {
           }}
           onMonthChange={handleLoadGridMonth}
           onModeChange={handleAdvancedModeChange}
+          onScopeChange={setAdvancedAssignmentScope}
           onWeekdayToggle={handleAdvancedWeekdayToggle}
           onDateToggle={handleAdvancedDateToggle}
           onClassificationChange={handleAdvancedClassificationChange}
           onAssign={handleAdvancedAssignClick}
+          onClear={handleAdvancedClear}
         />
       )}
       {false && activeTab === "grid" && (
@@ -1755,7 +1782,7 @@ const CalendarSettings = () => {
                     className="btn btn-primary"
                     onClick={handleBulkAssign}
                   >
-                    ✓ Assign Selected to {bulkType ? "Type" : "..."}
+                    âœ“ Assign Selected to {bulkType ? "Type" : "..."}
                   </button>
                   <button
                     className="btn"
@@ -1770,7 +1797,7 @@ const CalendarSettings = () => {
                       setBulkSelected(new Set());
                     }}
                   >
-                    🗑 Clear Selected
+                    ðŸ—‘ Clear Selected
                   </button>
                 </div>
 
@@ -1785,7 +1812,7 @@ const CalendarSettings = () => {
                     >
                       <div className="day-number">{day.day_number}</div>
                       <div className="day-type">
-                        {day.day_type ? day.day_type : "—"}
+                        {day.day_type ? day.day_type : "â€”"}
                       </div>
                     </button>
                   ))}
@@ -1850,7 +1877,7 @@ const CalendarSettings = () => {
                   }
                 }}
               >
-                ↓ Export CSV
+                â†“ Export CSV
               </button>
             </div>
           </div>
@@ -1876,7 +1903,7 @@ const CalendarSettings = () => {
 
           <div className="preview-box">
             <div>
-              <div className="preview-line">📋 CSV Format</div>
+              <div className="preview-line">ðŸ“‹ CSV Format</div>
 
               <div className="preview-sub" style={{ marginTop: "6px" }}>
                 Headers: Day Number, Day Type, Category
@@ -1952,7 +1979,7 @@ const PopupCalendar = ({
     if (mode === "BS") {
       info = bsMonthInfo(year, month);
       startWeekday = info.adStart.getDay();
-      title = `${pad2(month)} · ${BS_MONTHS[month - 1]} ${year}`;
+      title = `${pad2(month)} Â· ${BS_MONTHS[month - 1]} ${year}`;
 
       for (let i = 0; i < startWeekday; i++) {
         cells.push(<div key={`empty-${i}`} className="cal-day empty"></div>);
@@ -2023,23 +2050,23 @@ const PopupCalendar = ({
         <div className="cal-popup-topbar"></div>
         <div className="cal-popup-head">
           <button className="cal-popup-navbtn" onClick={() => onShiftMonth(-1)}>
-            ‹
+            â€¹
           </button>
           <div className="cal-popup-title">
             {title}
             <small>{mode === "BS" ? "Bikram Sambat" : "English (AD)"}</small>
           </div>
           <button className="cal-popup-navbtn" onClick={() => onShiftMonth(1)}>
-            ›
+            â€º
           </button>
         </div>
         <div className="cal-weekrow">{renderWeekRow()}</div>
         <div className="cal-daygrid">{cells}</div>
         <div className="cal-popup-actions">
-          <button onClick={onGoToday}>⏱ Today</button>
-          <button onClick={onClear}>🗑 Clear</button>
+          <button onClick={onGoToday}>â± Today</button>
+          <button onClick={onClear}>ðŸ—‘ Clear</button>
           <button className="close-btn" onClick={onClose}>
-            ✕ Close
+            âœ• Close
           </button>
         </div>
       </div>

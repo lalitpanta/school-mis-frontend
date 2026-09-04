@@ -184,4 +184,6 @@ export const getYearOptions = (mode = "BS") =>
  * Returns auto-calculated month boundaries based on BS calendar
  */
 export const getMonthAuto = (year_id, month_index) =>
-  axiosInstance.get("/v1/year/month-auto", { params: { year_id, month_index } });
+  axiosInstance.get("/v1/year/month-auto", {
+    params: { year_id, month_index },
+  });

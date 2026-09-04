@@ -24,6 +24,7 @@ const DayAssignmentBuilder = ({
   gridYearId,
   gridMonthId,
   assignmentMode,
+  assignmentScope,
   selectedWeekdays,
   selectedDates,
   selectedClassification,
@@ -34,10 +35,12 @@ const DayAssignmentBuilder = ({
   onYearChange,
   onMonthChange,
   onModeChange,
+  onScopeChange,
   onWeekdayToggle,
   onDateToggle,
   onClassificationChange,
   onAssign,
+  onClear,
 }) => {
   const modeYears = years.filter((year) => year.mode === calendarMode);
   const selectedYear = modeYears.find(
@@ -136,6 +139,25 @@ const DayAssignmentBuilder = ({
               </button>
             </div>
 
+            <div className="assignment-scope-toggle">
+              <button
+                type="button"
+                className={assignmentScope === "month" ? "active" : ""}
+                onClick={() => onScopeChange("month")}
+              >
+                Selected month
+              </button>
+              {assignmentMode === "weekday" && (
+                <button
+                  type="button"
+                  className={assignmentScope === "year" ? "active" : ""}
+                  onClick={() => onScopeChange("year")}
+                >
+                  Whole academic year
+                </button>
+              )}
+            </div>
+
             <div className="assignment-fields">
               <div className="field">
                 <label>Select year</label>
@@ -160,9 +182,9 @@ const DayAssignmentBuilder = ({
                   onChange={(event) => onMonthChange(event.target.value)}
                 >
                   <option value="">Choose a month</option>
-                    {months
+                  {months
                     .filter(
-                        (month) => String(month.year_id) === String(gridYearId),
+                      (month) => String(month.year_id) === String(gridYearId),
                     )
                     .sort(
                       (first, second) =>
@@ -272,11 +294,20 @@ const DayAssignmentBuilder = ({
             >
               {isAssigning ? "Assigning..." : "Assign classification"}
             </button>
+            <button
+              type="button"
+              className="assignment-clear"
+              disabled={!gridMonthId || selectedTotal === 0 || isAssigning}
+              onClick={onClear}
+            >
+              Clear selected assignment
+            </button>
           </div>
 
           <div className="assignment-preview">
-              <p className="assignment-preview-label">
-              {calendarMode === "BS" ? "BS" : "AD"} calendar preview - {monthName} {selectedYear?.value || ""}
+            <p className="assignment-preview-label">
+              {calendarMode === "BS" ? "BS" : "AD"} calendar preview -{" "}
+              {monthName} {selectedYear?.value || ""}
             </p>
             <div className="mini-calendar">
               <div className="mini-weekdays">
