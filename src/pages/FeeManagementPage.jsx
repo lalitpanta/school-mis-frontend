@@ -127,7 +127,29 @@ const FeeManagementPage = () => {
     } catch (err) { toast.error('Failed to add fee structure'); }
   };
 
-  const [paymentData, setPaymentData] = useState({ student_id: '', payment_mode: 'cash', amount_paid: 0, student_fee_id: '' });
+  const [paymentData, setPaymentData] = useState({ student_id: '', payment_mode: 'cash', amount_paid: 0, student_fee_id: '', payment_reference: '', remarks: '', idempotency_key: crypto.randomUUID() });
+  const [studentSearch, setStudentSearch] = useState('');
+  const [studentMatches, setStudentMatches] = useState([]);
+  const [studentDue, setStudentDue] = useState(null);
+
+  const searchStudents = async (value) => {
+    setStudentSearch(value);
+    if (value.trim().length < 2) { setStudentMatches([]); return; }
+    try {
+      const res = await api.get('/v1/fees/students/lookup', { params: { search: value.trim() } });
+      setStudentMatches(res.data?.data || []);
+    } catch (error) { setStudentMatches([]); }
+  };
+
+  const selectStudent = async (student) => {
+    setStudentSearch(`${student.full_name} (${student.admission_no || student.id})`);
+    setStudentMatches([]);
+    setPaymentData((current) => ({ ...current, student_id: student.id, student_fee_id: '', amount_paid: 0, idempotency_key: crypto.randomUUID() }));
+    try {
+      const res = await api.get(`/v1/fees/students/${student.id}/due`);
+      setStudentDue(res.data?.data || null);
+    } catch (error) { setStudentDue(null); toast.error('Unable to load student dues'); }
+  };
   
   const handleCollectPayment = async (e) => {
     e.preventDefault();
@@ -139,6 +161,9 @@ const FeeManagementPage = () => {
       const payload = {
         student_id: paymentData.student_id,
         payment_mode: paymentData.payment_mode,
+        payment_reference: paymentData.payment_reference || undefined,
+        remarks: paymentData.remarks || undefined,
+        idempotency_key: paymentData.idempotency_key,
         items: [{
           student_fee_id: paymentData.student_fee_id,
           amount_paid: paymentData.amount_paid,
@@ -151,15 +176,18 @@ const FeeManagementPage = () => {
         fetchStats();
         fetchStudentFees();
         fetchReceipts();
+        setPaymentData({ student_id: '', payment_mode: 'cash', amount_paid: 0, student_fee_id: '', payment_reference: '', remarks: '', idempotency_key: crypto.randomUUID() });
+        setStudentSearch('');
+        setStudentDue(null);
       }
-    } catch (err) { toast.error('Failed to collect payment'); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to collect payment'); }
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6 min-h-screen" style={{ color: 'var(--text-1)' }}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">Fee Management</h1>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-purple-600">Fee Management</h1>
           <p className="text-sm opacity-70 mt-1">Manage structures, collections, and receipts</p>
         </div>
       </div>
@@ -374,31 +402,31 @@ const FeeManagementPage = () => {
           <form onSubmit={handleCollectPayment} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1 opacity-70">Select Student</label>
-              <select 
-                value={paymentData.student_id}
-                onChange={(e) => setPaymentData({...paymentData, student_id: e.target.value})}
+              <input
+                value={studentSearch}
+                onChange={(e) => searchStudents(e.target.value)}
+                placeholder="Search by student ID, admission number, or name"
                 className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
-              >
-                <option value="">Select a student...</option>
-                {students.map(s => <option key={s.id} value={s.id}>{s.full_name} (Adm: {s.admission_no})</option>)}
-              </select>
+              />
+              {studentMatches.length > 0 && <div className="mt-2 rounded-xl border border-white/10 overflow-hidden">{studentMatches.map((student) => <button type="button" key={student.id} onClick={() => selectStudent(student)} className="w-full text-left px-4 py-3 bg-black/20 hover:bg-white/10 text-sm"><strong>{student.full_name}</strong><span className="block text-xs opacity-60">{student.admission_no || `ID ${student.id}`} · {student.class_name || 'Class not set'}{student.section_name ? ` / ${student.section_name}` : ''}</span></button>)}</div>}
             </div>
             
             {paymentData.student_id && (
               <div>
+                {studentDue && <div className="mb-3 rounded-xl bg-white/5 border border-white/10 p-3 text-sm"><div className="font-semibold">{studentDue.full_name}</div><div className="text-xs opacity-60">{studentDue.class_name || 'Class not set'}{studentDue.section_name ? ` / ${studentDue.section_name}` : ''} · Outstanding: ₹{Number(studentDue.totals?.outstanding || 0).toLocaleString()}</div></div>}
                 <label className="block text-sm font-medium mb-1 opacity-70">Select Fee Dues</label>
                 <select 
                   value={paymentData.student_fee_id}
                   onChange={(e) => {
                     const id = e.target.value;
-                    const fee = studentFees.find(f => f.id == id);
+                    const fee = (studentDue?.dues || studentFees).find(f => f.id == id);
                     setPaymentData({...paymentData, student_fee_id: id, amount_paid: fee ? fee.balance : 0});
                   }}
                   className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
                 >
                   <option value="">Select due fee...</option>
-                  {studentFees.filter(f => f.student_id == paymentData.student_id && f.status !== 'paid').map(f => (
-                    <option key={f.id} value={f.id}>{f.fee_category_name} - Balance: ₹{f.balance}</option>
+                  {(studentDue?.dues || studentFees.filter(f => f.student_id == paymentData.student_id && f.status !== 'paid')).map(f => (
+                    <option key={f.id} value={f.id}>{f.fee_category_name || f.category} - Balance: ₹{f.balance}</option>
                   ))}
                 </select>
               </div>
@@ -422,12 +450,15 @@ const FeeManagementPage = () => {
                 className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
               >
                 <option value="cash">Cash</option>
-                <option value="card">Card</option>
-                <option value="upi">UPI / QR</option>
-                <option value="bank_transfer">Bank Transfer</option>
+                <option value="bank">Bank</option>
+                <option value="esewa">eSewa</option>
+                <option value="khalti">Khalti</option>
+                <option value="connectips">ConnectIPS</option>
                 <option value="cheque">Cheque</option>
               </select>
             </div>
+            {paymentData.payment_mode !== 'cash' && <div><label className="block text-sm font-medium mb-1 opacity-70">Reference / transaction number</label><input required value={paymentData.payment_reference} onChange={(e) => setPaymentData({...paymentData, payment_reference: e.target.value})} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500" /></div>}
+            <div><label className="block text-sm font-medium mb-1 opacity-70">Remarks</label><input value={paymentData.remarks} onChange={(e) => setPaymentData({...paymentData, remarks: e.target.value})} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500" /></div>
             
             <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-4 py-3 mt-4 transition-colors">
               Process Payment

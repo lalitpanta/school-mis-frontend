@@ -228,7 +228,10 @@ const TenantStaffLoginPage = () => {
   ];
 
   return (
-    <div className="mis-login-page min-h-screen text-[var(--text-1)]" style={{ background: "var(--bg-main)" }}>
+    <div
+      className="mis-login-page min-h-screen text-[var(--text-1)]"
+      style={{ background: "var(--bg-main)" }}
+    >
       <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid w-full max-w-6xl overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 shadow-[0_30px_90px_rgba(15,23,42,0.75)] backdrop-blur-md lg:grid-cols-[1.15fr_0.85fr]">
           <div className="relative hidden overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.28),_transparent_34%),linear-gradient(135deg,_rgba(15,23,42,1),_rgba(2,6,23,1))] p-8 lg:flex lg:flex-col lg:justify-between xl:p-10">

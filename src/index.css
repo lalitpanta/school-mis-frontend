@@ -255,11 +255,17 @@ textarea {
   color: var(--text-1) !important;
 }
 .mis-login-page input::placeholder,
-.mis-login-page textarea::placeholder { color: var(--text-3) !important; }
+.mis-login-page textarea::placeholder {
+  color: var(--text-3) !important;
+}
 .mis-login-page input:focus,
 .mis-login-page select:focus,
-.mis-login-page textarea:focus { border-color: var(--accent) !important; }
-.mis-login-page .text-white { color: var(--text-1) !important; }
+.mis-login-page textarea:focus {
+  border-color: var(--accent) !important;
+}
+.mis-login-page .text-white {
+  color: var(--text-1) !important;
+}
 .mis-login-feature {
   background: var(--bg-hover);
   border: 1px solid var(--border-dim);
@@ -267,14 +273,21 @@ textarea {
 .mis-login-page [class*="bg-gradient"][class*="text-white"],
 .mis-login-page [class*="bg-linear"][class*="text-white"],
 .mis-login-page [class*="bg-indigo-"][class*="text-white"],
-.mis-login-page [class*="bg-violet-"][class*="text-white"] { color: var(--accent-text) !important; }
+.mis-login-page [class*="bg-violet-"][class*="text-white"] {
+  color: var(--accent-text) !important;
+}
 .mis-login-page [class*="bg-slate-950"],
 .mis-login-page [class*="bg-slate-900"],
 .mis-login-page [class*="bg-slate-800"],
 .mis-login-page [class*="bg-[#0b1220]"],
-.mis-login-page [class*="bg-[#070b14]"] { background-color: var(--bg-card) !important; }
+.mis-login-page [class*="bg-[#070b14]"] {
+  background-color: var(--bg-card) !important;
+}
 .mis-login-page [class*="bg-white\/"],
-.mis-login-page [class*="border-white"] { background-color: var(--bg-hover) !important; border-color: var(--border-dim) !important; }
+.mis-login-page [class*="border-white"] {
+  background-color: var(--bg-hover) !important;
+  border-color: var(--border-dim) !important;
+}
 
 /* react-big-calendar is injected at runtime, so its surface contract lives here. */
 .rbc-calendar {

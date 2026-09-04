@@ -22,6 +22,7 @@ import {
   updatePayrollStatus,
   exportAccountsCsv,
 } from "../../api/accountsApi";
+import FeeStructure from "./FeeStructurePro";
 
 // ── tiny helpers ─────────────────────────────────────────────────────────────
 
@@ -49,6 +50,7 @@ const TYPE_LABEL = { income: "Income", expense: "Expense" };
 
 const TABS = [
   "Overview",
+  "Fee Structure",
   "Fee Collection",
   "Expenses",
   "Payroll",
@@ -1741,12 +1743,15 @@ export default function Accounts() {
                 />
               )}
               {activeTab === 1 && (
+                <FeeStructure />
+              )}
+              {activeTab === 2 && (
                 <FeeCollectionTab
                   collections={collections}
                   overview={overview}
                 />
               )}
-              {activeTab === 2 && (
+              {activeTab === 3 && (
                 <ExpensesTab
                   expenses={expenses}
                   transactions={transactions}
@@ -1756,7 +1761,7 @@ export default function Accounts() {
                   }}
                 />
               )}
-              {activeTab === 3 && (
+              {activeTab === 4 && (
                 <PayrollTab
                   payroll={payroll}
                   loading={payLoading}
@@ -1764,7 +1769,7 @@ export default function Accounts() {
                   onStatus={handlePayrollStatus}
                 />
               )}
-              {activeTab === 4 && (
+              {activeTab === 5 && (
                 <TransactionsTab
                   transactions={transactions}
                   total={txnTotal}
