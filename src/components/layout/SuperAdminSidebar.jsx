@@ -84,8 +84,9 @@ const SuperAdminSidebar = () => {
   return (
     <aside
       style={{
-        background: "#07090f",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
+        background: "var(--bg-sidebar)",
+        borderRight: "1px solid var(--border-dim)",
+        color: "var(--text-1)",
       }}
       className={clsx(
         "relative flex flex-col h-screen shrink-0 transition-all duration-300 ease-in-out select-none z-20",
@@ -95,7 +96,7 @@ const SuperAdminSidebar = () => {
       {/* ── Logo ── */}
       <div
         className="flex items-center gap-2.5 px-4 py-5"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ borderBottom: "1px solid var(--border-dim)" }}
       >
         <div className="w-9 h-9 shrink-0 rounded-xl bg-linear-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg overflow-hidden">
           {brandLogo ? (

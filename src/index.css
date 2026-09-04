@@ -1,240 +1,85 @@
 @import "tailwindcss";
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ════════════════════════════════════════════════
    DESIGN TOKENS — change once, apply everywhere
 ════════════════════════════════════════════════ */
 
-/* Light mode */
+/* One semantic palette for every surface, control, and text role. */
 :root {
-  --bg-main: #f4f6fa;
+  color-scheme: light;
+  --bg-main: #f5f7fb;
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
-  --bg-hover: #eef3fb;
+  --bg-hover: #eef2f7;
   --bg-input: #ffffff;
-  --bg-sidebar: #f8fafd;
-  --border-dim: rgba(148, 163, 184, 0.18);
-  --border-card: #d1d5db;
-  --text-1: #0f172a;
-  --text-2: #475569;
-  --text-3: #64748b;
+  --bg-sidebar: #ffffff;
+  --border-dim: #e2e8f0;
+  --border-card: #cbd5e1;
+  --text-1: #172033;
+  --text-2: #526078;
+  --text-3: #718096;
   --text-inv: #ffffff;
   --accent: #6366f1;
-  --radio-accent: #60a5fa; /* blue */
-  --radio-dot: #111827; /* dark knob in light mode */
-  --toggle-knob: #111827; /* dark knob in light mode */
+  --accent-text: #ffffff;
   --accent-dim: rgba(99, 102, 241, 0.14);
-  --shadow-card: 0 16px 48px rgba(15, 23, 42, 0.08);
-}
-
-/* Dark mode */
-.dark {
-  --bg-main: #0f0f1a;
-  --bg-surface: #1a1a2e;
-  --bg-card: #1a1a2e;
-  --bg-hover: #2d2d45;
-  --bg-input: #161625;
-  --bg-sidebar: #161625;
-  --border-dim: rgba(255, 255, 255, 0.08);
-  --border-card: #2d2d45;
-  --text-1: #e2e8f0;
-  --text-2: #6b7280;
-  --text-3: #6b7280;
-  --text-inv: #e2e8f0;
-  --accent: #6366f1;
-  --radio-accent: #60a5fa; /* ensure blue in dark mode too */
-  --radio-dot: #ffffff; /* white knob in dark mode */
-  --toggle-knob: #ffffff; /* white knob in dark mode */
-  --accent-dim: rgba(99, 102, 241, 0.18);
-  --shadow-card: 0 12px 36px rgba(0, 0, 0, 0.45);
-}
-
-:not(.dark) [class*="bg-slate-950"],
-:not(.dark) [class*="bg-slate-900"],
-:not(.dark) [class*="bg-gray-950"],
-:not(.dark) [class*="bg-gray-900"],
-:not(.dark) [class*="bg-slate-800"],
-:not(.dark) [class*="bg-slate-700"],
-:not(.dark) [class*="bg-gray-800"],
-:not(.dark) [class*="bg-gray-700"],
-:not(.dark) [class*="bg-black"],
-:not(.dark) [class*="bg-[#0f141e]"],
-:not(.dark) [class*="bg-[#1a1a2e]"],
-:not(.dark) [class*="bg-[#0f172a]"] {
-  background-color: var(--bg-surface) !important;
-  color: var(--text-1) !important;
-}
-
-:not(.dark) [class*="bg-slate-600"],
-:not(.dark) [class*="bg-slate-500"],
-:not(.dark) [class*="bg-gray-600"],
-:not(.dark) [class*="bg-gray-500"] {
-  background-color: var(--bg-hover) !important;
-  color: var(--text-1) !important;
-}
-
-:not(.dark) .border-slate-700,
-:not(.dark) .border-slate-800,
-:not(.dark) .border-slate-900,
-:not(.dark) .border-gray-700,
-:not(.dark) .border-gray-800,
-:not(.dark) .border-gray-900 {
-  border-color: var(--border-card) !important;
-}
-
-:not(.dark) .text-white {
-  color: var(--text-1) !important;
-}
-
-:not(.dark) .text-slate-300,
-:not(.dark) .text-gray-300,
-:not(.dark) .text-slate-400,
-:not(.dark) .text-gray-400 {
-  color: var(--text-2) !important;
-}
-
-:not(.dark) .text-slate-200,
-:not(.dark) .text-gray-200,
-:not(.dark) .text-slate-100,
-:not(.dark) .text-gray-100 {
-  color: var(--text-3) !important;
+  --radio-accent: #6366f1;
+  --radio-dot: #172033;
+  --toggle-knob: #172033;
+  --success: #16805e;
+  --warning: #b45309;
+  --danger: #c2415d;
+  --info: #2563eb;
+  --shadow-card: 0 12px 32px rgba(15, 23, 42, 0.08);
+  --shadow-overlay: 0 24px 70px rgba(15, 23, 42, 0.2);
+  --overlay: rgba(15, 23, 42, 0.32);
 }
 
 .dark {
   color-scheme: dark;
+  --bg-main: #0d111c;
+  --bg-surface: #151c2b;
+  --bg-card: #192235;
+  --bg-hover: #243149;
+  --bg-input: #111927;
+  --bg-sidebar: #111827;
+  --border-dim: #2b3950;
+  --border-card: #3a4a63;
+  --text-1: #f1f5f9;
+  --text-2: #b2bfd1;
+  --text-3: #8d9bb0;
+  --text-inv: #0d111c;
+  --accent-dim: rgba(99, 102, 241, 0.22);
+  --radio-dot: #ffffff;
+  --toggle-knob: #ffffff;
+  --success: #43d39e;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  --info: #60a5fa;
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.28);
+  --shadow-overlay: 0 24px 70px rgba(0, 0, 0, 0.52);
+  --overlay: rgba(2, 6, 23, 0.74);
 }
 
-:root {
-  color-scheme: light;
-}
-
-/* Normalize legacy slate and gray dark-style classes to theme-aware surfaces */
-[class*="bg-slate-950"],
-[class*="bg-slate-900"],
-[class*="bg-gray-950"],
-[class*="bg-gray-900"],
-[class*="bg-black"],
-[class*="bg-[#0f141e]"],
-[class*="bg-[#1a1a2e]"],
-[class*="bg-[#0f172a]"] {
-  background-color: var(--bg-card) !important;
-  color: var(--text-1) !important;
-}
-
-[class*="bg-slate-800"],
-[class*="bg-slate-700"],
-[class*="bg-gray-800"],
-[class*="bg-gray-700"],
-[class*="bg-[#1e293b]"] {
-  background-color: var(--bg-surface) !important;
-  color: var(--text-1) !important;
-}
-
-[class*="bg-slate-600"],
-[class*="bg-slate-500"],
-[class*="bg-gray-600"],
-[class*="bg-gray-500"] {
-  background-color: var(--bg-hover) !important;
-  color: var(--text-1) !important;
-}
-
-[class*="border-slate-900"],
-[class*="border-gray-900"],
-[class*="border-slate-700"],
-[class*="border-slate-600"],
-[class*="border-slate-500"],
-[class*="border-gray-700"],
-[class*="border-gray-600"],
-[class*="border-gray-500"] {
-  border-color: var(--border-card) !important;
-}
-
-:not(.dark) .text-slate-100,
-:not(.dark) .text-gray-100,
-:not(.dark) .text-slate-200,
-:not(.dark) .text-gray-200,
-:not(.dark) .text-slate-300,
-:not(.dark) .text-gray-300,
-:not(.dark) .text-slate-400,
-:not(.dark) .text-gray-400 {
-  color: var(--text-2) !important;
-}
-
-[class*="bg-slate-950"],
-[class*="bg-slate-900"],
-[class*="bg-slate-800"],
-[class*="bg-slate-700"],
-[class*="bg-slate-600"],
-[class*="bg-slate-500"],
-[class*="bg-gray-950"],
-[class*="bg-gray-900"],
-[class*="bg-gray-800"],
-[class*="bg-gray-700"],
-[class*="bg-gray-600"],
-[class*="bg-gray-500"],
-[class*="bg-black"],
-[class*="bg-[#0f141e]"],
-[class*="bg-[#1a1a2e]"],
-[class*="bg-[#0f172a]"],
-[class*="bg-[#1e293b]"] {
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.dark [class*="bg-white"],
-.dark .bg-white,
-.dark .bg-slate-50,
-.dark .bg-slate-100,
-.dark .bg-slate-200,
-.dark .bg-gray-50,
-.dark .bg-gray-100,
-.dark .bg-gray-200 {
-  background-color: var(--bg-card) !important;
-  color: var(--text-1) !important;
-}
-
-.dark .border-gray-100,
-.dark .border-gray-200,
-.dark .border-gray-300,
-.dark .border-slate-100,
-.dark .border-slate-200,
-.dark .border-slate-300 {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-.dark .text-slate-900,
-.dark .text-gray-900,
-.dark .text-slate-800,
-.dark .text-gray-800 {
-  color: var(--text-1) !important;
-}
-
-.dark .text-slate-700,
-.dark .text-gray-700,
-.dark .text-slate-600,
-.dark .text-gray-600,
-.dark .text-slate-500,
-.dark .text-gray-500,
-.dark .text-slate-400,
-.dark .text-gray-400,
-.dark .text-slate-300,
-.dark .text-gray-300 {
-  color: var(--text-2) !important;
-}
-
-.dark .text-slate-200,
-.dark .text-gray-200,
-.dark .text-slate-100,
-.dark .text-gray-100 {
-  color: #e2e8f0 !important;
-}
-
-.dark .shadow-lg,
-.dark .shadow-xl,
-.dark .shadow-2xl {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35) !important;
-}
+/* Compatibility bridge for legacy Tailwind color utilities. */
+[class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"],
+[class*="bg-gray-900"], [class*="bg-black"], [class*="bg-[#0f141e]"],
+[class*="bg-[#1a1a2e]"], [class*="bg-[#0f172a]"] { background-color: var(--bg-card) !important; }
+[class*="bg-slate-800"], [class*="bg-slate-700"], [class*="bg-gray-800"],
+[class*="bg-gray-700"], [class*="bg-[#1e293b]"] { background-color: var(--bg-surface) !important; }
+[class*="bg-slate-600"], [class*="bg-slate-500"], [class*="bg-gray-600"],
+[class*="bg-gray-500"] { background-color: var(--bg-hover) !important; }
+[class*="border-slate-900"], [class*="border-slate-800"], [class*="border-slate-700"],
+[class*="border-slate-600"], [class*="border-gray-900"], [class*="border-gray-800"],
+[class*="border-gray-700"], [class*="border-gray-600"] { border-color: var(--border-card) !important; }
+.dark [class*="bg-white"], .dark .bg-white, .dark .bg-slate-50, .dark .bg-slate-100,
+.dark .bg-gray-50, .dark .bg-gray-100, .dark .bg-gray-200 { background-color: var(--bg-card) !important; }
+.dark .text-slate-900, .dark .text-gray-900, .dark .text-slate-800, .dark .text-gray-800,
+.dark .text-slate-700, .dark .text-gray-700, .dark .text-slate-600, .dark .text-gray-600,
+.dark .text-slate-500, .dark .text-gray-500, .dark .text-slate-400, .dark .text-gray-400,
+.dark .text-slate-300, .dark .text-gray-300 { color: var(--text-2) !important; }
+.dark .text-slate-200, .dark .text-gray-200, .dark .text-slate-100, .dark .text-gray-100,
+.dark .text-white { color: var(--text-1) !important; }
 
 /* ── Base reset ── */
 *,
@@ -295,9 +140,9 @@ body {
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .app-modal-surface select,
 .app-modal-surface textarea {
-  background: rgba(15, 23, 42, 0.78) !important;
-  border: 1px solid rgba(51, 65, 85, 0.95) !important;
-  color: #e2e8f0 !important;
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-card) !important;
+  color: var(--text-1) !important;
   border-radius: 0.9rem !important;
   box-shadow: none !important;
 }
@@ -306,19 +151,19 @@ body {
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
 .app-modal-surface select:focus,
 .app-modal-surface textarea:focus {
-  border-color: rgba(245, 158, 11, 0.9) !important;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-dim) !important;
   outline: none !important;
 }
 
 .app-modal-surface input::placeholder,
 .app-modal-surface textarea::placeholder {
-  color: #94a3b8 !important;
+  color: var(--text-3) !important;
 }
 
 .app-modal-surface option {
-  background: #0f172a !important;
-  color: #e2e8f0 !important;
+  background: var(--bg-input) !important;
+  color: var(--text-1) !important;
 }
 
 /* Radio buttons: ensure visibility on light and dark themes, including disabled state */
@@ -430,80 +275,6 @@ input[type="radio"]:disabled::after {
   margin-bottom: 0.25rem;
 }
 
-/* ── EmployeePage: Always dark with high-contrast text ── */
-:root:not(.dark) .min-h-screen.bg-gradient-to-br {
-  background: linear-gradient(
-    135deg,
-    rgba(15, 23, 42, 0.98) 0%,
-    rgba(30, 41, 59, 0.98) 100%
-  ) !important;
-}
-
-:root:not(.dark) .min-h-screen .text-white {
-  color: #e2e8f0 !important;
-}
-
-:root:not(.dark) .min-h-screen .text-slate-300 {
-  color: #e0e7ff !important;
-}
-
-:root:not(.dark) .min-h-screen .text-slate-400 {
-  color: #cbd5e1 !important;
-}
-
-/* Form inputs and buttons in EmployeePage */
-:root:not(.dark) .min-h-screen .bg-slate-900 {
-  background-color: rgba(15, 23, 42, 0.7) !important;
-}
-
-:root:not(.dark) .min-h-screen .bg-slate-800,
-:root:not(.dark) .min-h-screen .bg-slate-800\/60 {
-  background-color: rgba(30, 41, 59, 0.65) !important;
-}
-
-:root:not(.dark) .min-h-screen .bg-slate-700,
-:root:not(.dark) .min-h-screen .bg-slate-700\/40 {
-  background-color: rgba(51, 65, 85, 0.5) !important;
-}
-
-:root:not(.dark) .min-h-screen .border-slate-700,
-:root:not(.dark) .min-h-screen .border-slate-600 {
-  border-color: rgba(148, 163, 184, 0.4) !important;
-}
-
-/* ── Sidebar: Always dark with bright text ── */
-aside {
-  --bg-sidebar: #0f0f1a !important;
-  --border-card: #2d2d45 !important;
-  --text-1: #e2e8f0 !important;
-  --text-2: #cbd5e1 !important;
-}
-
-/* Ensure sidebar text stays bright in light mode */
-:root:not(.dark) aside .text-slate-400,
-:root:not(.dark) aside .text-slate-300,
-:root:not(.dark) aside .text-slate-200 {
-  color: #cbd5e1 !important;
-}
-
-:root:not(.dark) aside .text-slate-600 {
-  color: #94a3b8 !important;
-}
-
-/* Sidebar settings subdropdown styling */
-:root:not(.dark) aside .bg-white\/5 {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-:root:not(.dark) aside .hover\:text-white:hover {
-  color: #f1f5f9 !important;
-}
-
-/* Sidebar hover states */
-:root:not(.dark) aside .hover\:bg-white\/5:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {
   width: 5px;
@@ -513,7 +284,7 @@ aside {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--border-card);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {

@@ -11,9 +11,9 @@ const Toast = () => (
     toastOptions={{
       duration: 4000,
       style: {
-        background: '#1e293b',
-        color:      '#f1f5f9',
-        border:     '1px solid #334155',
+        background: 'var(--bg-card)',
+        color:      'var(--text-1)',
+        border:     '1px solid var(--border-card)',
         borderRadius: '12px',
         fontSize:   '14px',
       },

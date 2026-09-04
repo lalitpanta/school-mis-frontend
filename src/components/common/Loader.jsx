@@ -24,7 +24,7 @@ const Loader = ({ size = 'md', fullPage = false, text = '' }) => {
 
   if (fullPage) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'var(--overlay)' }}>
         {spinner}
       </div>
     );

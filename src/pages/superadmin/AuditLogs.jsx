@@ -337,15 +337,15 @@ const SuperAdminAuditLogs = () => {
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(15, 23, 42, 0.5);
+          background: var(--bg-hover);
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(51, 65, 85, 0.8);
+          background: var(--border-card);
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(71, 85, 105, 1);
+          background: var(--accent);
         }
       `}} />
     </div>

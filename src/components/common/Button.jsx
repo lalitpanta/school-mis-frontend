@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 
 const variants = {
-  primary:  { background: 'var(--accent)', color: '#fff', border: 'none' },
-  danger:   { background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none' },
+  primary:  { background: 'var(--accent)', color: 'var(--accent-text)', border: 'none' },
+  danger:   { background: 'var(--danger)', color: 'var(--accent-text)', border: 'none' },
   ghost:    { background: 'transparent', color: 'var(--text-2)', border: '1px solid var(--border-dim)' },
   outline:  { background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)' },
   secondary:{ background: 'var(--bg-surface)', color: 'var(--text-1)', border: '1px solid var(--border-dim)' },

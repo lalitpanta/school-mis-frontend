@@ -197,21 +197,21 @@ const css = `
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 .mis-sidebar {
-  --sb-bg:         #0d0f1e;
-  --sb-panel:      #11141f;
-  --sb-panel-2:    #151827;
-  --sb-hover:      #1b1f30;
-  --sb-active:     #201a3d;
-  --sb-border:     #212537;
-  --sb-border-s:   #1a1d2c;
-  --sb-v500:       #7c6cf6;
-  --sb-v400:       #9b8dfa;
-  --sb-vglow:      rgba(124,108,246,0.35);
-  --sb-hi:         #eef0fa;
-  --sb-mid:        #a6acc4;
-  --sb-low:        #6b7290;
-  --sb-section:    #4d5375;
-  --sb-danger:     #f0607a;
+  --sb-bg:         var(--bg-sidebar);
+  --sb-panel:      var(--bg-sidebar);
+  --sb-panel-2:    var(--bg-surface);
+  --sb-hover:      var(--bg-hover);
+  --sb-active:     var(--accent-dim);
+  --sb-border:     var(--border-card);
+  --sb-border-s:   var(--border-dim);
+  --sb-v500:       var(--accent);
+  --sb-v400:       var(--accent);
+  --sb-vglow:      var(--accent-dim);
+  --sb-hi:         var(--text-1);
+  --sb-mid:        var(--text-2);
+  --sb-low:        var(--text-3);
+  --sb-section:    var(--text-3);
+  --sb-danger:     var(--danger);
   --sb-w:          296px;
   --sb-wc:         76px;
 
@@ -220,7 +220,7 @@ const css = `
   height: 100vh;
   position: sticky;
   top: 0;
-  background: linear-gradient(180deg, var(--sb-panel) 0%, var(--sb-bg) 100%);
+  background: var(--sb-bg);
   border-right: 1px solid var(--sb-border-s);
   display: flex;
   flex-direction: column;
@@ -321,7 +321,7 @@ const css = `
 .sb-search-input::placeholder { color: var(--sb-low); }
 .sb-kbd {
   font-size: 10px; color: var(--sb-low);
-  background: #0a0c16; border: 1px solid var(--sb-border);
+  background: var(--sb-panel); border: 1px solid var(--sb-border);
   border-radius: 4px; padding: 1px 5px; flex-shrink: 0;
 }
 
@@ -442,7 +442,7 @@ const css = `
   position: absolute;
   left: calc(100% + 12px); top: 50%;
   transform: translateY(-50%);
-  background: #1c2032; border: 1px solid var(--sb-border);
+  background: var(--sb-panel-2); border: 1px solid var(--sb-border);
   padding: 7px 12px; border-radius: 7px;
   font-size: 13.5px; font-weight: 500;
   color: var(--sb-hi); white-space: nowrap;

@@ -37,8 +37,8 @@ const AdminRoute = ({ element }) => {
   if (loading) {
     return (
       <div
-        style={{ background: "#070b14", minHeight: "100vh" }}
-        className="flex items-center justify-center text-white"
+        style={{ background: "var(--bg-main)", minHeight: "100vh", color: "var(--text-1)" }}
+        className="flex items-center justify-center"
       >
         <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
@@ -61,8 +61,8 @@ const SuperAdminRoute = ({ element }) => {
   if (loading) {
     return (
       <div
-        style={{ background: "#070b14", minHeight: "100vh" }}
-        className="flex items-center justify-center text-white"
+        style={{ background: "var(--bg-main)", minHeight: "100vh", color: "var(--text-1)" }}
+        className="flex items-center justify-center"
       >
         <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
@@ -85,8 +85,8 @@ const TenantRoute = ({ element }) => {
   if (loading) {
     return (
       <div
-        style={{ background: "#070b14", minHeight: "100vh" }}
-        className="flex items-center justify-center text-white"
+        style={{ background: "var(--bg-main)", minHeight: "100vh", color: "var(--text-1)" }}
+        className="flex items-center justify-center"
       >
         <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
@@ -109,8 +109,8 @@ const ProtectedRoute = ({ element }) => {
   if (loading) {
     return (
       <div
-        style={{ background: "#070b14", minHeight: "100vh" }}
-        className="flex items-center justify-center text-white"
+        style={{ background: "var(--bg-main)", minHeight: "100vh", color: "var(--text-1)" }}
+        className="flex items-center justify-center"
       >
         <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>

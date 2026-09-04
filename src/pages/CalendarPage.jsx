@@ -283,7 +283,7 @@ const CalendarPage = () => {
             <ChevronLeft size={16} />
           </button>
 
-          <div className="text-center min-w-45">
+          <div className="text-center min-w-[180px]">
             <p className="text-sm font-bold text-white">{BS_MONTHS[view.month - 1]} {view.year}</p>
             <p className="text-[11px] text-slate-500">{adLabel}</p>
           </div>
@@ -408,7 +408,7 @@ const CalendarPage = () => {
                 onClick={() => handleCellClick(bsDay, current)}
                 className={clsx(
                   'relative p-3 rounded-2xl flex flex-col gap-1 transition-all duration-300 cursor-pointer shadow-sm m-1',
-                  !current && 'opacity-0 pointer-events-none',
+                  !current && 'opacity-10 opacity-0 pointer-events-none',
                   current && (dayType ? s.cell : 'bg-slate-800/40 border border-slate-700/50 hover:bg-slate-700/60'),
                   today && 'ring-4 ring-indigo-500 ring-offset-4 ring-offset-[#0c1220] z-10',
                 )}

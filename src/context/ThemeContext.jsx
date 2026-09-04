@@ -85,7 +85,9 @@ const applyToDOM = (isDark, primary) => {
 export const ThemeProvider = ({ children }) => {
   const [isDark,  setIsDark]  = useState(() => {
     const saved = localStorage.getItem('mis_theme');
-    return saved ? saved === 'dark' : true; // default dark
+    return saved
+      ? saved === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [primary, setPrimaryState] = useState(
     () => localStorage.getItem('mis_primary') || 'indigo'
