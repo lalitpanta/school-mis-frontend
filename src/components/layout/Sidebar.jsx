@@ -508,12 +508,12 @@ const css = `
 
 /* ── Nav item ───────────────────────────────── */
 .sb-item {
-  display: flex; align-items: center; gap: 13px;
-  padding: 10.5px 12px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 11.5px 12px;
   border-radius: 9px;
   color: var(--sb-mid);
   text-decoration: none;
-  font-size: 15px; font-weight: 600;
+  font-size: 16px; font-weight: 600;
   cursor: pointer;
   position: relative;
   transition: background .15s, color .15s;
@@ -525,7 +525,7 @@ const css = `
 }
 .sb-item:hover { background: var(--sb-hover); color: var(--sb-hi); }
 
-.sb-item svg:first-child { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; }
+.sb-item svg:first-child { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; }
 
 .sb-item-label { overflow: hidden; text-overflow: ellipsis; flex: 1; }
 .mis-sidebar.sb-collapsed .sb-item-label { display: none; }
@@ -586,8 +586,8 @@ const css = `
 .mis-sidebar.sb-collapsed .sb-submenu { display: none; }
 
 .sb-submenu .sb-item {
-  padding: 8.5px 12px 8.5px 22px;
-  font-size: 14px;
+  padding: 9px 12px 9px 22px;
+  font-size: 14.5px;
   font-weight: 500;
 }
 .sb-submenu .sb-item svg:first-child { width: 15px; height: 15px; }

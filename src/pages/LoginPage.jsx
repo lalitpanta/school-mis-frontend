@@ -104,20 +104,20 @@ const LoginPage = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
-      style={{ background: "#070b14" }}
+      className="mis-login-page min-h-screen flex flex-col items-center justify-center px-4 py-10"
+      style={{ background: "var(--bg-main)", color: "var(--text-1)" }}
     >
       {/* ── App Brand ── */}
       <div className="text-center mb-7">
         <div className="flex items-center justify-center gap-3 mb-3">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/30">
-            <GraduationCap size={30} className="text-white" />
+            <GraduationCap size={30} className="text-[var(--accent-text)]" />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl font-extrabold text-[var(--text-1)] tracking-tight">
             School Management System
           </h1>
         </div>
-        <p className="text-sm" style={{ color: "#64748b" }}>
+        <p className="text-sm" style={{ color: "var(--text-2)" }}>
           Multi-Tenant School Management Platform
         </p>
       </div>
@@ -126,9 +126,9 @@ const LoginPage = () => {
       <div
         className="w-full max-w-md rounded-2xl p-7"
         style={{
-          background: "#0f172a",
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-dim)",
+          boxShadow: "var(--shadow-card)",
         }}
       >
         {/* Card header */}
@@ -140,7 +140,7 @@ const LoginPage = () => {
           ) : (
             <Building2 size={20} className="text-indigo-400" />
           )}
-          <h2 className="text-xl font-bold text-white">
+          <h2 className="text-xl font-bold text-[var(--text-1)]">
             {tab === "admin"
               ? "System Admin Login"
               : tab === "staff"
@@ -148,7 +148,7 @@ const LoginPage = () => {
                 : "Tenant Login"}
           </h2>
         </div>
-        <p className="text-sm mb-5" style={{ color: "#64748b" }}>
+        <p className="text-sm mb-5" style={{ color: "var(--text-2)" }}>
           {tab === "admin"
             ? "Login as system administrator to manage tenants."
             : tab === "staff"
@@ -159,7 +159,10 @@ const LoginPage = () => {
         {/* Tabs */}
         <div
           className="flex rounded-xl p-1 mb-6"
-          style={{ background: "#1e293b" }}
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-dim)",
+          }}
         >
           {[
             { key: "tenant", label: "Tenant", Icon: Building2 },
@@ -176,8 +179,8 @@ const LoginPage = () => {
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200"
               style={
                 tab === key
-                  ? { background: "#334155", color: "#f1f5f9" }
-                  : { background: "transparent", color: "#64748b" }
+                  ? { background: "var(--bg-hover)", color: "var(--text-1)" }
+                  : { background: "transparent", color: "var(--text-2)" }
               }
             >
               <Icon size={15} />
@@ -213,7 +216,7 @@ const LoginPage = () => {
             <div>
               <label
                 className="block text-sm font-medium mb-1.5"
-                style={{ color: "#94a3b8" }}
+                style={{ color: "var(--text-2)" }}
               >
                 Tenant Name / Slug
               </label>
@@ -227,18 +230,17 @@ const LoginPage = () => {
                 })}
                 type="text"
                 placeholder="tenant-name"
-                className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200"
+                className="mis-input px-4 py-3 text-sm transition-all duration-200"
                 style={{
-                  background: "#1e293b",
                   border: errors.tenantSlug
                     ? "1px solid #f87171"
-                    : "1px solid rgba(255,255,255,0.08)",
+                    : "1px solid var(--border-card)",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
                 onBlur={(e) =>
                   (e.target.style.borderColor = errors.tenantSlug
                     ? "#f87171"
-                    : "rgba(255,255,255,0.08)")
+                    : "var(--border-card)")
                 }
               />
               {errors.tenantSlug && (
@@ -253,7 +255,7 @@ const LoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium mb-1.5"
-              style={{ color: "#94a3b8" }}
+              style={{ color: "var(--text-2)" }}
             >
               Email
             </label>
@@ -266,18 +268,17 @@ const LoginPage = () => {
               placeholder={
                 tab === "admin" ? "admin@system.local" : "tenant@school.local"
               }
-              className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200"
+              className="mis-input px-4 py-3 text-sm transition-all duration-200"
               style={{
-                background: "#1e293b",
                 border: errors.email
                   ? "1px solid #f87171"
-                  : "1px solid rgba(255,255,255,0.08)",
+                  : "1px solid var(--border-card)",
               }}
-              onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
               onBlur={(e) =>
                 (e.target.style.borderColor = errors.email
                   ? "#f87171"
-                  : "rgba(255,255,255,0.08)")
+                  : "var(--border-card)")
               }
             />
             {errors.email && (
@@ -291,7 +292,7 @@ const LoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium mb-1.5"
-              style={{ color: "#94a3b8" }}
+              style={{ color: "var(--text-2)" }}
             >
               Password
             </label>
@@ -303,18 +304,17 @@ const LoginPage = () => {
                 })}
                 type={showPass ? "text" : "password"}
                 placeholder="••••••••••••••••"
-                className="w-full px-4 py-3 pr-12 rounded-xl text-sm text-white outline-none transition-all duration-200"
+                className="mis-input px-4 py-3 pr-12 text-sm transition-all duration-200"
                 style={{
-                  background: "#1e293b",
                   border: errors.password
                     ? "1px solid #f87171"
-                    : "1px solid rgba(255,255,255,0.08)",
+                    : "1px solid var(--border-card)",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
                 onBlur={(e) =>
                   (e.target.style.borderColor = errors.password
                     ? "#f87171"
-                    : "rgba(255,255,255,0.08)")
+                    : "var(--border-card)")
                 }
               />
               <button
@@ -336,12 +336,11 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl text-sm font-bold text-white mt-2 transition-all duration-200 disabled:opacity-60"
+            className="w-full py-3.5 rounded-xl text-sm font-bold mt-2 transition-all duration-200 disabled:opacity-60"
             style={{
-              background: loading
-                ? "#4338ca"
-                : "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
-              boxShadow: "0 8px 24px rgba(99,102,241,0.35)",
+              background: "var(--accent)",
+              color: "var(--accent-text)",
+              boxShadow: "0 8px 24px var(--accent-dim)",
             }}
           >
             {loading ? (
@@ -357,7 +356,7 @@ const LoginPage = () => {
       </div>
 
       {/* ── Footer ── */}
-      <p className="mt-8 text-xs" style={{ color: "#334155" }}>
+      <p className="mt-8 text-xs" style={{ color: "var(--text-3)" }}>
         Copyright © {new Date().getFullYear()} School Management System. All
         rights reserved.
       </p>

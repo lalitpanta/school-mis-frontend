@@ -166,7 +166,7 @@ const SystemLoginPage = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
+      className="mis-login-page min-h-screen flex flex-col items-center justify-center px-4 py-10"
       style={{ background: "#070b14" }}
     >
       <div className="text-center mb-7">
