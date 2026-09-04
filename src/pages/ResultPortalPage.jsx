@@ -107,50 +107,50 @@ const ResultPortalPage = () => {
   }, [resultData]);
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white px-4 py-10">
-      <div className="mx-auto max-w-6xl rounded-3xl border border-white/10 bg-[#0f172a]/90 p-6 shadow-2xl shadow-black/30">
+    <div className="min-h-screen px-4 py-10 text-[var(--text-1)]" style={{ background: "var(--bg-main)" }}>
+      <div className="mis-card mx-auto max-w-6xl p-6">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-indigo-400">
               Result Portal
             </p>
-            <h1 className="text-3xl font-black">Public Result Distribution</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-400">
+            <h1 className="mis-page-title">Public Result Distribution</h1>
+            <p className="mt-2 max-w-2xl text-[var(--text-2)]">
               Admins publish results once. Students and parents can open the
               same public link, enter the roll number and date of birth, and
               view or download the result without logging in.
             </p>
           </div>
-          <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/10 px-4 py-3 text-sm text-indigo-200">
+          <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/10 px-4 py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-300">
             No login required
           </div>
         </div>
 
         <form
           onSubmit={handleLookup}
-          className="grid gap-4 rounded-2xl border border-slate-800 bg-slate-900/80 p-5 md:grid-cols-[1fr_1fr_auto]"
+          className="grid gap-4 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-5 md:grid-cols-[1fr_1fr_auto]"
         >
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-300">
+            <label className="mb-2 block text-sm font-semibold text-[var(--text-1)]">
               Roll number
             </label>
             <input
               value={rollNumber}
               onChange={(e) => setRollNumber(e.target.value)}
               placeholder="101"
-              className="w-full rounded-xl border border-slate-700 bg-[#0f172a] px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+              className="mis-input"
               required
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-300">
+            <label className="mb-2 block text-sm font-semibold text-[var(--text-1)]">
               Date of birth
             </label>
             <input
               type="date"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-[#0f172a] px-3 py-2.5 text-sm outline-none focus:border-indigo-500"
+              className="mis-input"
               required
             />
           </div>
@@ -170,7 +170,7 @@ const ResultPortalPage = () => {
         )}
 
         {resultData?.student && (
-          <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+          <div className="mt-6 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-5">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-indigo-500/10 p-3 text-indigo-300">
@@ -180,38 +180,38 @@ const ResultPortalPage = () => {
                   <h2 className="text-xl font-semibold">
                     {resultData.student.full_name}
                   </h2>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-[var(--text-2)]">
                     Roll No: {resultData.student.roll_no}
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleDownloadPdf}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-700"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-card)] bg-[var(--bg-hover)] px-4 py-2.5 text-sm font-semibold text-[var(--text-1)] transition hover:border-[var(--accent)]"
               >
                 <Download size={16} /> Download PDF
               </button>
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4">
-                <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+              <div className="rounded-xl border border-[var(--border-dim)] bg-[var(--bg-card)] p-4">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-2)]">
                   Total Subjects
                 </p>
-                <p className="mt-2 text-2xl font-black text-white">
+                <p className="mt-2 text-2xl font-black text-[var(--text-1)]">
                   {summary.length}
                 </p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4">
-                <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+              <div className="rounded-xl border border-[var(--border-dim)] bg-[var(--bg-card)] p-4">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-2)]">
                   Passed
                 </p>
                 <p className="mt-2 text-2xl font-black text-emerald-400">
                   {summary.filter((s) => s.is_pass).length}
                 </p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4">
-                <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+              <div className="rounded-xl border border-[var(--border-dim)] bg-[var(--bg-card)] p-4">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-2)]">
                   Failed
                 </p>
                 <p className="mt-2 text-2xl font-black text-rose-400">
@@ -226,18 +226,18 @@ const ResultPortalPage = () => {
                   key={exam.exam_format_id}
                   className="overflow-hidden rounded-2xl border border-slate-800"
                 >
-                  <div className="bg-slate-800/80 px-4 py-3">
+                  <div className="bg-[var(--bg-hover)] px-4 py-3">
                     <h3 className="text-lg font-semibold">
                       {exam.exam_type || "Exam"}
                     </h3>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-[var(--text-2)]">
                       {exam.term || ""} • {exam.class_name || "-"} •{" "}
                       {exam.section_name || "-"}
                     </p>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-slate-800 text-sm">
-                      <thead className="bg-slate-900/80 text-left text-slate-400">
+                      <thead className="bg-[var(--bg-hover)] text-left text-[var(--text-2)]">
                         <tr>
                           <th className="px-4 py-3">Subject</th>
                           <th className="px-4 py-3">Theory</th>
@@ -247,7 +247,7 @@ const ResultPortalPage = () => {
                           <th className="px-4 py-3">Remarks</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800 bg-[#0f172a] text-slate-200">
+                      <tbody className="divide-y divide-[var(--border-dim)] bg-[var(--bg-card)] text-[var(--text-1)]">
                         {exam.subjects.map((subject) => (
                           <tr
                             key={

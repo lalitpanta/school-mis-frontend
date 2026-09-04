@@ -99,35 +99,35 @@ const ResultPortalModulePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050816] px-4 py-8 text-white">
+    <div className="min-h-screen px-4 py-8 text-[var(--text-1)]" style={{ background: "var(--bg-main)" }}>
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="rounded-3xl border border-white/10 bg-[#0f172a]/90 p-6 shadow-2xl shadow-black/30">
+        <div className="mis-card p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.35em] text-indigo-400">
                 Result Portal
               </p>
-              <h1 className="text-3xl font-black">
+              <h1 className="mis-page-title">
                 Manage public result distribution
               </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-400">
+              <p className="mt-2 max-w-2xl text-[var(--text-2)]">
                 Share one public link with students and parents. They only need
                 the roll number and date of birth to open the result, view
                 marks, grades, pass/fail status, and download a PDF.
               </p>
             </div>
-            <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/10 px-4 py-3 text-sm text-indigo-200">
+            <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/10 px-4 py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-300">
               {portalConfig.enabled ? "Portal is live" : "Portal is disabled"}
             </div>
           </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
+          <div className="mis-card p-6">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold">Portal controls</h2>
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-[var(--text-2)]">
                   Enable, disable, or revoke the shared result link at any time.
                 </p>
               </div>
@@ -147,8 +147,8 @@ const ResultPortalModulePage = () => {
               </button>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-slate-800 bg-[#0f172a] p-4">
-              <label className="mb-2 block text-sm font-semibold text-slate-300">
+            <div className="mt-6 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4">
+              <label className="mb-2 block text-sm font-semibold text-[var(--text-1)]">
                 Public link
               </label>
               <div className="flex flex-col gap-3 md:flex-row">
@@ -156,63 +156,63 @@ const ResultPortalModulePage = () => {
                   type="text"
                   readOnly
                   value={publicLink}
-                  className="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-slate-200 outline-none"
+                  className="mis-input flex-1"
                 />
                 <button
                   onClick={copyLink}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-700"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--border-card)] bg-[var(--bg-hover)] px-4 py-2.5 text-sm font-semibold text-[var(--text-1)] transition hover:border-[var(--accent)]"
                 >
                   <Copy size={16} /> {copied ? "Copied" : "Copy link"}
                 </button>
               </div>
-              <p className="mt-3 text-sm text-slate-400">
+              <p className="mt-3 text-sm text-[var(--text-2)]">
                 Students and parents open this link and enter their roll number
                 plus date of birth.
               </p>
             </div>
 
             <div className="mt-6 space-y-3">
-              <label className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-3 text-sm text-slate-300">
+              <label className="flex items-center gap-3 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-3 text-sm text-[var(--text-1)]">
                 <input
                   type="checkbox"
                   checked={portalConfig.allowDownload}
                   onChange={(e) =>
                     savePortalConfig({ allowDownload: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-900"
+                  className="h-4 w-4 rounded"
                 />
                 Allow PDF download from the public result page
               </label>
-              <label className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-3 text-sm text-slate-300">
+              <label className="flex items-center gap-3 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-3 text-sm text-[var(--text-1)]">
                 <input
                   type="checkbox"
                   checked={portalConfig.allowPublicLookup}
                   onChange={(e) =>
                     savePortalConfig({ allowPublicLookup: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-900"
+                  className="h-4 w-4 rounded"
                 />
                 Allow public lookup without login
               </label>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
+          <div className="mis-card p-6">
             <div className="flex items-center gap-2 text-lg font-semibold">
               <Send size={18} className="text-indigo-400" />
               Published exams
             </div>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-[var(--text-2)]">
               Publish an exam to make its results visible through the public
               portal.
             </p>
 
             {loading ? (
-              <div className="mt-6 rounded-2xl border border-slate-800 bg-[#0f172a] p-4 text-sm text-slate-400">
+              <div className="mt-6 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 text-sm text-[var(--text-2)]">
                 Loading published results...
               </div>
             ) : examFormats.length === 0 ? (
-              <div className="mt-6 rounded-2xl border border-slate-800 bg-[#0f172a] p-4 text-sm text-slate-400">
+              <div className="mt-6 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 text-sm text-[var(--text-2)]">
                 No exam formats found yet.
               </div>
             ) : (
@@ -220,27 +220,27 @@ const ResultPortalModulePage = () => {
                 {examFormats.map((exam) => (
                   <div
                     key={exam.id}
-                    className="rounded-2xl border border-slate-800 bg-[#0f172a] p-4"
+                    className="rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="font-semibold text-white">
+                        <div className="font-semibold text-[var(--text-1)]">
                           {exam.exam_type}
                         </div>
-                        <div className="mt-1 text-sm text-slate-400">
+                        <div className="mt-1 text-sm text-[var(--text-2)]">
                           {exam.class_name || "Class"} •{" "}
                           {exam.section_name || "Section"} •{" "}
                           {exam.term || "Term"}
                         </div>
                       </div>
                       <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${exam.is_published ? "bg-emerald-500/10 text-emerald-300" : "bg-slate-800 text-slate-300"}`}
+                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${exam.is_published ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300" : "bg-[var(--bg-hover)] text-[var(--text-2)]"}`}
                       >
                         {exam.is_published ? "Published" : "Draft"}
                       </span>
                     </div>
                     <div className="mt-4 flex items-center justify-between">
-                      <div className="text-sm text-slate-400">
+                      <div className="text-sm text-[var(--text-2)]">
                         {exam.is_published
                           ? "Students can see this exam result from the shared portal."
                           : "Publish this exam to open it publicly."}

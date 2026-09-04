@@ -19,15 +19,15 @@ const colorMap = {
  */
 const StatCard = ({ title, value, icon: Icon, color = 'indigo', change, positive }) => {
   return (
-    <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 flex items-start gap-4 hover:border-slate-600 transition-colors">
+    <div className="mis-card p-5 flex items-start gap-4 hover:border-[var(--accent)] transition-colors">
       <div className={clsx('p-3 rounded-xl border flex-shrink-0', colorMap[color])}>
         <Icon size={20} />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider truncate">{title}</p>
-        <p className="mt-1 text-2xl font-bold text-white">{value ?? '—'}</p>
+        <p className="text-sm font-semibold text-[var(--text-2)] uppercase tracking-wider truncate">{title}</p>
+        <p className="mt-1 text-2xl font-bold text-[var(--text-1)]">{value ?? '—'}</p>
         {change && (
-          <p className={clsx('mt-1 text-xs', positive ? 'text-emerald-400' : 'text-slate-500')}>
+          <p className={clsx('mt-1 text-sm font-medium', positive ? 'text-emerald-500' : 'text-[var(--text-3)]')}>
             {change}
           </p>
         )}

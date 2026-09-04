@@ -7,8 +7,6 @@ import {
   getDaysInBsMonth, prevBsMonth, nextBsMonth,
 } from '../utils/bsCalendar';
 import { getMonths, getCalendarDays, getAvailableDayTypes, assignDayType, getYears } from '../api/calendarApi';
-import { useSettings } from '../context/SettingsContext';
-
 
 const AD_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAYS      = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
@@ -258,8 +256,8 @@ const CalendarPage = () => {
       {/* ── Page Header ── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-lg font-bold text-white">School Calendar</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+            <h1 className="mis-page-title">School Calendar</h1>
+            <p className="mis-helper mt-0.5">
             Live B.S / A.D dual-view with day types from settings
           </p>
         </div>
@@ -279,33 +277,33 @@ const CalendarPage = () => {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <button onClick={() => setView(prevBsMonth(view.year, view.month))}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+            className="p-1.5 rounded-lg text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)] transition-colors">
             <ChevronLeft size={16} />
           </button>
 
           <div className="text-center min-w-[180px]">
-            <p className="text-sm font-bold text-white">{BS_MONTHS[view.month - 1]} {view.year}</p>
-            <p className="text-[11px] text-slate-500">{adLabel}</p>
+              <p className="text-base font-bold text-[var(--text-1)]">{BS_MONTHS[view.month - 1]} {view.year}</p>
+              <p className="mis-helper">{adLabel}</p>
           </div>
 
           <button onClick={() => setView(nextBsMonth(view.year, view.month))}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+            className="p-1.5 rounded-lg text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)] transition-colors">
             <ChevronRight size={16} />
           </button>
 
           <button onClick={goToday}
-            className="px-3 py-1 text-xs font-medium border border-slate-700 text-slate-300 hover:bg-white/5 rounded-lg transition-colors ml-1">
+            className="px-3 py-1 text-sm font-semibold border border-[var(--border-card)] text-[var(--text-2)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors ml-1">
             Today
           </button>
         </div>
 
         {/* B.S / A.D toggles */}
-        <div className="flex items-center gap-4 bg-slate-900/50 p-1 rounded-lg border border-slate-700/50">
+        <div className="flex items-center gap-4 bg-[var(--bg-surface)] p-1 rounded-lg border border-[var(--border-dim)]">
           <button
             onClick={() => updateSetting('calendar_type', 'BS')}
             className={clsx(
               "px-3 py-1 rounded-md text-[10px] font-bold transition-all",
-              calendarType === 'BS' ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+              calendarType === 'BS' ? "bg-indigo-600 text-white" : "text-[var(--text-2)] hover:text-[var(--text-1)]"
             )}
           >
             B.S Mode
@@ -314,18 +312,18 @@ const CalendarPage = () => {
             onClick={() => updateSetting('calendar_type', 'AD')}
             className={clsx(
               "px-3 py-1 rounded-md text-[10px] font-bold transition-all",
-              calendarType === 'AD' ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+              calendarType === 'AD' ? "bg-indigo-600 text-white" : "text-[var(--text-2)] hover:text-[var(--text-1)]"
             )}
           >
             A.D Mode
           </button>
-          <div className="w-px h-4 bg-slate-700 mx-1" />
+          <div className="w-px h-4 bg-[var(--border-card)] mx-1" />
           <div className="flex items-center gap-3 pr-2">
             {[
               ['showBs', 'BS', showBs, setShowBs],
               ['showAd', 'AD', showAd, setShowAd]
             ].map(([id, label, val, setter]) => (
-              <label key={id} className="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-300 hover:text-white transition-colors">
+              <label key={id} className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors">
                 <input type="checkbox" checked={val} onChange={e => setter(e.target.checked)}
                   className="accent-indigo-500 w-3 h-3" />
                 {label}
@@ -408,9 +406,9 @@ const CalendarPage = () => {
                 onClick={() => handleCellClick(bsDay, current)}
                 className={clsx(
                   'relative p-3 rounded-2xl flex flex-col gap-1 transition-all duration-300 cursor-pointer shadow-sm m-1',
-                  !current && 'opacity-10 opacity-0 pointer-events-none',
+                  !current && 'opacity-0 pointer-events-none',
                   current && (dayType ? s.cell : 'bg-slate-800/40 border border-slate-700/50 hover:bg-slate-700/60'),
-                  today && 'ring-4 ring-indigo-500 ring-offset-4 ring-offset-[#0c1220] z-10',
+                  today && 'ring-4 ring-indigo-500 ring-offset-4 ring-offset-[var(--bg-main)] z-10',
                 )}
               >
                 {/* Dates row */}
@@ -442,7 +440,7 @@ const CalendarPage = () => {
 
                 {/* Default label for untyped days */}
                 {current && !dayType && !loadingDays && matchedMonth && (
-                  <span className="text-[10px] text-slate-700 mt-auto opacity-0 hover:opacity-100 transition-opacity">Click to assign</span>
+                  <span className="text-[10px] text-[var(--text-2)] mt-auto opacity-0 hover:opacity-100 transition-opacity">Click to assign</span>
                 )}
               </div>
             );
@@ -452,9 +450,9 @@ const CalendarPage = () => {
 
       {/* ── Assign Day Type Modal ── */}
       {selectedDay && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-white mb-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200" style={{ background: 'var(--overlay)', backdropFilter: 'blur(8px)' }}>
+          <div className="mis-card w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+            <h3 className="mis-section-title mb-1">
               Assign Day Type
             </h3>
             <p className="text-sm text-slate-400 mb-5">
@@ -466,7 +464,7 @@ const CalendarPage = () => {
                 <select
                   value={selectedDay?.selectedTypeId ?? ''}
                   onChange={(e) => setSelectedDay({ ...selectedDay, selectedTypeId: e.target.value })}
-                  className="w-full bg-slate-900/80 border border-slate-700/80 text-slate-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="mis-input text-sm"
                 >
                   <option value="">Choose a day type...</option>
                   {availableDayTypes && availableDayTypes.map(t => (
@@ -482,7 +480,7 @@ const CalendarPage = () => {
                 <button
                   onClick={() => setSelectedDay(null)}
                   disabled={savingDay}
-                  className="flex-1 px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-700/50 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl border border-[var(--border-card)] text-[var(--text-1)] hover:bg-[var(--bg-hover)] transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>

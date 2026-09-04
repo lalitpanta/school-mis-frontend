@@ -1,4 +1,4 @@
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 
 /**
  * Toast — renders the react-hot-toast container.
@@ -11,17 +11,17 @@ const Toast = () => (
     toastOptions={{
       duration: 4000,
       style: {
-        background: 'var(--bg-card)',
-        color:      'var(--text-1)',
-        border:     '1px solid var(--border-card)',
-        borderRadius: '12px',
-        fontSize:   '14px',
+        background: "var(--bg-card)",
+        color: "var(--text-1)",
+        border: "1px solid var(--border-card)",
+        borderRadius: "12px",
+        fontSize: "14px",
       },
       success: {
-        iconTheme: { primary: '#6366f1', secondary: '#fff' },
+        iconTheme: { primary: "#6366f1", secondary: "#fff" },
       },
       error: {
-        iconTheme: { primary: '#ef4444', secondary: '#fff' },
+        iconTheme: { primary: "#ef4444", secondary: "#fff" },
       },
     }}
   />

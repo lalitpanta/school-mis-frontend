@@ -62,24 +62,119 @@
 }
 
 /* Compatibility bridge for legacy Tailwind color utilities. */
-[class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"],
-[class*="bg-gray-900"], [class*="bg-black"], [class*="bg-[#0f141e]"],
-[class*="bg-[#1a1a2e]"], [class*="bg-[#0f172a]"] { background-color: var(--bg-card) !important; }
-[class*="bg-slate-800"], [class*="bg-slate-700"], [class*="bg-gray-800"],
-[class*="bg-gray-700"], [class*="bg-[#1e293b]"] { background-color: var(--bg-surface) !important; }
-[class*="bg-slate-600"], [class*="bg-slate-500"], [class*="bg-gray-600"],
-[class*="bg-gray-500"] { background-color: var(--bg-hover) !important; }
-[class*="border-slate-900"], [class*="border-slate-800"], [class*="border-slate-700"],
-[class*="border-slate-600"], [class*="border-gray-900"], [class*="border-gray-800"],
-[class*="border-gray-700"], [class*="border-gray-600"] { border-color: var(--border-card) !important; }
-.dark [class*="bg-white"], .dark .bg-white, .dark .bg-slate-50, .dark .bg-slate-100,
-.dark .bg-gray-50, .dark .bg-gray-100, .dark .bg-gray-200 { background-color: var(--bg-card) !important; }
-.dark .text-slate-900, .dark .text-gray-900, .dark .text-slate-800, .dark .text-gray-800,
-.dark .text-slate-700, .dark .text-gray-700, .dark .text-slate-600, .dark .text-gray-600,
-.dark .text-slate-500, .dark .text-gray-500, .dark .text-slate-400, .dark .text-gray-400,
-.dark .text-slate-300, .dark .text-gray-300 { color: var(--text-2) !important; }
-.dark .text-slate-200, .dark .text-gray-200, .dark .text-slate-100, .dark .text-gray-100,
-.dark .text-white { color: var(--text-1) !important; }
+[class*="bg-slate-950"],
+[class*="bg-slate-900"],
+[class*="bg-gray-950"],
+[class*="bg-gray-900"],
+[class*="bg-black"],
+[class*="bg-[#0f141e]"],
+[class*="bg-[#1a1a2e]"],
+[class*="bg-[#0f172a]"] {
+  background-color: var(--bg-card) !important;
+}
+[class*="bg-slate-800"],
+[class*="bg-slate-700"],
+[class*="bg-gray-800"],
+[class*="bg-gray-700"],
+[class*="bg-[#1e293b]"] {
+  background-color: var(--bg-surface) !important;
+}
+[class*="bg-slate-600"],
+[class*="bg-slate-500"],
+[class*="bg-gray-600"],
+[class*="bg-gray-500"] {
+  background-color: var(--bg-hover) !important;
+}
+[class*="border-slate-900"],
+[class*="border-slate-800"],
+[class*="border-slate-700"],
+[class*="border-slate-600"],
+[class*="border-gray-900"],
+[class*="border-gray-800"],
+[class*="border-gray-700"],
+[class*="border-gray-600"] {
+  border-color: var(--border-card) !important;
+}
+.dark [class*="border-white"],
+.dark [class*="border-black"] {
+  border-color: var(--border-card) !important;
+}
+.dark [class*="bg-white\/"],
+.dark [class*="bg-black\/"],
+.dark [class*="bg-[#050816]"] {
+  background-color: var(--bg-card) !important;
+}
+.dark [class*="text-black"] {
+  color: var(--text-1) !important;
+}
+.dark [class*="text-white"] {
+  color: var(--text-1) !important;
+}
+:root:not(.dark) [class*="text-white"],
+:root:not(.dark) [class*="text-black"] {
+  color: var(--text-1) !important;
+}
+:root:not(.dark) [class*="border-white"],
+:root:not(.dark) [class*="border-black"] {
+  border-color: var(--border-dim) !important;
+}
+:root:not(.dark) [class*="bg-white\/"],
+:root:not(.dark) [class*="bg-black\/"],
+:root:not(.dark) [class*="bg-[#ffffff]"],
+:root:not(.dark) [class*="bg-[#050816]"] {
+  background-color: var(--bg-card) !important;
+}
+:root:not(.dark) [class*="hover:bg-white\/"]:hover { background-color: var(--bg-hover) !important; }
+:root:not(.dark) [class*="hover:bg-[#ffffff]"]:hover { background-color: var(--bg-hover) !important; }
+:root:not(.dark) [class*="hover:text-white"]:hover { color: var(--text-1) !important; }
+:root:not(.dark) [class*="bg-indigo-"][class*="text-white"],
+:root:not(.dark) [class*="bg-blue-"][class*="text-white"],
+:root:not(.dark) [class*="bg-emerald-"][class*="text-white"],
+:root:not(.dark) [class*="bg-green-"][class*="text-white"],
+:root:not(.dark) [class*="bg-rose-"][class*="text-white"],
+:root:not(.dark) [class*="bg-red-"][class*="text-white"],
+:root:not(.dark) [class*="bg-amber-"][class*="text-white"],
+:root:not(.dark) [class*="bg-sky-"][class*="text-white"] {
+  color: var(--accent-text) !important;
+}
+:root:not(.dark) [class*="from-"][class*="text-white"],
+:root:not(.dark) [class*="to-"][class*="text-white"],
+:root:not(.dark) [class*="bg-gradient"][class*="text-white"],
+:root:not(.dark) [class*="bg-linear"][class*="text-white"] {
+  color: var(--accent-text) !important;
+}
+.dark [class*="bg-white"],
+.dark .bg-white,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-gray-200 {
+  background-color: var(--bg-card) !important;
+}
+.dark .text-slate-900,
+.dark .text-gray-900,
+.dark .text-slate-800,
+.dark .text-gray-800,
+.dark .text-slate-700,
+.dark .text-gray-700,
+.dark .text-slate-600,
+.dark .text-gray-600,
+.dark .text-slate-500,
+.dark .text-gray-500,
+.dark .text-slate-400,
+.dark .text-gray-400,
+.dark .text-slate-300,
+.dark .text-gray-300 {
+  color: var(--text-2) !important;
+}
+.dark .text-slate-200,
+.dark .text-gray-200,
+.dark .text-slate-100,
+.dark .text-gray-100,
+.dark .text-white {
+  color: var(--text-1) !important;
+}
 
 /* ── Base reset ── */
 *,
@@ -97,6 +192,8 @@ body,
 
 body {
   font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   background-color: var(--bg-main);
   color: var(--text-1);
   transition:
@@ -105,6 +202,64 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text-1);
+  line-height: 1.25;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+.mis-page-title {
+  font-size: 1.75rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.mis-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.mis-body {
+  font-size: 0.9375rem;
+  color: var(--text-1);
+}
+.mis-muted {
+  color: var(--text-2);
+}
+.mis-helper {
+  font-size: 0.8125rem;
+  color: var(--text-3);
+}
+
+/* react-big-calendar is injected at runtime, so its surface contract lives here. */
+.rbc-calendar { color: var(--text-1); font-size: 0.9375rem; }
+.rbc-toolbar button,
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view,
+.rbc-header,
+.rbc-month-row,
+.rbc-day-bg,
+.rbc-time-content,
+.rbc-time-header-content,
+.rbc-agenda-table { border-color: var(--border-dim); }
+.rbc-toolbar button { color: var(--text-1); background: var(--bg-card); border-color: var(--border-card); font-weight: 600; }
+.rbc-toolbar button:hover,
+.rbc-toolbar button:focus,
+.rbc-toolbar button.rbc-active { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
+.rbc-month-view, .rbc-time-view, .rbc-agenda-view { background: var(--bg-card); }
+.rbc-off-range-bg { background: var(--bg-main); }
+.rbc-today { background: var(--accent-dim); }
+.rbc-header { color: var(--text-2); background: var(--bg-surface); font-weight: 700; padding: 0.65rem 0.25rem; }
+.rbc-date-cell { color: var(--text-1); padding: 0.35rem 0.5rem; font-weight: 600; }
+.rbc-event { background: var(--accent); color: var(--accent-text); font-weight: 600; }
+.rbc-show-more, .rbc-agenda-date-cell, .rbc-agenda-time-cell { color: var(--accent); font-weight: 600; }
 
 /* ── Themed utility classes ── */
 .mis-card {
@@ -250,7 +405,7 @@ input[type="radio"]:disabled::after {
   background: var(--bg-surface);
   color: var(--text-3);
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.75rem 1rem;
@@ -261,11 +416,15 @@ input[type="radio"]:disabled::after {
   padding: 0.65rem 1rem;
   color: var(--text-1);
   border-bottom: 1px solid var(--border-dim);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
 }
 .mis-table tr:hover td {
   background: var(--bg-hover);
 }
+
+table th { font-size: 0.8125rem; font-weight: 700; color: var(--text-2); }
+table td { font-size: 0.875rem; color: var(--text-1); }
 
 .mis-label {
   display: block;

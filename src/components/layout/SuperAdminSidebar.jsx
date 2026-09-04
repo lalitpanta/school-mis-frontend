@@ -137,7 +137,7 @@ const SuperAdminSidebar = () => {
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all",
                 isNavActive(to)
                   ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25"
-                  : "text-slate-400 hover:text-white hover:bg-[#ffffff]/5",
+                  : "text-slate-400 hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)]",
               )}
             >
               <Icon size={16} className="shrink-0" />
@@ -167,7 +167,7 @@ const SuperAdminSidebar = () => {
       {/* ── Collapse toggle ── */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#1e293b] border border-[#334155] flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-600 transition-all z-30 shadow-lg"
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-card)] flex items-center justify-center text-[var(--text-2)] hover:text-[var(--accent-text)] hover:bg-indigo-600 transition-all z-30 shadow-lg"
       >
         {collapsed ? <ChevronRight size={11} /> : <ChevronLeft size={11} />}
       </button>

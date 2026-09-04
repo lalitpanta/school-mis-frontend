@@ -50,7 +50,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
           <label className="block text-xs font-medium text-slate-400 mb-1">Title *</label>
           <input
             {...register('title', { required: 'Title is required' })}
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+              className="mis-input text-sm"
             placeholder="Event title"
           />
           {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>}
@@ -60,13 +60,13 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Start Date *</label>
             <input type="date" {...register('start', { required: true })}
-              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+                className="mis-input text-sm"
             />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">End Date *</label>
             <input type="date" {...register('end', { required: true })}
-              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+                className="mis-input text-sm"
             />
           </div>
         </div>
@@ -74,7 +74,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
         <div>
           <label className="block text-xs font-medium text-slate-400 mb-1">Type</label>
           <select {...register('type')}
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+              className="mis-input text-sm"
           >
             <option value="holiday">Holiday</option>
             <option value="exam">Exam</option>
@@ -86,7 +86,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
         <div>
           <label className="block text-xs font-medium text-slate-400 mb-1">Description</label>
           <textarea {...register('description')} rows={3}
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 resize-none"
+              className="mis-input text-sm resize-none"
             placeholder="Optional description..."
           />
         </div>

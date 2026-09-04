@@ -9,184 +9,341 @@ import { useSettings } from "../../context/SettingsContext";
 // ─────────────────────────────────────────────────────────────────────────────
 const MAIN_NAV = [
   {
-    label: "Dashboard", to: ROUTES.DASHBOARD, module: "dashboard",
+    label: "Dashboard",
+    to: ROUTES.DASHBOARD,
+    module: "dashboard",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/>
-        <rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="3" y="3" width="7" height="9" rx="1.5" />
+        <rect x="14" y="3" width="7" height="5" rx="1.5" />
+        <rect x="14" y="12" width="7" height="9" rx="1.5" />
+        <rect x="3" y="16" width="7" height="5" rx="1.5" />
       </svg>
     ),
   },
   {
-    label: "Calendar", to: ROUTES.CALENDAR, module: "calendar",
+    label: "Calendar",
+    to: ROUTES.CALENDAR,
+    module: "calendar",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <path d="M8 2v4M16 2v4M3 9h18" />
       </svg>
     ),
   },
   {
-    label: "Attendance", to: ROUTES.ATTENDANCE, module: "attendance",
+    label: "Attendance",
+    to: ROUTES.ATTENDANCE,
+    module: "attendance",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="5" y="3" width="14" height="18" rx="2"/>
-        <path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="5" y="3" width="14" height="18" rx="2" />
+        <path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3" />
       </svg>
     ),
   },
   {
-    label: "Teachers", to: ROUTES.TEACHER, module: "teacher",
+    label: "Teachers",
+    to: ROUTES.TEACHER,
+    module: "teacher",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="9" cy="8" r="3.2"/>
-        <path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/>
-        <circle cx="17.5" cy="8.5" r="2.4"/>
-        <path d="M17 13.7c2.7.4 4.5 2.7 4.5 5.6"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="9" cy="8" r="3.2" />
+        <path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" />
+        <circle cx="17.5" cy="8.5" r="2.4" />
+        <path d="M17 13.7c2.7.4 4.5 2.7 4.5 5.6" />
       </svg>
     ),
   },
   {
-    label: "Students", to: ROUTES.STUDENT, module: "student",
+    label: "Students",
+    to: ROUTES.STUDENT,
+    module: "student",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 10L12 5 2 10l10 5 10-5Z"/>
-        <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M22 10L12 5 2 10l10 5 10-5Z" />
+        <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" />
       </svg>
     ),
   },
   {
-    label: "Employees", to: ROUTES.EMPLOYEE, module: "employee",
+    label: "Employees",
+    to: ROUTES.EMPLOYEE,
+    module: "employee",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="7.5" width="18" height="12.5" rx="2"/>
-        <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="3" y="7.5" width="18" height="12.5" rx="2" />
+        <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18" />
       </svg>
     ),
   },
   {
-    label: "Results", to: ROUTES.RESULTS, module: "results",
+    label: "Results",
+    to: ROUTES.RESULTS,
+    module: "results",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 20V10M12 20V4M20 20v-7"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 20V10M12 20V4M20 20v-7" />
       </svg>
     ),
   },
   {
-    label: "Result Portal", to: ROUTES.RESULT_PORTAL, module: "result_portal",
+    label: "Result Portal",
+    to: ROUTES.RESULT_PORTAL,
+    module: "result_portal",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/>
-        <path d="M14 3v5h5M9 13h6M9 17h6"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+        <path d="M14 3v5h5M9 13h6M9 17h6" />
       </svg>
     ),
   },
   {
-    label: "Daily Reports", to: ROUTES.DAILY_REPORTS, module: "daily_reports",
+    label: "Daily Reports",
+    to: ROUTES.DAILY_REPORTS,
+    module: "daily_reports",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/>
-        <path d="M14 3v5h5M9 12h6M9 16h4"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+        <path d="M14 3v5h5M9 12h6M9 16h4" />
       </svg>
     ),
   },
   {
-    label: "Fees", to: ROUTES.FEES, module: "fee_management",
+    label: "Fees",
+    to: ROUTES.FEES,
+    module: "fee_management",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/>
-        <path d="M2.5 10h19"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2" />
+        <path d="M2.5 10h19" />
       </svg>
     ),
   },
   {
-    label: "Leave", to: ROUTES.LEAVE_MANAGEMENT, module: "leave_management",
+    label: "Leave",
+    to: ROUTES.LEAVE_MANAGEMENT,
+    module: "leave_management",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M12 7v5l3.3 3.3"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.3 3.3" />
       </svg>
     ),
   },
   {
-    label: "Accounts", to: "/settings?tab=accounts", module: "settings",
+    label: "Accounts",
+    to: "/settings?tab=accounts",
+    module: "settings",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/>
-        <path d="M2.5 10h19M7 15h2M12 15h2"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2" />
+        <path d="M2.5 10h19M7 15h2M12 15h2" />
       </svg>
     ),
   },
 ];
 
 const SETTINGS_TABS = [
-  { key: "school",           label: "School Profile"      },
-  { key: "calendarSettings", label: "Calendar Settings"   },
-  { key: "users",            label: "Users & Staff"       },
-  { key: "roles",            label: "Roles & Permissions" },
-  { key: "fees",             label: "Fees"                },
-  { key: "notices",          label: "Notices & SMS"       },
-  { key: "integrations",     label: "Integrations"        },
-  { key: "devices",          label: "Device Integration"  },
-  { key: "security",         label: "Security"            },
-  { key: "theme",            label: "Theme"               },
-  { key: "departments",      label: "Departments"         },
-  { key: "classrooms",       label: "Classrooms"          },
-  { key: "courses",          label: "Courses"             },
-  { key: "rooms",            label: "Rooms"               },
-  { key: "students",         label: "Students"            },
+  { key: "school", label: "School Profile" },
+  { key: "calendarSettings", label: "Calendar Settings" },
+  { key: "users", label: "Users & Staff" },
+  { key: "roles", label: "Roles & Permissions" },
+  { key: "fees", label: "Fees" },
+  { key: "notices", label: "Notices & SMS" },
+  { key: "integrations", label: "Integrations" },
+  { key: "devices", label: "Device Integration" },
+  { key: "security", label: "Security" },
+  { key: "theme", label: "Theme" },
+  { key: "departments", label: "Departments" },
+  { key: "classrooms", label: "Classrooms" },
+  { key: "courses", label: "Courses" },
+  { key: "rooms", label: "Rooms" },
+  { key: "students", label: "Students" },
 ];
 
 const EXAM_TABS = [
-  { key: "resultFormat",  label: "Exam Setup"      },
-  { key: "resultSubject", label: "Course & Marks"  },
+  { key: "resultFormat", label: "Exam Setup" },
+  { key: "resultSubject", label: "Course & Marks" },
 ];
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ICONS
 // ─────────────────────────────────────────────────────────────────────────────
 const IconSettings = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" style={{ flexShrink: 0 }}>
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2.06 2.06 0 1 1-2.92 2.92l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2.06 2.06 0 1 1-4.12 0v-.09A1.7 1.7 0 0 0 8.7 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2.06 2.06 0 1 1-2.92-2.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H2.6a2.06 2.06 0 1 1 0-4.12h.09A1.7 1.7 0 0 0 4.24 8.7a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.06 2.06 0 1 1 2.92-2.92l.06.06a1.7 1.7 0 0 0 1.87.34H8.7a1.7 1.7 0 0 0 1-1.55V2.6a2.06 2.06 0 1 1 4.12 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2.06 2.06 0 1 1 2.92 2.92l-.06.06a1.7 1.7 0 0 0-.34 1.87V8.7a1.7 1.7 0 0 0 1.55 1h.09a2.06 2.06 0 1 1 0 4.12h-.09a1.7 1.7 0 0 0-1.55 1Z"/>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    stroke="currentColor"
+    style={{ flexShrink: 0 }}
+  >
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2.06 2.06 0 1 1-2.92 2.92l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2.06 2.06 0 1 1-4.12 0v-.09A1.7 1.7 0 0 0 8.7 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2.06 2.06 0 1 1-2.92-2.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H2.6a2.06 2.06 0 1 1 0-4.12h.09A1.7 1.7 0 0 0 4.24 8.7a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.06 2.06 0 1 1 2.92-2.92l.06.06a1.7 1.7 0 0 0 1.87.34H8.7a1.7 1.7 0 0 0 1-1.55V2.6a2.06 2.06 0 1 1 4.12 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2.06 2.06 0 1 1 2.92 2.92l-.06.06a1.7 1.7 0 0 0-.34 1.87V8.7a1.7 1.7 0 0 0 1.55 1h.09a2.06 2.06 0 1 1 0 4.12h-.09a1.7 1.7 0 0 0-1.55 1Z" />
   </svg>
 );
 
 const IconExam = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" style={{ flexShrink: 0 }}>
-    <path d="M4 20V10M12 20V4M20 20v-7"/>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    stroke="currentColor"
+    style={{ flexShrink: 0 }}
+  >
+    <path d="M4 20V10M12 20V4M20 20v-7" />
   </svg>
 );
 
 const IconChevronDown = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginLeft: "auto" }}>
-    <path d="m6 9 6 6 6-6"/>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ flexShrink: 0, marginLeft: "auto" }}
+  >
+    <path d="m6 9 6 6 6-6" />
   </svg>
 );
 
 const IconChevronLeft = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M15 18l-6-6 6-6"/>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M15 18l-6-6 6-6" />
   </svg>
 );
 
 const IconSignOut = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-    <path d="M16 17l5-5-5-5M21 12H9"/>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <path d="M16 17l5-5-5-5M21 12H9" />
   </svg>
 );
 
 const IconSearch = () => (
-  <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor">
-    <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    stroke="currentColor"
+  >
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.3-4.3" />
   </svg>
 );
 
 const IconGradCap = () => (
-  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" stroke="currentColor">
-    <path d="M22 10L12 5 2 10l10 5 10-5Z"/>
-    <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    stroke="currentColor"
+  >
+    <path d="M22 10L12 5 2 10l10 5 10-5Z" />
+    <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" />
   </svg>
 );
 
@@ -256,7 +413,7 @@ const css = `
   box-shadow: 0 4px 14px var(--sb-vglow);
   flex-shrink: 0;
 }
-.sb-brand-mark svg { width: 20px; height: 20px; stroke: #fff; }
+.sb-brand-mark svg { width: 20px; height: 20px; stroke: var(--accent-text); }
 
 .sb-brand-text {
   overflow: hidden;
@@ -356,7 +513,7 @@ const css = `
   border-radius: 9px;
   color: var(--sb-mid);
   text-decoration: none;
-  font-size: 14.5px; font-weight: 500;
+  font-size: 15px; font-weight: 600;
   cursor: pointer;
   position: relative;
   transition: background .15s, color .15s;
@@ -378,7 +535,7 @@ const css = `
 /* Active state */
 .sb-item.sb-active {
   background: linear-gradient(90deg, var(--sb-active), rgba(124,108,246,0.08));
-  color: #fff;
+  color: var(--accent-text);
 }
 .sb-item.sb-active::before {
   content: '';
@@ -430,8 +587,8 @@ const css = `
 
 .sb-submenu .sb-item {
   padding: 8.5px 12px 8.5px 22px;
-  font-size: 13.5px;
-  font-weight: 450;
+  font-size: 14px;
+  font-weight: 500;
 }
 .sb-submenu .sb-item svg:first-child { width: 15px; height: 15px; }
 .sb-submenu .sb-item.sb-active::before { left: -3px; }
@@ -497,20 +654,25 @@ const css = `
 // COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 const Sidebar = () => {
-  const location  = useLocation();
-  const navigate  = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { hasModule, isTenant, logout, user } = useAuth();
   const { settings } = useSettings();
 
   const schoolProfile = settings?.school_profile || {};
-  const brandName = settings?.platform_name || settings?.system_name || schoolProfile.name || "School MIS";
-  const brandTagline = settings?.platform_tagline || schoolProfile.motto || "Management System";
+  const brandName =
+    settings?.platform_name ||
+    settings?.system_name ||
+    schoolProfile.name ||
+    "School MIS";
+  const brandTagline =
+    settings?.platform_tagline || schoolProfile.motto || "Management System";
   const brandLogo = settings?.platform_logo || schoolProfile.logo || null;
 
-  const [collapsed,    setCollapsed]    = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [examOpen,     setExamOpen]     = useState(false);
-  const [search,       setSearch]       = useState("");
+  const [examOpen, setExamOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const searchRef = useRef(null);
 
   // ⌘K / Ctrl+K focuses the search box
@@ -526,13 +688,18 @@ const Sidebar = () => {
   }, [collapsed]);
 
   const onSettings = location.pathname === ROUTES.SETTINGS;
-  const activeTab  = new URLSearchParams(location.search).get("tab") || "school";
-  const isExamTab  = EXAM_TABS.some((t) => t.key === activeTab);
+  const activeTab = new URLSearchParams(location.search).get("tab") || "school";
+  const isExamTab = EXAM_TABS.some((t) => t.key === activeTab);
   // Auto-open correct accordion when on /settings
   useEffect(() => {
     if (onSettings) {
-      if (isExamTab) { setExamOpen(true); setSettingsOpen(false); }
-      else           { setSettingsOpen(true); setExamOpen(false); }
+      if (isExamTab) {
+        setExamOpen(true);
+        setSettingsOpen(false);
+      } else {
+        setSettingsOpen(true);
+        setExamOpen(false);
+      }
     }
   }, [onSettings, isExamTab]);
 
@@ -543,17 +710,27 @@ const Sidebar = () => {
   const visibleNav = (() => {
     if (user?.type === "super_admin")
       return MAIN_NAV.filter((i) => i.module === "dashboard");
-    if (isTenant())
-      return MAIN_NAV.filter((i) => hasModule(i.module));
+    if (isTenant()) return MAIN_NAV.filter((i) => hasModule(i.module));
     return MAIN_NAV;
   })();
 
-  const showSettings = user?.type !== "super_admin" && (!isTenant() || hasModule("settings"));
+  const showSettings =
+    user?.type !== "super_admin" && (!isTenant() || hasModule("settings"));
 
   // Initials from user name
   const name = user?.name || user?.firstName || user?.email || "User";
-  const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-  const roleLabel = user?.type === "super_admin" ? "Super Admin" : isTenant() ? "Administrator" : "Admin";
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+  const roleLabel =
+    user?.type === "super_admin"
+      ? "Super Admin"
+      : isTenant()
+        ? "Administrator"
+        : "Admin";
 
   // Search filtering
   const q = search.trim().toLowerCase();
@@ -573,7 +750,10 @@ const Sidebar = () => {
   const toggleSettings = () => {
     if (collapsed) {
       setCollapsed(false);
-      setTimeout(() => { setSettingsOpen(true); setExamOpen(false); }, 50);
+      setTimeout(() => {
+        setSettingsOpen(true);
+        setExamOpen(false);
+      }, 50);
       if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
       return;
     }
@@ -585,7 +765,10 @@ const Sidebar = () => {
   const toggleExam = () => {
     if (collapsed) {
       setCollapsed(false);
-      setTimeout(() => { setExamOpen(true); setSettingsOpen(false); }, 50);
+      setTimeout(() => {
+        setExamOpen(true);
+        setSettingsOpen(false);
+      }, 50);
       if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
       return;
     }
@@ -594,19 +777,27 @@ const Sidebar = () => {
     if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
   };
 
-
   return (
     <>
       <style>{css}</style>
       <aside className={`mis-sidebar${collapsed ? " sb-collapsed" : ""}`}>
-
         {/* ── Brand ── */}
         <div className="sb-brand">
           <div className="sb-brand-mark">
-            {brandLogo
-              ? <img src={brandLogo} alt="logo" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 11 }} />
-              : <IconGradCap />
-            }
+            {brandLogo ? (
+              <img
+                src={brandLogo}
+                alt="logo"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: 11,
+                }}
+              />
+            ) : (
+              <IconGradCap />
+            )}
           </div>
           <div className="sb-brand-text">
             <div className="sb-brand-title">{brandName}</div>
@@ -639,7 +830,6 @@ const Sidebar = () => {
 
         {/* ── Scrollable nav ── */}
         <nav className="sb-nav">
-
           <div className="sb-section-label">Main</div>
 
           {filteredNav.map(({ label, to, icon }) => {
@@ -666,11 +856,23 @@ const Sidebar = () => {
           {!isTenant() && (
             <button
               className="sb-item"
-              onClick={() => navigate(user?.type === "super_admin" ? "/superadmin/tenants" : "/admin/tenants")}
+              onClick={() =>
+                navigate(
+                  user?.type === "super_admin"
+                    ? "/superadmin/tenants"
+                    : "/admin/tenants",
+                )
+              }
             >
-              <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="7.5" width="18" height="12.5" rx="2"/>
-                <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="7.5" width="18" height="12.5" rx="2" />
+                <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18" />
               </svg>
               <span className="sb-item-label">Tenants</span>
               <span className="sb-tooltip">Tenants</span>
@@ -678,11 +880,21 @@ const Sidebar = () => {
           )}
 
           {/* Empty search state */}
-          {q && filteredNav.length === 0 && filteredSettings.length === 0 && filteredExam.length === 0 && (
-            <div style={{ padding: "20px 12px", textAlign: "center", color: "var(--sb-low)", fontSize: 13 }}>
-              No results for &ldquo;{search}&rdquo;
-            </div>
-          )}
+          {q &&
+            filteredNav.length === 0 &&
+            filteredSettings.length === 0 &&
+            filteredExam.length === 0 && (
+              <div
+                style={{
+                  padding: "20px 12px",
+                  textAlign: "center",
+                  color: "var(--sb-low)",
+                  fontSize: 13,
+                }}
+              >
+                No results for &ldquo;{search}&rdquo;
+              </div>
+            )}
 
           {/* ── Configuration section ── */}
           {showSettings && (
@@ -690,7 +902,9 @@ const Sidebar = () => {
               <div className="sb-section-label">Configuration</div>
 
               {/* Settings accordion */}
-              <div className={`sb-group${settingsOpen || settingsHasMatch ? " sb-open" : ""}`}>
+              <div
+                className={`sb-group${settingsOpen || settingsHasMatch ? " sb-open" : ""}`}
+              >
                 <button
                   className={`sb-item${onSettings && !isExamTab ? " sb-active" : ""}`}
                   onClick={toggleSettings}
@@ -707,7 +921,9 @@ const Sidebar = () => {
                       <button
                         key={key}
                         className={`sb-item${active ? " sb-active" : ""}`}
-                        onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                        onClick={() =>
+                          navigate(`${ROUTES.SETTINGS}?tab=${key}`)
+                        }
                       >
                         <span className="sb-dot" />
                         <span className="sb-item-label">{label}</span>
@@ -718,7 +934,9 @@ const Sidebar = () => {
               </div>
 
               {/* Exam & Result accordion */}
-              <div className={`sb-group${examOpen || examHasMatch ? " sb-open" : ""}`}>
+              <div
+                className={`sb-group${examOpen || examHasMatch ? " sb-open" : ""}`}
+              >
                 <button
                   className={`sb-item${onSettings && isExamTab ? " sb-active" : ""}`}
                   onClick={toggleExam}
@@ -735,7 +953,9 @@ const Sidebar = () => {
                       <button
                         key={key}
                         className={`sb-item${active ? " sb-active" : ""}`}
-                        onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                        onClick={() =>
+                          navigate(`${ROUTES.SETTINGS}?tab=${key}`)
+                        }
                       >
                         <span className="sb-dot" />
                         <span className="sb-item-label">{label}</span>
@@ -744,22 +964,25 @@ const Sidebar = () => {
                   })}
                 </div>
               </div>
-
             </>
           )}
-
         </nav>
 
         {/* ── Footer / Account ── */}
         <div className="sb-footer">
           <button
             className="sb-user-card"
-            onClick={() => { logout(); navigate("/login"); }}
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
             title="Sign out"
           >
             <div className="sb-avatar">{initials}</div>
             <div className="sb-user-meta">
-              <div className="sb-user-name">{name.split(" ").slice(0, 2).join(" ")}</div>
+              <div className="sb-user-name">
+                {name.split(" ").slice(0, 2).join(" ")}
+              </div>
               <div className="sb-user-role">{roleLabel}</div>
             </div>
             <div className="sb-signout">
@@ -767,7 +990,6 @@ const Sidebar = () => {
             </div>
           </button>
         </div>
-
       </aside>
     </>
   );

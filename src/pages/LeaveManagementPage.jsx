@@ -127,7 +127,7 @@ const LeaveManagementPage = () => {
 
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-[#0f172a] border border-slate-800/60 rounded-2xl p-6 shadow-xl flex items-center gap-4 cursor-pointer hover:border-amber-500/30 transition-all" onClick={() => setActiveTab('pending')}>
+          <div className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-amber-500/30 transition-all" onClick={() => setActiveTab('pending')}>
             <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
               <Clock size={24} />
             </div>
@@ -136,7 +136,7 @@ const LeaveManagementPage = () => {
               <div className="text-sm font-medium text-slate-400">Pending</div>
             </div>
           </div>
-          <div className="bg-[#0f172a] border border-slate-800/60 rounded-2xl p-6 shadow-xl flex items-center gap-4 cursor-pointer hover:border-emerald-500/30 transition-all" onClick={() => setActiveTab('approved')}>
+          <div className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-emerald-500/30 transition-all" onClick={() => setActiveTab('approved')}>
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
               <CheckCircle size={24} />
             </div>
@@ -145,7 +145,7 @@ const LeaveManagementPage = () => {
               <div className="text-sm font-medium text-slate-400">Approved</div>
             </div>
           </div>
-          <div className="bg-[#0f172a] border border-slate-800/60 rounded-2xl p-6 shadow-xl flex items-center gap-4 cursor-pointer hover:border-rose-500/30 transition-all" onClick={() => setActiveTab('rejected')}>
+          <div className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-rose-500/30 transition-all" onClick={() => setActiveTab('rejected')}>
             <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
               <XCircle size={24} />
             </div>
@@ -182,13 +182,13 @@ const LeaveManagementPage = () => {
               <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
             </div>
           ) : filteredLeaves.length === 0 ? (
-            <div className="col-span-full py-12 text-center bg-[#0f172a] border border-slate-800/60 rounded-2xl shadow-xl">
+            <div className="col-span-full py-12 text-center mis-card">
               <FileText size={48} className="mx-auto mb-4 text-slate-600 opacity-50" />
               <p className="text-slate-400 font-medium">No {activeTab} leave requests found.</p>
             </div>
           ) : (
             filteredLeaves.map(leave => (
-              <div key={leave.id} className="bg-[#0f172a] border border-slate-800/60 rounded-2xl p-5 shadow-xl flex flex-col hover:border-slate-700 transition-all">
+              <div key={leave.id} className="mis-card p-5 flex flex-col hover:border-[var(--accent)] transition-all">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700">
