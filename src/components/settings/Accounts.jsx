@@ -3,7 +3,7 @@
  * Matches the design from accounts-section.html:
  *   - Dark sidebar color palette (#0d0f1e / #11141f) carried into the page
  *   - Violet accent (#7c6cf6 / #9b8dfa)
- *   - Tabs: Overview · Fee collection · Expenses · Payroll · Invoices & receipts
+ *   - Tabs: Dashboard · Vouchers · Chart of Accounts · General Ledger · Reports
  *   - Overview: balance card, 4 stat mini-cards, collection %, info row,
  *               recent-transactions table, collection-by-class bars, expense pie
  */
@@ -17,14 +17,13 @@ import {
   deleteTransaction,
   getExpenseBreakdown,
   getCollectionByClass,
-  getPayroll,
-  createPayroll,
-  updatePayrollStatus,
   exportAccountsCsv,
 } from "../../api/accountsApi";
-import FeeStructure from "./FeeStructurePro";
 import AccountSettings from "./AccountSettings";
 import AccountingLedger from "./AccountingLedger";
+import AccountingChart from "./AccountingChart";
+import AccountingVouchers from "./AccountingVouchers";
+import AccountingReports from "./AccountingReports";
 
 // ── tiny helpers ─────────────────────────────────────────────────────────────
 
@@ -51,14 +50,12 @@ const STATUS_COLOR = {
 const TYPE_LABEL = { income: "Income", expense: "Expense" };
 
 const TABS = [
-  "Overview",
+  "Dashboard",
+  "Vouchers",
+  "Chart of Accounts",
   "General Ledger",
-  "Fee Structure",
+  "Reports",
   "Account Settings",
-  "Fee Collection",
-  "Expenses",
-  "Payroll",
-  "Transactions",
 ];
 
 // ── CSS injected once ────────────────────────────────────────────────────────
@@ -652,193 +649,6 @@ function TransactionModal({ open, onClose, onSaved, initial }) {
   );
 }
 
-// ── Payroll form modal ────────────────────────────────────────────────────────
-
-const PAY_DEFAULTS = {
-  employee_name: "",
-  employee_type: "staff",
-  pay_month: "",
-  basic_salary: "",
-  allowances: "",
-  deductions: "",
-  payment_mode: "bank",
-  notes: "",
-};
-
-function PayrollModal({ open, onClose, onSaved }) {
-  const [form, setForm] = useState(PAY_DEFAULTS);
-  const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    if (open) {
-      setForm(PAY_DEFAULTS);
-      setErr("");
-    }
-  }, [open]);
-
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!form.employee_name.trim()) return setErr("Employee name is required");
-    if (!form.pay_month.trim()) return setErr("Pay month is required");
-    if (!form.basic_salary || isNaN(form.basic_salary))
-      return setErr("Valid salary required");
-    setSaving(true);
-    setErr("");
-    try {
-      await createPayroll({
-        ...form,
-        employee_id: crypto.randomUUID(),
-        basic_salary: parseFloat(form.basic_salary),
-        allowances: parseFloat(form.allowances) || 0,
-        deductions: parseFloat(form.deductions) || 0,
-      });
-      onSaved();
-      onClose();
-    } catch (e) {
-      setErr(e.response?.data?.message || "Failed to save");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (!open) return null;
-
-  return (
-    <div
-      className="acc-overlay"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="acc-modal">
-        <div className="acc-modal-title">Add Payroll Entry</div>
-        <form onSubmit={submit}>
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
-          >
-            <div className="acc-form-row">
-              <label className="acc-label">Employee Name *</label>
-              <input
-                className="acc-input"
-                value={form.employee_name}
-                onChange={(e) => set("employee_name", e.target.value)}
-              />
-            </div>
-            <div className="acc-form-row">
-              <label className="acc-label">Type</label>
-              <select
-                className="acc-select"
-                value={form.employee_type}
-                onChange={(e) => set("employee_type", e.target.value)}
-              >
-                <option value="teacher">Teacher</option>
-                <option value="staff">Staff</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-          </div>
-          <div className="acc-form-row">
-            <label className="acc-label">Pay Month *</label>
-            <input
-              className="acc-input"
-              placeholder="e.g. Shrawan 2082"
-              value={form.pay_month}
-              onChange={(e) => set("pay_month", e.target.value)}
-            />
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: 12,
-            }}
-          >
-            <div className="acc-form-row">
-              <label className="acc-label">Basic (Rs.) *</label>
-              <input
-                className="acc-input"
-                type="number"
-                min="0"
-                value={form.basic_salary}
-                onChange={(e) => set("basic_salary", e.target.value)}
-              />
-            </div>
-            <div className="acc-form-row">
-              <label className="acc-label">Allowances</label>
-              <input
-                className="acc-input"
-                type="number"
-                min="0"
-                value={form.allowances}
-                onChange={(e) => set("allowances", e.target.value)}
-              />
-            </div>
-            <div className="acc-form-row">
-              <label className="acc-label">Deductions</label>
-              <input
-                className="acc-input"
-                type="number"
-                min="0"
-                value={form.deductions}
-                onChange={(e) => set("deductions", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="acc-form-row">
-            <label className="acc-label">Payment Mode</label>
-            <select
-              className="acc-select"
-              value={form.payment_mode}
-              onChange={(e) => set("payment_mode", e.target.value)}
-            >
-              <option value="bank">Bank Transfer</option>
-              <option value="cash">Cash</option>
-              <option value="cheque">Cheque</option>
-            </select>
-          </div>
-          <div className="acc-form-row">
-            <label className="acc-label">Notes</label>
-            <textarea
-              className="acc-textarea"
-              value={form.notes}
-              onChange={(e) => set("notes", e.target.value)}
-            />
-          </div>
-          {err && (
-            <p style={{ color: "#f43f5e", fontSize: 13, marginBottom: 8 }}>
-              {err}
-            </p>
-          )}
-          <div className="acc-modal-footer">
-            <button
-              type="button"
-              className="acc-btn acc-btn-ghost"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="acc-btn acc-btn-primary"
-              disabled={saving}
-            >
-              {saving ? (
-                <span
-                  className="acc-spinner"
-                  style={{ width: 14, height: 14 }}
-                />
-              ) : (
-                "Save"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 // ── Overview tab ─────────────────────────────────────────────────────────────
 
 function OverviewTab({
@@ -1396,172 +1206,6 @@ function ExpensesTab({ expenses, transactions, onNew }) {
   );
 }
 
-// ── Fee Collection tab ────────────────────────────────────────────────────────
-
-function FeeCollectionTab({ collections, overview }) {
-  return (
-    <>
-      <div className="acc-section-row" style={{ marginTop: 0 }}>
-        <div className="acc-section-title">Fee Collection by Class</div>
-      </div>
-
-      {overview && (
-        <div
-          className="acc-info-grid"
-          style={{ marginTop: 0, marginBottom: 20 }}
-        >
-          {[
-            { title: "Total Collected", val: fmt(overview.fees_collected) },
-            { title: "Outstanding", val: fmt(overview.fees_outstanding) },
-            { title: "Students Billed", val: overview.students_billed },
-            { title: "Collection Rate", val: `${overview.collection_pct}%` },
-          ].map(({ title, val }) => (
-            <div key={title} className="acc-info-card">
-              <div className="acc-info-title">{title}</div>
-              <div className="acc-info-num">{val}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="acc-table-wrap" style={{ padding: "20px 24px" }}>
-        {collections.length === 0 && (
-          <div className="acc-empty">No class data available.</div>
-        )}
-        <div className="acc-bar-list">
-          {collections.map((c) => (
-            <div key={c.class_name} className="acc-bar-row">
-              <div className="acc-bar-meta">
-                <span style={{ fontWeight: 600, color: "var(--ac-hi)" }}>
-                  {c.class_name}
-                </span>
-                <span>
-                  <span style={{ color: "var(--ac-v400)", fontWeight: 700 }}>
-                    {c.pct}%
-                  </span>
-                  <span
-                    style={{
-                      color: "var(--ac-low)",
-                      fontSize: 12,
-                      marginLeft: 8,
-                    }}
-                  >
-                    {fmtShort(c.collected)} / {fmtShort(c.billed)}
-                  </span>
-                </span>
-              </div>
-              <div className="acc-bar-track">
-                <div
-                  className="acc-bar-fill"
-                  style={{ width: `${Math.min(c.pct, 100)}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-// ── Payroll tab ───────────────────────────────────────────────────────────────
-
-function PayrollTab({ payroll, loading, onNew, onStatus }) {
-  const totalNet = payroll.reduce(
-    (s, p) => s + parseFloat(p.net_salary || 0),
-    0,
-  );
-  const paidCount = payroll.filter((p) => p.status === "paid").length;
-
-  return (
-    <>
-      <div className="acc-section-row" style={{ marginTop: 0 }}>
-        <div className="acc-section-title">Payroll</div>
-        <button className="acc-btn acc-btn-primary" onClick={onNew}>
-          + Add Entry
-        </button>
-      </div>
-
-      <div className="acc-info-grid" style={{ marginTop: 0, marginBottom: 20 }}>
-        {[
-          { title: "Total Payroll", val: fmt(totalNet) },
-          { title: "Entries", val: payroll.length },
-          { title: "Paid", val: paidCount },
-          { title: "Pending", val: payroll.length - paidCount },
-        ].map(({ title, val }) => (
-          <div key={title} className="acc-info-card">
-            <div className="acc-info-title">{title}</div>
-            <div className="acc-info-num">{val}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="acc-table-wrap">
-        <table className="acc-table">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Type</th>
-              <th>Month</th>
-              <th>Basic</th>
-              <th>Allowances</th>
-              <th>Deductions</th>
-              <th>Net</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={9}>
-                  <Spinner />
-                </td>
-              </tr>
-            )}
-            {!loading && payroll.length === 0 && (
-              <tr>
-                <td colSpan={9} className="acc-empty">
-                  No payroll entries yet.
-                </td>
-              </tr>
-            )}
-            {payroll.map((p) => (
-              <tr key={p.id}>
-                <td className="cell-main">{p.employee_name}</td>
-                <td style={{ textTransform: "capitalize" }}>
-                  {p.employee_type}
-                </td>
-                <td>{p.pay_month}</td>
-                <td>{fmt(p.basic_salary)}</td>
-                <td>{fmt(p.allowances)}</td>
-                <td>{fmt(p.deductions)}</td>
-                <td style={{ fontWeight: 700, color: "var(--ac-hi)" }}>
-                  {fmt(p.net_salary)}
-                </td>
-                <td>
-                  <StatusBadge status={p.status} />
-                </td>
-                <td>
-                  {p.status === "pending" && (
-                    <button
-                      className="acc-btn acc-btn-ghost"
-                      style={{ padding: "5px 10px", fontSize: 12 }}
-                      onClick={() => onStatus(p.id, "paid")}
-                    >
-                      Mark Paid
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function Accounts() {
@@ -1571,16 +1215,13 @@ export default function Accounts() {
   const [txnTotal, setTxnTotal] = useState(0);
   const [expenses, setExpenses] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [payroll, setPayroll] = useState([]);
   const [loading, setLoading] = useState(true);
   const [txnLoading, setTxnLoading] = useState(false);
-  const [payLoading, setPayLoading] = useState(false);
   const [txnFilter, setTxnFilter] = useState({});
 
   // modals
   const [txnModal, setTxnModal] = useState(false);
   const [txnEdit, setTxnEdit] = useState(null);
-  const [payModal, setPayModal] = useState(false);
 
   const loadOverview = useCallback(async () => {
     try {
@@ -1622,18 +1263,6 @@ export default function Accounts() {
     }
   }, []);
 
-  const loadPayroll = useCallback(async () => {
-    setPayLoading(true);
-    try {
-      const res = await getPayroll();
-      setPayroll(res.data?.data || []);
-    } catch {
-      setPayroll([]);
-    } finally {
-      setPayLoading(false);
-    }
-  }, []);
-
   const loadAll = useCallback(async () => {
     setLoading(true);
     await Promise.all([
@@ -1641,7 +1270,6 @@ export default function Accounts() {
       loadTransactions(),
       loadExpenses(),
       loadCollections(),
-      loadPayroll(),
     ]);
     setLoading(false);
   }, [
@@ -1649,7 +1277,6 @@ export default function Accounts() {
     loadTransactions,
     loadExpenses,
     loadCollections,
-    loadPayroll,
   ]);
 
   useEffect(() => {
@@ -1669,15 +1296,6 @@ export default function Accounts() {
       loadOverview();
     } catch {
       alert("Failed to delete.");
-    }
-  };
-
-  const handlePayrollStatus = async (id, status) => {
-    try {
-      await updatePayrollStatus(id, status);
-      loadPayroll();
-    } catch {
-      alert("Failed to update status.");
     }
   };
 
@@ -1756,45 +1374,11 @@ export default function Accounts() {
                   onNewTxn={openNewTxn}
                 />
               )}
-              {activeTab === 1 && <AccountingLedger />}
-              {activeTab === 2 && <FeeStructure />}
-              {activeTab === 3 && <AccountSettings />}
-              {activeTab === 4 && (
-                <FeeCollectionTab
-                  collections={collections}
-                  overview={overview}
-                />
-              )}
-              {activeTab === 5 && (
-                <ExpensesTab
-                  expenses={expenses}
-                  transactions={transactions}
-                  onNew={() => {
-                    setTxnEdit({ txn_type: "expense" });
-                    setTxnModal(true);
-                  }}
-                />
-              )}
-              {activeTab === 6 && (
-                <PayrollTab
-                  payroll={payroll}
-                  loading={payLoading}
-                  onNew={() => setPayModal(true)}
-                  onStatus={handlePayrollStatus}
-                />
-              )}
-              {activeTab === 7 && (
-                <TransactionsTab
-                  transactions={transactions}
-                  total={txnTotal}
-                  loading={txnLoading}
-                  onNew={openNewTxn}
-                  onEdit={openEditTxn}
-                  onDelete={handleDeleteTxn}
-                  onFilter={handleFilterChange}
-                  filter={txnFilter}
-                />
-              )}
+              {activeTab === 1 && <AccountingVouchers />}
+              {activeTab === 2 && <AccountingChart />}
+              {activeTab === 3 && <AccountingLedger />}
+              {activeTab === 4 && <AccountingReports />}
+              {activeTab === 5 && <AccountSettings />}
             </>
           )}
         </div>
@@ -1812,11 +1396,6 @@ export default function Accounts() {
             loadExpenses();
           }}
           initial={txnEdit}
-        />
-        <PayrollModal
-          open={payModal}
-          onClose={() => setPayModal(false)}
-          onSaved={loadPayroll}
         />
       </div>
     </>

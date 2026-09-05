@@ -3,7 +3,6 @@ import SchoolProfile from "../components/settings/SchoolProfile";
 import CalendarSettings from "../components/settings/CalendarSettings";
 import UsersStaff from "../components/settings/UsersStaff";
 import RolesPermissions from "../components/settings/RolesPermissions";
-import FeesNotifications from "../components/settings/FeesNotifications";
 import Security from "../components/settings/Security";
 import UserProfile from "../components/settings/UserProfile";
 import Departments from "../components/settings/Departments";
@@ -16,7 +15,6 @@ import NoticesSms from "../components/settings/NoticesSms";
 import DeviceIntegration from "./settings/DeviceIntegration";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import Theme from "../components/settings/Theme";
-import Accounts from "../components/settings/Accounts";
 
 // Map tab keys to rendered panels
 const PANEL_MAP = {
@@ -24,7 +22,6 @@ const PANEL_MAP = {
   calendarSettings: <CalendarSettings />,
   users:            <UsersStaff />,
   roles:            <RolesPermissions />,
-  fees:             <FeesNotifications />,
   notices:          <NoticesSms />,
   integrations:     <Integrations />,
   devices:          <DeviceIntegration />,
@@ -38,7 +35,6 @@ const PANEL_MAP = {
   resultSubject:    <ResultManagementModule moduleType="subject" />,
   theme:            <Theme />,
   profile:          <UserProfile />,
-  accounts:         <Accounts />,
 };
 
 // Human-readable labels for the active tab header
@@ -47,7 +43,6 @@ const TAB_LABELS = {
   calendarSettings: "Calendar Settings",
   users:            "Users & Staff",
   roles:            "Roles & Permissions",
-  fees:             "Fees",
   notices:          "Notices & SMS",
   integrations:     "Integrations",
   devices:          "Device Integration",
@@ -61,7 +56,6 @@ const TAB_LABELS = {
   resultSubject:    "Course & Marks",
   theme:            "Theme",
   profile:          "My Profile",
-  accounts:         "Accounts",
 };
 
 const SettingsPage = () => {

@@ -67,6 +67,8 @@ export const ROUTES = {
   STUDENT: "/student",
   EMPLOYEE: "/employee",
   SETTINGS: "/settings",
+    FEE_PAYROLL: "/fee-payroll",
+    ACCOUNTS: "/accounts",
   RESULTS: "/results",
   RESULT_PORTAL: "/result-portal-module",
   DAILY_REPORTS: "/daily-reports",
@@ -131,7 +133,6 @@ export const AVAILABLE_MODULES = [
     label: "Roles & Permissions",
     description: "Role-based access control",
   },
-  { key: "fees", label: "Fees", description: "Fee structures and notices" },
   {
     key: "notices",
     label: "Notices & SMS",
@@ -211,5 +212,6 @@ export const MODULE_ROUTE_MAP = {
   results: ROUTES.RESULTS,
   result_portal: ROUTES.RESULT_PORTAL,
   daily_reports: ROUTES.DAILY_REPORTS,
+  accounts: ROUTES.ACCOUNTS,
   leave_management: ROUTES.LEAVE_MANAGEMENT,
 };

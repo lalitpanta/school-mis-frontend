@@ -59,3 +59,6 @@ export const closeAccountingFiscalYear = (id) =>
 
 export const getAccountingJournals = (params = {}) =>
   axiosInstance.get('/v1/accounts/accounting/journals', { params });
+
+export const getFinancialReport = (report, params = {}) =>
+  axiosInstance.get(`/v1/accounts/accounting/reports/${report}`, { params });

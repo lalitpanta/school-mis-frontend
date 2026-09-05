@@ -25,6 +25,8 @@ import DailyReportPage from "../pages/DailyReportPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
 import LeaveManagementPage from "../pages/LeaveManagementPage";
+import Accounts from "../components/settings/Accounts";
+import FeePayroll from "../components/settings/FeePayroll";
 import { ROUTES, MODULE_ROUTE_MAP } from "../utils/constants";
 
 /**
@@ -171,7 +173,7 @@ const AppRoutes = () => {
     useAuth();
 
   const getFirstModuleRoute = () => {
-    const moduleOrder = ["dashboard", "calendar", "attendance", "settings"];
+    const moduleOrder = ["dashboard", "calendar", "attendance", "accounts", "settings"];
     const firstAllowed = moduleOrder.find((key) => hasModule(key));
     return MODULE_ROUTE_MAP[firstAllowed] || "/login";
   };
@@ -427,6 +429,32 @@ const AppRoutes = () => {
             element={
               <MainLayout>
                 <SettingsPage />
+              </MainLayout>
+            }
+          />
+        }
+      />
+      <Route
+        path={ROUTES.FEE_PAYROLL}
+        element={
+          <ModuleRoute
+            moduleKey="settings"
+            element={
+              <MainLayout>
+                <FeePayroll />
+              </MainLayout>
+            }
+          />
+        }
+      />
+      <Route
+        path={ROUTES.ACCOUNTS}
+        element={
+          <ModuleRoute
+            moduleKey="accounts"
+            element={
+              <MainLayout>
+                <Accounts />
               </MainLayout>
             }
           />

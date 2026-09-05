@@ -183,8 +183,9 @@ const MAIN_NAV = [
   },
   {
     label: "Accounts",
-    to: "/settings?tab=accounts",
-    module: "settings",
+    to: ROUTES.ACCOUNTS,
+    module: "accounts",
+    section: "Accounts",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -200,9 +201,9 @@ const MAIN_NAV = [
   },
   {
     label: "Fee & Payroll",
-    to: "/settings?tab=accounts",
+    to: ROUTES.FEE_PAYROLL,
     module: "settings",
-    subItem: true,
+    section: "Fee & Payroll",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -216,6 +217,65 @@ const MAIN_NAV = [
       </svg>
     ),
   },
+  {
+    label: "Vouchers",
+    to: ROUTES.ACCOUNTS,
+    module: "accounts",
+    subItem: true,
+    icon: <span className="sb-dot" />,
+  },
+  {
+    label: "Chart of Accounts",
+    to: ROUTES.ACCOUNTS,
+    module: "accounts",
+    subItem: true,
+    icon: <span className="sb-dot" />,
+  },
+  {
+    label: "General Ledger",
+    to: ROUTES.ACCOUNTS,
+    module: "accounts",
+    subItem: true,
+    icon: <span className="sb-dot" />,
+  },
+  {
+    label: "Reports",
+    to: ROUTES.ACCOUNTS,
+    module: "accounts",
+    subItem: true,
+    icon: <span className="sb-dot" />,
+  },
+  {
+    label: "Account Settings",
+    to: ROUTES.ACCOUNTS,
+    module: "accounts",
+    subItem: true,
+    icon: <span className="sb-dot" />,
+  },
+  {
+    label: "Fee",
+    to: ROUTES.FEE_PAYROLL,
+    module: "settings",
+    subItem: true,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <path d="M8 8h8M8 12h8M8 16h5" />
+      </svg>
+    ),
+  },
+  {
+    label: "Payroll",
+    to: ROUTES.FEE_PAYROLL,
+    module: "settings",
+    subItem: true,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="7" width="18" height="13" rx="2" />
+        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18" />
+      </svg>
+    ),
+  },
 ];
 
 const SETTINGS_TABS = [
@@ -223,7 +283,6 @@ const SETTINGS_TABS = [
   { key: "calendarSettings", label: "Calendar Settings" },
   { key: "users", label: "Users & Staff" },
   { key: "roles", label: "Roles & Permissions" },
-  { key: "fees", label: "Fees" },
   { key: "notices", label: "Notices & SMS" },
   { key: "integrations", label: "Integrations" },
   { key: "devices", label: "Device Integration" },
@@ -710,10 +769,17 @@ const Sidebar = () => {
 
   // Determine visible nav items
   const visibleNav = (() => {
-    if (user?.type === "super_admin")
-      return MAIN_NAV.filter((i) => i.module === "dashboard");
-    if (isTenant()) return MAIN_NAV.filter((i) => hasModule(i.module));
-    return MAIN_NAV;
+    let items;
+    if (user?.type === "super_admin") items = MAIN_NAV.filter((i) => i.module === "dashboard");
+    else if (isTenant()) items = MAIN_NAV.filter((i) => hasModule(i.module));
+    else items = [...MAIN_NAV];
+    const financeOrder = ["Fee & Payroll", "Fee", "Payroll", "Accounts", "Vouchers", "Chart of Accounts", "General Ledger", "Reports", "Account Settings"];
+    return items.sort((left, right) => {
+      const leftIndex = financeOrder.indexOf(left.label);
+      const rightIndex = financeOrder.indexOf(right.label);
+      if (leftIndex === -1 || rightIndex === -1) return 0;
+      return leftIndex - rightIndex;
+    });
   })();
 
   const showSettings =
@@ -834,23 +900,25 @@ const Sidebar = () => {
         <nav className="sb-nav">
           <div className="sb-section-label">Main</div>
 
-          {filteredNav.map(({ label, to, icon, subItem }) => {
+          {filteredNav.map(({ label, to, icon, subItem, section }) => {
             // Special active check for items whose `to` includes a query string (e.g. Accounts)
             const active = to.includes("?")
               ? location.pathname === to.split("?")[0] &&
                 new URLSearchParams(to.split("?")[1]).get("tab") === activeTab
               : isNavActive(to);
             return (
-              <button
-                key={`${label}-${to}`}
-                className={`sb-item${subItem ? " sb-subitem" : ""}${active ? " sb-active" : ""}`}
-                onClick={() => navigate(to)}
-                title={collapsed ? label : undefined}
-              >
-                {icon}
-                <span className="sb-item-label">{label}</span>
-                <span className="sb-tooltip">{label}</span>
-              </button>
+              <div key={`${label}-${to}`}>
+                {section && <div className="sb-section-label">{section}</div>}
+                <button
+                  className={`sb-item${subItem ? " sb-subitem" : ""}${active ? " sb-active" : ""}`}
+                  onClick={() => navigate(to)}
+                  title={collapsed ? label : undefined}
+                >
+                  {icon}
+                  <span className="sb-item-label">{label}</span>
+                  <span className="sb-tooltip">{label}</span>
+                </button>
+              </div>
             );
           })}
 
