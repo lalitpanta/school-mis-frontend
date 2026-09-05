@@ -4,8 +4,14 @@ import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingsContext";
 import { useTheme } from "../../context/ThemeContext";
 import {
-  Moon, Sun, ChevronDown, LogOut, User, Settings,
-  Bell, Building2,
+  Moon,
+  Sun,
+  ChevronDown,
+  LogOut,
+  User,
+  Settings,
+  Bell,
+  Building2,
 } from "lucide-react";
 
 // Map pathnames to page titles
@@ -20,7 +26,6 @@ const PAGE_TITLES = {
   "/results": "Results",
   "/result-portal-module": "Result Portal",
   "/daily-reports": "Daily Reports",
-  "/fees": "Fee Management",
   "/leave-management": "Leave Management",
 };
 
@@ -66,11 +71,12 @@ const Navbar = () => {
     .toUpperCase()
     .slice(0, 2);
 
-  const roleLabel = user?.type === "super_admin"
-    ? "Super Admin"
-    : isTenant()
-      ? "Tenant Admin"
-      : "Admin";
+  const roleLabel =
+    user?.type === "super_admin"
+      ? "Super Admin"
+      : isTenant()
+        ? "Tenant Admin"
+        : "Admin";
 
   return (
     <header
@@ -105,7 +111,10 @@ const Navbar = () => {
             }}
           >
             <Building2 size={13} />
-            <span className="text-xs font-semibold max-w-[140px] truncate" style={{ color: "var(--text-1)" }}>
+            <span
+              className="text-xs font-semibold max-w-[140px] truncate"
+              style={{ color: "var(--text-1)" }}
+            >
               {brandName}
             </span>
             <ChevronDown
@@ -142,28 +151,43 @@ const Navbar = () => {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="text-sm font-bold truncate" style={{ color: "var(--text-1)" }}>
+                    <p
+                      className="text-sm font-bold truncate"
+                      style={{ color: "var(--text-1)" }}
+                    >
                       {brandName}
                     </p>
                     {brandAddress && (
-                      <p className="text-xs truncate" style={{ color: "var(--text-3)" }}>
+                      <p
+                        className="text-xs truncate"
+                        style={{ color: "var(--text-3)" }}
+                      >
                         {brandAddress}
                       </p>
                     )}
                   </div>
                 </div>
                 {schoolProfile.email && (
-                  <p className="text-xs mb-1" style={{ color: "var(--text-3)" }}>
+                  <p
+                    className="text-xs mb-1"
+                    style={{ color: "var(--text-3)" }}
+                  >
                     {schoolProfile.email}
                   </p>
                 )}
                 {schoolProfile.phone && (
-                  <p className="text-xs mb-3" style={{ color: "var(--text-3)" }}>
+                  <p
+                    className="text-xs mb-3"
+                    style={{ color: "var(--text-3)" }}
+                  >
                     {schoolProfile.phone}
                   </p>
                 )}
                 <button
-                  onClick={() => { setSchoolOpen(false); navigate("/settings?tab=school"); }}
+                  onClick={() => {
+                    setSchoolOpen(false);
+                    navigate("/settings?tab=school");
+                  }}
                   className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold text-white transition-colors"
                   style={{ background: "var(--accent)" }}
                 >
@@ -217,7 +241,10 @@ const Navbar = () => {
             {initials}
           </div>
           <div className="hidden md:block leading-tight text-left">
-            <p className="text-xs font-semibold" style={{ color: "var(--text-1)" }}>
+            <p
+              className="text-xs font-semibold"
+              style={{ color: "var(--text-1)" }}
+            >
               {name.split(" ")[0]}
             </p>
             <p className="text-[10px]" style={{ color: "var(--text-3)" }}>
@@ -255,10 +282,16 @@ const Navbar = () => {
                   {initials}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold truncate" style={{ color: "var(--text-1)" }}>
+                  <p
+                    className="text-xs font-bold truncate"
+                    style={{ color: "var(--text-1)" }}
+                  >
                     {name}
                   </p>
-                  <p className="text-[10px] truncate" style={{ color: "var(--text-3)" }}>
+                  <p
+                    className="text-[10px] truncate"
+                    style={{ color: "var(--text-3)" }}
+                  >
                     {user?.email || roleLabel}
                   </p>
                 </div>
@@ -268,34 +301,66 @@ const Navbar = () => {
             {/* Menu items */}
             <div className="p-1.5">
               <button
-                onClick={() => { setProfileOpen(false); navigate("/settings?tab=profile"); }}
+                onClick={() => {
+                  setProfileOpen(false);
+                  navigate("/settings?tab=profile");
+                }}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left"
                 style={{ color: "var(--text-2)" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-1)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-2)"; }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--bg-hover)";
+                  e.currentTarget.style.color = "var(--text-1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "var(--text-2)";
+                }}
               >
                 <User size={13} />
                 My Profile
               </button>
               <button
-                onClick={() => { setProfileOpen(false); navigate("/settings?tab=school"); }}
+                onClick={() => {
+                  setProfileOpen(false);
+                  navigate("/settings?tab=school");
+                }}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left"
                 style={{ color: "var(--text-2)" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-1)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-2)"; }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--bg-hover)";
+                  e.currentTarget.style.color = "var(--text-1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "var(--text-2)";
+                }}
               >
                 <Settings size={13} />
                 Settings
               </button>
 
-              <div style={{ height: 1, background: "var(--border-dim)", margin: "4px 0" }} />
+              <div
+                style={{
+                  height: 1,
+                  background: "var(--border-dim)",
+                  margin: "4px 0",
+                }}
+              />
 
               <button
-                onClick={() => { setProfileOpen(false); logout(); navigate("/login"); }}
+                onClick={() => {
+                  setProfileOpen(false);
+                  logout();
+                  navigate("/login");
+                }}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left"
                 style={{ color: "#f43f5e" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(244,63,94,0.08)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(244,63,94,0.08)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                }}
               >
                 <LogOut size={13} />
                 Sign Out

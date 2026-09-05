@@ -165,23 +165,6 @@ const MAIN_NAV = [
     ),
   },
   {
-    label: "Fees",
-    to: ROUTES.FEES,
-    module: "fee_management",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2" />
-        <path d="M2.5 10h19" />
-      </svg>
-    ),
-  },
-  {
     label: "Leave",
     to: ROUTES.LEAVE_MANAGEMENT,
     module: "leave_management",
@@ -672,6 +655,7 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [examOpen, setExamOpen] = useState(false);
+  const [accountsOpen, setAccountsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const searchRef = useRef(null);
 
@@ -838,6 +822,39 @@ const Sidebar = () => {
               ? location.pathname === to.split("?")[0] &&
                 new URLSearchParams(to.split("?")[1]).get("tab") === activeTab
               : isNavActive(to);
+
+            if (label === "Accounts") {
+              return (
+                <div
+                  key={to}
+                  className={`sb-group${accountsOpen || active ? " sb-open" : ""}`}
+                >
+                  <button
+                    className={`sb-item${active ? " sb-active" : ""}`}
+                    onClick={() => {
+                      setAccountsOpen((open) => !open);
+                      navigate(to);
+                    }}
+                    title={collapsed ? label : undefined}
+                  >
+                    {icon}
+                    <span className="sb-item-label">{label}</span>
+                    <IconChevronDown />
+                    <span className="sb-tooltip">{label}</span>
+                  </button>
+                  <div className="sb-submenu">
+                    <button
+                      className={`sb-item${active ? " sb-active" : ""}`}
+                      onClick={() => navigate(to)}
+                    >
+                      <span className="sb-dot" />
+                      <span className="sb-item-label">Fee &amp; Payroll</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <button
                 key={to}

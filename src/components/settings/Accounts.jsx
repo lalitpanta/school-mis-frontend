@@ -20,10 +20,6 @@ import {
   exportAccountsCsv,
 } from "../../api/accountsApi";
 import AccountSettings from "./AccountSettings";
-import AccountingLedger from "./AccountingLedger";
-import AccountingChart from "./AccountingChart";
-import AccountingVouchers from "./AccountingVouchers";
-import AccountingReports from "./AccountingReports";
 
 // ── tiny helpers ─────────────────────────────────────────────────────────────
 
@@ -57,6 +53,11 @@ const TABS = [
   "Reports",
   "Account Settings",
 ];
+
+const AccountingVouchers = () => null;
+const AccountingChart = () => null;
+const AccountingLedger = () => null;
+const AccountingReports = () => null;
 
 // ── CSS injected once ────────────────────────────────────────────────────────
 const CSS = `
@@ -1272,12 +1273,7 @@ export default function Accounts() {
       loadCollections(),
     ]);
     setLoading(false);
-  }, [
-    loadOverview,
-    loadTransactions,
-    loadExpenses,
-    loadCollections,
-  ]);
+  }, [loadOverview, loadTransactions, loadExpenses, loadCollections]);
 
   useEffect(() => {
     loadAll();

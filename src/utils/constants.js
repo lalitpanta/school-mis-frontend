@@ -70,7 +70,6 @@ export const ROUTES = {
   RESULTS: "/results",
   RESULT_PORTAL: "/result-portal-module",
   DAILY_REPORTS: "/daily-reports",
-  FEES: "/fees",
   LEAVE_MANAGEMENT: "/leave-management",
   LOGIN: "/login",
 };
@@ -101,11 +100,6 @@ export const AVAILABLE_MODULES = [
     key: "daily_reports",
     label: "Daily Student Report",
     description: "Daily student reports and templates",
-  },
-  {
-    key: "fee_management",
-    label: "Fee Management",
-    description: "Manage student fees, structures, and payments",
   },
   {
     key: "leave_management",
@@ -217,6 +211,5 @@ export const MODULE_ROUTE_MAP = {
   results: ROUTES.RESULTS,
   result_portal: ROUTES.RESULT_PORTAL,
   daily_reports: ROUTES.DAILY_REPORTS,
-  fee_management: ROUTES.FEES,
   leave_management: ROUTES.LEAVE_MANAGEMENT,
 };
