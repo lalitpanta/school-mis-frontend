@@ -25,6 +25,8 @@ import DailyReportPage from "../pages/DailyReportPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
 import LeaveManagementPage from "../pages/LeaveManagementPage";
+import FeePayrollPage from "../pages/FeePayrollPage";
+import AccountingPage from "../pages/AccountingPage";
 import { ROUTES, MODULE_ROUTE_MAP } from "../utils/constants";
 
 /**
@@ -440,6 +442,32 @@ const AppRoutes = () => {
             element={
               <MainLayout>
                 <LeaveManagementPage />
+              </MainLayout>
+            }
+          />
+        }
+      />
+      <Route
+        path={ROUTES.FEE_PAYROLL}
+        element={
+          <ModuleRoute
+            moduleKey="accounts"
+            element={
+              <MainLayout>
+                <FeePayrollPage />
+              </MainLayout>
+            }
+          />
+        }
+      />
+      <Route
+        path={ROUTES.ACCOUNTING}
+        element={
+          <ModuleRoute
+            moduleKey="accounts"
+            element={
+              <MainLayout>
+                <AccountingPage />
               </MainLayout>
             }
           />

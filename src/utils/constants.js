@@ -71,6 +71,8 @@ export const ROUTES = {
   RESULT_PORTAL: "/result-portal-module",
   DAILY_REPORTS: "/daily-reports",
   LEAVE_MANAGEMENT: "/leave-management",
+  FEE_PAYROLL: "/fee-payroll",
+  ACCOUNTING: "/accounting",
   LOGIN: "/login",
 };
 
@@ -212,4 +214,6 @@ export const MODULE_ROUTE_MAP = {
   result_portal: ROUTES.RESULT_PORTAL,
   daily_reports: ROUTES.DAILY_REPORTS,
   leave_management: ROUTES.LEAVE_MANAGEMENT,
+  accounts: ROUTES.FEE_PAYROLL,
+  accounting: ROUTES.ACCOUNTING,
 };

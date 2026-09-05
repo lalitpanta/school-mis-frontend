@@ -182,9 +182,9 @@ const MAIN_NAV = [
     ),
   },
   {
-    label: "Accounts",
-    to: "/settings?tab=accounts",
-    module: "settings",
+    label: "Fee & Payroll",
+    to: ROUTES.FEE_PAYROLL,
+    module: "accounts",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -198,7 +198,41 @@ const MAIN_NAV = [
       </svg>
     ),
   },
+  {
+    label: "Accounting",
+    to: ROUTES.ACCOUNTING,
+    module: "accounts",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6M20 16V3" />
+      </svg>
+    ),
+  },
 ];
+
+const FINANCE_SUBMENUS = {
+  "Fee & Payroll": [
+    { label: "Fee", to: ROUTES.FEE_PAYROLL },
+    { label: "Payroll", to: ROUTES.FEE_PAYROLL },
+  ],
+  Accounting: [
+    { label: "Dashboard", to: ROUTES.ACCOUNTING },
+    { label: "Chart of Accounts", to: `${ROUTES.ACCOUNTING}?tab=chart` },
+    { label: "General Ledger", to: `${ROUTES.ACCOUNTING}?tab=ledger` },
+    { label: "Journal Entries", to: `${ROUTES.ACCOUNTING}?tab=journals` },
+    { label: "Vouchers", to: `${ROUTES.ACCOUNTING}?tab=vouchers` },
+    { label: "Payment Gateway", to: `${ROUTES.ACCOUNTING}?tab=payments` },
+    { label: "Bank Reconciliation", to: `${ROUTES.ACCOUNTING}?tab=bank` },
+    { label: "Reports", to: `${ROUTES.ACCOUNTING}?tab=reports` },
+    { label: "Settings", to: `${ROUTES.ACCOUNTING}?tab=settings` },
+  ],
+};
 
 const SETTINGS_TABS = [
   { key: "school", label: "School Profile" },
@@ -655,7 +689,7 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [examOpen, setExamOpen] = useState(false);
-  const [accountsOpen, setAccountsOpen] = useState(false);
+  const [financeOpen, setFinanceOpen] = useState({});
   const [search, setSearch] = useState("");
   const searchRef = useRef(null);
 
@@ -817,22 +851,19 @@ const Sidebar = () => {
           <div className="sb-section-label">Main</div>
 
           {filteredNav.map(({ label, to, icon }) => {
-            // Special active check for items whose `to` includes a query string (e.g. Accounts)
-            const active = to.includes("?")
-              ? location.pathname === to.split("?")[0] &&
-                new URLSearchParams(to.split("?")[1]).get("tab") === activeTab
-              : isNavActive(to);
+            const active = isNavActive(to.split("?")[0]);
+            const submenu = FINANCE_SUBMENUS[label];
 
-            if (label === "Accounts") {
+            if (submenu) {
               return (
                 <div
                   key={to}
-                  className={`sb-group${accountsOpen || active ? " sb-open" : ""}`}
+                  className={`sb-group${financeOpen[label] || active ? " sb-open" : ""}`}
                 >
                   <button
                     className={`sb-item${active ? " sb-active" : ""}`}
                     onClick={() => {
-                      setAccountsOpen((open) => !open);
+                      setFinanceOpen((open) => ({ ...open, [label]: !open[label] }));
                       navigate(to);
                     }}
                     title={collapsed ? label : undefined}
@@ -843,13 +874,22 @@ const Sidebar = () => {
                     <span className="sb-tooltip">{label}</span>
                   </button>
                   <div className="sb-submenu">
-                    <button
-                      className={`sb-item${active ? " sb-active" : ""}`}
-                      onClick={() => navigate(to)}
-                    >
-                      <span className="sb-dot" />
-                      <span className="sb-item-label">Fee &amp; Payroll</span>
-                    </button>
+                    {submenu.map((item) => {
+                      const itemActive =
+                        location.pathname === item.to.split("?")[0] &&
+                        (!item.to.includes("?") ||
+                          new URLSearchParams(item.to.split("?")[1]).get("tab") === activeTab);
+                      return (
+                        <button
+                          key={item.to}
+                          className={`sb-item${itemActive ? " sb-active" : ""}`}
+                          onClick={() => navigate(item.to)}
+                        >
+                          <span className="sb-dot" />
+                          <span className="sb-item-label">{item.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               );
