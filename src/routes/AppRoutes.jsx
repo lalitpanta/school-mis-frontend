@@ -24,7 +24,6 @@ import ResultManagement from "../pages/ResultManagement";
 import DailyReportPage from "../pages/DailyReportPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
-import FeeManagementPage from "../pages/FeeManagementPage";
 import LeaveManagementPage from "../pages/LeaveManagementPage";
 import { ROUTES, MODULE_ROUTE_MAP } from "../utils/constants";
 
@@ -428,19 +427,6 @@ const AppRoutes = () => {
             element={
               <MainLayout>
                 <SettingsPage />
-              </MainLayout>
-            }
-          />
-        }
-      />
-      <Route
-        path={ROUTES.FEES}
-        element={
-          <ModuleRoute
-            moduleKey="fee_management"
-            element={
-              <MainLayout>
-                <FeeManagementPage />
               </MainLayout>
             }
           />

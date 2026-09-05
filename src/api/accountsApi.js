@@ -35,3 +35,27 @@ export const updatePayrollStatus = (id, status) =>
 
 export const exportAccountsCsv = (params = {}) =>
   axiosInstance.get('/v1/accounts/export/csv', { params, responseType: 'blob' });
+
+export const getAccountingAccounts = () =>
+  axiosInstance.get('/v1/accounts/accounting/accounts');
+
+export const createAccountingAccount = (payload) =>
+  axiosInstance.post('/v1/accounts/accounting/accounts', payload);
+
+export const postAccountingJournal = (payload) =>
+  axiosInstance.post('/v1/accounts/accounting/journals', payload);
+
+export const getTrialBalance = (params = {}) =>
+  axiosInstance.get('/v1/accounts/accounting/trial-balance', { params });
+
+export const getAccountingFiscalYears = () =>
+  axiosInstance.get('/v1/accounts/accounting/fiscal-years');
+
+export const createAccountingFiscalYear = (payload) =>
+  axiosInstance.post('/v1/accounts/accounting/fiscal-years', payload);
+
+export const closeAccountingFiscalYear = (id) =>
+  axiosInstance.patch(`/v1/accounts/accounting/fiscal-years/${id}/close`);
+
+export const getAccountingJournals = (params = {}) =>
+  axiosInstance.get('/v1/accounts/accounting/journals', { params });

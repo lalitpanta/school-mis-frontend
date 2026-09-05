@@ -24,6 +24,7 @@ import {
 } from "../../api/accountsApi";
 import FeeStructure from "./FeeStructurePro";
 import AccountSettings from "./AccountSettings";
+import AccountingLedger from "./AccountingLedger";
 
 // ── tiny helpers ─────────────────────────────────────────────────────────────
 
@@ -51,6 +52,7 @@ const TYPE_LABEL = { income: "Income", expense: "Expense" };
 
 const TABS = [
   "Overview",
+  "General Ledger",
   "Fee Structure",
   "Account Settings",
   "Fee Collection",
@@ -1754,15 +1756,16 @@ export default function Accounts() {
                   onNewTxn={openNewTxn}
                 />
               )}
-              {activeTab === 1 && <FeeStructure />}
-              {activeTab === 2 && <AccountSettings />}
-              {activeTab === 3 && (
+              {activeTab === 1 && <AccountingLedger />}
+              {activeTab === 2 && <FeeStructure />}
+              {activeTab === 3 && <AccountSettings />}
+              {activeTab === 4 && (
                 <FeeCollectionTab
                   collections={collections}
                   overview={overview}
                 />
               )}
-              {activeTab === 4 && (
+              {activeTab === 5 && (
                 <ExpensesTab
                   expenses={expenses}
                   transactions={transactions}
@@ -1772,7 +1775,7 @@ export default function Accounts() {
                   }}
                 />
               )}
-              {activeTab === 5 && (
+              {activeTab === 6 && (
                 <PayrollTab
                   payroll={payroll}
                   loading={payLoading}
@@ -1780,7 +1783,7 @@ export default function Accounts() {
                   onStatus={handlePayrollStatus}
                 />
               )}
-              {activeTab === 6 && (
+              {activeTab === 7 && (
                 <TransactionsTab
                   transactions={transactions}
                   total={txnTotal}

@@ -165,23 +165,6 @@ const MAIN_NAV = [
     ),
   },
   {
-    label: "Fees",
-    to: ROUTES.FEES,
-    module: "fee_management",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2" />
-        <path d="M2.5 10h19" />
-      </svg>
-    ),
-  },
-  {
     label: "Leave",
     to: ROUTES.LEAVE_MANAGEMENT,
     module: "leave_management",
@@ -202,6 +185,24 @@ const MAIN_NAV = [
     label: "Accounts",
     to: "/settings?tab=accounts",
     module: "settings",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2.5" y="5.5" width="19" height="13" rx="2.2" />
+        <path d="M2.5 10h19M7 15h2M12 15h2" />
+      </svg>
+    ),
+  },
+  {
+    label: "Fee & Payroll",
+    to: "/settings?tab=accounts",
+    module: "settings",
+    subItem: true,
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -524,6 +525,7 @@ const css = `
   font-family: 'Inter', sans-serif;
 }
 .sb-item:hover { background: var(--sb-hover); color: var(--sb-hi); }
+.sb-subitem { padding-left: 34px; }
 
 .sb-item svg:first-child { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; }
 
@@ -832,7 +834,7 @@ const Sidebar = () => {
         <nav className="sb-nav">
           <div className="sb-section-label">Main</div>
 
-          {filteredNav.map(({ label, to, icon }) => {
+          {filteredNav.map(({ label, to, icon, subItem }) => {
             // Special active check for items whose `to` includes a query string (e.g. Accounts)
             const active = to.includes("?")
               ? location.pathname === to.split("?")[0] &&
@@ -840,8 +842,8 @@ const Sidebar = () => {
               : isNavActive(to);
             return (
               <button
-                key={to}
-                className={`sb-item${active ? " sb-active" : ""}`}
+                key={`${label}-${to}`}
+                className={`sb-item${subItem ? " sb-subitem" : ""}${active ? " sb-active" : ""}`}
                 onClick={() => navigate(to)}
                 title={collapsed ? label : undefined}
               >

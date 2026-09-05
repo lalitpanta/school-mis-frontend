@@ -20,7 +20,6 @@ const PAGE_TITLES = {
   "/results": "Results",
   "/result-portal-module": "Result Portal",
   "/daily-reports": "Daily Reports",
-  "/fees": "Fee Management",
   "/leave-management": "Leave Management",
 };
 
