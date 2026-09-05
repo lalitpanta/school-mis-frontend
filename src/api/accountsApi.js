@@ -45,6 +45,9 @@ export const getAccountingAccounts = () =>
 export const createAccountingAccount = (payload) =>
   axiosInstance.post("/v1/accounts/accounting/accounts", payload);
 
+export const updateAccountingAccount = (id, payload) =>
+  axiosInstance.patch(`/v1/accounts/accounting/accounts/${id}`, payload);
+
 export const postAccountingJournal = (payload) =>
   axiosInstance.post("/v1/accounts/accounting/journals", payload);
 
@@ -62,6 +65,21 @@ export const closeAccountingFiscalYear = (id) =>
 
 export const getAccountingJournals = (params = {}) =>
   axiosInstance.get("/v1/accounts/accounting/journals", { params });
+
+export const getAccountingJournal = (id) =>
+  axiosInstance.get(`/v1/accounts/accounting/journals/${id}`);
+
+export const getAccountingLedger = (params = {}) =>
+  axiosInstance.get("/v1/accounts/accounting/ledger", { params });
+
+export const getAccountingVouchers = (params = {}) =>
+  axiosInstance.get("/v1/accounts/accounting/vouchers", { params });
+
+export const createAccountingVoucher = (payload) =>
+  axiosInstance.post("/v1/accounts/accounting/vouchers", payload);
+
+export const postAccountingVoucher = (id) =>
+  axiosInstance.post(`/v1/accounts/accounting/vouchers/${id}/post`);
 
 export const getFinancialReport = (report, params = {}) =>
   axiosInstance.get(`/v1/accounts/accounting/reports/${report}`, { params });

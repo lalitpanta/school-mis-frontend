@@ -689,7 +689,6 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [examOpen, setExamOpen] = useState(false);
-  const [financeOpen, setFinanceOpen] = useState({});
   const [search, setSearch] = useState("");
   const searchRef = useRef(null);
 
@@ -858,19 +857,15 @@ const Sidebar = () => {
               return (
                 <div
                   key={to}
-                  className={`sb-group${financeOpen[label] || active ? " sb-open" : ""}`}
+                  className="sb-group sb-open"
                 >
                   <button
                     className={`sb-item${active ? " sb-active" : ""}`}
-                    onClick={() => {
-                      setFinanceOpen((open) => ({ ...open, [label]: !open[label] }));
-                      navigate(to);
-                    }}
+                    onClick={() => navigate(to)}
                     title={collapsed ? label : undefined}
                   >
                     {icon}
                     <span className="sb-item-label">{label}</span>
-                    <IconChevronDown />
                     <span className="sb-tooltip">{label}</span>
                   </button>
                   <div className="sb-submenu">
