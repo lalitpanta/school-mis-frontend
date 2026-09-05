@@ -17,11 +17,10 @@ const PAGE_TITLES = {
   "/student": "Students",
   "/employee": "Employees",
   "/settings": "Settings",
-  "/fee-payroll": "Fee & Payroll",
-  "/accounts": "Accounts",
   "/results": "Results",
   "/result-portal-module": "Result Portal",
   "/daily-reports": "Daily Reports",
+  "/fees": "Fee Management",
   "/leave-management": "Leave Management",
 };
 

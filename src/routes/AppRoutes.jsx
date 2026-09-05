@@ -24,9 +24,8 @@ import ResultManagement from "../pages/ResultManagement";
 import DailyReportPage from "../pages/DailyReportPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
+import FeeManagementPage from "../pages/FeeManagementPage";
 import LeaveManagementPage from "../pages/LeaveManagementPage";
-import Accounts from "../components/settings/Accounts";
-import FeePayroll from "../components/settings/FeePayroll";
 import { ROUTES, MODULE_ROUTE_MAP } from "../utils/constants";
 
 /**
@@ -173,7 +172,7 @@ const AppRoutes = () => {
     useAuth();
 
   const getFirstModuleRoute = () => {
-    const moduleOrder = ["dashboard", "calendar", "attendance", "accounts", "settings"];
+    const moduleOrder = ["dashboard", "calendar", "attendance", "settings"];
     const firstAllowed = moduleOrder.find((key) => hasModule(key));
     return MODULE_ROUTE_MAP[firstAllowed] || "/login";
   };
@@ -435,26 +434,13 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path={ROUTES.FEE_PAYROLL}
+        path={ROUTES.FEES}
         element={
           <ModuleRoute
-            moduleKey="settings"
+            moduleKey="fee_management"
             element={
               <MainLayout>
-                <FeePayroll />
-              </MainLayout>
-            }
-          />
-        }
-      />
-      <Route
-        path={ROUTES.ACCOUNTS}
-        element={
-          <ModuleRoute
-            moduleKey="accounts"
-            element={
-              <MainLayout>
-                <Accounts />
+                <FeeManagementPage />
               </MainLayout>
             }
           />
