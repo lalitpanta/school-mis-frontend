@@ -3,13 +3,19 @@ import { useSearchParams } from "react-router-dom";
 import {
   createAccountingAccount,
   createAccountingVoucher,
+  createBankAccount,
   getAccountingAccounts,
+  getBankStatements,
+  getGatewayTransactions,
   getAccountingLedger,
   getAccountingJournals,
   getAccountingVouchers,
+  getPaymentGateways,
   getFinancialReport,
   postAccountingJournal,
   postAccountingVoucher,
+  savePaymentGateway,
+  importBankStatement,
   getTrialBalance,
 } from "../api/accountsApi";
 
@@ -33,12 +39,17 @@ const AccountingPage = () => {
   const [trialBalance, setTrialBalance] = useState([]);
   const [ledger, setLedger] = useState([]);
   const [vouchers, setVouchers] = useState([]);
+  const [gateways, setGateways] = useState([]);
+  const [gatewayTransactions, setGatewayTransactions] = useState([]);
+  const [bankStatements, setBankStatements] = useState([]);
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [accountForm, setAccountForm] = useState({ code: "", name: "", account_type: "asset" });
   const [journalForm, setJournalForm] = useState({ description: "", debitAccount: "", creditAccount: "", amount: "" });
   const [voucherForm, setVoucherForm] = useState({ voucher_type: "receipt", narration: "", debitAccount: "", creditAccount: "", amount: "" });
+  const [gatewayForm, setGatewayForm] = useState({ name: "", provider: "", merchant_id: "", api_key: "", api_secret: "", mode: "sandbox" });
+  const [bankForm, setBankForm] = useState({ bank_account_id: "", entries: "" });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -63,6 +74,20 @@ const AccountingPage = () => {
     getFinancialReport("profit-loss")
       .then((response) => setReport(response.data.data))
       .catch(() => setReport(null));
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === "payments") {
+      Promise.all([getPaymentGateways(), getGatewayTransactions()])
+        .then(([gatewayResponse, transactionResponse]) => {
+          setGateways(gatewayResponse.data.data || []);
+          setGatewayTransactions(transactionResponse.data.data || []);
+        })
+        .catch(() => setError("Unable to load payment gateway data."));
+    }
+    if (activeTab === "bank") {
+      getBankStatements().then((response) => setBankStatements(response.data.data || [])).catch(() => setError("Unable to load bank statements."));
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -153,6 +178,35 @@ const AccountingPage = () => {
     }
   };
 
+  const saveGateway = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      const response = await savePaymentGateway(gatewayForm);
+      setGateways((current) => [...current.filter((gateway) => gateway.name !== response.data.data.name), response.data.data]);
+      setGatewayForm({ name: "", provider: "", merchant_id: "", api_key: "", api_secret: "", mode: "sandbox" });
+      setError("");
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to save gateway.");
+    } finally { setSaving(false); }
+  };
+
+  const importStatements = async (event) => {
+    event.preventDefault();
+    let entries;
+    try { entries = JSON.parse(bankForm.entries); } catch { setError("Statement data must be a valid JSON array."); return; }
+    setSaving(true);
+    try {
+      await importBankStatement({ bank_account_id: bankForm.bank_account_id, entries });
+      const response = await getBankStatements();
+      setBankStatements(response.data.data || []);
+      setBankForm({ bank_account_id: "", entries: "" });
+      setError("");
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to import statement.");
+    } finally { setSaving(false); }
+  };
+
   return (
     <div className="h-full overflow-y-auto p-6" style={{ color: "var(--text-1)" }}>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
@@ -214,6 +268,30 @@ const AccountingPage = () => {
                   <button disabled={saving} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">{saving ? "Saving..." : "Save draft voucher"}</button>
                 </form>
                 {vouchers.map((voucher) => <div key={voucher.id} className="flex items-center justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{voucher.voucher_number}<br /><span style={{ color: "var(--text-2)" }}>{voucher.voucher_type} · {voucher.narration || "No narration"}</span></span><span className="flex items-center gap-2">{voucher.status}{voucher.status === "draft" && <button type="button" onClick={() => postVoucher(voucher.id)} className="rounded bg-indigo-600 px-2 py-1 text-xs text-white">Post</button>}</span></div>)}
+              </>
+            ) : activeTab === "payments" ? (
+              <>
+                <form onSubmit={saveGateway} className="grid gap-2 mb-4 sm:grid-cols-2">
+                  <input required placeholder="Gateway name" value={gatewayForm.name} onChange={(event) => setGatewayForm({ ...gatewayForm, name: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <input required placeholder="Provider" value={gatewayForm.provider} onChange={(event) => setGatewayForm({ ...gatewayForm, provider: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <input placeholder="Merchant ID" value={gatewayForm.merchant_id} onChange={(event) => setGatewayForm({ ...gatewayForm, merchant_id: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <input placeholder="API key" value={gatewayForm.api_key} onChange={(event) => setGatewayForm({ ...gatewayForm, api_key: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <input type="password" placeholder="API secret" value={gatewayForm.api_secret} onChange={(event) => setGatewayForm({ ...gatewayForm, api_secret: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <select value={gatewayForm.mode} onChange={(event) => setGatewayForm({ ...gatewayForm, mode: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm"><option value="sandbox">Sandbox</option><option value="live">Live</option></select>
+                  <button disabled={saving} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white sm:col-span-2">{saving ? "Saving..." : "Save gateway"}</button>
+                </form>
+                {gateways.map((gateway) => <div key={gateway.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{gateway.name} · {gateway.provider}<br /><span style={{ color: "var(--text-2)" }}>{gateway.mode}</span></span><span>{gateway.is_active ? "Active" : "Inactive"}</span></div>)}
+                <h3 className="mt-5 mb-2 font-medium">Transactions</h3>
+                {gatewayTransactions.map((transaction) => <div key={transaction.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{transaction.external_id}<br /><span style={{ color: "var(--text-2)" }}>{transaction.gateway_name}</span></span><span>NPR {Number(transaction.amount).toLocaleString("en-IN")} · {transaction.status}</span></div>)}
+              </>
+            ) : activeTab === "bank" ? (
+              <>
+                <form onSubmit={importStatements} className="grid gap-2 mb-4">
+                  <input required placeholder="Bank account ID" value={bankForm.bank_account_id} onChange={(event) => setBankForm({ ...bankForm, bank_account_id: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <textarea required rows="5" placeholder='Statement JSON: [{"transaction_date":"2026-09-06","reference":"REF-1","amount":100,"direction":"credit"}]' value={bankForm.entries} onChange={(event) => setBankForm({ ...bankForm, entries: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <button disabled={saving} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">{saving ? "Importing..." : "Import statement"}</button>
+                </form>
+                {bankStatements.map((statement) => <div key={statement.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{statement.transaction_date}<br /><span style={{ color: "var(--text-2)" }}>{statement.reference} · {statement.bank_account_name}</span></span><span>NPR {Number(statement.amount).toLocaleString("en-IN")} · {statement.status}</span></div>)}
               </>
             ) : activeTab === "reports" ? (report?.accounts || []).map((account) => <div key={account.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{account.code} · {account.name}</span><span>NPR {Number(account.credit || account.debit || 0).toLocaleString("en-IN")}</span></div>) : journals.slice(0, 12).map((journal) => <div key={journal.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{journal.journal_number}<br /><span style={{ color: "var(--text-2)" }}>{journal.description || "Journal entry"}</span></span><span>NPR {Number(journal.total_debit || 0).toLocaleString("en-IN")}</span></div>)}
             {!accounts.length && !journals.length && <p style={{ color: "var(--text-2)" }}>No accounting records are available yet.</p>}

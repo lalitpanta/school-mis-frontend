@@ -81,5 +81,13 @@ export const createAccountingVoucher = (payload) =>
 export const postAccountingVoucher = (id) =>
   axiosInstance.post(`/v1/accounts/accounting/vouchers/${id}/post`);
 
+export const getPaymentGateways = () => axiosInstance.get("/v1/accounts/accounting/payment-gateways");
+export const savePaymentGateway = (payload) => axiosInstance.post("/v1/accounts/accounting/payment-gateways", payload);
+export const getGatewayTransactions = (params = {}) => axiosInstance.get("/v1/accounts/accounting/payment-gateway-transactions", { params });
+export const recordGatewayTransaction = (payload) => axiosInstance.post("/v1/accounts/accounting/payment-gateway-transactions", payload);
+export const getBankStatements = (params = {}) => axiosInstance.get("/v1/accounts/accounting/bank-statements", { params });
+export const createBankAccount = (payload) => axiosInstance.post("/v1/accounts/accounting/bank-accounts", payload);
+export const importBankStatement = (payload) => axiosInstance.post("/v1/accounts/accounting/bank-statements/import", payload);
+
 export const getFinancialReport = (report, params = {}) =>
   axiosInstance.get(`/v1/accounts/accounting/reports/${report}`, { params });
