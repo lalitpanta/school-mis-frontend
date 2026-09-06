@@ -216,24 +216,6 @@ const MAIN_NAV = [
   },
 ];
 
-const FINANCE_SUBMENUS = {
-  "Fee & Payroll": [
-    { label: "Fee", to: ROUTES.FEE_PAYROLL },
-    { label: "Payroll", to: ROUTES.FEE_PAYROLL },
-  ],
-  Accounting: [
-    { label: "Dashboard", to: ROUTES.ACCOUNTING },
-    { label: "Chart of Accounts", to: `${ROUTES.ACCOUNTING}?tab=chart` },
-    { label: "General Ledger", to: `${ROUTES.ACCOUNTING}?tab=ledger` },
-    { label: "Journal Entries", to: `${ROUTES.ACCOUNTING}?tab=journals` },
-    { label: "Vouchers", to: `${ROUTES.ACCOUNTING}?tab=vouchers` },
-    { label: "Payment Gateway", to: `${ROUTES.ACCOUNTING}?tab=payments` },
-    { label: "Bank Reconciliation", to: `${ROUTES.ACCOUNTING}?tab=bank` },
-    { label: "Reports", to: `${ROUTES.ACCOUNTING}?tab=reports` },
-    { label: "Settings", to: `${ROUTES.ACCOUNTING}?tab=settings` },
-  ],
-};
-
 const SETTINGS_TABS = [
   { key: "school", label: "School Profile" },
   { key: "calendarSettings", label: "Calendar Settings" },
@@ -851,44 +833,6 @@ const Sidebar = () => {
 
           {filteredNav.map(({ label, to, icon }) => {
             const active = isNavActive(to.split("?")[0]);
-            const submenu = FINANCE_SUBMENUS[label];
-
-            if (submenu) {
-              return (
-                <div
-                  key={to}
-                  className="sb-group sb-open"
-                >
-                  <button
-                    className={`sb-item${active ? " sb-active" : ""}`}
-                    onClick={() => navigate(to)}
-                    title={collapsed ? label : undefined}
-                  >
-                    {icon}
-                    <span className="sb-item-label">{label}</span>
-                    <span className="sb-tooltip">{label}</span>
-                  </button>
-                  <div className="sb-submenu">
-                    {submenu.map((item) => {
-                      const itemActive =
-                        location.pathname === item.to.split("?")[0] &&
-                        (!item.to.includes("?") ||
-                          new URLSearchParams(item.to.split("?")[1]).get("tab") === activeTab);
-                      return (
-                        <button
-                          key={item.to}
-                          className={`sb-item${itemActive ? " sb-active" : ""}`}
-                          onClick={() => navigate(item.to)}
-                        >
-                          <span className="sb-dot" />
-                          <span className="sb-item-label">{item.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            }
 
             return (
               <button
