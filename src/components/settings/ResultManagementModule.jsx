@@ -15,9 +15,11 @@ import {
   Download,
   Search,
   Check,
+  ChevronDown,
 } from "lucide-react";
 import axiosInstance from "../../api/axiosInstance";
 import SettingsModal from "../common/SettingsModal";
+import "./ResultsModuleDesign.css";
 
 const CSV_HEADERS = [
   "subject_name",
@@ -799,33 +801,39 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#0f141e] rounded-2xl border border-slate-800/50">
-      <div className="p-6 pb-0">
-        <div className="flex items-start justify-between mb-6 gap-4">
-          <div>
-            <h2 className="text-xl font-black text-white">
-              {currentTitle.title}
-            </h2>
-            <p className="text-slate-500 mt-1 font-medium text-[11px]">
-              {currentTitle.description}
-            </p>
+    <div className="results-module">
+      <div className="results-header">
+        <div>
+          <h1>{currentTitle.title}</h1>
+          <p>{currentTitle.description}</p>
+        </div>
+        <div className="header-right">
+          <div className="year-pill">
+            <span className="dot"></span>
+            {new Date().getFullYear()}–{new Date().getFullYear() + 1}
           </div>
-          <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-900/40 border border-slate-800/50 rounded-xl">
-            <FileText size={14} className="text-indigo-400" />
-            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-              Results Module
-            </span>
-          </div>
+          <button className="btn-ghost" type="button">
+            <FileText size={14} />
+            Results Module
+          </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-500/10 text-red-300 rounded-lg border border-red-500/20">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-sm">{error}</span>
+        <div style={{ margin: '0 24px 16px 24px', padding: '12px 16px', background: 'var(--danger-dim)', border: '1px solid var(--danger)', borderRadius: 'var(--radius-s)', color: 'var(--danger)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+            <span style={{ fontSize: '13px' }}>{error}</span>
             <button
               onClick={() => setError(null)}
-              className="text-xs px-3 py-1 rounded-lg border border-red-500/20 hover:bg-red-500/10"
+              style={{
+                fontSize: '12px',
+                padding: '6px 12px',
+                borderRadius: 'var(--radius-s)',
+                border: '1px solid var(--danger)',
+                background: 'transparent',
+                color: 'var(--danger)',
+                cursor: 'pointer'
+              }}
             >
               Dismiss
             </button>
@@ -833,12 +841,20 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         </div>
       )}
       {success && (
-        <div className="mb-4 p-4 bg-emerald-500/10 text-emerald-300 rounded-lg border border-emerald-500/20">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-sm">{success}</span>
+        <div style={{ margin: '0 24px 16px 24px', padding: '12px 16px', background: 'var(--success-dim)', border: '1px solid var(--success)', borderRadius: 'var(--radius-s)', color: 'var(--success)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+            <span style={{ fontSize: '13px' }}>{success}</span>
             <button
               onClick={() => setSuccess(null)}
-              className="text-xs px-3 py-1 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10"
+              style={{
+                fontSize: '12px',
+                padding: '6px 12px',
+                borderRadius: 'var(--radius-s)',
+                border: '1px solid var(--success)',
+                background: 'transparent',
+                color: 'var(--success)',
+                cursor: 'pointer'
+              }}
             >
               Dismiss
             </button>
@@ -846,98 +862,66 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+      <div className="results-content">
         {moduleType === "format" && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-xs text-slate-400 font-black uppercase tracking-widest">
-                Exam Format Setup
-              </div>
+            <div className="section-header">
+              <span>Exam Format Setup</span>
               <button
                 onClick={handleAddFormat}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20"
+                className="btn-primary"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
               >
-                <Plus size={14} /> New Exam Format
+                <Plus size={14} /> New Format
               </button>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-slate-800/60">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-900/60 border-b border-slate-800/50">
+            <div className="format-table">
+              <table>
+                <thead>
                   <tr>
-                    <th className="px-4 py-3 text-left text-slate-300">
-                      Exam Type
-                    </th>
-                    <th className="px-4 py-3 text-left text-slate-300">
-                      Class
-                    </th>
-                    <th className="px-4 py-3 text-left text-slate-300">
-                      Section
-                    </th>
-                    <th className="px-4 py-3 text-left text-slate-300">Year</th>
-                    <th className="px-4 py-3 text-left text-slate-300">Term</th>
-                    <th className="px-4 py-3 text-left text-slate-300">
-                      Exam Date
-                    </th>
-                    <th className="px-4 py-3 text-left text-slate-300">
-                      Pass Mark %
-                    </th>
-                    <th className="px-4 py-3 text-center text-slate-300">
-                      Actions
-                    </th>
+                    <th>Exam Type</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Year</th>
+                    <th>Term</th>
+                    <th>Exam Date</th>
+                    <th>Pass Mark %</th>
+                    <th style={{ textAlign: 'center' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50">
+                <tbody>
                   {examFormats.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan="8"
-                        className="px-4 py-8 text-center text-slate-500"
-                      >
-                        No exam formats available yet. Create one to get
-                        started.
+                      <td colSpan="8" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-faint)' }}>
+                        No exam formats available yet. Create one to get started.
                       </td>
                     </tr>
                   ) : (
                     examFormats.map((format) => (
-                      <tr
-                        key={format.id}
-                        className="border-b border-slate-100 hover:bg-slate-50"
-                      >
-                        <td className="px-4 py-3 font-medium text-slate-800">
-                          {format.exam_type || "-"}
-                        </td>
-                        <td className="px-4 py-3">
-                          {format.class_name || "-"}
-                        </td>
-                        <td className="px-4 py-3">
-                          {format.section_name ||
-                            format.section?.section_name ||
-                            "-"}
-                        </td>
-                        <td className="px-4 py-3">
-                          {format.academic_year || "-"}
-                        </td>
-                        <td className="px-4 py-3">{format.term || "-"}</td>
-                        <td className="px-4 py-3">
-                          {formatDisplayDate(format.exam_date)}
-                        </td>
-                        <td className="px-4 py-3">
-                          {format.pass_mark_percentage ?? 0}%
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex justify-center gap-2">
+                      <tr key={format.id}>
+                        <td>{format.exam_type || "-"}</td>
+                        <td>{format.class_name || "-"}</td>
+                        <td>{format.section_name || format.section?.section_name || "-"}</td>
+                        <td>{format.academic_year || "-"}</td>
+                        <td>{format.term || "-"}</td>
+                        <td>{formatDisplayDate(format.exam_date)}</td>
+                        <td>{format.pass_mark_percentage ?? 0}%</td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                             <button
                               onClick={() => handleEditFormat(format)}
-                              className="text-blue-600 hover:text-blue-800"
+                              className="icon-btn"
+                              title="Edit"
                             >
-                              <Edit2 size={18} />
+                              <Edit2 size={16} />
                             </button>
                             <button
                               onClick={() => handleDeleteFormat(format.id)}
-                              className="text-red-600 hover:text-red-800"
+                              className="icon-btn"
+                              title="Delete"
                             >
-                              <Trash2 size={18} />
+                              <Trash2 size={16} />
                             </button>
                           </div>
                         </td>
@@ -949,21 +933,21 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </div>
           </div>
         )}
+
         {moduleType === "subject" && (
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
                 Select Exam Format
               </label>
               <select
                 value={selectedExamForSubjects?.id || ""}
                 onChange={(e) => {
-                  const exam = examFormats.find(
-                    (f) => f.id === parseInt(e.target.value),
-                  );
+                  const exam = examFormats.find((f) => f.id === parseInt(e.target.value));
                   if (exam) handleSelectExamForSubjects(exam);
                 }}
-                className="w-full border rounded-lg px-3 py-2"
+                className="filter-select"
+                style={{ width: '100%' }}
               >
                 <option value="">-- Choose Exam Format --</option>
                 {examFormats.map((format) => (
@@ -978,51 +962,47 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               <>
                 <button
                   onClick={handleAddSubject}
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700"
+                  className="btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
-                  <Plus size={20} /> Add Subject
+                  <Plus size={16} /> Add Subject
                 </button>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-100">
+                <div className="format-table">
+                  <table>
+                    <thead>
                       <tr>
-                        <th className="px-4 py-3 text-left">Subject Name</th>
-                        <th className="px-4 py-3 text-left">Theory Max</th>
-                        <th className="px-4 py-3 text-left">Practical Max</th>
-                        <th className="px-4 py-3 text-left">Total Max</th>
-                        <th className="px-4 py-3 text-center">Actions</th>
+                        <th>Subject Name</th>
+                        <th>Theory Max</th>
+                        <th>Practical Max</th>
+                        <th>Total Max</th>
+                        <th style={{ textAlign: 'center' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {examSubjects.map((subject) => (
-                        <tr
-                          key={subject.id}
-                          className="border-b hover:bg-gray-50"
-                        >
-                          <td className="px-4 py-3">{subject.subject_name}</td>
-                          <td className="px-4 py-3">
-                            {subject.theory_max_marks}
-                          </td>
-                          <td className="px-4 py-3">
-                            {subject.practical_max_marks}
-                          </td>
-                          <td className="px-4 py-3">
-                            {subject.total_max_marks}
-                          </td>
-                          <td className="px-4 py-3 flex justify-center gap-2">
-                            <button
-                              onClick={() => handleEditSubject(subject)}
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              <Edit2 size={18} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteSubject(subject.id)}
-                              className="text-red-600 hover:text-red-800"
-                            >
-                              <Trash2 size={18} />
-                            </button>
+                        <tr key={subject.id}>
+                          <td>{subject.subject_name}</td>
+                          <td>{subject.theory_max_marks}</td>
+                          <td>{subject.practical_max_marks}</td>
+                          <td>{subject.total_max_marks}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                              <button
+                                onClick={() => handleEditSubject(subject)}
+                                className="icon-btn"
+                                title="Edit"
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSubject(subject.id)}
+                                className="icon-btn"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1033,12 +1013,28 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             )}
           </div>
         )}
+
         {moduleType === "marks" && (
-          <div className="space-y-6 text-sm">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Workflow Rail */}
+            {marksClassId && marksSectionId && selectedExamForMarks && selectedSubjectForMarks && (
+              <div className="workflow-rail">
+                <div className="rail-top">
+                  <span className="rail-title">Mark Entry Workflow</span>
+                  <span className="rail-progress-label" id="stepLabel">
+                    Class, Section, Exam & Subject Selected
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-xs font-bold mr-auto">
-                Academic Year 2025-26
+            <div className="toolbar active">
+              <div style={{ flex: 1, display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div className="year-pill">
+                  <span className="dot"></span>
+                  {new Date().getFullYear()}–{new Date().getFullYear() + 1}
+                </div>
               </div>
               <input
                 ref={fileInputRef}
@@ -1047,45 +1043,52 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 className="hidden"
                 onChange={handleImportCsv}
               />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={loading || isImportingCsv}
-                className="flex items-center gap-2 px-4 py-2 border border-slate-700 hover:bg-slate-800 rounded-lg text-slate-300 font-medium text-xs transition disabled:opacity-50"
-              >
-                <Upload size={14} />{" "}
-                {isImportingCsv ? "Importing..." : "Import CSV"}
-              </button>
-              <button
-                onClick={handleExportCsv}
-                disabled={loading || isExportingCsv || !canUseMarksCsvActions}
-                className="flex items-center gap-2 px-4 py-2 border border-slate-700 hover:bg-slate-800 rounded-lg text-slate-300 font-medium text-xs transition disabled:opacity-50"
-              >
-                <Download size={14} />{" "}
-                {isExportingCsv ? "Exporting..." : "Export CSV"}
-              </button>
-              <button
-                onClick={handleExportTemplate}
-                disabled={!canUseMarksCsvActions}
-                className="flex items-center gap-2 px-4 py-2 border border-slate-700 hover:bg-slate-800 rounded-lg text-slate-300 font-medium text-xs transition disabled:opacity-50"
-              >
-                <FileText size={14} /> Export Template
-              </button>
-            </div>
-            <div className="text-[11px] text-slate-400">
-              Select class, section, exam and subject first, then import or
-              export the CSV file for this marks sheet.
+              <div className="toolbar-actions">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading || isImportingCsv || !canUseMarksCsvActions}
+                  className="btn-ghost"
+                >
+                  <Upload size={14} />
+                  {isImportingCsv ? "Importing..." : "Import CSV"}
+                </button>
+                <button
+                  onClick={handleExportCsv}
+                  disabled={loading || isExportingCsv || !canUseMarksCsvActions}
+                  className="btn-ghost"
+                >
+                  <Download size={14} />
+                  {isExportingCsv ? "Exporting..." : "Export CSV"}
+                </button>
+                <button
+                  onClick={handleExportTemplate}
+                  disabled={!canUseMarksCsvActions}
+                  className="btn-ghost"
+                >
+                  <FileText size={14} /> Template
+                </button>
+              </div>
             </div>
 
-            {/* Filters Area */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 border border-slate-700/60 rounded-xl bg-slate-900/40">
+            {/* Filter Selection Area */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '12px',
+              padding: '16px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border-soft)',
+              borderRadius: 'var(--radius-m)'
+            }}>
               <div>
-                <label className="block text-xs font-black text-slate-400 mb-2 uppercase tracking-wider">
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
                   CLASS
                 </label>
                 <select
                   value={marksClassId}
                   onChange={(e) => handleMarksClassChange(e.target.value)}
-                  className="w-full bg-[#1e2430] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500"
+                  className="filter-select"
+                  style={{ width: '100%' }}
                 >
                   <option value="">-- Select Class --</option>
                   {classes.map((cls) => (
@@ -1096,18 +1099,17 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-400 mb-2 uppercase tracking-wider">
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
                   SECTION
                 </label>
                 <select
                   value={marksSectionId}
                   onChange={(e) => handleMarksSectionChange(e.target.value)}
                   disabled={!marksClassId}
-                  className="w-full bg-[#1e2430] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 disabled:opacity-50"
+                  className="filter-select"
+                  style={{ width: '100%', opacity: !marksClassId ? 0.5 : 1 }}
                 >
-                  <option value="">
-                    {marksClassId ? "-- Select Section --" : "Choose Class"}
-                  </option>
+                  <option value="">{marksClassId ? "-- Select Section --" : "Choose Class"}</option>
                   {marksSections.map((sec) => (
                     <option key={sec.id} value={sec.id}>
                       {sec.name || sec.section_name}
@@ -1116,19 +1118,17 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-400 mb-2 uppercase tracking-wider">
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
                   EXAM
                 </label>
                 <select
                   value={selectedExamForMarks?.id || ""}
                   onChange={(e) => {
-                    const exam = examFormats.find(
-                      (f) => f.id === parseInt(e.target.value),
-                    );
-                    if (exam) handleSelectExamForMarks(exam);
-                    else handleSelectExamForMarks(null);
+                    const exam = examFormats.find((f) => f.id === parseInt(e.target.value));
+                    handleSelectExamForMarks(exam || null);
                   }}
-                  className="w-full bg-[#1e2430] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500"
+                  className="filter-select"
+                  style={{ width: '100%' }}
                 >
                   <option value="">-- Choose Exam --</option>
                   {examFormats.map((format) => (
@@ -1139,26 +1139,20 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-400 mb-2 uppercase tracking-wider">
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
                   SUBJECT
                 </label>
                 <select
                   value={selectedSubjectForMarks?.id || ""}
                   onChange={(e) => {
-                    const subject = examSubjects.find(
-                      (s) => s.id === parseInt(e.target.value),
-                    );
-                    if (subject) handleSelectSubjectForMarks(subject);
-                    else handleSelectSubjectForMarks(null);
+                    const subject = examSubjects.find((s) => s.id === parseInt(e.target.value));
+                    handleSelectSubjectForMarks(subject || null);
                   }}
                   disabled={!selectedExamForMarks}
-                  className="w-full bg-[#1e2430] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 disabled:opacity-50"
+                  className="filter-select"
+                  style={{ width: '100%', opacity: !selectedExamForMarks ? 0.5 : 1 }}
                 >
-                  <option value="">
-                    {selectedExamForMarks
-                      ? "-- Choose Subject --"
-                      : "Choose Exam"}
-                  </option>
+                  <option value="">{selectedExamForMarks ? "-- Choose Subject --" : "Choose Exam"}</option>
                   {examSubjects.map((subject) => (
                     <option key={subject.id} value={subject.id}>
                       {subject.subject_name}
@@ -1167,13 +1161,14 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-400 mb-2 uppercase tracking-wider">
-                  STATUS FILTER
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                  FILTER
                 </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full bg-[#1e2430] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500"
+                  className="filter-select"
+                  style={{ width: '100%' }}
                 >
                   <option value="All students">All students</option>
                   <option value="Passed">Passed</option>
@@ -1182,394 +1177,266 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               </div>
             </div>
 
-            {selectedSubjectForMarks && marksClassId && (
-              <>
-                {selectedExamForMarks && (
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
-                    <div>
-                      <div className="text-xs font-black uppercase tracking-[0.25em] text-slate-400">
-                        Public Result Portal
-                      </div>
-                      <div className="mt-1 text-sm text-slate-300">
-                        {selectedExamForMarks.is_published
-                          ? "This exam is currently published for public access."
-                          : "Publish this exam to make it visible to students and parents."}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <a
-                        href="/result-portal"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800"
-                      >
-                        Open Portal
-                      </a>
-                      <button
-                        onClick={() =>
-                          handlePublishExam(
-                            selectedExamForMarks,
-                            !selectedExamForMarks.is_published,
-                          )
-                        }
-                        className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${selectedExamForMarks.is_published ? "bg-rose-500/15 text-rose-300 hover:bg-rose-500/20" : "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/20"}`}
-                      >
-                        {selectedExamForMarks.is_published
-                          ? "Unpublish"
-                          : "Publish"}
-                      </button>
-                    </div>
+            {/* Publish Section */}
+            {selectedExamForMarks && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px',
+                background: 'var(--surface)',
+                border: '1px solid var(--border-soft)',
+                borderRadius: 'var(--radius-m)',
+                gap: '16px'
+              }}>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                    Result Portal
                   </div>
-                )}
+                  <div style={{ marginTop: '4px', fontSize: '14px', color: 'var(--text-dim)' }}>
+                    {selectedExamForMarks.is_published
+                      ? "This exam is published for public access"
+                      : "Publish to make visible to students and parents"}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <a
+                    href="/result-portal"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-secondary"
+                  >
+                    Open Portal
+                  </a>
+                  <button
+                    onClick={() =>
+                      handlePublishExam(selectedExamForMarks, !selectedExamForMarks.is_published)
+                    }
+                    className="btn-primary"
+                  >
+                    {selectedExamForMarks.is_published ? "Unpublish" : "Publish"}
+                  </button>
+                </div>
+              </div>
+            )}
 
-                {/* Summary Cards */}
+            {/* Stats Cards */}
+            {selectedSubjectForMarks && (
+              <div className="stats active">
                 {(() => {
-                  let passed = 0;
-                  let failed = 0;
-                  let totalPercent = 0;
-                  const validStudents = students.filter(
-                    (s) =>
-                      marksData[s.id] &&
-                      (marksData[s.id].theory_marks !== "" ||
-                        marksData[s.id].practical_marks !== ""),
+                  let passed = 0, failed = 0, totalPercent = 0;
+                  const validStudents = students.filter((s) =>
+                    marksData[s.id] &&
+                    (marksData[s.id].theory_marks !== "" || marksData[s.id].practical_marks !== "")
                   );
-
                   validStudents.forEach((s) => {
                     if (marksData[s.id].is_pass) passed++;
                     else failed++;
-                    const maxMarks =
-                      parseFloat(selectedSubjectForMarks?.total_max_marks) ||
-                      100;
-                    const totalMarks =
-                      parseFloat(marksData[s.id].total_marks) || 0;
-                    const percent =
-                      maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
+                    const maxMarks = parseFloat(selectedSubjectForMarks?.total_max_marks) || 100;
+                    const totalMarks = parseFloat(marksData[s.id].total_marks) || 0;
+                    const percent = maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
                     totalPercent += percent;
                   });
-
-                  const passRate = validStudents.length
-                    ? Math.round((passed / validStudents.length) * 100)
-                    : 0;
-                  const classAvg = validStudents.length
-                    ? Math.round(totalPercent / validStudents.length)
-                    : 0;
+                  const passRate = validStudents.length ? Math.round((passed / validStudents.length) * 100) : 0;
+                  const classAvg = validStudents.length ? Math.round(totalPercent / validStudents.length) : 0;
 
                   return (
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div className="p-4 border border-slate-700/60 rounded-xl bg-slate-900/40">
-                        <div className="text-2xl font-black text-white">
-                          {students.length}
-                        </div>
-                        <div className="text-xs font-medium text-slate-400 mt-1">
-                          Total students
-                        </div>
+                    <>
+                      <div className="stat-card">
+                        <div className="label">Total Students</div>
+                        <div className="value">{students.length}</div>
                       </div>
-                      <div className="p-4 border border-slate-700/60 rounded-xl bg-slate-900/40">
-                        <div className="text-2xl font-black text-green-500">
-                          {passed}
-                        </div>
-                        <div className="text-xs font-medium text-slate-400 mt-1">
-                          Passed
-                        </div>
+                      <div className="stat-card success">
+                        <div className="label">Passed</div>
+                        <div className="value">{passed}</div>
                       </div>
-                      <div className="p-4 border border-slate-700/60 rounded-xl bg-slate-900/40">
-                        <div className="text-2xl font-black text-red-500">
-                          {failed}
-                        </div>
-                        <div className="text-xs font-medium text-slate-400 mt-1">
-                          Failed
-                        </div>
+                      <div className="stat-card warn">
+                        <div className="label">Failed</div>
+                        <div className="value">{failed}</div>
                       </div>
-                      <div className="p-4 border border-slate-700/60 rounded-xl bg-slate-900/40">
-                        <div className="text-2xl font-black text-white">
-                          {passRate}%
-                        </div>
-                        <div className="text-xs font-medium text-slate-400 mt-1">
-                          Pass rate
-                        </div>
+                      <div className="stat-card">
+                        <div className="label">Pass Rate</div>
+                        <div className="value">{passRate}<span>%</span></div>
                       </div>
-                      <div className="p-4 border border-slate-700/60 rounded-xl bg-slate-900/40">
-                        <div className="text-2xl font-black text-white">
-                          {classAvg}%
-                        </div>
-                        <div className="text-xs font-medium text-slate-400 mt-1">
-                          Class average
-                        </div>
+                      <div className="stat-card success">
+                        <div className="label">Class Avg</div>
+                        <div className="value">{classAvg}<span>%</span></div>
                       </div>
-                    </div>
+                    </>
                   );
                 })()}
+              </div>
+            )}
 
-                {/* Toolbar: Search and Action Buttons */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
-                  <div className="relative flex-1 max-w-md">
-                    <Search
-                      size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Search by name or roll number..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-[#1e2430] border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-white outline-none focus:border-indigo-500"
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={handleSaveAllMarks}
-                      disabled={loading}
-                      className="flex items-center gap-2 px-4 py-2 border border-slate-600 hover:bg-slate-800 text-white font-medium rounded-lg text-sm transition disabled:opacity-50"
-                    >
-                      <Check size={16} />{" "}
-                      {loading ? "Saving..." : "Save all marks"}
-                    </button>
-                  </div>
+            {/* Search Bar */}
+            {selectedSubjectForMarks && (
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div className="search-box" style={{ flex: 1 }}>
+                  <Search size={15} />
+                  <input
+                    type="text"
+                    placeholder="Search by name or roll number..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
+                <button
+                  onClick={handleSaveAllMarks}
+                  disabled={loading}
+                  className="btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Check size={14} /> {loading ? "Saving..." : "Save"}
+                </button>
+              </div>
+            )}
 
-                {/* Data Table */}
-                <div className="overflow-x-auto border border-slate-700/60 rounded-xl mt-4 bg-[#141a23]">
-                  <div className="flex items-center justify-between p-4 bg-slate-800/40 border-b border-slate-700/60 text-slate-300">
-                    <div className="font-bold">{students.length} students</div>
-                    <div className="text-xs">
-                      Pass mark:{" "}
-                      {selectedExamForMarks?.pass_mark_percentage || 40} | Full
-                      marks: Theory{" "}
-                      {selectedSubjectForMarks.theory_max_marks || 0} +
-                      Practical{" "}
-                      {selectedSubjectForMarks.practical_max_marks || 0} ={" "}
-                      {selectedSubjectForMarks.total_max_marks || 0}
-                    </div>
-                  </div>
-                  <table className="w-full text-sm">
-                    <thead className="bg-[#141a23] border-b border-slate-700/60">
-                      <tr>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-24">
-                          ROLL NO
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400">
-                          STUDENT NAME
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-28">
-                          THEORY /
-                          {selectedSubjectForMarks.theory_max_marks || 0}
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-28">
-                          PRACTICAL /
-                          {selectedSubjectForMarks.practical_max_marks || 0}
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-20">
-                          TOTAL
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-16">
-                          %
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-16">
-                          GRADE
-                        </th>
-                        <th className="px-4 py-4 text-left text-[10px] font-black uppercase text-slate-400 w-32">
-                          REMARKS
-                        </th>
-                        <th className="px-4 py-4 text-center text-[10px] font-black uppercase text-slate-400 w-16"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {students
-                        .filter((s) => {
-                          const searchLower = searchQuery.toLowerCase();
-                          const matchesSearch =
-                            s.full_name.toLowerCase().includes(searchLower) ||
-                            (s.roll_no &&
-                              s.roll_no
-                                .toString()
-                                .toLowerCase()
-                                .includes(searchLower));
+            {/* Data Table */}
+            {selectedSubjectForMarks && (
+              <div className="table-wrap active">
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '13px 16px',
+                  background: 'var(--surface)',
+                  borderBottom: '1px solid var(--border-soft)',
+                  fontSize: '12px',
+                  color: 'var(--text-faint)'
+                }}>
+                  <span>{students.length} students registered</span>
+                  <span style={{ fontSize: '11px' }}>
+                    Pass: {selectedExamForMarks?.pass_mark_percentage || 40}% | Max: {selectedSubjectForMarks.total_max_marks || 0}
+                  </span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th style={{ width: '60px' }}>Roll</th>
+                      <th>Student Name</th>
+                      <th className="num" style={{ width: '80px' }}>Theory</th>
+                      <th className="num" style={{ width: '80px' }}>Practical</th>
+                      <th className="num" style={{ width: '60px' }}>Total</th>
+                      <th className="num" style={{ width: '50px' }}>%</th>
+                      <th className="num" style={{ width: '60px' }}>Grade</th>
+                      <th style={{ width: '100px' }}>Remarks</th>
+                      <th style={{ width: '70px', textAlign: 'center' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students
+                      .filter((s) => {
+                        const searchLower = searchQuery.toLowerCase();
+                        const matchesSearch =
+                          s.full_name.toLowerCase().includes(searchLower) ||
+                          (s.roll_no && s.roll_no.toString().toLowerCase().includes(searchLower));
+                        if (statusFilter === "All students") return matchesSearch;
+                        const mark = marksData[s.id];
+                        if (!mark || (mark.theory_marks === "" && mark.practical_marks === "")) return false;
+                        if (statusFilter === "Passed") return matchesSearch && mark.is_pass;
+                        if (statusFilter === "Failed") return matchesSearch && !mark.is_pass;
+                        return matchesSearch;
+                      })
+                      .map((student) => {
+                        const mark = marksData[student.id];
+                        if (!mark) return null;
+                        const hasMarks = mark.theory_marks !== "" || mark.practical_marks !== "";
+                        const maxMarks = parseFloat(selectedSubjectForMarks?.total_max_marks) || 100;
+                        const totalMarks = parseFloat(mark.total_marks) || 0;
+                        const percent = maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
 
-                          if (statusFilter === "All students")
-                            return matchesSearch;
-                          const mark = marksData[s.id];
-                          if (
-                            !mark ||
-                            (mark.theory_marks === "" &&
-                              mark.practical_marks === "")
-                          )
-                            return false;
+                        const getGradeInfo = (pct, isPass, hasData) => {
+                          if (!hasData) return { grade: "—", cls: "grade-none" };
+                          if (!isPass) return { grade: "F", cls: "grade-F" };
+                          if (pct >= 80) return { grade: "A", cls: "grade-A" };
+                          if (pct >= 60) return { grade: "B", cls: "grade-B" };
+                          return { grade: "C", cls: "grade-C" };
+                        };
+                        const gradeInfo = getGradeInfo(percent, mark.is_pass, hasMarks);
 
-                          if (statusFilter === "Passed")
-                            return matchesSearch && mark.is_pass;
-                          if (statusFilter === "Failed")
-                            return matchesSearch && !mark.is_pass;
-                          return matchesSearch;
-                        })
-                        .map((student) => {
-                          const mark = marksData[student.id];
-                          if (!mark) return null;
-
-                          const hasMarks =
-                            mark.theory_marks !== "" ||
-                            mark.practical_marks !== "";
-                          const maxMarks =
-                            parseFloat(
-                              selectedSubjectForMarks?.total_max_marks,
-                            ) || 100;
-                          const totalMarks = parseFloat(mark.total_marks) || 0;
-                          const percent =
-                            maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
-
-                          const getGradeInfo = (pct, isPass, hasData) => {
-                            if (!hasData)
-                              return {
-                                grade: "-",
-                                color: "text-slate-500",
-                                bg: "bg-slate-800",
-                              };
-                            if (!isPass)
-                              return {
-                                grade: "F",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            if (pct >= 90)
-                              return {
-                                grade: "A+",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            if (pct >= 80)
-                              return {
-                                grade: "A",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            if (pct >= 70)
-                              return {
-                                grade: "B+",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            if (pct >= 60)
-                              return {
-                                grade: "B",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            if (pct >= 50)
-                              return {
-                                grade: "C+",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            if (pct >= 40)
-                              return {
-                                grade: "C",
-                                color: "text-blue-400",
-                                bg: "bg-blue-400/20",
-                              };
-                            return {
-                              grade: "D",
-                              color: "text-blue-400",
-                              bg: "bg-blue-400/20",
-                            };
-                          };
-
-                          const gradeInfo = getGradeInfo(
-                            percent,
-                            mark.is_pass,
-                            hasMarks,
-                          );
-
-                          return (
-                            <tr
-                              key={student.id}
-                              className="hover:bg-slate-800/30 transition text-white font-medium"
-                            >
-                              <td className="px-4 py-4">{student.roll_no}</td>
-                              <td className="px-4 py-4">{student.full_name}</td>
-                              <td className="px-4 py-4">
+                        return (
+                          <tr key={student.id}>
+                            <td>{student.roll_no}</td>
+                            <td>
+                              <div className="student-cell">
+                                <div className="avatar">{student.full_name?.split(" ").map(w => w[0]).join("").toUpperCase()}</div>
+                                <div>
+                                  <div className="student-name">{student.full_name}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="marks-cell">
                                 <input
                                   type="number"
-                                  className="w-16 bg-[#1e2430] border border-slate-700 rounded px-2 py-1.5 outline-none focus:border-indigo-500 text-center"
+                                  className={`marks-input ${hasMarks ? (percent < (selectedExamForMarks?.pass_mark_percentage || 40) ? 'fail' : 'pass-ok') : ''}`}
+                                  min="0"
                                   value={mark.theory_marks}
                                   onChange={(e) =>
-                                    handleMarkChange(
-                                      student.id,
-                                      "theory_marks",
-                                      e.target.value,
-                                    )
+                                    handleMarkChange(student.id, "theory_marks", e.target.value)
                                   }
                                 />
-                              </td>
-                              <td className="px-4 py-4">
+                                <span className="marks-max">/ {selectedSubjectForMarks.theory_max_marks || 0}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="marks-cell">
                                 <input
                                   type="number"
-                                  className="w-16 bg-[#1e2430] border border-slate-700 rounded px-2 py-1.5 outline-none focus:border-indigo-500 text-center"
+                                  className={`marks-input ${hasMarks ? (percent < (selectedExamForMarks?.pass_mark_percentage || 40) ? 'fail' : 'pass-ok') : ''}`}
+                                  min="0"
                                   value={mark.practical_marks}
                                   onChange={(e) =>
-                                    handleMarkChange(
-                                      student.id,
-                                      "practical_marks",
-                                      e.target.value,
-                                    )
+                                    handleMarkChange(student.id, "practical_marks", e.target.value)
                                   }
                                 />
-                              </td>
-                              <td className="px-4 py-4">
-                                {hasMarks ? mark.total_marks : "-"}
-                              </td>
-                              <td className="px-4 py-4">
-                                {hasMarks ? `${Math.round(percent)}%` : "-"}
-                              </td>
-                              <td className="px-4 py-4">
-                                <span
-                                  className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${gradeInfo.bg} ${gradeInfo.color}`}
-                                >
-                                  {gradeInfo.grade}
+                                <span className="marks-max">/ {selectedSubjectForMarks.practical_max_marks || 0}</span>
+                              </div>
+                            </td>
+                            <td className="pct-cell">{hasMarks ? mark.total_marks : "—"}</td>
+                            <td className="pct-cell">{hasMarks ? `${Math.round(percent)}%` : "—"}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              <span className={`grade-badge ${gradeInfo.cls}`}>{gradeInfo.grade}</span>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="marks-input"
+                                value={mark.remarks}
+                                placeholder="Remarks"
+                                onChange={(e) =>
+                                  handleMarkChange(student.id, "remarks", e.target.value)
+                                }
+                                style={{ width: '100%' }}
+                              />
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              {hasMarks && (
+                                <span className={`status-badge status-${mark.is_pass ? 'entered' : 'pending'}`}>
+                                  {mark.is_pass ? "✓ Pass" : "✗ Fail"}
                                 </span>
-                              </td>
-                              <td className="px-4 py-4">
-                                <input
-                                  type="text"
-                                  className="w-full bg-[#1e2430] border border-slate-700 rounded px-3 py-1.5 text-sm outline-none focus:border-indigo-500"
-                                  value={mark.remarks}
-                                  placeholder="Add re"
-                                  onChange={(e) =>
-                                    handleMarkChange(
-                                      student.id,
-                                      "remarks",
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              </td>
-                              <td className="px-4 py-4 text-center">
-                                <div className="flex items-center justify-center gap-2">
-                                  {hasMarks && (
-                                    <span
-                                      className={`px-3 py-1 text-xs font-bold rounded-full border ${
-                                        mark.is_pass
-                                          ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                          : "bg-red-500/10 text-red-500 border-red-500/20"
-                                      }`}
-                                    >
-                                      {mark.is_pass ? "Pass" : "Fail"}
-                                    </span>
-                                  )}
-                                  <button className="w-8 h-8 flex items-center justify-center border border-red-900/30 bg-red-900/20 hover:bg-red-900/40 rounded transition">
-                                    <Edit2 size={12} className="text-red-500" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {!selectedSubjectForMarks && (
+              <div className="empty-state">
+                <FileText width={52} height={52} />
+                <h3>No data loaded yet</h3>
+                <p>Select class, section, exam and subject above to view and enter student marks.</p>
+              </div>
             )}
           </div>
-        )}{" "}
+        )}
       </div>
+
+
 
       <SettingsModal
         open={showFormatModal}
@@ -1578,25 +1445,27 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         subtitle="Fill in the exam details and assign the right section."
         width="max-w-2xl"
         footer={
-          <div className="flex gap-3">
+          <div style={{ display: 'flex', gap: '12px' }}>
             <button
               onClick={() => setShowFormatModal(false)}
-              className="flex-1 px-4 py-2 border border-slate-600/50 rounded-lg hover:bg-white/5 transition"
+              className="btn-secondary"
+              style={{ flex: 1 }}
             >
               Cancel
             </button>
             <button
               onClick={handleSaveFormat}
-              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              className="btn-primary"
+              style={{ flex: 1 }}
             >
               Save
             </button>
           </div>
         }
       >
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Exam Type *
             </label>
             <input
@@ -1605,16 +1474,20 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               onChange={(e) =>
                 setFormatForm({ ...formatForm, exam_type: e.target.value })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%', appearance: 'none', display: 'block' }}
               placeholder="e.g., Midterm, Final"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Class</label>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+              Class
+            </label>
             <select
               value={formatForm.class_id}
               onChange={(e) => handleClassChange(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%' }}
             >
               <option value="">-- Select --</option>
               {classes.map((cls) => (
@@ -1625,13 +1498,16 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Section</label>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+              Section
+            </label>
             <select
               value={formatForm.section_id || ""}
               onChange={(e) =>
                 setFormatForm({ ...formatForm, section_id: e.target.value })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%', opacity: !formatForm.class_id ? 0.5 : 1 }}
               disabled={!formatForm.class_id}
             >
               <option value="">
@@ -1649,13 +1525,13 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               ))}
             </select>
             {!formatForm.class_id && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p style={{ fontSize: '12px', color: 'var(--text-faint)', marginTop: '6px' }}>
                 Select a class to load sections from the school database.
               </p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Academic Year *
             </label>
             <select
@@ -1666,7 +1542,8 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   academic_year_id: e.target.value,
                 })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%' }}
             >
               <option value="">-- Select --</option>
               {years.map((year) => (
@@ -1677,30 +1554,36 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Term</label>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+              Term
+            </label>
             <input
               type="text"
               value={formatForm.term}
               onChange={(e) =>
                 setFormatForm({ ...formatForm, term: e.target.value })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%', appearance: 'none', display: 'block' }}
               placeholder="e.g., First Term"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Exam Date</label>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+              Exam Date
+            </label>
             <input
               type="date"
               value={formatDateInputValue(formatForm.exam_date)}
               onChange={(e) =>
                 setFormatForm({ ...formatForm, exam_date: e.target.value })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%' }}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Pass Mark %
             </label>
             <input
@@ -1712,7 +1595,8 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   pass_mark_percentage: e.target.value,
                 })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%' }}
             />
           </div>
         </div>
@@ -1724,25 +1608,27 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         title={selectedSubject ? "Edit Subject" : "New Subject"}
         width="max-w-md"
         footer={
-          <div className="flex gap-3">
+          <div style={{ display: 'flex', gap: '12px' }}>
             <button
               onClick={() => setShowSubjectModal(false)}
-              className="flex-1 px-4 py-2 border border-slate-600/50 rounded-lg hover:bg-white/5 transition"
+              className="btn-secondary"
+              style={{ flex: 1 }}
             >
               Cancel
             </button>
             <button
               onClick={handleSaveSubject}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              className="btn-primary"
+              style={{ flex: 1 }}
             >
               Save
             </button>
           </div>
         }
       >
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Subject Name *
             </label>
             <select
@@ -1759,7 +1645,8 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                     : "",
                 });
               }}
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%' }}
             >
               <option value="">-- Select Course / Subject --</option>
               {courses.map((course) => (
@@ -1770,7 +1657,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Theory Max Marks
             </label>
             <input
@@ -1782,11 +1669,12 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   theory_max_marks: e.target.value,
                 })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%', appearance: 'none', display: 'block' }}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Practical Max Marks
             </label>
             <input
@@ -1798,11 +1686,12 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   practical_max_marks: e.target.value,
                 })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%', appearance: 'none', display: 'block' }}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
               Total Max Marks *
             </label>
             <input
@@ -1814,7 +1703,8 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   total_max_marks: e.target.value,
                 })
               }
-              className="w-full border rounded-lg px-3 py-2"
+              className="filter-select"
+              style={{ width: '100%', appearance: 'none', display: 'block' }}
             />
           </div>
         </div>
