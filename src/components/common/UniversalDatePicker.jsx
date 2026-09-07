@@ -16,7 +16,7 @@ import {
 function adIsoToBs(adIso) {
   if (!adIso) return null;
   try {
-    const d = new Date(adIso + "T00:00:00");   // force local midnight
+    const d = new Date(adIso + "T00:00:00"); // force local midnight
     if (isNaN(d)) return null;
     return adToBs(d);
   } catch {
@@ -54,9 +54,9 @@ const BsPicker = ({ value, onChange }) => {
   };
 
   const initial = parseValue(value);
-  const [bsYear,  setBsYear]  = useState(initial.year);
+  const [bsYear, setBsYear] = useState(initial.year);
   const [bsMonth, setBsMonth] = useState(initial.month);
-  const [bsDay,   setBsDay]   = useState(initial.day);
+  const [bsDay, setBsDay] = useState(initial.day);
 
   // Track whether the last onChange we fired matches the current value prop —
   // prevents the re-sync loop (value changes → effect syncs state → effect fires
@@ -93,7 +93,6 @@ const BsPicker = ({ value, onChange }) => {
 
   return (
     <div className="flex flex-col gap-1.5 w-full">
-
       {/* ── Mode badge ── */}
       <div className="flex items-center gap-1.5 text-[10px] font-bold text-indigo-400 uppercase tracking-widest px-0.5">
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500" />
@@ -109,7 +108,9 @@ const BsPicker = ({ value, onChange }) => {
           title="BS Year"
         >
           {BS_YEARS.map((y) => (
-            <option key={y} value={y}>{y}</option>
+            <option key={y} value={y}>
+              {y}
+            </option>
           ))}
         </select>
 
@@ -133,7 +134,9 @@ const BsPicker = ({ value, onChange }) => {
           title="BS Day"
         >
           {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
-            <option key={d} value={d}>{d}</option>
+            <option key={d} value={d}>
+              {d}
+            </option>
           ))}
         </select>
       </div>
@@ -142,7 +145,9 @@ const BsPicker = ({ value, onChange }) => {
       {value && (
         <div className="flex items-center gap-1.5 text-[11px] px-0.5">
           <span className="text-slate-600">AD equivalent →</span>
-          <span className="text-slate-400 font-mono tracking-wide">{value}</span>
+          <span className="text-slate-400 font-mono tracking-wide">
+            {value}
+          </span>
         </div>
       )}
     </div>
@@ -167,9 +172,15 @@ const BsPicker = ({ value, onChange }) => {
  * The contract is identical in both modes: the parent always works with AD ISO
  * strings and never needs to know which calendar mode is active.
  */
-const UniversalDatePicker = ({ value, onChange, className = "", label }) => {
+const UniversalDatePicker = ({
+  value,
+  onChange,
+  className = "",
+  label,
+  calendarType: calendarTypeOverride,
+}) => {
   const { settings } = useSettings();
-  const calendarType = settings?.calendar_type || "BS";
+  const calendarType = calendarTypeOverride || settings?.calendar_type || "BS";
 
   const adClass =
     "bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm " +
