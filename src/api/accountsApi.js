@@ -62,6 +62,18 @@ export const createAccountingFiscalYear = (payload) =>
 
 export const closeAccountingFiscalYear = (id) =>
   axiosInstance.patch(`/v1/accounts/accounting/fiscal-years/${id}/close`);
+export const setActiveAccountingFiscalYear = (id) =>
+  axiosInstance.patch(`/v1/accounts/accounting/fiscal-years/${id}/active`);
+export const lockAccountingFiscalYear = (id) =>
+  axiosInstance.patch(`/v1/accounts/accounting/fiscal-years/${id}/lock`);
+export const getAccountingConfiguration = () =>
+  axiosInstance.get("/v1/accounts/accounting/configuration");
+export const updateAccountingConfiguration = (payload) =>
+  axiosInstance.patch("/v1/accounts/accounting/configuration", payload);
+export const createAccountingTaxRule = (payload) =>
+  axiosInstance.post("/v1/accounts/accounting/tax-rules", payload);
+export const createAccountingCostCenter = (payload) =>
+  axiosInstance.post("/v1/accounts/accounting/cost-centers", payload);
 
 export const getAccountingJournals = (params = {}) =>
   axiosInstance.get("/v1/accounts/accounting/journals", { params });

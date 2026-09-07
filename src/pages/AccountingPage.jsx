@@ -3,7 +3,11 @@ import { useSearchParams } from "react-router-dom";
 import {
   createAccountingAccount,
   createAccountingVoucher,
+  createAccountingCostCenter,
+  createAccountingFiscalYear,
+  createAccountingTaxRule,
   createBankAccount,
+  getAccountingConfiguration,
   getAccountingAccounts,
   getBankStatements,
   getGatewayTransactions,
@@ -17,6 +21,9 @@ import {
   savePaymentGateway,
   importBankStatement,
   getTrialBalance,
+  lockAccountingFiscalYear,
+  setActiveAccountingFiscalYear,
+  updateAccountingConfiguration,
 } from "../api/accountsApi";
 
 const tabs = [
@@ -27,6 +34,7 @@ const tabs = [
   ["vouchers", "Vouchers"],
   ["payments", "Payment Gateway"],
   ["bank", "Bank Reconciliation"],
+  ["fiscal-years", "Fiscal Years"],
   ["reports", "Reports"],
   ["settings", "Settings"],
 ];
@@ -42,6 +50,12 @@ const AccountingPage = () => {
   const [gateways, setGateways] = useState([]);
   const [gatewayTransactions, setGatewayTransactions] = useState([]);
   const [bankStatements, setBankStatements] = useState([]);
+  const [configuration, setConfiguration] = useState({});
+  const [fiscalYears, setFiscalYears] = useState([]);
+  const [settingsForm, setSettingsForm] = useState({ legal_name: "", address: "", pan_number: "", vat_number: "", currency: "NPR", decimal_places: 2, approval_required: false, approval_threshold: 0 });
+  const [fiscalYearForm, setFiscalYearForm] = useState({ name: "", starts_on: "", ends_on: "" });
+  const [taxForm, setTaxForm] = useState({ name: "", tax_type: "VAT", rate: "", rate_kind: "percentage" });
+  const [costCenterForm, setCostCenterForm] = useState({ code: "", name: "" });
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -53,12 +67,16 @@ const AccountingPage = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    Promise.all([getAccountingAccounts(), getAccountingJournals(), getTrialBalance(), getAccountingVouchers()])
-      .then(([accountResponse, journalResponse, balanceResponse, voucherResponse]) => {
+    Promise.all([getAccountingAccounts(), getAccountingJournals(), getTrialBalance(), getAccountingVouchers(), getAccountingConfiguration()])
+      .then(([accountResponse, journalResponse, balanceResponse, voucherResponse, configurationResponse]) => {
         setAccounts(accountResponse.data.data || []);
         setJournals(journalResponse.data.data || []);
         setTrialBalance(balanceResponse.data.data?.accounts || []);
         setVouchers(voucherResponse.data.data || []);
+        const nextConfiguration = configurationResponse.data.data || {};
+        setConfiguration(nextConfiguration);
+        setFiscalYears(nextConfiguration.fiscal_years || []);
+        setSettingsForm((current) => ({ ...current, ...(nextConfiguration.general || {}) }));
       })
       .catch(() => {
         setAccounts([]);
@@ -207,6 +225,52 @@ const AccountingPage = () => {
     } finally { setSaving(false); }
   };
 
+  const saveSettings = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      const response = await updateAccountingConfiguration(settingsForm);
+      setConfiguration(response.data.data || {});
+      setError("");
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to save accounting settings.");
+    } finally { setSaving(false); }
+  };
+
+  const createFiscalYear = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      const response = await createAccountingFiscalYear(fiscalYearForm);
+      setFiscalYears((current) => [response.data.data, ...current]);
+      setFiscalYearForm({ name: "", starts_on: "", ends_on: "" });
+      setError("");
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to create fiscal year.");
+    } finally { setSaving(false); }
+  };
+
+  const changeFiscalYear = async (id, action) => {
+    setSaving(true);
+    try {
+      const response = await (action === "active" ? setActiveAccountingFiscalYear(id) : lockAccountingFiscalYear(id));
+      setFiscalYears((current) => current.map((year) => year.id === id ? response.data.data : action === "active" ? { ...year, is_active: false } : year));
+      setError("");
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Unable to update fiscal year.");
+    } finally { setSaving(false); }
+  };
+
+  const createTax = async (event) => {
+    event.preventDefault();
+    try { const response = await createAccountingTaxRule({ ...taxForm, rate: Number(taxForm.rate) }); setConfiguration((current) => ({ ...current, taxes: [...(current.taxes || []), response.data.data] })); setTaxForm({ name: "", tax_type: "VAT", rate: "", rate_kind: "percentage" }); } catch (requestError) { setError(requestError.response?.data?.message || "Unable to create tax rule."); }
+  };
+
+  const createCostCenter = async (event) => {
+    event.preventDefault();
+    try { const response = await createAccountingCostCenter(costCenterForm); setConfiguration((current) => ({ ...current, cost_centers: [...(current.cost_centers || []), response.data.data] })); setCostCenterForm({ code: "", name: "" }); } catch (requestError) { setError(requestError.response?.data?.message || "Unable to create cost center."); }
+  };
+
   return (
     <div className="h-full overflow-y-auto p-6" style={{ color: "var(--text-1)" }}>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
@@ -292,6 +356,28 @@ const AccountingPage = () => {
                   <button disabled={saving} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">{saving ? "Importing..." : "Import statement"}</button>
                 </form>
                 {bankStatements.map((statement) => <div key={statement.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{statement.transaction_date}<br /><span style={{ color: "var(--text-2)" }}>{statement.reference} · {statement.bank_account_name}</span></span><span>NPR {Number(statement.amount).toLocaleString("en-IN")} · {statement.status}</span></div>)}
+              </>
+            ) : activeTab === "settings" ? (
+              <>
+                <h3 className="font-medium mb-2">General configuration</h3>
+                <form onSubmit={saveSettings} className="grid gap-2 sm:grid-cols-2">
+                  {[["legal_name", "Legal name"], ["pan_number", "PAN number"], ["vat_number", "VAT number"], ["currency", "Currency"], ["address", "Address"]].map(([key, label]) => <input key={key} placeholder={label} value={settingsForm[key] || ""} onChange={(event) => setSettingsForm({ ...settingsForm, [key]: event.target.value })} className={`rounded-lg border bg-transparent px-3 py-2 text-sm ${key === "address" ? "sm:col-span-2" : ""}`} />)}
+                  <input type="number" min="0" max="4" placeholder="Decimal places" value={settingsForm.decimal_places} onChange={(event) => setSettingsForm({ ...settingsForm, decimal_places: Number(event.target.value) })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <input type="number" min="0" step="0.01" placeholder="Approval threshold" value={settingsForm.approval_threshold} onChange={(event) => setSettingsForm({ ...settingsForm, approval_threshold: Number(event.target.value) })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" />
+                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settingsForm.approval_required} onChange={(event) => setSettingsForm({ ...settingsForm, approval_required: event.target.checked })} /> Require approval</label>
+                  <button disabled={saving} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white sm:col-span-2">{saving ? "Saving..." : "Save configuration"}</button>
+                </form>
+                <h3 className="mt-6 font-medium mb-2">Tax rules</h3>
+                <form onSubmit={createTax} className="grid gap-2 sm:grid-cols-4"><input required placeholder="Tax name" value={taxForm.name} onChange={(event) => setTaxForm({ ...taxForm, name: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><input required placeholder="Type" value={taxForm.tax_type} onChange={(event) => setTaxForm({ ...taxForm, tax_type: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><input required type="number" min="0" step="0.01" placeholder="Rate" value={taxForm.rate} onChange={(event) => setTaxForm({ ...taxForm, rate: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><button className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">Add tax</button></form>
+                {(configuration.taxes || []).map((tax) => <div key={tax.id} className="border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}>{tax.name} · {tax.tax_type} · {tax.rate}{tax.rate_kind === "percentage" ? "%" : ""}</div>)}
+                <h3 className="mt-6 font-medium mb-2">Cost centers</h3>
+                <form onSubmit={createCostCenter} className="grid gap-2 sm:grid-cols-3"><input required placeholder="Code" value={costCenterForm.code} onChange={(event) => setCostCenterForm({ ...costCenterForm, code: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><input required placeholder="Name" value={costCenterForm.name} onChange={(event) => setCostCenterForm({ ...costCenterForm, name: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><button className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">Add cost center</button></form>
+                {(configuration.cost_centers || []).map((center) => <div key={center.id} className="border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}>{center.code} · {center.name}</div>)}
+              </>
+            ) : activeTab === "fiscal-years" ? (
+              <>
+                <form onSubmit={createFiscalYear} className="grid gap-2 mb-4 sm:grid-cols-4"><input required placeholder="Fiscal year name" value={fiscalYearForm.name} onChange={(event) => setFiscalYearForm({ ...fiscalYearForm, name: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><input required type="date" value={fiscalYearForm.starts_on} onChange={(event) => setFiscalYearForm({ ...fiscalYearForm, starts_on: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><input required type="date" value={fiscalYearForm.ends_on} onChange={(event) => setFiscalYearForm({ ...fiscalYearForm, ends_on: event.target.value })} className="rounded-lg border bg-transparent px-3 py-2 text-sm" /><button disabled={saving} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">Create year</button></form>
+                {fiscalYears.map((year) => <div key={year.id} className="flex items-center justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{year.name} · {year.starts_on || "-"} to {year.ends_on || "-"}<br /><span style={{ color: "var(--text-2)" }}>{year.is_active ? "Active" : year.locked_at ? "Locked" : year.status}</span></span><span className="flex gap-2">{!year.is_active && !year.locked_at && <button type="button" onClick={() => changeFiscalYear(year.id, "active")} className="rounded bg-indigo-600 px-2 py-1 text-xs text-white">Set active</button>}{!year.locked_at && year.status === "open" && <button type="button" onClick={() => changeFiscalYear(year.id, "lock")} className="rounded border px-2 py-1 text-xs">Lock</button>}</span></div>)}
               </>
             ) : activeTab === "reports" ? (report?.accounts || []).map((account) => <div key={account.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{account.code} · {account.name}</span><span>NPR {Number(account.credit || account.debit || 0).toLocaleString("en-IN")}</span></div>) : journals.slice(0, 12).map((journal) => <div key={journal.id} className="flex justify-between border-b py-2 text-sm" style={{ borderColor: "var(--border-card)" }}><span>{journal.journal_number}<br /><span style={{ color: "var(--text-2)" }}>{journal.description || "Journal entry"}</span></span><span>NPR {Number(journal.total_debit || 0).toLocaleString("en-IN")}</span></div>)}
             {!accounts.length && !journals.length && <p style={{ color: "var(--text-2)" }}>No accounting records are available yet.</p>}
