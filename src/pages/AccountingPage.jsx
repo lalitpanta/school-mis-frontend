@@ -67,22 +67,38 @@ const AccountingPage = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    Promise.all([getAccountingAccounts(), getAccountingJournals(), getTrialBalance(), getAccountingVouchers(), getAccountingConfiguration()])
-      .then(([accountResponse, journalResponse, balanceResponse, voucherResponse, configurationResponse]) => {
-        setAccounts(accountResponse.data.data || []);
-        setJournals(journalResponse.data.data || []);
-        setTrialBalance(balanceResponse.data.data?.accounts || []);
-        setVouchers(voucherResponse.data.data || []);
-        const nextConfiguration = configurationResponse.data.data || {};
-        setConfiguration(nextConfiguration);
-        setFiscalYears(nextConfiguration.fiscal_years || []);
-        setSettingsForm((current) => ({ ...current, ...(nextConfiguration.general || {}) }));
-      })
-      .catch(() => {
-        setAccounts([]);
-        setJournals([]);
-        setTrialBalance([]);
-        setError("Unable to load accounting data. Check your access and try again.");
+    Promise.allSettled([
+      getAccountingAccounts(),
+      getAccountingJournals(),
+      getTrialBalance(),
+      getAccountingVouchers(),
+      getAccountingConfiguration(),
+    ])
+      .then((results) => {
+        const [accountResult, journalResult, balanceResult, voucherResult, configurationResult] = results;
+        const failed = [];
+        const read = (result, label) => {
+          if (result.status === "fulfilled") return result.value;
+          const status = result.reason?.response?.status;
+          failed.push(`${label}${status ? ` (${status})` : ""}`);
+          return null;
+        };
+        const accountResponse = read(accountResult, "chart of accounts");
+        const journalResponse = read(journalResult, "journals");
+        const balanceResponse = read(balanceResult, "trial balance");
+        const voucherResponse = read(voucherResult, "vouchers");
+        const configurationResponse = read(configurationResult, "settings");
+        if (accountResponse) setAccounts(accountResponse.data.data || []);
+        if (journalResponse) setJournals(journalResponse.data.data || []);
+        if (balanceResponse) setTrialBalance(balanceResponse.data.data?.accounts || []);
+        if (voucherResponse) setVouchers(voucherResponse.data.data || []);
+        if (configurationResponse) {
+          const nextConfiguration = configurationResponse.data.data || {};
+          setConfiguration(nextConfiguration);
+          setFiscalYears(nextConfiguration.fiscal_years || []);
+          setSettingsForm((current) => ({ ...current, ...(nextConfiguration.general || {}) }));
+        }
+        setError(failed.length ? `Accounting data unavailable: ${failed.join(", ")}.` : "");
       })
       .finally(() => setLoading(false));
   }, []);
