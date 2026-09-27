@@ -226,6 +226,7 @@ const SETTINGS_TABS = [
   { key: "integrations", label: "Integrations" },
   { key: "devices", label: "Device Integration" },
   { key: "security", label: "Security" },
+  { key: "backup", label: "Backup" },
   { key: "theme", label: "Theme" },
   { key: "departments", label: "Departments" },
   { key: "classrooms", label: "Classrooms" },

@@ -16,6 +16,7 @@ import DeviceIntegration from "./settings/DeviceIntegration";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import Theme from "../components/settings/Theme";
 import Accounts from "../components/settings/Accounts";
+import Backup from "../components/settings/Backup";
 
 // Map tab keys to rendered panels
 const PANEL_MAP = {
@@ -27,6 +28,7 @@ const PANEL_MAP = {
   integrations: <Integrations />,
   devices: <DeviceIntegration />,
   security: <Security />,
+  backup: <Backup />,
   departments: <Departments />,
   classrooms: <Classrooms />,
   courses: <Courses />,
@@ -49,6 +51,7 @@ const TAB_LABELS = {
   integrations: "Integrations",
   devices: "Device Integration",
   security: "Security",
+  backup: "Backup",
   departments: "Departments",
   classrooms: "Classrooms",
   courses: "Courses",

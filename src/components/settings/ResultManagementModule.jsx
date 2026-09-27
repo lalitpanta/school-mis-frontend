@@ -820,19 +820,35 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
       </div>
 
       {error && (
-        <div style={{ margin: '0 24px 16px 24px', padding: '12px 16px', background: 'var(--danger-dim)', border: '1px solid var(--danger)', borderRadius: 'var(--radius-s)', color: 'var(--danger)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-            <span style={{ fontSize: '13px' }}>{error}</span>
+        <div
+          style={{
+            margin: "0 24px 16px 24px",
+            padding: "12px 16px",
+            background: "var(--danger-dim)",
+            border: "1px solid var(--danger)",
+            borderRadius: "var(--radius-s)",
+            color: "var(--danger)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+            }}
+          >
+            <span style={{ fontSize: "13px" }}>{error}</span>
             <button
               onClick={() => setError(null)}
               style={{
-                fontSize: '12px',
-                padding: '6px 12px',
-                borderRadius: 'var(--radius-s)',
-                border: '1px solid var(--danger)',
-                background: 'transparent',
-                color: 'var(--danger)',
-                cursor: 'pointer'
+                fontSize: "12px",
+                padding: "6px 12px",
+                borderRadius: "var(--radius-s)",
+                border: "1px solid var(--danger)",
+                background: "transparent",
+                color: "var(--danger)",
+                cursor: "pointer",
               }}
             >
               Dismiss
@@ -841,19 +857,35 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         </div>
       )}
       {success && (
-        <div style={{ margin: '0 24px 16px 24px', padding: '12px 16px', background: 'var(--success-dim)', border: '1px solid var(--success)', borderRadius: 'var(--radius-s)', color: 'var(--success)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-            <span style={{ fontSize: '13px' }}>{success}</span>
+        <div
+          style={{
+            margin: "0 24px 16px 24px",
+            padding: "12px 16px",
+            background: "var(--success-dim)",
+            border: "1px solid var(--success)",
+            borderRadius: "var(--radius-s)",
+            color: "var(--success)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+            }}
+          >
+            <span style={{ fontSize: "13px" }}>{success}</span>
             <button
               onClick={() => setSuccess(null)}
               style={{
-                fontSize: '12px',
-                padding: '6px 12px',
-                borderRadius: 'var(--radius-s)',
-                border: '1px solid var(--success)',
-                background: 'transparent',
-                color: 'var(--success)',
-                cursor: 'pointer'
+                fontSize: "12px",
+                padding: "6px 12px",
+                borderRadius: "var(--radius-s)",
+                border: "1px solid var(--success)",
+                background: "transparent",
+                color: "var(--success)",
+                cursor: "pointer",
               }}
             >
               Dismiss
@@ -870,7 +902,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               <button
                 onClick={handleAddFormat}
                 className="btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
                 <Plus size={14} /> New Format
               </button>
@@ -887,14 +919,22 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                     <th>Term</th>
                     <th>Exam Date</th>
                     <th>Pass Mark %</th>
-                    <th style={{ textAlign: 'center' }}>Actions</th>
+                    <th style={{ textAlign: "center" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {examFormats.length === 0 ? (
                     <tr>
-                      <td colSpan="8" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-faint)' }}>
-                        No exam formats available yet. Create one to get started.
+                      <td
+                        colSpan="8"
+                        style={{
+                          textAlign: "center",
+                          padding: "32px",
+                          color: "var(--text-faint)",
+                        }}
+                      >
+                        No exam formats available yet. Create one to get
+                        started.
                       </td>
                     </tr>
                   ) : (
@@ -902,13 +942,23 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                       <tr key={format.id}>
                         <td>{format.exam_type || "-"}</td>
                         <td>{format.class_name || "-"}</td>
-                        <td>{format.section_name || format.section?.section_name || "-"}</td>
+                        <td>
+                          {format.section_name ||
+                            format.section?.section_name ||
+                            "-"}
+                        </td>
                         <td>{format.academic_year || "-"}</td>
                         <td>{format.term || "-"}</td>
                         <td>{formatDisplayDate(format.exam_date)}</td>
                         <td>{format.pass_mark_percentage ?? 0}%</td>
-                        <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                        <td style={{ textAlign: "center" }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              gap: "8px",
+                            }}
+                          >
                             <button
                               onClick={() => handleEditFormat(format)}
                               className="icon-btn"
@@ -937,17 +987,27 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         {moduleType === "subject" && (
           <div className="space-y-6">
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  marginBottom: "8px",
+                  color: "var(--text)",
+                }}
+              >
                 Select Exam Format
               </label>
               <select
                 value={selectedExamForSubjects?.id || ""}
                 onChange={(e) => {
-                  const exam = examFormats.find((f) => f.id === parseInt(e.target.value));
+                  const exam = examFormats.find(
+                    (f) => f.id === parseInt(e.target.value),
+                  );
                   if (exam) handleSelectExamForSubjects(exam);
                 }}
                 className="filter-select"
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
               >
                 <option value="">-- Choose Exam Format --</option>
                 {examFormats.map((format) => (
@@ -963,7 +1023,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 <button
                   onClick={handleAddSubject}
                   className="btn-primary"
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
                 >
                   <Plus size={16} /> Add Subject
                 </button>
@@ -976,7 +1036,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                         <th>Theory Max</th>
                         <th>Practical Max</th>
                         <th>Total Max</th>
-                        <th style={{ textAlign: 'center' }}>Actions</th>
+                        <th style={{ textAlign: "center" }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -986,8 +1046,14 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                           <td>{subject.theory_max_marks}</td>
                           <td>{subject.practical_max_marks}</td>
                           <td>{subject.total_max_marks}</td>
-                          <td style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                          <td style={{ textAlign: "center" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "8px",
+                              }}
+                            >
                               <button
                                 onClick={() => handleEditSubject(subject)}
                                 className="icon-btn"
@@ -1015,22 +1081,34 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         )}
 
         {moduleType === "marks" && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
             {/* Workflow Rail */}
-            {marksClassId && marksSectionId && selectedExamForMarks && selectedSubjectForMarks && (
-              <div className="workflow-rail">
-                <div className="rail-top">
-                  <span className="rail-title">Mark Entry Workflow</span>
-                  <span className="rail-progress-label" id="stepLabel">
-                    Class, Section, Exam & Subject Selected
-                  </span>
+            {marksClassId &&
+              marksSectionId &&
+              selectedExamForMarks &&
+              selectedSubjectForMarks && (
+                <div className="workflow-rail">
+                  <div className="rail-top">
+                    <span className="rail-title">Mark Entry Workflow</span>
+                    <span className="rail-progress-label" id="stepLabel">
+                      Class, Section, Exam & Subject Selected
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Action Buttons */}
             <div className="toolbar active">
-              <div style={{ flex: 1, display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "center",
+                }}
+              >
                 <div className="year-pill">
                   <span className="dot"></span>
                   {new Date().getFullYear()}–{new Date().getFullYear() + 1}
@@ -1071,24 +1149,35 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </div>
 
             {/* Filter Selection Area */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '12px',
-              padding: '16px',
-              background: 'var(--surface)',
-              border: '1px solid var(--border-soft)',
-              borderRadius: 'var(--radius-m)'
-            }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "12px",
+                padding: "16px",
+                background: "var(--surface)",
+                border: "1px solid var(--border-soft)",
+                borderRadius: "var(--radius-m)",
+              }}
+            >
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginBottom: "6px",
+                    color: "var(--text-faint)",
+                    textTransform: "uppercase",
+                  }}
+                >
                   CLASS
                 </label>
                 <select
                   value={marksClassId}
                   onChange={(e) => handleMarksClassChange(e.target.value)}
                   className="filter-select"
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 >
                   <option value="">-- Select Class --</option>
                   {classes.map((cls) => (
@@ -1099,7 +1188,16 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginBottom: "6px",
+                    color: "var(--text-faint)",
+                    textTransform: "uppercase",
+                  }}
+                >
                   SECTION
                 </label>
                 <select
@@ -1107,9 +1205,11 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   onChange={(e) => handleMarksSectionChange(e.target.value)}
                   disabled={!marksClassId}
                   className="filter-select"
-                  style={{ width: '100%', opacity: !marksClassId ? 0.5 : 1 }}
+                  style={{ width: "100%", opacity: !marksClassId ? 0.5 : 1 }}
                 >
-                  <option value="">{marksClassId ? "-- Select Section --" : "Choose Class"}</option>
+                  <option value="">
+                    {marksClassId ? "-- Select Section --" : "Choose Class"}
+                  </option>
                   {marksSections.map((sec) => (
                     <option key={sec.id} value={sec.id}>
                       {sec.name || sec.section_name}
@@ -1118,17 +1218,28 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginBottom: "6px",
+                    color: "var(--text-faint)",
+                    textTransform: "uppercase",
+                  }}
+                >
                   EXAM
                 </label>
                 <select
                   value={selectedExamForMarks?.id || ""}
                   onChange={(e) => {
-                    const exam = examFormats.find((f) => f.id === parseInt(e.target.value));
+                    const exam = examFormats.find(
+                      (f) => f.id === parseInt(e.target.value),
+                    );
                     handleSelectExamForMarks(exam || null);
                   }}
                   className="filter-select"
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 >
                   <option value="">-- Choose Exam --</option>
                   {examFormats.map((format) => (
@@ -1139,20 +1250,38 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginBottom: "6px",
+                    color: "var(--text-faint)",
+                    textTransform: "uppercase",
+                  }}
+                >
                   SUBJECT
                 </label>
                 <select
                   value={selectedSubjectForMarks?.id || ""}
                   onChange={(e) => {
-                    const subject = examSubjects.find((s) => s.id === parseInt(e.target.value));
+                    const subject = examSubjects.find(
+                      (s) => s.id === parseInt(e.target.value),
+                    );
                     handleSelectSubjectForMarks(subject || null);
                   }}
                   disabled={!selectedExamForMarks}
                   className="filter-select"
-                  style={{ width: '100%', opacity: !selectedExamForMarks ? 0.5 : 1 }}
+                  style={{
+                    width: "100%",
+                    opacity: !selectedExamForMarks ? 0.5 : 1,
+                  }}
                 >
-                  <option value="">{selectedExamForMarks ? "-- Choose Subject --" : "Choose Exam"}</option>
+                  <option value="">
+                    {selectedExamForMarks
+                      ? "-- Choose Subject --"
+                      : "Choose Exam"}
+                  </option>
                   {examSubjects.map((subject) => (
                     <option key={subject.id} value={subject.id}>
                       {subject.subject_name}
@@ -1161,14 +1290,23 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginBottom: "6px",
+                    color: "var(--text-faint)",
+                    textTransform: "uppercase",
+                  }}
+                >
                   FILTER
                 </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="filter-select"
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 >
                   <option value="All students">All students</option>
                   <option value="Passed">Passed</option>
@@ -1179,27 +1317,44 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
 
             {/* Publish Section */}
             {selectedExamForMarks && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '16px',
-                background: 'var(--surface)',
-                border: '1px solid var(--border-soft)',
-                borderRadius: 'var(--radius-m)',
-                gap: '16px'
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "16px",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border-soft)",
+                  borderRadius: "var(--radius-m)",
+                  gap: "16px",
+                }}
+              >
                 <div>
-                  <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: "600",
+                      color: "var(--text-faint)",
+                      textTransform: "uppercase",
+                    }}
+                  >
                     Result Portal
                   </div>
-                  <div style={{ marginTop: '4px', fontSize: '14px', color: 'var(--text-dim)' }}>
+                  <div
+                    style={{
+                      marginTop: "4px",
+                      fontSize: "14px",
+                      color: "var(--text-dim)",
+                    }}
+                  >
                     {selectedExamForMarks.is_published
                       ? "This exam is published for public access"
                       : "Publish to make visible to students and parents"}
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div
+                  style={{ display: "flex", gap: "8px", alignItems: "center" }}
+                >
                   <a
                     href="/result-portal"
                     target="_blank"
@@ -1210,11 +1365,16 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   </a>
                   <button
                     onClick={() =>
-                      handlePublishExam(selectedExamForMarks, !selectedExamForMarks.is_published)
+                      handlePublishExam(
+                        selectedExamForMarks,
+                        !selectedExamForMarks.is_published,
+                      )
                     }
                     className="btn-primary"
                   >
-                    {selectedExamForMarks.is_published ? "Unpublish" : "Publish"}
+                    {selectedExamForMarks.is_published
+                      ? "Unpublish"
+                      : "Publish"}
                   </button>
                 </div>
               </div>
@@ -1224,21 +1384,33 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             {selectedSubjectForMarks && (
               <div className="stats active">
                 {(() => {
-                  let passed = 0, failed = 0, totalPercent = 0;
-                  const validStudents = students.filter((s) =>
-                    marksData[s.id] &&
-                    (marksData[s.id].theory_marks !== "" || marksData[s.id].practical_marks !== "")
+                  let passed = 0,
+                    failed = 0,
+                    totalPercent = 0;
+                  const validStudents = students.filter(
+                    (s) =>
+                      marksData[s.id] &&
+                      (marksData[s.id].theory_marks !== "" ||
+                        marksData[s.id].practical_marks !== ""),
                   );
                   validStudents.forEach((s) => {
                     if (marksData[s.id].is_pass) passed++;
                     else failed++;
-                    const maxMarks = parseFloat(selectedSubjectForMarks?.total_max_marks) || 100;
-                    const totalMarks = parseFloat(marksData[s.id].total_marks) || 0;
-                    const percent = maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
+                    const maxMarks =
+                      parseFloat(selectedSubjectForMarks?.total_max_marks) ||
+                      100;
+                    const totalMarks =
+                      parseFloat(marksData[s.id].total_marks) || 0;
+                    const percent =
+                      maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
                     totalPercent += percent;
                   });
-                  const passRate = validStudents.length ? Math.round((passed / validStudents.length) * 100) : 0;
-                  const classAvg = validStudents.length ? Math.round(totalPercent / validStudents.length) : 0;
+                  const passRate = validStudents.length
+                    ? Math.round((passed / validStudents.length) * 100)
+                    : 0;
+                  const classAvg = validStudents.length
+                    ? Math.round(totalPercent / validStudents.length)
+                    : 0;
 
                   return (
                     <>
@@ -1256,11 +1428,17 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                       </div>
                       <div className="stat-card">
                         <div className="label">Pass Rate</div>
-                        <div className="value">{passRate}<span>%</span></div>
+                        <div className="value">
+                          {passRate}
+                          <span>%</span>
+                        </div>
                       </div>
                       <div className="stat-card success">
                         <div className="label">Class Avg</div>
-                        <div className="value">{classAvg}<span>%</span></div>
+                        <div className="value">
+                          {classAvg}
+                          <span>%</span>
+                        </div>
                       </div>
                     </>
                   );
@@ -1270,7 +1448,9 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
 
             {/* Search Bar */}
             {selectedSubjectForMarks && (
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div
+                style={{ display: "flex", gap: "12px", alignItems: "center" }}
+              >
                 <div className="search-box" style={{ flex: 1 }}>
                   <Search size={15} />
                   <input
@@ -1284,7 +1464,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                   onClick={handleSaveAllMarks}
                   disabled={loading}
                   className="btn-primary"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
                   <Check size={14} /> {loading ? "Saving..." : "Save"}
                 </button>
@@ -1294,33 +1474,48 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             {/* Data Table */}
             {selectedSubjectForMarks && (
               <div className="table-wrap active">
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '13px 16px',
-                  background: 'var(--surface)',
-                  borderBottom: '1px solid var(--border-soft)',
-                  fontSize: '12px',
-                  color: 'var(--text-faint)'
-                }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "13px 16px",
+                    background: "var(--surface)",
+                    borderBottom: "1px solid var(--border-soft)",
+                    fontSize: "12px",
+                    color: "var(--text-faint)",
+                  }}
+                >
                   <span>{students.length} students registered</span>
-                  <span style={{ fontSize: '11px' }}>
-                    Pass: {selectedExamForMarks?.pass_mark_percentage || 40}% | Max: {selectedSubjectForMarks.total_max_marks || 0}
+                  <span style={{ fontSize: "11px" }}>
+                    Pass: {selectedExamForMarks?.pass_mark_percentage || 40}% |
+                    Max: {selectedSubjectForMarks.total_max_marks || 0}
                   </span>
                 </div>
                 <table>
                   <thead>
                     <tr>
-                      <th style={{ width: '60px' }}>Roll</th>
+                      <th style={{ width: "60px" }}>Roll</th>
                       <th>Student Name</th>
-                      <th className="num" style={{ width: '80px' }}>Theory</th>
-                      <th className="num" style={{ width: '80px' }}>Practical</th>
-                      <th className="num" style={{ width: '60px' }}>Total</th>
-                      <th className="num" style={{ width: '50px' }}>%</th>
-                      <th className="num" style={{ width: '60px' }}>Grade</th>
-                      <th style={{ width: '100px' }}>Remarks</th>
-                      <th style={{ width: '70px', textAlign: 'center' }}>Status</th>
+                      <th className="num" style={{ width: "80px" }}>
+                        Theory
+                      </th>
+                      <th className="num" style={{ width: "80px" }}>
+                        Practical
+                      </th>
+                      <th className="num" style={{ width: "60px" }}>
+                        Total
+                      </th>
+                      <th className="num" style={{ width: "50px" }}>
+                        %
+                      </th>
+                      <th className="num" style={{ width: "60px" }}>
+                        Grade
+                      </th>
+                      <th style={{ width: "100px" }}>Remarks</th>
+                      <th style={{ width: "70px", textAlign: "center" }}>
+                        Status
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1329,39 +1524,70 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                         const searchLower = searchQuery.toLowerCase();
                         const matchesSearch =
                           s.full_name.toLowerCase().includes(searchLower) ||
-                          (s.roll_no && s.roll_no.toString().toLowerCase().includes(searchLower));
-                        if (statusFilter === "All students") return matchesSearch;
+                          (s.roll_no &&
+                            s.roll_no
+                              .toString()
+                              .toLowerCase()
+                              .includes(searchLower));
+                        if (statusFilter === "All students")
+                          return matchesSearch;
                         const mark = marksData[s.id];
-                        if (!mark || (mark.theory_marks === "" && mark.practical_marks === "")) return false;
-                        if (statusFilter === "Passed") return matchesSearch && mark.is_pass;
-                        if (statusFilter === "Failed") return matchesSearch && !mark.is_pass;
+                        if (
+                          !mark ||
+                          (mark.theory_marks === "" &&
+                            mark.practical_marks === "")
+                        )
+                          return false;
+                        if (statusFilter === "Passed")
+                          return matchesSearch && mark.is_pass;
+                        if (statusFilter === "Failed")
+                          return matchesSearch && !mark.is_pass;
                         return matchesSearch;
                       })
                       .map((student) => {
                         const mark = marksData[student.id];
                         if (!mark) return null;
-                        const hasMarks = mark.theory_marks !== "" || mark.practical_marks !== "";
-                        const maxMarks = parseFloat(selectedSubjectForMarks?.total_max_marks) || 100;
+                        const hasMarks =
+                          mark.theory_marks !== "" ||
+                          mark.practical_marks !== "";
+                        const maxMarks =
+                          parseFloat(
+                            selectedSubjectForMarks?.total_max_marks,
+                          ) || 100;
                         const totalMarks = parseFloat(mark.total_marks) || 0;
-                        const percent = maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
+                        const percent =
+                          maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
 
                         const getGradeInfo = (pct, isPass, hasData) => {
-                          if (!hasData) return { grade: "—", cls: "grade-none" };
+                          if (!hasData)
+                            return { grade: "—", cls: "grade-none" };
                           if (!isPass) return { grade: "F", cls: "grade-F" };
                           if (pct >= 80) return { grade: "A", cls: "grade-A" };
                           if (pct >= 60) return { grade: "B", cls: "grade-B" };
                           return { grade: "C", cls: "grade-C" };
                         };
-                        const gradeInfo = getGradeInfo(percent, mark.is_pass, hasMarks);
+                        const gradeInfo = getGradeInfo(
+                          percent,
+                          mark.is_pass,
+                          hasMarks,
+                        );
 
                         return (
                           <tr key={student.id}>
                             <td>{student.roll_no}</td>
                             <td>
                               <div className="student-cell">
-                                <div className="avatar">{student.full_name?.split(" ").map(w => w[0]).join("").toUpperCase()}</div>
+                                <div className="avatar">
+                                  {student.full_name
+                                    ?.split(" ")
+                                    .map((w) => w[0])
+                                    .join("")
+                                    .toUpperCase()}
+                                </div>
                                 <div>
-                                  <div className="student-name">{student.full_name}</div>
+                                  <div className="student-name">
+                                    {student.full_name}
+                                  </div>
                                 </div>
                               </div>
                             </td>
@@ -1369,34 +1595,56 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                               <div className="marks-cell">
                                 <input
                                   type="number"
-                                  className={`marks-input ${hasMarks ? (percent < (selectedExamForMarks?.pass_mark_percentage || 40) ? 'fail' : 'pass-ok') : ''}`}
+                                  className={`marks-input ${hasMarks ? (percent < (selectedExamForMarks?.pass_mark_percentage || 40) ? "fail" : "pass-ok") : ""}`}
                                   min="0"
                                   value={mark.theory_marks}
                                   onChange={(e) =>
-                                    handleMarkChange(student.id, "theory_marks", e.target.value)
+                                    handleMarkChange(
+                                      student.id,
+                                      "theory_marks",
+                                      e.target.value,
+                                    )
                                   }
                                 />
-                                <span className="marks-max">/ {selectedSubjectForMarks.theory_max_marks || 0}</span>
+                                <span className="marks-max">
+                                  /{" "}
+                                  {selectedSubjectForMarks.theory_max_marks ||
+                                    0}
+                                </span>
                               </div>
                             </td>
                             <td>
                               <div className="marks-cell">
                                 <input
                                   type="number"
-                                  className={`marks-input ${hasMarks ? (percent < (selectedExamForMarks?.pass_mark_percentage || 40) ? 'fail' : 'pass-ok') : ''}`}
+                                  className={`marks-input ${hasMarks ? (percent < (selectedExamForMarks?.pass_mark_percentage || 40) ? "fail" : "pass-ok") : ""}`}
                                   min="0"
                                   value={mark.practical_marks}
                                   onChange={(e) =>
-                                    handleMarkChange(student.id, "practical_marks", e.target.value)
+                                    handleMarkChange(
+                                      student.id,
+                                      "practical_marks",
+                                      e.target.value,
+                                    )
                                   }
                                 />
-                                <span className="marks-max">/ {selectedSubjectForMarks.practical_max_marks || 0}</span>
+                                <span className="marks-max">
+                                  /{" "}
+                                  {selectedSubjectForMarks.practical_max_marks ||
+                                    0}
+                                </span>
                               </div>
                             </td>
-                            <td className="pct-cell">{hasMarks ? mark.total_marks : "—"}</td>
-                            <td className="pct-cell">{hasMarks ? `${Math.round(percent)}%` : "—"}</td>
-                            <td style={{ textAlign: 'center' }}>
-                              <span className={`grade-badge ${gradeInfo.cls}`}>{gradeInfo.grade}</span>
+                            <td className="pct-cell">
+                              {hasMarks ? mark.total_marks : "—"}
+                            </td>
+                            <td className="pct-cell">
+                              {hasMarks ? `${Math.round(percent)}%` : "—"}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              <span className={`grade-badge ${gradeInfo.cls}`}>
+                                {gradeInfo.grade}
+                              </span>
                             </td>
                             <td>
                               <input
@@ -1405,14 +1653,20 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                                 value={mark.remarks}
                                 placeholder="Remarks"
                                 onChange={(e) =>
-                                  handleMarkChange(student.id, "remarks", e.target.value)
+                                  handleMarkChange(
+                                    student.id,
+                                    "remarks",
+                                    e.target.value,
+                                  )
                                 }
-                                style={{ width: '100%' }}
+                                style={{ width: "100%" }}
                               />
                             </td>
-                            <td style={{ textAlign: 'center' }}>
+                            <td style={{ textAlign: "center" }}>
                               {hasMarks && (
-                                <span className={`status-badge status-${mark.is_pass ? 'entered' : 'pending'}`}>
+                                <span
+                                  className={`status-badge status-${mark.is_pass ? "entered" : "pending"}`}
+                                >
                                   {mark.is_pass ? "✓ Pass" : "✗ Fail"}
                                 </span>
                               )}
@@ -1429,14 +1683,15 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               <div className="empty-state">
                 <FileText width={52} height={52} />
                 <h3>No data loaded yet</h3>
-                <p>Select class, section, exam and subject above to view and enter student marks.</p>
+                <p>
+                  Select class, section, exam and subject above to view and
+                  enter student marks.
+                </p>
               </div>
             )}
           </div>
         )}
       </div>
-
-
 
       <SettingsModal
         open={showFormatModal}
@@ -1445,7 +1700,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         subtitle="Fill in the exam details and assign the right section."
         width="max-w-2xl"
         footer={
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: "flex", gap: "12px" }}>
             <button
               onClick={() => setShowFormatModal(false)}
               className="btn-secondary"
@@ -1463,9 +1718,17 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
           </div>
         }
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Exam Type *
             </label>
             <input
@@ -1475,19 +1738,27 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 setFormatForm({ ...formatForm, exam_type: e.target.value })
               }
               className="filter-select"
-              style={{ width: '100%', appearance: 'none', display: 'block' }}
+              style={{ width: "100%", appearance: "none", display: "block" }}
               placeholder="e.g., Midterm, Final"
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Class
             </label>
             <select
               value={formatForm.class_id}
               onChange={(e) => handleClassChange(e.target.value)}
               className="filter-select"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
               <option value="">-- Select --</option>
               {classes.map((cls) => (
@@ -1498,7 +1769,15 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Section
             </label>
             <select
@@ -1507,7 +1786,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 setFormatForm({ ...formatForm, section_id: e.target.value })
               }
               className="filter-select"
-              style={{ width: '100%', opacity: !formatForm.class_id ? 0.5 : 1 }}
+              style={{ width: "100%", opacity: !formatForm.class_id ? 0.5 : 1 }}
               disabled={!formatForm.class_id}
             >
               <option value="">
@@ -1525,13 +1804,27 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
               ))}
             </select>
             {!formatForm.class_id && (
-              <p style={{ fontSize: '12px', color: 'var(--text-faint)', marginTop: '6px' }}>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--text-faint)",
+                  marginTop: "6px",
+                }}
+              >
                 Select a class to load sections from the school database.
               </p>
             )}
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Academic Year *
             </label>
             <select
@@ -1543,7 +1836,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 })
               }
               className="filter-select"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
               <option value="">-- Select --</option>
               {years.map((year) => (
@@ -1554,7 +1847,15 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Term
             </label>
             <input
@@ -1564,12 +1865,20 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 setFormatForm({ ...formatForm, term: e.target.value })
               }
               className="filter-select"
-              style={{ width: '100%', appearance: 'none', display: 'block' }}
+              style={{ width: "100%", appearance: "none", display: "block" }}
               placeholder="e.g., First Term"
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Exam Date
             </label>
             <input
@@ -1579,11 +1888,19 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 setFormatForm({ ...formatForm, exam_date: e.target.value })
               }
               className="filter-select"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Pass Mark %
             </label>
             <input
@@ -1596,7 +1913,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 })
               }
               className="filter-select"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           </div>
         </div>
@@ -1608,7 +1925,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
         title={selectedSubject ? "Edit Subject" : "New Subject"}
         width="max-w-md"
         footer={
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: "flex", gap: "12px" }}>
             <button
               onClick={() => setShowSubjectModal(false)}
               className="btn-secondary"
@@ -1626,9 +1943,17 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
           </div>
         }
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Subject Name *
             </label>
             <select
@@ -1646,7 +1971,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 });
               }}
               className="filter-select"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
               <option value="">-- Select Course / Subject --</option>
               {courses.map((course) => (
@@ -1657,7 +1982,15 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Theory Max Marks
             </label>
             <input
@@ -1670,11 +2003,19 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 })
               }
               className="filter-select"
-              style={{ width: '100%', appearance: 'none', display: 'block' }}
+              style={{ width: "100%", appearance: "none", display: "block" }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Practical Max Marks
             </label>
             <input
@@ -1687,11 +2028,19 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 })
               }
               className="filter-select"
-              style={{ width: '100%', appearance: 'none', display: 'block' }}
+              style={{ width: "100%", appearance: "none", display: "block" }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--text)' }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "13px",
+                fontWeight: "600",
+                marginBottom: "6px",
+                color: "var(--text)",
+              }}
+            >
               Total Max Marks *
             </label>
             <input
@@ -1704,7 +2053,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 })
               }
               className="filter-select"
-              style={{ width: '100%', appearance: 'none', display: 'block' }}
+              style={{ width: "100%", appearance: "none", display: "block" }}
             />
           </div>
         </div>
