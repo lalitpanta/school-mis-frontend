@@ -18,6 +18,7 @@ import Theme from "../components/settings/Theme";
 import Accounts from "../components/settings/Accounts";
 import Backup from "../components/settings/Backup";
 import ActivityLog from "../components/settings/ActivityLog";
+import ActiveSessions from "../components/settings/ActiveSessions";
 
 // Map tab keys to rendered panels
 const PANEL_MAP = {
@@ -31,6 +32,7 @@ const PANEL_MAP = {
   security: <Security />,
   backup: <Backup />,
   activityLog: <ActivityLog />,
+  activeSessions: <ActiveSessions />,
   departments: <Departments />,
   classrooms: <Classrooms />,
   courses: <Courses />,
@@ -71,6 +73,7 @@ const SETTINGS_NAV = [
       { key: "devices", label: "Device Integration" },
       { key: "backup", label: "Backup" },
       { key: "activityLog", label: "Activity Log" },
+      { key: "activeSessions", label: "Active Sessions" },
     ],
   },
 ];
@@ -86,6 +89,7 @@ const TAB_LABELS = {
   security: "Security",
   backup: "Backup",
   activityLog: "Activity Log",
+  activeSessions: "Active Sessions",
   departments: "Departments",
   classrooms: "Classrooms",
   courses: "Courses",

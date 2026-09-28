@@ -88,6 +88,14 @@ export const getAuditLogs = (params = {}) =>
   axiosInstance.get("/v1/settings/audit-logs", { params });
 export const getAuditStats = () =>
   axiosInstance.get("/v1/settings/audit-stats");
+export const getActiveSessions = () =>
+  axiosInstance.get("/v1/settings/active-sessions");
+export const revokeActiveSession = (sessionId) =>
+  axiosInstance.delete(`/v1/settings/active-sessions/${sessionId}`);
+export const revokeOtherActiveSessions = () =>
+  axiosInstance.post("/v1/settings/active-sessions/revoke-others");
+export const endCurrentSession = () =>
+  axiosInstance.post("/v1/auth/session/logout");
 
 // ── Theme ───────────────────────────────────────────────────
 export const getThemeSettings = () => axiosInstance.get("/v1/settings/theme");

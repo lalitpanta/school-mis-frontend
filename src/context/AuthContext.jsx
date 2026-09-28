@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import config from "../config/config";
+import { endCurrentSession } from "../api/settingsApi";
 
 const AuthContext = createContext(null);
 
@@ -65,6 +66,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    endCurrentSession().catch((error) => {
+      console.warn("Could not close server session during sign out:", error.message);
+    });
     setUser(null);
     setToken(null);
     setUserType(null);

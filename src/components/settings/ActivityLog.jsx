@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, AlertTriangle, CheckCircle2, Clock3, Info, Shield } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  Clock3,
+  Info,
+  Shield,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { getAuditLogs, getAuditStats } from "../../api/settingsApi";
 
@@ -144,7 +151,8 @@ const ActivityLog = () => {
             Security
           </div>
           <div className="mt-3 text-2xl font-bold text-rose-300">
-            {stats?.severities?.find((item) => item.severity === "error")?.count ?? 0}
+            {stats?.severities?.find((item) => item.severity === "error")
+              ?.count ?? 0}
           </div>
         </div>
       </div>
@@ -158,7 +166,9 @@ const ActivityLog = () => {
         </div>
 
         {loading ? (
-          <div className="p-6 text-sm text-[var(--text-2)]">Loading activity logs...</div>
+          <div className="p-6 text-sm text-[var(--text-2)]">
+            Loading activity logs...
+          </div>
         ) : filteredLogs.length === 0 ? (
           <div className="p-6 text-sm text-[var(--text-2)]">
             No activity recorded yet.
@@ -166,13 +176,14 @@ const ActivityLog = () => {
         ) : (
           <div className="divide-y divide-[var(--border-card)]">
             {filteredLogs.map((log) => (
-              <div key={log.id} className="flex items-center justify-between gap-4 px-4 py-3">
+              <div
+                key={log.id}
+                className="flex items-center justify-between gap-4 px-4 py-3"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className={
-                        `inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${severityClasses[log.severity] || severityClasses.info}`
-                      }
+                      className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${severityClasses[log.severity] || severityClasses.info}`}
                     >
                       {log.title || log.action || "Activity"}
                     </span>
@@ -182,9 +193,13 @@ const ActivityLog = () => {
                   </div>
 
                   <div className="mt-1 flex items-center gap-2 text-xs text-[var(--text-3)]">
-                    <span>{categoryLabels[log.category] || log.category || "System"}</span>
+                    <span>
+                      {categoryLabels[log.category] || log.category || "System"}
+                    </span>
                     <span>•</span>
-                    <span className="truncate">{log.message || "System activity recorded"}</span>
+                    <span className="truncate">
+                      {log.message || "System activity recorded"}
+                    </span>
                   </div>
                 </div>
 
