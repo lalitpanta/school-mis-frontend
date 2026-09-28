@@ -616,6 +616,9 @@ const css = `
   width: 100%; text-align: left;
   font-family: 'Inter', sans-serif;
 }
+.sb-config-item {
+  padding-left: 12px;
+}
 .sb-item:hover { background: var(--sb-hover); color: var(--sb-hi); }
 
 .sb-item svg:first-child { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; }
@@ -1012,10 +1015,9 @@ const Sidebar = () => {
               <div className="sb-subsection-title">Exam &amp; Result</div>
 
               <button
-                className={`sb-item${location.pathname === ROUTES.EXAM_SETUP ? " sb-active" : ""}`}
+                className={`sb-item sb-config-item${location.pathname === ROUTES.EXAM_SETUP ? " sb-active" : ""}`}
                 onClick={() => navigate(ROUTES.EXAM_SETUP)}
                 title={collapsed ? "Exam Setup" : undefined}
-                style={{ paddingLeft: 26 }}
               >
                 <IconExamSetup />
                 <span className="sb-item-label">Exam Setup</span>
@@ -1023,10 +1025,9 @@ const Sidebar = () => {
               </button>
 
               <button
-                className={`sb-item${location.pathname === ROUTES.COURSE_MARKS ? " sb-active" : ""}`}
+                className={`sb-item sb-config-item${location.pathname === ROUTES.COURSE_MARKS ? " sb-active" : ""}`}
                 onClick={() => navigate(ROUTES.COURSE_MARKS)}
                 title={collapsed ? "Course & Marks" : undefined}
-                style={{ paddingLeft: 26 }}
               >
                 <IconCourseMarks />
                 <span className="sb-item-label">Course &amp; Marks</span>
