@@ -719,8 +719,6 @@ const Sidebar = () => {
   const brandLogo = settings?.platform_logo || schoolProfile.logo || null;
 
   const [collapsed, setCollapsed] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [examOpen, setExamOpen] = useState(false);
   const [search, setSearch] = useState("");
   const searchRef = useRef(null);
 
@@ -739,18 +737,6 @@ const Sidebar = () => {
   const onSettings = location.pathname === ROUTES.SETTINGS;
   const activeTab = new URLSearchParams(location.search).get("tab") || "school";
   const isExamTab = EXAM_TABS.some((t) => t.key === activeTab);
-  // Auto-open correct accordion when on /settings
-  useEffect(() => {
-    if (onSettings) {
-      if (isExamTab) {
-        setExamOpen(true);
-        setSettingsOpen(false);
-      } else {
-        setSettingsOpen(true);
-        setExamOpen(false);
-      }
-    }
-  }, [onSettings, isExamTab]);
 
   const isNavActive = (to) =>
     to === "/" ? location.pathname === "/" : location.pathname === to;
@@ -793,38 +779,8 @@ const Sidebar = () => {
     ? EXAM_TABS.filter((t) => t.label.toLowerCase().includes(q))
     : EXAM_TABS;
   // Auto-expand accordions when search has results inside them
-  const settingsHasMatch = q ? filteredSettings.length > 0 : settingsOpen;
-  const examHasMatch = q ? filteredExam.length > 0 : examOpen;
-
-  const toggleSettings = () => {
-    if (collapsed) {
-      setCollapsed(false);
-      setTimeout(() => {
-        setSettingsOpen(true);
-        setExamOpen(false);
-      }, 50);
-      if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
-      return;
-    }
-    const next = !settingsOpen;
-    setSettingsOpen(next);
-    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=school`);
-  };
-
-  const toggleExam = () => {
-    if (collapsed) {
-      setCollapsed(false);
-      setTimeout(() => {
-        setExamOpen(true);
-        setSettingsOpen(false);
-      }, 50);
-      if (!onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
-      return;
-    }
-    const next = !examOpen;
-    setExamOpen(next);
-    if (next && !onSettings) navigate(`${ROUTES.SETTINGS}?tab=resultFormat`);
-  };
+  const settingsHasMatch = q ? filteredSettings.length > 0 : false;
+  const examHasMatch = q ? filteredExam.length > 0 : false;
 
   return (
     <>
@@ -958,81 +914,25 @@ const Sidebar = () => {
             <>
               <div className="sb-section-label">Configuration</div>
 
-              {/* Settings accordion */}
-              <div
-                className={`sb-group${settingsOpen || settingsHasMatch ? " sb-open" : ""}`}
+              <button
+                className={`sb-item${onSettings ? " sb-active" : ""}`}
+                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=school`)}
+                title={collapsed ? "Settings" : undefined}
               >
-                <button
-                  className={`sb-item${onSettings && !isExamTab ? " sb-active" : ""}`}
-                  onClick={toggleSettings}
-                >
-                  <IconSettings />
-                  <span className="sb-item-label">Settings</span>
-                  <IconChevronDown />
-                  <span className="sb-tooltip">Settings</span>
-                </button>
-                <div className="sb-submenu">
-                  {SETTINGS_GROUPS.map(({ title, items }) => {
-                    const visibleItems = items
-                      .map((key) => SETTINGS_TABS.find((tab) => tab.key === key))
-                      .filter(Boolean)
-                      .filter(({ label }) => !q || label.toLowerCase().includes(q));
+                <IconSettings />
+                <span className="sb-item-label">Settings</span>
+                <span className="sb-tooltip">Settings</span>
+              </button>
 
-                    if (!visibleItems.length) return null;
-
-                    return (
-                      <div key={title}>
-                        <div className="sb-subsection-title">{title}</div>
-                        {visibleItems.map(({ key, label }) => {
-                          const active = onSettings && activeTab === key;
-                          return (
-                            <button
-                              key={key}
-                              className={`sb-item${active ? " sb-active" : ""}`}
-                              onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
-                            >
-                              <span className="sb-dot" />
-                              <span className="sb-item-label">{label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Exam & Result accordion */}
-              <div
-                className={`sb-group${examOpen || examHasMatch ? " sb-open" : ""}`}
+              <button
+                className={`sb-item${onSettings && isExamTab ? " sb-active" : ""}`}
+                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=resultFormat`)}
+                title={collapsed ? "Exam & Result" : undefined}
               >
-                <button
-                  className={`sb-item${onSettings && isExamTab ? " sb-active" : ""}`}
-                  onClick={toggleExam}
-                >
-                  <IconExam />
-                  <span className="sb-item-label">Exam &amp; Result</span>
-                  <IconChevronDown />
-                  <span className="sb-tooltip">Exam &amp; Result</span>
-                </button>
-                <div className="sb-submenu">
-                  {filteredExam.map(({ key, label }) => {
-                    const active = onSettings && activeTab === key;
-                    return (
-                      <button
-                        key={key}
-                        className={`sb-item${active ? " sb-active" : ""}`}
-                        onClick={() =>
-                          navigate(`${ROUTES.SETTINGS}?tab=${key}`)
-                        }
-                      >
-                        <span className="sb-dot" />
-                        <span className="sb-item-label">{label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                <IconExam />
+                <span className="sb-item-label">Exam &amp; Result</span>
+                <span className="sb-tooltip">Exam &amp; Result</span>
+              </button>
             </>
           )}
         </nav>
