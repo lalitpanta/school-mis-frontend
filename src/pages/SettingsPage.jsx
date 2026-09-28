@@ -41,7 +41,24 @@ const PANEL_MAP = {
   accounts: <Accounts />,
 };
 
-// Human-readable labels for the active tab header
+const SETTINGS_NAV = [
+  {
+    title: "Company",
+    items: [
+      { key: "school", label: "School Profile" },
+      { key: "calendarSettings", label: "Calendar Settings" },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { key: "security", label: "Security" },
+      { key: "backup", label: "Backup" },
+      { key: "theme", label: "Theme" },
+    ],
+  },
+];
+
 const TAB_LABELS = {
   school: "School Profile",
   calendarSettings: "Calendar Settings",
@@ -65,45 +82,87 @@ const TAB_LABELS = {
 };
 
 const SettingsPage = () => {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const tab = params.get("tab") || "school";
   const label = TAB_LABELS[tab] ?? "Settings";
 
   return (
-    <div className="h-full flex flex-col">
-      {/* ── Page header ── */}
-      <div className="flex items-center justify-between mb-4 shrink-0">
-        <div>
-          <p
-            className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-            style={{ color: "var(--text-3)" }}
-          >
-            Settings
-          </p>
-          <h1
-            className="text-lg font-bold tracking-tight"
-            style={{ color: "var(--text-1)" }}
-          >
-            {label}
-          </h1>
-        </div>
+    <div className="h-full flex flex-col gap-4">
+      <div className="shrink-0">
+        <p
+          className="text-[10px] font-semibold uppercase tracking-widest mb-1"
+          style={{ color: "var(--text-3)" }}
+        >
+          Settings
+        </p>
+        <h1
+          className="text-lg font-bold tracking-tight"
+          style={{ color: "var(--text-1)" }}
+        >
+          {label}
+        </h1>
       </div>
 
-      {/* ── Content card ── */}
       <div
-        className="flex-1 min-h-0 rounded-2xl overflow-hidden"
+        className="flex-1 min-h-0 overflow-hidden rounded-2xl"
         style={{
           background: "var(--bg-card)",
           border: "1px solid var(--border-card)",
           boxShadow: "var(--shadow-card)",
+          display: "grid",
+          gridTemplateColumns: "280px minmax(0, 1fr)",
         }}
       >
-        <div
-          className="h-full overflow-y-auto"
-          style={{ maxHeight: "calc(100vh - 9.5rem)" }}
+        <aside
+          style={{
+            background: "rgba(17, 24, 39, 0.92)",
+            borderRight: "1px solid rgba(148, 163, 184, 0.14)",
+            color: "#e5e7eb",
+          }}
+          className="h-full overflow-y-auto p-3"
         >
+          {SETTINGS_NAV.map((group) => (
+            <div key={group.title} className="mb-4">
+              <div
+                className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[0.18em]"
+                style={{ color: "#94a3b8" }}
+              >
+                {group.title}
+              </div>
+
+              {group.items.map((item) => {
+                const active = item.key === tab;
+
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setParams({ tab: item.key })}
+                    className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-sm font-medium transition-all duration-150"
+                    style={{
+                      background: active ? "rgba(249, 115, 22, 0.12)" : "transparent",
+                      borderColor: active ? "rgba(249, 115, 22, 0.35)" : "transparent",
+                      color: active ? "#f8fafc" : "#cbd5e1",
+                    }}
+                  >
+                    <span
+                      className="inline-block h-2 w-2 rounded-full"
+                      style={{
+                        background: active ? "#f59e0b" : "transparent",
+                        boxShadow: active ? "0 0 0 4px rgba(245, 158, 11, 0.18)" : "none",
+                      }}
+                    />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </aside>
+
+        <main className="h-full overflow-y-auto p-4 md:p-5">
           {PANEL_MAP[tab] ?? PANEL_MAP.school}
-        </div>
+        </main>
       </div>
     </div>
   );
