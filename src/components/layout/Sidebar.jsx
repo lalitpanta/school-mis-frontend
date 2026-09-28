@@ -570,6 +570,8 @@ const css = `
 .mis-sidebar.sb-collapsed .sb-item-label { display: none; }
 .mis-sidebar.sb-collapsed .sb-item-chev { display: none; }
 .mis-sidebar.sb-collapsed .sb-item { justify-content: center; padding: 11px 0; }
+.mis-sidebar.sb-collapsed .sb-subsection-title { display: none; }
+.mis-sidebar.sb-collapsed .sb-dot { display: none; }
 
 /* Active state */
 .sb-item.sb-active {
