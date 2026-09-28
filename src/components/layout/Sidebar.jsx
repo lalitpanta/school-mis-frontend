@@ -589,10 +589,13 @@ const css = `
 .mis-sidebar.sb-collapsed .sb-item-chev { display: none; }
 .mis-sidebar.sb-collapsed .sb-item {
   justify-content: center;
+  display: flex;
+  align-items: center;
   padding: 10px 0;
   gap: 0;
   width: 100%;
   min-width: 0;
+  min-height: 40px;
   color: var(--text-2);
   background: transparent;
   border-radius: 12px;
@@ -601,20 +604,22 @@ const css = `
   background: var(--bg-hover);
   color: var(--text-1);
 }
-.mis-sidebar.sb-collapsed .sb-item svg:first-child {
-  display: block;
-  width: 18px;
-  height: 18px;
-  opacity: 1;
-  visibility: visible;
-  stroke: currentColor;
-  color: currentColor;
-  fill: none;
+.mis-sidebar.sb-collapsed .sb-item svg,
+.mis-sidebar.sb-collapsed .sb-item svg:first-child,
+.mis-sidebar.sb-collapsed .sb-item > svg {
+  display: block !important;
+  width: 20px !important;
+  height: 20px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  stroke: currentColor !important;
+  color: currentColor !important;
+  fill: none !important;
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active {
   background: var(--accent-dim);
   color: var(--accent);
-  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.18);
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active::before {
   display: none;
