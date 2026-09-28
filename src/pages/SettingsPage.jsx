@@ -155,8 +155,12 @@ const SettingsPage = () => {
                     onClick={() => setParams({ tab: item.key })}
                     className="w-full flex items-center gap-2.5 rounded-xl border text-left text-sm font-medium transition-all duration-150"
                     style={{
-                      background: active ? "rgba(249, 115, 22, 0.12)" : "transparent",
-                      borderColor: active ? "rgba(249, 115, 22, 0.35)" : "transparent",
+                      background: active
+                        ? "rgba(249, 115, 22, 0.12)"
+                        : "transparent",
+                      borderColor: active
+                        ? "rgba(249, 115, 22, 0.35)"
+                        : "transparent",
                       color: active ? "#f8fafc" : "#cbd5e1",
                       padding: "8px 10px",
                       marginBottom: "2px",
@@ -167,12 +171,18 @@ const SettingsPage = () => {
                       style={{
                         width: "6px",
                         height: "6px",
-                        background: active ? "#f59e0b" : "rgba(148, 163, 184, 0.35)",
-                        boxShadow: active ? "0 0 0 4px rgba(245, 158, 11, 0.18)" : "none",
+                        background: active
+                          ? "#f59e0b"
+                          : "rgba(148, 163, 184, 0.35)",
+                        boxShadow: active
+                          ? "0 0 0 4px rgba(245, 158, 11, 0.18)"
+                          : "none",
                         flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: "12.5px", lineHeight: 1.35 }}>{item.label}</span>
+                    <span style={{ fontSize: "12.5px", lineHeight: 1.35 }}>
+                      {item.label}
+                    </span>
                   </button>
                 );
               })}

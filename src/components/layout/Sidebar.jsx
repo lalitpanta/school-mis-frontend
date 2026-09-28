@@ -219,7 +219,13 @@ const MAIN_NAV = [
 const NAV_GROUPS = [
   {
     label: "Main",
-    modules: ["dashboard", "calendar", "attendance", "leave_management", "daily_reports"],
+    modules: [
+      "dashboard",
+      "calendar",
+      "attendance",
+      "leave_management",
+      "daily_reports",
+    ],
   },
   {
     label: "People",
@@ -429,11 +435,11 @@ const css = `
 }
 
 .mis-sidebar.sb-collapsed {
-  width: var(--sb-wc);
-  min-width: var(--sb-wc);
-  background: linear-gradient(180deg, #0f1d3a 0%, #0a1730 100%);
-  border-right: 1px solid rgba(148, 163, 184, 0.18);
-  box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.12);
+  width: 68px;
+  min-width: 68px;
+  background: linear-gradient(180deg, #0b1a33 0%, #09182f 100%);
+  border-right: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.08);
 }
 
 /* ── Brand ─────────────────────────────────── */
@@ -464,6 +470,15 @@ const css = `
   min-width: 0;
 }
 .mis-sidebar.sb-collapsed .sb-brand-text { opacity: 0; width: 0; }
+.mis-sidebar.sb-collapsed .sb-brand {
+  padding: 18px 12px 14px;
+  justify-content: center;
+  border-bottom-color: rgba(148, 163, 184, 0.12);
+}
+.mis-sidebar.sb-collapsed .sb-brand-mark {
+  width: 34px; height: 34px; border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(28, 122, 255, 0.35);
+}
 
 .sb-brand-title {
   font-family: 'Sora', sans-serif;
@@ -574,33 +589,37 @@ const css = `
 .mis-sidebar.sb-collapsed .sb-item-chev { display: none; }
 .mis-sidebar.sb-collapsed .sb-item {
   justify-content: center;
-  padding: 11px 0;
+  padding: 10px 0;
   gap: 0;
   width: 100%;
   min-width: 0;
-  color: rgba(226, 232, 240, 0.9);
+  color: rgba(226, 232, 240, 0.85);
   background: transparent;
+  border-radius: 12px;
 }
 .mis-sidebar.sb-collapsed .sb-item:hover {
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(148, 163, 184, 0.08);
   color: #ffffff;
 }
 .mis-sidebar.sb-collapsed .sb-item svg:first-child {
   display: block;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   opacity: 1;
   visibility: visible;
   stroke: currentColor;
   color: currentColor;
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active {
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.32), rgba(14, 165, 233, 0.14));
+  background: linear-gradient(180deg, rgba(70, 140, 255, 0.22), rgba(70, 140, 255, 0.10));
   color: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(109, 167, 255, 0.38);
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active::before {
   display: none;
+}
+.mis-sidebar.sb-collapsed .sb-nav {
+  padding: 10px 8px;
 }
 .mis-sidebar.sb-collapsed .sb-subsection-title { display: none; }
 .mis-sidebar.sb-collapsed .sb-dot { display: none; }
@@ -870,7 +889,9 @@ const Sidebar = () => {
         {/* ── Scrollable nav ── */}
         <nav className="sb-nav">
           {NAV_GROUPS.map(({ label, modules }) => {
-            const items = filteredNav.filter((item) => modules.includes(item.module));
+            const items = filteredNav.filter((item) =>
+              modules.includes(item.module),
+            );
             if (!items.length) return null;
 
             return (
