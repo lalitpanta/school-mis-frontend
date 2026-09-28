@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { getAllSettings, updateSettings } from '../../api/settingsApi';
-import { Mail, Key, Save, Check, Server, Shield, Send, AlignLeft } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { getAllSettings, updateSettings, sendTestEmail } from '../../api/settingsApi';
+import { Mail, Key, Save, Server, Send, Bold, Italic, Underline, List, ListOrdered, Link2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const parseSettingsValue = (value) => {
@@ -27,8 +27,6 @@ const DEFAULT_EMAIL_CONFIG = {
     student_created: true,
     user_created: true,
     fee_payment_success: true,
-    exam_results_published: true,
-    attendance_alert: true,
     exam_results_published: true,
     attendance_alert: true,
   }
@@ -101,11 +99,11 @@ const TEMPLATE_KEYS = [
 ];
 
 const DEFAULT_VARIABLES = {
-  student_created: 'Available variables: schoolName, studentName, admissionNo',
-  user_created: 'Available variables: name, username, password',
-  fee_payment_success: 'Available variables: studentName, amount, receiptNo',
-  exam_results_published: 'Available variables: studentName, examName',
-  attendance_alert: 'Available variables: studentName, date',
+  student_created: ['schoolName', 'studentName', 'admissionNo'],
+  user_created: ['name', 'username', 'password'],
+  fee_payment_success: ['studentName', 'amount', 'receiptNo'],
+  exam_results_published: ['studentName', 'examName'],
+  attendance_alert: ['studentName', 'date'],
 };
 
 const normalizeTemplates = (value, defaults) => {
@@ -114,6 +112,113 @@ const normalizeTemplates = (value, defaults) => {
     return parsed;
   }
   return defaults;
+};
+
+const EDITOR_COMMANDS = [
+  { command: 'bold', label: 'Bold', Icon: Bold },
+  { command: 'italic', label: 'Italic', Icon: Italic },
+  { command: 'underline', label: 'Underline', Icon: Underline },
+  { command: 'insertUnorderedList', label: 'Bulleted list', Icon: List },
+  { command: 'insertOrderedList', label: 'Numbered list', Icon: ListOrdered },
+];
+
+const EmailBodyEditor = ({ value, onChange, variables }) => {
+  const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value || '';
+    }
+  }, [value]);
+
+  const applyCommand = (command) => {
+    editorRef.current?.focus();
+    if (command === 'createLink') {
+      const url = window.prompt('Enter link URL');
+      if (!url) return;
+      document.execCommand(command, false, url);
+    } else {
+      document.execCommand(command, false);
+    }
+    onChange(editorRef.current?.innerHTML || '');
+  };
+
+  const insertVariable = (variable) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const selection = window.getSelection();
+    let range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+    if (!range || !editor.contains(range.commonAncestorContainer)) {
+      range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+    }
+    range.deleteContents();
+    const token = document.createTextNode(`{{${variable}}}`);
+    range.insertNode(token);
+    range.setStartAfter(token);
+    range.collapse(true);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    onChange(editor.innerHTML);
+  };
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-slate-700 bg-white text-slate-900">
+      <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 p-2">
+        {EDITOR_COMMANDS.map(({ command, label, Icon }) => (
+          <button
+            key={command}
+            type="button"
+            title={label}
+            aria-label={label}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => applyCommand(command)}
+            className="rounded p-2 text-slate-700 hover:bg-slate-200"
+          >
+            <Icon size={16} />
+          </button>
+        ))}
+        <button
+          type="button"
+          title="Insert link"
+          aria-label="Insert link"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => applyCommand('createLink')}
+          className="rounded p-2 text-slate-700 hover:bg-slate-200"
+        >
+          <Link2 size={16} />
+        </button>
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        role="textbox"
+        aria-label="Email template body editor"
+        aria-multiline="true"
+        onInput={(event) => onChange(event.currentTarget.innerHTML)}
+        className="min-h-64 max-h-[520px] overflow-y-auto p-5 text-sm leading-6 outline-none [&_a]:text-blue-700 [&_h1]:my-3 [&_h1]:text-2xl [&_h2]:my-3 [&_h2]:text-xl [&_li]:ml-5 [&_ol]:list-decimal [&_p]:my-2 [&_ul]:list-disc"
+      />
+      <div className="border-t border-slate-200 bg-slate-50 p-3">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Insert variable</p>
+        <div className="flex flex-wrap gap-2">
+          {variables.map((variable) => (
+            <button
+              key={variable}
+              type="button"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => insertVariable(variable)}
+              className="rounded border border-blue-200 bg-white px-2 py-1 font-mono text-xs text-blue-700 hover:bg-blue-50"
+            >
+              {`{{${variable}}}`}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const Integrations = () => {
@@ -126,6 +231,8 @@ const Integrations = () => {
   const [whatsappTemplates, setWhatsappTemplates] = useState(DEFAULT_WHATSAPP_TEMPLATES);
   const [selectedTemplateKey, setSelectedTemplateKey] = useState('student_created');
   const [templateChannel, setTemplateChannel] = useState('email');
+  const [testRecipient, setTestRecipient] = useState('');
+  const [sendingTest, setSendingTest] = useState(false);
 
   useEffect(() => {
     if (!templates || !templates[selectedTemplateKey]) {
@@ -182,6 +289,22 @@ const Integrations = () => {
     }
   };
 
+  const handleSendTest = async () => {
+    if (!testRecipient.trim()) {
+      toast.error('Enter a recipient email address first.');
+      return;
+    }
+    try {
+      setSendingTest(true);
+      await sendTestEmail({ to: testRecipient.trim(), eventType: selectedTemplateKey });
+      toast.success('Test email sent.');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not send test email. Check SMTP settings and this event trigger.');
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
   const updateConfig = (key, value) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
@@ -231,9 +354,9 @@ const Integrations = () => {
       <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Mail className="text-blue-400" /> Communication Integrations
+            <Mail className="text-blue-400" /> Email Settings
           </h2>
-          <p className="text-sm text-slate-400 mt-1">Configure automated email and WhatsApp notifications.</p>
+          <p className="text-sm text-slate-400 mt-1">Configure SMTP delivery and notification templates.</p>
         </div>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -552,6 +675,27 @@ const Integrations = () => {
                 </div>
               </div>
 
+              {templateChannel === 'email' && (
+                <div className="mb-5 flex flex-col gap-2 sm:flex-row">
+                  <input
+                    type="email"
+                    value={testRecipient}
+                    onChange={(event) => setTestRecipient(event.target.value)}
+                    placeholder="Send a test to email address"
+                    aria-label="Test email recipient"
+                    className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSendTest}
+                    disabled={sendingTest}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+                  >
+                    <Send size={15} /> {sendingTest ? 'Sending...' : 'Send test'}
+                  </button>
+                </div>
+              )}
+
               <div className="space-y-4">
                 {templateChannel === 'email' && (
                   <div>
@@ -566,30 +710,29 @@ const Integrations = () => {
                 )}
 
                 <div>
-                  <label className="flex items-center justify-between text-sm font-medium text-slate-300 mb-1">
-                    <span>{templateChannel === 'email' ? 'HTML Body' : 'Message Body'}</span>
-                    <span className="text-xs text-slate-500 flex items-center gap-1"><AlignLeft size={14}/> {templateChannel === 'email' ? 'Supports HTML tags' : 'Plain text with variables'}</span>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    {templateChannel === 'email' ? 'Email body' : 'Message body'}
                   </label>
-                  <textarea 
-                    rows={10}
-                    value={templateChannel === 'email'
-                      ? (templates[selectedTemplateKey]?.body || DEFAULT_EMAIL_TEMPLATES[selectedTemplateKey]?.body || '')
-                      : (whatsappTemplates[selectedTemplateKey]?.body || DEFAULT_WHATSAPP_TEMPLATES[selectedTemplateKey]?.body || '')
-                    }
-                    onChange={(e) => templateChannel === 'email'
-                      ? updateTemplate(selectedTemplateKey, 'body', e.target.value)
-                      : updateWhatsappTemplate(selectedTemplateKey, 'body', e.target.value)
-                    }
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
-                  />
+                  {templateChannel === 'email' ? (
+                    <EmailBodyEditor
+                      value={templates[selectedTemplateKey]?.body || DEFAULT_EMAIL_TEMPLATES[selectedTemplateKey]?.body || ''}
+                      onChange={(value) => updateTemplate(selectedTemplateKey, 'body', value)}
+                      variables={DEFAULT_VARIABLES[selectedTemplateKey] || []}
+                    />
+                  ) : (
+                    <textarea
+                      rows={10}
+                      value={whatsappTemplates[selectedTemplateKey]?.body || DEFAULT_WHATSAPP_TEMPLATES[selectedTemplateKey]?.body || ''}
+                      onChange={(e) => updateWhatsappTemplate(selectedTemplateKey, 'body', e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
+                    />
+                  )}
                 </div>
 
                 <div className="p-4 bg-blue-900/20 border border-blue-500/20 rounded-lg">
                   <h4 className="text-sm font-semibold text-blue-400 mb-2">Available Variables</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Use <code className="text-pink-400 bg-slate-900 px-1 rounded">{'{{variableName}}'}</code> to inject dynamic data.
-                    <br />
-                    {DEFAULT_VARIABLES[selectedTemplateKey]}
+                    Select a variable above to insert it at the cursor. Its value is supplied by the matching system event.
                   </p>
                 </div>
               </div>

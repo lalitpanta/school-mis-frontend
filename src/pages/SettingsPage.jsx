@@ -64,12 +64,14 @@ const SETTINGS_NAV = [
   },
   {
     title: "Communication",
-    items: [{ key: "notices", label: "SMS" }],
+    items: [
+      { key: "notices", label: "SMS" },
+      { key: "integrations", label: "Email Settings" },
+    ],
   },
   {
     title: "System",
     items: [
-      { key: "integrations", label: "Integrations" },
       { key: "devices", label: "Device Integration" },
       { key: "backup", label: "Backup" },
       { key: "activityLog", label: "Activity Log" },
@@ -84,7 +86,7 @@ const TAB_LABELS = {
   users: "Users & Staff",
   roles: "Roles & Permissions",
   notices: "SMS",
-  integrations: "Integrations",
+  integrations: "Email Settings",
   devices: "Device Integration",
   security: "Security",
   backup: "Backup",
