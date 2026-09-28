@@ -320,6 +320,42 @@ const IconExam = () => (
   </svg>
 );
 
+const IconExamSetup = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    stroke="currentColor"
+    style={{ flexShrink: 0 }}
+  >
+    <path d="M4 18.5h16" />
+    <path d="M7 15V8.5m5 6.5V5m5 10v-7" />
+    <path d="M4 5.5h16" />
+  </svg>
+);
+
+const IconCourseMarks = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    stroke="currentColor"
+    style={{ flexShrink: 0 }}
+  >
+    <path d="M6 4.5h9l3 3V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2Z" />
+    <path d="M15 4.5v4h4" />
+    <path d="M8 11h8M8 15h6" />
+  </svg>
+);
+
 const IconChevronDown = () => (
   <svg
     width="14"
@@ -993,7 +1029,7 @@ const Sidebar = () => {
                 title={collapsed ? "Exam Setup" : undefined}
                 style={{ paddingLeft: 26 }}
               >
-                <span className="sb-dot" />
+                <IconExamSetup />
                 <span className="sb-item-label">Exam Setup</span>
                 <span className="sb-tooltip">Exam Setup</span>
               </button>
@@ -1004,7 +1040,7 @@ const Sidebar = () => {
                 title={collapsed ? "Course & Marks" : undefined}
                 style={{ paddingLeft: 26 }}
               >
-                <span className="sb-dot" />
+                <IconCourseMarks />
                 <span className="sb-item-label">Course &amp; Marks</span>
                 <span className="sb-tooltip">Course &amp; Marks</span>
               </button>
