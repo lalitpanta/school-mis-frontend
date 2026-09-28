@@ -17,6 +17,7 @@ import ResultManagementModule from "../components/settings/ResultManagementModul
 import Theme from "../components/settings/Theme";
 import Accounts from "../components/settings/Accounts";
 import Backup from "../components/settings/Backup";
+import ActivityLog from "../components/settings/ActivityLog";
 
 // Map tab keys to rendered panels
 const PANEL_MAP = {
@@ -29,6 +30,7 @@ const PANEL_MAP = {
   devices: <DeviceIntegration />,
   security: <Security />,
   backup: <Backup />,
+  activityLog: <ActivityLog />,
   departments: <Departments />,
   classrooms: <Classrooms />,
   courses: <Courses />,
@@ -68,6 +70,7 @@ const SETTINGS_NAV = [
       { key: "integrations", label: "Integrations" },
       { key: "devices", label: "Device Integration" },
       { key: "backup", label: "Backup" },
+      { key: "activityLog", label: "Activity Log" },
     ],
   },
 ];
@@ -82,6 +85,7 @@ const TAB_LABELS = {
   devices: "Device Integration",
   security: "Security",
   backup: "Backup",
+  activityLog: "Activity Log",
   departments: "Departments",
   classrooms: "Classrooms",
   courses: "Courses",
