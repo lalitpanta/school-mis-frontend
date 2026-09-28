@@ -431,6 +431,9 @@ const css = `
 .mis-sidebar.sb-collapsed {
   width: var(--sb-wc);
   min-width: var(--sb-wc);
+  background: linear-gradient(180deg, #0f1d3a 0%, #0a1730 100%);
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.12);
 }
 
 /* ── Brand ─────────────────────────────────── */
@@ -575,6 +578,12 @@ const css = `
   gap: 0;
   width: 100%;
   min-width: 0;
+  color: rgba(226, 232, 240, 0.9);
+  background: transparent;
+}
+.mis-sidebar.sb-collapsed .sb-item:hover {
+  background: rgba(148, 163, 184, 0.12);
+  color: #ffffff;
 }
 .mis-sidebar.sb-collapsed .sb-item svg:first-child {
   display: block;
@@ -582,6 +591,16 @@ const css = `
   height: 22px;
   opacity: 1;
   visibility: visible;
+  stroke: currentColor;
+  color: currentColor;
+}
+.mis-sidebar.sb-collapsed .sb-item.sb-active {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.32), rgba(14, 165, 233, 0.14));
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.25);
+}
+.mis-sidebar.sb-collapsed .sb-item.sb-active::before {
+  display: none;
 }
 .mis-sidebar.sb-collapsed .sb-subsection-title { display: none; }
 .mis-sidebar.sb-collapsed .sb-dot { display: none; }
