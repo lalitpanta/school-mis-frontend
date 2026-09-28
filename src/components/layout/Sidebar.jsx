@@ -924,14 +924,28 @@ const Sidebar = () => {
                 <span className="sb-tooltip">Settings</span>
               </button>
 
+              <div className="sb-subsection-title">Exam &amp; Result</div>
+
               <button
-                className={`sb-item${onSettings && isExamTab ? " sb-active" : ""}`}
+                className={`sb-item${onSettings && activeTab === "resultFormat" ? " sb-active" : ""}`}
                 onClick={() => navigate(`${ROUTES.SETTINGS}?tab=resultFormat`)}
-                title={collapsed ? "Exam & Result" : undefined}
+                title={collapsed ? "Exam Setup" : undefined}
+                style={{ paddingLeft: 26 }}
               >
-                <IconExam />
-                <span className="sb-item-label">Exam &amp; Result</span>
-                <span className="sb-tooltip">Exam &amp; Result</span>
+                <span className="sb-dot" />
+                <span className="sb-item-label">Exam Setup</span>
+                <span className="sb-tooltip">Exam Setup</span>
+              </button>
+
+              <button
+                className={`sb-item${onSettings && activeTab === "resultSubject" ? " sb-active" : ""}`}
+                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=resultSubject`)}
+                title={collapsed ? "Course & Marks" : undefined}
+                style={{ paddingLeft: 26 }}
+              >
+                <span className="sb-dot" />
+                <span className="sb-item-label">Course &amp; Marks</span>
+                <span className="sb-tooltip">Course &amp; Marks</span>
               </button>
             </>
           )}

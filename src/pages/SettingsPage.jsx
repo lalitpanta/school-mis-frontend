@@ -52,7 +52,11 @@ const SETTINGS_NAV = [
   },
   {
     title: "Access & Security",
-    items: [{ key: "security", label: "Security" }],
+    items: [
+      { key: "users", label: "Users & Staff" },
+      { key: "roles", label: "Roles & Permissions" },
+      { key: "security", label: "Security" },
+    ],
   },
   {
     title: "Communication",
