@@ -1009,8 +1009,6 @@ const Sidebar = () => {
           {/* ── Configuration section ── */}
           {showSettings && (
             <>
-              <div className="sb-section-label">Configuration</div>
-
               <div className="sb-subsection-title">Exam &amp; Result</div>
 
               <button
@@ -1034,6 +1032,8 @@ const Sidebar = () => {
                 <span className="sb-item-label">Course &amp; Marks</span>
                 <span className="sb-tooltip">Course &amp; Marks</span>
               </button>
+
+              <div className="sb-section-label">Configuration</div>
 
               <button
                 className={`sb-item${location.pathname === ROUTES.SETTINGS ? " sb-active" : ""}`}
