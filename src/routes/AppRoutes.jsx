@@ -21,6 +21,7 @@ import TeacherPage from "../pages/TeacherPage";
 import StudentPage from "../pages/StudentPage";
 import EmployeePage from "../pages/EmployeePage";
 import ResultManagement from "../pages/ResultManagement";
+import ResultManagementModule from "../components/settings/ResultManagementModule";
 import DailyReportPage from "../pages/DailyReportPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
@@ -403,6 +404,44 @@ const AppRoutes = () => {
             element={
               <MainLayout>
                 <ResultManagement />
+              </MainLayout>
+            }
+          />
+        }
+      />
+      <Route
+        path={ROUTES.EXAM_SETUP}
+        element={
+          <ModuleRoute
+            moduleKey="results"
+            element={
+              <MainLayout>
+                <div className="w-full px-4 py-6 md:px-6">
+                  <div className="mis-card mx-auto w-full max-w-7xl">
+                    <div className="max-h-[calc(100vh-9rem)] overflow-y-auto p-4 md:p-6">
+                      <ResultManagementModule moduleType="format" />
+                    </div>
+                  </div>
+                </div>
+              </MainLayout>
+            }
+          />
+        }
+      />
+      <Route
+        path={ROUTES.COURSE_MARKS}
+        element={
+          <ModuleRoute
+            moduleKey="results"
+            element={
+              <MainLayout>
+                <div className="w-full px-4 py-6 md:px-6">
+                  <div className="mis-card mx-auto w-full max-w-7xl">
+                    <div className="max-h-[calc(100vh-9rem)] overflow-y-auto p-4 md:p-6">
+                      <ResultManagementModule moduleType="subject" />
+                    </div>
+                  </div>
+                </div>
               </MainLayout>
             }
           />

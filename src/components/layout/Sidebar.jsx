@@ -1011,21 +1011,11 @@ const Sidebar = () => {
             <>
               <div className="sb-section-label">Configuration</div>
 
-              <button
-                className={`sb-item${onSettings ? " sb-active" : ""}`}
-                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=school`)}
-                title={collapsed ? "Settings" : undefined}
-              >
-                <IconSettings />
-                <span className="sb-item-label">Settings</span>
-                <span className="sb-tooltip">Settings</span>
-              </button>
-
               <div className="sb-subsection-title">Exam &amp; Result</div>
 
               <button
-                className={`sb-item${onSettings && activeTab === "resultFormat" ? " sb-active" : ""}`}
-                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=resultFormat`)}
+                className={`sb-item${location.pathname === ROUTES.EXAM_SETUP ? " sb-active" : ""}`}
+                onClick={() => navigate(ROUTES.EXAM_SETUP)}
                 title={collapsed ? "Exam Setup" : undefined}
                 style={{ paddingLeft: 26 }}
               >
@@ -1035,14 +1025,24 @@ const Sidebar = () => {
               </button>
 
               <button
-                className={`sb-item${onSettings && activeTab === "resultSubject" ? " sb-active" : ""}`}
-                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=resultSubject`)}
+                className={`sb-item${location.pathname === ROUTES.COURSE_MARKS ? " sb-active" : ""}`}
+                onClick={() => navigate(ROUTES.COURSE_MARKS)}
                 title={collapsed ? "Course & Marks" : undefined}
                 style={{ paddingLeft: 26 }}
               >
                 <IconCourseMarks />
                 <span className="sb-item-label">Course &amp; Marks</span>
                 <span className="sb-tooltip">Course &amp; Marks</span>
+              </button>
+
+              <button
+                className={`sb-item${location.pathname === ROUTES.SETTINGS ? " sb-active" : ""}`}
+                onClick={() => navigate(`${ROUTES.SETTINGS}?tab=school`)}
+                title={collapsed ? "Settings" : undefined}
+              >
+                <IconSettings />
+                <span className="sb-item-label">Settings</span>
+                <span className="sb-tooltip">Settings</span>
               </button>
             </>
           )}

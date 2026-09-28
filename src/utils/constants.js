@@ -68,6 +68,8 @@ export const ROUTES = {
   EMPLOYEE: "/employee",
   SETTINGS: "/settings",
   RESULTS: "/results",
+  EXAM_SETUP: "/exam-setup",
+  COURSE_MARKS: "/course-marks",
   RESULT_PORTAL: "/result-portal-module",
   DAILY_REPORTS: "/daily-reports",
   LEAVE_MANAGEMENT: "/leave-management",
