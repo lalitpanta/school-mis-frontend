@@ -164,61 +164,35 @@ const ActivityLog = () => {
             No activity recorded yet.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-[var(--bg-surface)] text-[var(--text-3)]">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Time</th>
-                  <th className="px-4 py-3 font-medium">User</th>
-                  <th className="px-4 py-3 font-medium">Action</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium">Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredLogs.map((log) => (
-                  <tr key={log.id} className="border-t border-[var(--border-card)] align-top">
-                    <td className="px-4 py-3 text-[var(--text-2)] whitespace-nowrap">
-                      {formatDateTime(log.created_at)}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--text-1)] whitespace-nowrap">
-                      <div className="font-medium">{log.user_email || "System"}</div>
-                      <div className="text-[11px] text-[var(--text-3)]">
-                        {log.user_type || "system"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-[var(--text-1)]">{log.title || log.action}</div>
-                      <div className="text-[11px] text-[var(--text-3)]">{log.action}</div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full px-2 py-1 text-[11px] font-medium text-[var(--text-1)] bg-[var(--bg-surface)] border border-[var(--border-card)]">
-                        {categoryLabels[log.category] || log.category || "System"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="space-y-2">
-                        <div className="text-[var(--text-2)]">{log.message}</div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={
-                              `inline-flex rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${severityClasses[log.severity] || severityClasses.info}`
-                            }
-                          >
-                            {log.severity || "info"}
-                          </span>
-                          {log.tenant_name && (
-                            <span className="text-[11px] text-[var(--text-3)]">
-                              {log.tenant_name}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="divide-y divide-[var(--border-card)]">
+            {filteredLogs.map((log) => (
+              <div key={log.id} className="flex items-center justify-between gap-4 px-4 py-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={
+                        `inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${severityClasses[log.severity] || severityClasses.info}`
+                      }
+                    >
+                      {log.title || log.action || "Activity"}
+                    </span>
+                    <span className="truncate text-sm text-[var(--text-1)]">
+                      {log.user_email || "System"}
+                    </span>
+                  </div>
+
+                  <div className="mt-1 flex items-center gap-2 text-xs text-[var(--text-3)]">
+                    <span>{categoryLabels[log.category] || log.category || "System"}</span>
+                    <span>•</span>
+                    <span className="truncate">{log.message || "System activity recorded"}</span>
+                  </div>
+                </div>
+
+                <div className="shrink-0 text-right text-[11px] text-[var(--text-3)]">
+                  {formatDateTime(log.created_at)}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
