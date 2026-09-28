@@ -238,20 +238,39 @@ const NAV_GROUPS = [
 const SETTINGS_TABS = [
   { key: "school", label: "School Profile" },
   { key: "calendarSettings", label: "Calendar Settings" },
+  { key: "theme", label: "Theme" },
   { key: "users", label: "Users & Staff" },
   { key: "roles", label: "Roles & Permissions" },
-  { key: "fees", label: "Fees" },
+  { key: "security", label: "Security" },
   { key: "notices", label: "Notices & SMS" },
   { key: "integrations", label: "Integrations" },
   { key: "devices", label: "Device Integration" },
-  { key: "security", label: "Security" },
   { key: "backup", label: "Backup" },
-  { key: "theme", label: "Theme" },
+  { key: "fees", label: "Fees" },
   { key: "departments", label: "Departments" },
   { key: "classrooms", label: "Classrooms" },
   { key: "courses", label: "Courses" },
   { key: "rooms", label: "Rooms" },
   { key: "students", label: "Students" },
+];
+
+const SETTINGS_GROUPS = [
+  {
+    title: "Core Settings",
+    items: ["school", "calendarSettings", "theme"],
+  },
+  {
+    title: "Access & Security",
+    items: ["users", "roles", "security"],
+  },
+  {
+    title: "Communication",
+    items: ["notices"],
+  },
+  {
+    title: "System",
+    items: ["integrations", "devices", "backup"],
+  },
 ];
 
 const EXAM_TABS = [
@@ -605,6 +624,16 @@ const css = `
 }
 .mis-sidebar.sb-collapsed .sb-submenu { display: none; }
 
+.sb-subsection-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sb-section);
+  padding: 10px 12px 6px 14px;
+  opacity: 0.9;
+}
+
 .sb-submenu .sb-item {
   padding: 9px 12px 9px 22px;
   font-size: 14.5px;
@@ -943,19 +972,31 @@ const Sidebar = () => {
                   <span className="sb-tooltip">Settings</span>
                 </button>
                 <div className="sb-submenu">
-                  {filteredSettings.map(({ key, label }) => {
-                    const active = onSettings && activeTab === key;
+                  {SETTINGS_GROUPS.map(({ title, items }) => {
+                    const visibleItems = items
+                      .map((key) => SETTINGS_TABS.find((tab) => tab.key === key))
+                      .filter(Boolean)
+                      .filter(({ label }) => !q || label.toLowerCase().includes(q));
+
+                    if (!visibleItems.length) return null;
+
                     return (
-                      <button
-                        key={key}
-                        className={`sb-item${active ? " sb-active" : ""}`}
-                        onClick={() =>
-                          navigate(`${ROUTES.SETTINGS}?tab=${key}`)
-                        }
-                      >
-                        <span className="sb-dot" />
-                        <span className="sb-item-label">{label}</span>
-                      </button>
+                      <div key={title}>
+                        <div className="sb-subsection-title">{title}</div>
+                        {visibleItems.map(({ key, label }) => {
+                          const active = onSettings && activeTab === key;
+                          return (
+                            <button
+                              key={key}
+                              className={`sb-item${active ? " sb-active" : ""}`}
+                              onClick={() => navigate(`${ROUTES.SETTINGS}?tab=${key}`)}
+                            >
+                              <span className="sb-dot" />
+                              <span className="sb-item-label">{label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     );
                   })}
                 </div>

@@ -43,18 +43,31 @@ const PANEL_MAP = {
 
 const SETTINGS_NAV = [
   {
-    title: "Company",
+    title: "Core Settings",
     items: [
       { key: "school", label: "School Profile" },
       { key: "calendarSettings", label: "Calendar Settings" },
+      { key: "theme", label: "Theme" },
     ],
+  },
+  {
+    title: "Access & Security",
+    items: [
+      { key: "users", label: "Users & Staff" },
+      { key: "roles", label: "Roles & Permissions" },
+      { key: "security", label: "Security" },
+    ],
+  },
+  {
+    title: "Communication",
+    items: [{ key: "notices", label: "Notices & SMS" }],
   },
   {
     title: "System",
     items: [
-      { key: "security", label: "Security" },
+      { key: "integrations", label: "Integrations" },
+      { key: "devices", label: "Device Integration" },
       { key: "backup", label: "Backup" },
-      { key: "theme", label: "Theme" },
     ],
   },
 ];
