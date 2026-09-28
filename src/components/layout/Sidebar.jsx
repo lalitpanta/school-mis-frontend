@@ -62,6 +62,40 @@ const MAIN_NAV = [
     ),
   },
   {
+    label: "Leave",
+    to: ROUTES.LEAVE_MANAGEMENT,
+    module: "leave_management",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.3 3.3" />
+      </svg>
+    ),
+  },
+  {
+    label: "Daily Reports",
+    to: ROUTES.DAILY_REPORTS,
+    module: "daily_reports",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+        <path d="M14 3v5h5M9 12h6M9 16h4" />
+      </svg>
+    ),
+  },
+  {
     label: "Teachers",
     to: ROUTES.TEACHER,
     module: "teacher",
@@ -148,40 +182,6 @@ const MAIN_NAV = [
     ),
   },
   {
-    label: "Daily Reports",
-    to: ROUTES.DAILY_REPORTS,
-    module: "daily_reports",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
-        <path d="M14 3v5h5M9 12h6M9 16h4" />
-      </svg>
-    ),
-  },
-  {
-    label: "Leave",
-    to: ROUTES.LEAVE_MANAGEMENT,
-    module: "leave_management",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3.3 3.3" />
-      </svg>
-    ),
-  },
-  {
     label: "Fee & Payroll",
     to: ROUTES.FEE_PAYROLL,
     module: "accounts",
@@ -213,6 +213,25 @@ const MAIN_NAV = [
         <path d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6M20 16V3" />
       </svg>
     ),
+  },
+];
+
+const NAV_GROUPS = [
+  {
+    label: "Main",
+    modules: ["dashboard", "calendar", "attendance", "leave_management", "daily_reports"],
+  },
+  {
+    label: "People",
+    modules: ["teacher", "student", "employee"],
+  },
+  {
+    label: "Academics",
+    modules: ["results", "result_portal"],
+  },
+  {
+    label: "Finance",
+    modules: ["accounts"],
   },
 ];
 
@@ -369,8 +388,8 @@ const css = `
   --sb-low:        var(--text-3);
   --sb-section:    var(--text-3);
   --sb-danger:     var(--danger);
-  --sb-w:          296px;
-  --sb-wc:         76px;
+  --sb-w:          280px;
+  --sb-wc:         78px;
 
   width: var(--sb-w);
   min-width: var(--sb-w);
@@ -387,6 +406,7 @@ const css = `
   -webkit-font-smoothing: antialiased;
   z-index: 20;
   overflow: hidden;
+  box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.08);
 }
 
 .mis-sidebar.sb-collapsed {
@@ -830,50 +850,61 @@ const Sidebar = () => {
 
         {/* ── Scrollable nav ── */}
         <nav className="sb-nav">
-          <div className="sb-section-label">Main</div>
-
-          {filteredNav.map(({ label, to, icon }) => {
-            const active = isNavActive(to.split("?")[0]);
+          {NAV_GROUPS.map(({ label, modules }) => {
+            const items = filteredNav.filter((item) => modules.includes(item.module));
+            if (!items.length) return null;
 
             return (
-              <button
-                key={to}
-                className={`sb-item${active ? " sb-active" : ""}`}
-                onClick={() => navigate(to)}
-                title={collapsed ? label : undefined}
-              >
-                {icon}
-                <span className="sb-item-label">{label}</span>
-                <span className="sb-tooltip">{label}</span>
-              </button>
+              <div key={label} className="sb-nav-group">
+                <div className="sb-section-label">{label}</div>
+                {items.map(({ label: itemLabel, to, icon, module }) => {
+                  const active = isNavActive(to.split("?")[0]);
+                  return (
+                    <button
+                      key={to}
+                      className={`sb-item${active ? " sb-active" : ""}`}
+                      onClick={() => navigate(to)}
+                      title={collapsed ? itemLabel : undefined}
+                    >
+                      {icon}
+                      <span className="sb-item-label">{itemLabel}</span>
+                      <span className="sb-tooltip">{itemLabel}</span>
+                    </button>
+                  );
+                })}
+              </div>
             );
           })}
 
           {/* Tenants (non-tenant users only) */}
           {!isTenant() && (
-            <button
-              className="sb-item"
-              onClick={() =>
-                navigate(
-                  user?.type === "super_admin"
-                    ? "/superadmin/tenants"
-                    : "/admin/tenants",
-                )
-              }
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <div className="sb-nav-group">
+              <div className="sb-section-label">Management</div>
+              <button
+                className="sb-item"
+                onClick={() =>
+                  navigate(
+                    user?.type === "super_admin"
+                      ? "/superadmin/tenants"
+                      : "/admin/tenants",
+                  )
+                }
+                title={collapsed ? "Tenants" : undefined}
               >
-                <rect x="3" y="7.5" width="18" height="12.5" rx="2" />
-                <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18" />
-              </svg>
-              <span className="sb-item-label">Tenants</span>
-              <span className="sb-tooltip">Tenants</span>
-            </button>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="7.5" width="18" height="12.5" rx="2" />
+                  <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5M3 12.5h18" />
+                </svg>
+                <span className="sb-item-label">Tenants</span>
+                <span className="sb-tooltip">Tenants</span>
+              </button>
+            </div>
           )}
 
           {/* Empty search state */}
