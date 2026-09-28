@@ -437,8 +437,8 @@ const css = `
 .mis-sidebar.sb-collapsed {
   width: 68px;
   min-width: 68px;
-  background: linear-gradient(180deg, #0b1a33 0%, #09182f 100%);
-  border-right: 1px solid rgba(148, 163, 184, 0.14);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--sb-border-s);
   box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.08);
 }
 
@@ -473,11 +473,11 @@ const css = `
 .mis-sidebar.sb-collapsed .sb-brand {
   padding: 18px 12px 14px;
   justify-content: center;
-  border-bottom-color: rgba(148, 163, 184, 0.12);
+  border-bottom-color: var(--sb-border-s);
 }
 .mis-sidebar.sb-collapsed .sb-brand-mark {
   width: 34px; height: 34px; border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(28, 122, 255, 0.35);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.18);
 }
 
 .sb-brand-title {
@@ -593,13 +593,13 @@ const css = `
   gap: 0;
   width: 100%;
   min-width: 0;
-  color: rgba(226, 232, 240, 0.85);
+  color: var(--text-2);
   background: transparent;
   border-radius: 12px;
 }
 .mis-sidebar.sb-collapsed .sb-item:hover {
-  background: rgba(148, 163, 184, 0.08);
-  color: #ffffff;
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 .mis-sidebar.sb-collapsed .sb-item svg:first-child {
   display: block;
@@ -609,11 +609,12 @@ const css = `
   visibility: visible;
   stroke: currentColor;
   color: currentColor;
+  fill: none;
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active {
-  background: linear-gradient(180deg, rgba(70, 140, 255, 0.22), rgba(70, 140, 255, 0.10));
-  color: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(109, 167, 255, 0.38);
+  background: var(--accent-dim);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.16);
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active::before {
   display: none;
