@@ -569,7 +569,20 @@ const css = `
 .sb-item-label { overflow: hidden; text-overflow: ellipsis; flex: 1; }
 .mis-sidebar.sb-collapsed .sb-item-label { display: none; }
 .mis-sidebar.sb-collapsed .sb-item-chev { display: none; }
-.mis-sidebar.sb-collapsed .sb-item { justify-content: center; padding: 11px 0; }
+.mis-sidebar.sb-collapsed .sb-item {
+  justify-content: center;
+  padding: 11px 0;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+}
+.mis-sidebar.sb-collapsed .sb-item svg:first-child {
+  display: block;
+  width: 22px;
+  height: 22px;
+  opacity: 1;
+  visibility: visible;
+}
 .mis-sidebar.sb-collapsed .sb-subsection-title { display: none; }
 .mis-sidebar.sb-collapsed .sb-dot { display: none; }
 
