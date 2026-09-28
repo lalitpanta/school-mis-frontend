@@ -123,23 +123,23 @@ const SettingsPage = () => {
           border: "1px solid var(--border-card)",
           boxShadow: "var(--shadow-card)",
           display: "grid",
-          gridTemplateColumns: "220px minmax(0, 1fr)",
+          gridTemplateColumns: "190px minmax(0, 1fr)",
         }}
       >
         <aside
           style={{
-            background: "rgba(17, 24, 39, 0.94)",
+            background: "rgba(17, 24, 39, 0.92)",
             borderRight: "1px solid rgba(148, 163, 184, 0.14)",
             color: "#e5e7eb",
-            width: "220px",
-            minWidth: "220px",
+            width: "190px",
+            minWidth: "190px",
           }}
-          className="h-full overflow-y-auto p-2.5"
+          className="h-full overflow-y-auto p-3"
         >
           {SETTINGS_NAV.map((group) => (
             <div key={group.title} className="mb-4">
               <div
-                className="px-2.5 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[0.18em]"
+                className="px-3 pb-2 pt-2 text-[9px] font-semibold uppercase tracking-[0.18em]"
                 style={{ color: "#94a3b8" }}
               >
                 {group.title}
@@ -153,12 +153,12 @@ const SettingsPage = () => {
                     key={item.key}
                     type="button"
                     onClick={() => setParams({ tab: item.key })}
-                    className="w-full flex items-center gap-2.5 rounded-lg border text-left text-sm font-medium transition-all duration-150"
+                    className="w-full flex items-center gap-2.5 rounded-xl border text-left text-sm font-medium transition-all duration-150"
                     style={{
                       background: active ? "rgba(249, 115, 22, 0.12)" : "transparent",
                       borderColor: active ? "rgba(249, 115, 22, 0.35)" : "transparent",
                       color: active ? "#f8fafc" : "#cbd5e1",
-                      padding: "9px 10px",
+                      padding: "8px 10px",
                       marginBottom: "2px",
                     }}
                   >
@@ -167,12 +167,12 @@ const SettingsPage = () => {
                       style={{
                         width: "6px",
                         height: "6px",
-                        background: active ? "#f59e0b" : "rgba(148, 163, 184, 0.4)",
+                        background: active ? "#f59e0b" : "rgba(148, 163, 184, 0.35)",
                         boxShadow: active ? "0 0 0 4px rgba(245, 158, 11, 0.18)" : "none",
                         flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: "13px", lineHeight: 1.4 }}>{item.label}</span>
+                    <span style={{ fontSize: "12.5px", lineHeight: 1.35 }}>{item.label}</span>
                   </button>
                 );
               })}
