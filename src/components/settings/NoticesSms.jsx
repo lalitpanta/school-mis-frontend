@@ -23,11 +23,19 @@ import { Plus, Trash2, Send, ShieldCheck, Star } from 'lucide-react';
 const NOTICE_CATEGORIES = ['Academic', 'Event', 'Holiday', 'Urgent', 'General'];
 const AUDIENCE_OPTIONS = ['All', 'Teachers', 'Students', 'Parents', 'Class-wise', 'Section-wise'];
 const DEFAULT_SMS_CONFIG = {
+  provider: 'megaweblink',
+  endpoint: 'https://sms.megaweblink.com.np/api/v1/sms/send/',
   enabled: false,
-  gateway: 'sparrow',
   api_key: '',
-  sender_id: '',
-  provider_name: 'Sparrow SMS',
+  api_key_configured: false,
+  sender_id: {
+    NT: '',
+    Ncell: '',
+  },
+  provider_name: 'Mega Web Link SMS',
+  message_type: 'plain',
+  scheduling_enabled: false,
+  scheduled_at: '',
   country: 'NP',
   credits: 0,
   signature: '',
@@ -60,6 +68,9 @@ const NoticesSms = () => {
   const [smsForm, setSmsForm] = useState({ recipientType: 'manual', recipientPhones: '', templateName: '', message: '', scheduledAt: '' });
   const [templateForm, setTemplateForm] = useState({ name: '', content: '' });
   const [editingTemplateId, setEditingTemplateId] = useState(null);
+  const [sendingTest, setSendingTest] = useState(false);
+  const [savingConfig, setSavingConfig] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -71,12 +82,21 @@ const NoticesSms = () => {
         getSmsLogs(),
       ]);
       setNotices(noticeRes.data?.data || []);
-      setSmsConfig(smsConfigRes.data?.data || DEFAULT_SMS_CONFIG);
+      const config = smsConfigRes.data?.data || DEFAULT_SMS_CONFIG;
+      setSmsConfig({
+        ...DEFAULT_SMS_CONFIG,
+        ...config,
+        sender_id: {
+          NT: config?.sender_id?.NT || config?.sender_id || '',
+          Ncell: config?.sender_id?.Ncell || '',
+        },
+        api_key: '',
+      });
       setSmsTemplates(templatesRes.data?.data || []);
       setSmsLogs(logsRes.data?.data || []);
     } catch (err) {
       console.error('NoticesSms fetchData error', err.response?.data || err.message, err);
-      toast.error(err.response?.data?.message || 'Failed to load Notices / SMS data');
+      toast.error(err.response?.data?.message || 'Failed to load SMS data');
     } finally {
       setLoading(false);
     }
@@ -174,29 +194,82 @@ const NoticesSms = () => {
   const saveSmsSettings = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...smsConfig };
+      setSavingConfig(true);
+      if (!smsConfig.api_key?.trim()) {
+        toast.error('API key is required to save the SMS configuration.');
+        return;
+      }
+      if (!smsConfig.sender_id?.NT?.trim() && !smsConfig.sender_id?.Ncell?.trim()) {
+        toast.error('At least one approved Sender ID is required.');
+        return;
+      }
+      if (!smsConfig.endpoint?.trim()) {
+        toast.error('SMS endpoint is required.');
+        return;
+      }
+
+      const payload = {
+        provider: 'megaweblink',
+        endpoint: 'https://sms.megaweblink.com.np/api/v1/sms/send/',
+        provider_name: 'Mega Web Link SMS',
+        api_key: smsConfig.api_key.trim(),
+        sender_id: {
+          NT: smsConfig.sender_id?.NT?.trim() || '',
+          Ncell: smsConfig.sender_id?.Ncell?.trim() || '',
+        },
+        message_type: smsConfig.message_type || 'plain',
+        scheduling_enabled: !!smsConfig.scheduling_enabled,
+        scheduled_at: smsConfig.scheduling_enabled ? smsConfig.scheduled_at : '',
+        enabled: !!smsConfig.enabled,
+      };
+
       await updateSmsConfig(payload);
-      toast.success('SMS configuration saved');
+      toast.success('SMS configuration saved successfully.');
+      setSmsConfig((prev) => ({ ...prev, api_key: '' }));
       await fetchData();
     } catch (err) {
       console.error(err);
-      toast.error('Failed to save SMS settings');
+      toast.error(err.response?.data?.message || 'Failed to save SMS settings');
+    } finally {
+      setSavingConfig(false);
     }
   };
 
   const handleSmsSend = async (e) => {
     e.preventDefault();
     try {
+      setSendingTest(true);
+      if (!smsForm.recipientPhones?.trim()) {
+        toast.error('Please enter a test phone number.');
+        return;
+      }
+      if (!smsForm.message?.trim()) {
+        toast.error('Please enter a test message.');
+        return;
+      }
+
       const payload = {
-        ...smsForm,
+        recipientPhones: smsForm.recipientPhones,
+        message: smsForm.message,
+        recipientType: smsForm.recipientType,
+        scheduledAt: smsForm.scheduledAt || '',
+        sender_id: {
+          NT: smsConfig.sender_id?.NT || '',
+          Ncell: smsConfig.sender_id?.Ncell || '',
+        },
+        message_type: smsConfig.message_type || 'plain',
       };
+
       const result = await sendSms(payload);
-      toast.success(result.data?.data?.sent ? 'SMS queued' : 'SMS saved as draft');
+      const batchId = result.data?.data?.batch_id;
+      toast.success(batchId ? `Test SMS sent successfully. Batch ID: ${batchId}` : 'Test SMS sent successfully.');
       setSmsForm({ recipientType: 'manual', recipientPhones: '', templateName: '', message: '', scheduledAt: '' });
       await fetchData();
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || 'Failed to send SMS');
+      toast.error(err.response?.data?.message || 'Failed to send test SMS');
+    } finally {
+      setSendingTest(false);
     }
   };
 
@@ -283,19 +356,22 @@ const NoticesSms = () => {
   };
 
   if (loading) {
-    return <div className="p-6 text-slate-300">Loading Notices & SMS...</div>;
+    return <div className="p-6 text-slate-300">Loading SMS configuration...</div>;
   }
+
+  const statusColor = smsConfig.enabled && smsConfig.api_key_configured ? 'text-emerald-400' : smsConfig.enabled ? 'text-amber-400' : 'text-slate-400';
+  const statusLabel = smsConfig.enabled && smsConfig.api_key_configured ? 'Connected' : smsConfig.enabled ? 'Configuration Error' : 'Not Configured';
 
   return (
     <div className="space-y-6">
       <div className="rounded-2xl p-6 bg-slate-900 border border-slate-700/60 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-semibold text-white">Notices & SMS</h2>
-            <p className="text-slate-400 mt-1">Manage internal notices, SMS settings, templates and delivery tracking.</p>
+            <h2 className="text-2xl font-semibold text-white">SMS</h2>
+            <p className="text-slate-400 mt-1">Configure your Mega Web Link SMS provider and test delivery.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {['notices','sms','templates','logs'].map((tab) => (
+            {['sms','notices','templates','logs'].map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -469,68 +545,210 @@ const NoticesSms = () => {
         )}
 
         {activeTab === 'sms' && (
-          <div className="grid gap-6 lg:grid-cols-[0.65fr,0.35fr]">
-            <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">SMS Configuration</h3>
-              <form onSubmit={saveSmsSettings} className="space-y-4">
-                <label className="mis-label">Gateway</label>
-                <select className="mis-input" value={smsConfig.gateway} onChange={(e) => setSmsConfig((prev) => ({ ...prev, gateway: e.target.value }))}>
-                  <option value="sparrow">Sparrow SMS</option>
-                  <option value="aakash">Aakash SMS</option>
-                  <option value="twilio">Twilio</option>
-                  <option value="nexmo">Nexmo</option>
-                </select>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between rounded-2xl border border-slate-700 bg-slate-800/80 p-4">
+              <div className="flex items-center gap-3">
+                <span className={`h-2.5 w-2.5 rounded-full ${statusColor.replace('text-', 'bg-')}`} />
+                <div>
+                  <p className="text-sm font-semibold text-white">Status</p>
+                  <p className="text-xs text-slate-400">{statusLabel}</p>
+                </div>
+              </div>
+              <button type="button" className="rounded-full border border-slate-600 px-3 py-2 text-sm text-slate-200 hover:bg-slate-700">
+                Test Connection
+              </button>
+            </div>
 
-                <label className="mis-label">API Key</label>
-                <input className="mis-input" value={smsConfig.api_key} onChange={(e) => setSmsConfig((prev) => ({ ...prev, api_key: e.target.value }))} />
-
-                <label className="mis-label">Sender ID</label>
-                <input className="mis-input" value={smsConfig.sender_id} onChange={(e) => setSmsConfig((prev) => ({ ...prev, sender_id: e.target.value }))} />
-
-                <label className="mis-label">Provider Name</label>
-                <input className="mis-input" value={smsConfig.provider_name} onChange={(e) => setSmsConfig((prev) => ({ ...prev, provider_name: e.target.value }))} />
-
-                <label className="mis-label">Signature</label>
-                <input className="mis-input" value={smsConfig.signature} onChange={(e) => setSmsConfig((prev) => ({ ...prev, signature: e.target.value }))} />
-
-                <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
+              <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">SMS Provider</h3>
+                <form onSubmit={saveSmsSettings} className="space-y-4">
                   <div>
-                    <label className="mis-label">Country</label>
-                    <input className="mis-input" value={smsConfig.country} onChange={(e) => setSmsConfig((prev) => ({ ...prev, country: e.target.value }))} />
+                    <label className="mis-label">API Endpoint</label>
+                    <input className="mis-input" value={smsConfig.endpoint || 'https://sms.megaweblink.com.np/api/v1/sms/send/'} readOnly />
                   </div>
+
                   <div>
-                    <label className="mis-label">SMS Credits</label>
-                    <input type="number" className="mis-input" value={smsConfig.credits} onChange={(e) => setSmsConfig((prev) => ({ ...prev, credits: Number(e.target.value) }))} />
+                    <label className="mis-label">API Key</label>
+                    <div className="relative">
+                      <input
+                        type={showApiKey ? 'text' : 'password'}
+                        className="mis-input pr-11"
+                        value={smsConfig.api_key}
+                        placeholder="Enter your SMS API key"
+                        onChange={(e) => setSmsConfig((prev) => ({ ...prev, api_key: e.target.value }))}
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-300 hover:text-white"
+                        onClick={() => setShowApiKey((prev) => !prev)}
+                      >
+                        {showApiKey ? 'Hide' : 'Show'}
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs text-slate-400">Your API key is encrypted/secured and is never exposed to the client.</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
+                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">Sender ID Configuration</h4>
+                    <p className="mb-4 text-xs text-slate-400">Sender IDs must be approved for the corresponding operator before they can be used.</p>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="mis-label">NT / Nepal Telecom</label>
+                        <input
+                          className="mis-input"
+                          value={smsConfig.sender_id?.NT || ''}
+                          placeholder="Sender ID"
+                          onChange={(e) => setSmsConfig((prev) => ({
+                            ...prev,
+                            sender_id: {
+                              ...prev.sender_id,
+                              NT: e.target.value,
+                            },
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="mis-label">Ncell</label>
+                        <input
+                          className="mis-input"
+                          value={smsConfig.sender_id?.Ncell || ''}
+                          placeholder="Sender ID"
+                          onChange={(e) => setSmsConfig((prev) => ({
+                            ...prev,
+                            sender_id: {
+                              ...prev.sender_id,
+                              Ncell: e.target.value,
+                            },
+                          }))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
+                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">Message Settings</h4>
+                    <div>
+                      <label className="mis-label">Message Type</label>
+                      <select
+                        className="mis-input"
+                        value={smsConfig.message_type || 'plain'}
+                        onChange={(e) => setSmsConfig((prev) => ({ ...prev, message_type: e.target.value }))}
+                      >
+                        <option value="plain">Plain</option>
+                        <option value="unicode">Unicode</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
+                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">Scheduled SMS</h4>
+                    <label className="mb-3 flex items-center justify-between gap-3">
+                      <span className="text-sm text-slate-200">Enable Scheduling</span>
+                      <input
+                        type="checkbox"
+                        checked={!!smsConfig.scheduling_enabled}
+                        onChange={(e) => setSmsConfig((prev) => ({ ...prev, scheduling_enabled: e.target.checked }))}
+                      />
+                    </label>
+
+                    {smsConfig.scheduling_enabled && (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <label className="mis-label">Scheduled Date</label>
+                          <input
+                            type="date"
+                            className="mis-input"
+                            value={smsConfig.scheduled_at ? smsConfig.scheduled_at.slice(0, 10) : ''}
+                            onChange={(e) => setSmsConfig((prev) => ({
+                              ...prev,
+                              scheduled_at: `${e.target.value}${prev.scheduled_at?.slice(10) || 'T00:00'}`,
+                            }))}
+                          />
+                        </div>
+                        <div>
+                          <label className="mis-label">Scheduled Time</label>
+                          <input
+                            type="time"
+                            className="mis-input"
+                            value={smsConfig.scheduled_at ? smsConfig.scheduled_at.slice(11, 16) : ''}
+                            onChange={(e) => setSmsConfig((prev) => ({
+                              ...prev,
+                              scheduled_at: `${prev.scheduled_at?.slice(0, 10) || new Date().toISOString().slice(0, 10)}T${e.target.value}`,
+                            }))}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button type="submit" disabled={savingConfig}>
+                      {savingConfig ? 'Saving...' : 'Save Configuration'}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Configuration Summary</h3>
+                <div className="space-y-3 text-sm text-slate-300">
+                  <div className="rounded-xl bg-slate-900/70 p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">SMS Provider</div>
+                    <div className="mt-1 text-white">Mega Web Link SMS</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-900/70 p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">API Endpoint</div>
+                    <div className="mt-1 break-all">https://sms.megaweblink.com.np/api/v1/sms/send/</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-900/70 p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">API Key</div>
+                    <div className="mt-1 text-white">••••••••••••••••</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-900/70 p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">Operators</div>
+                    <div className="mt-1 text-white">{smsConfig.sender_id?.NT ? '✓ Nepal Telecom' : '— Nepal Telecom'}{smsConfig.sender_id?.Ncell ? ' · ✓ Ncell' : ' · — Ncell'}</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-900/70 p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">Message Type</div>
+                    <div className="mt-1 text-white">{smsConfig.message_type === 'unicode' ? 'Unicode' : 'Plain'}</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-900/70 p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">Scheduling</div>
+                    <div className="mt-1 text-white">{smsConfig.scheduling_enabled ? 'Enabled' : 'Disabled'}</div>
                   </div>
                 </div>
-                <label className="mis-label flex items-center gap-3">
-                  <input type="checkbox" checked={smsConfig.enabled} onChange={(e) => setSmsConfig((prev) => ({ ...prev, enabled: e.target.checked }))} />
-                  Enable SMS Gateway
-                </label>
-                <div className="flex justify-end">
-                  <Button type="submit">Save SMS Config</Button>
-                </div>
-              </form>
+              </div>
             </div>
 
             <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
-              <div className="flex items-center gap-3 mb-4 text-slate-300">
-                <ShieldCheck size={18} />
+              <h3 className="text-lg font-semibold text-white mb-4">Test SMS</h3>
+              <form onSubmit={handleSmsSend} className="space-y-4">
                 <div>
-                  <p className="text-sm font-semibold text-white">Gateway Status</p>
-                  <p className="text-xs text-slate-500">{smsConfig.enabled ? `Active (${smsConfig.provider_name})` : 'Disabled'}</p>
+                  <label className="mis-label">Test Phone Number</label>
+                  <input
+                    className="mis-input"
+                    value={smsForm.recipientPhones}
+                    placeholder="98XXXXXXXX"
+                    onChange={(e) => setSmsForm((prev) => ({ ...prev, recipientPhones: e.target.value }))}
+                  />
                 </div>
-              </div>
-              <div className="grid gap-3">
-                <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                  <div className="text-slate-400 text-xs uppercase tracking-[0.2em]">Remaining Credits</div>
-                  <div className="text-3xl font-semibold text-white">{smsConfig.credits ?? 0}</div>
+                <div>
+                  <label className="mis-label">Test Message</label>
+                  <textarea
+                    rows={4}
+                    className="mis-input resize-none"
+                    value={smsForm.message}
+                    placeholder="This is a test SMS from your application."
+                    onChange={(e) => setSmsForm((prev) => ({ ...prev, message: e.target.value }))}
+                  />
                 </div>
-                <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                  <div className="text-slate-400 text-xs uppercase tracking-[0.2em]">Country</div>
-                  <div className="text-xl font-semibold text-white">{smsConfig.country || 'NP'}</div>
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={sendingTest}>
+                    {sendingTest ? 'Sending...' : 'Send Test SMS'}
+                  </Button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         )}

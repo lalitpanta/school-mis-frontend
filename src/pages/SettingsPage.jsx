@@ -60,7 +60,7 @@ const SETTINGS_NAV = [
   },
   {
     title: "Communication",
-    items: [{ key: "notices", label: "Notices & SMS" }],
+    items: [{ key: "notices", label: "SMS" }],
   },
   {
     title: "System",
@@ -77,7 +77,7 @@ const TAB_LABELS = {
   calendarSettings: "Calendar Settings",
   users: "Users & Staff",
   roles: "Roles & Permissions",
-  notices: "Notices & SMS",
+  notices: "SMS",
   integrations: "Integrations",
   devices: "Device Integration",
   security: "Security",
