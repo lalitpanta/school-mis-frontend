@@ -65,7 +65,7 @@ export const archiveNotice = (id) =>
 export const sendNoticeEmail = (id) =>
   axiosInstance.post(`/v1/settings/notices/${id}/send-email`);
 export const sendTestEmail = (data) =>
-  axiosInstance.post("/v1/settings/test-email", data);
+  axiosInstance.post("/v1/settings/test-email", data, { timeout: 60000 });
 export const getSmsConfig = () => axiosInstance.get("/v1/settings/sms/config");
 export const updateSmsConfig = (data) =>
   axiosInstance.put("/v1/settings/sms/config", data);

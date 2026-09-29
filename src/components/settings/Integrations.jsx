@@ -115,7 +115,13 @@ const TEMPLATE_KEYS = [
 ];
 
 const DEFAULT_VARIABLES = {
-  student_created: ["schoolName", "studentName", "admissionNo", "loginEmail", "password"],
+  student_created: [
+    "schoolName",
+    "studentName",
+    "admissionNo",
+    "loginEmail",
+    "password",
+  ],
   user_created: ["name", "username", "password"],
   fee_payment_success: ["studentName", "amount", "receiptNo"],
   exam_results_published: ["studentName", "examName"],
@@ -345,9 +351,12 @@ const Integrations = () => {
           : "SMTP test email sent. Enable and save email notifications to send automated emails.",
       );
     } catch (err) {
-      toast.error(
+      const errorMessage =
         err.response?.data?.message ||
-          `SMTP test request failed${err.response?.status ? ` (HTTP ${err.response.status})` : ""}. Check that the backend is updated and reachable, then review the SMTP settings.`,
+        err.message ||
+        "Unknown SMTP test request error.";
+      toast.error(
+        `SMTP test failed${err.response?.status ? ` (HTTP ${err.response.status})` : ""}: ${errorMessage}`,
       );
     } finally {
       setSendingTest(false);
@@ -526,8 +535,8 @@ const Integrations = () => {
                   />
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  For hosted mailboxes, use the mailbox account password. Use
-                  an app password only when your email provider requires one.
+                  For hosted mailboxes, use the mailbox account password. Use an
+                  app password only when your email provider requires one.
                 </p>
               </div>
 

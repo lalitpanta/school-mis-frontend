@@ -640,7 +640,10 @@ const UsersStaff = () => {
               )}
               {selectedStudent && (
                 <p className="text-xs text-emerald-300 mt-1">
-                  Student portal login will use the linked email: {selectedStudent.student_mail || selectedStudent.school_email || "not provided"}
+                  Student portal login will use the linked email:{" "}
+                  {selectedStudent.student_mail ||
+                    selectedStudent.school_email ||
+                    "not provided"}
                 </p>
               )}
             </div>
@@ -790,11 +793,12 @@ const UsersStaff = () => {
                       {formErrors.student_id}
                     </p>
                   )}
-                    {selectedStudent && (
-                      <p className="text-xs text-emerald-300 mt-2">
-                        Student access will be created using the student portal login email and the default student permissions.
-                      </p>
-                    )}
+                  {selectedStudent && (
+                    <p className="text-xs text-emerald-300 mt-2">
+                      Student access will be created using the student portal
+                      login email and the default student permissions.
+                    </p>
+                  )}
                 </div>
               </>
             )}

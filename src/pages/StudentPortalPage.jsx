@@ -14,7 +14,9 @@ const StudentPortalPage = () => {
         const response = await getCurrentStudent();
         setStudent(response?.data?.data || null);
       } catch (err) {
-        setError(err?.response?.data?.message || "Unable to load student profile.");
+        setError(
+          err?.response?.data?.message || "Unable to load student profile.",
+        );
       } finally {
         setLoading(false);
       }
@@ -55,8 +57,12 @@ const StudentPortalPage = () => {
             <GraduationCap className="h-7 w-7" />
           </div>
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Student portal</p>
-            <h1 className="text-2xl font-semibold text-white">{student.full_name || "Student"}</h1>
+            <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+              Student portal
+            </p>
+            <h1 className="text-2xl font-semibold text-white">
+              {student.full_name || "Student"}
+            </h1>
           </div>
         </div>
         <div className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300">
@@ -73,15 +79,21 @@ const StudentPortalPage = () => {
           <dl className="space-y-3 text-sm text-slate-300">
             <div className="flex items-center justify-between gap-4">
               <dt>Admission No.</dt>
-              <dd className="font-medium text-white">{student.admission_no || "N/A"}</dd>
+              <dd className="font-medium text-white">
+                {student.admission_no || "N/A"}
+              </dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt>Roll No.</dt>
-              <dd className="font-medium text-white">{student.roll_no || "N/A"}</dd>
+              <dd className="font-medium text-white">
+                {student.roll_no || "N/A"}
+              </dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt>Class</dt>
-              <dd className="font-medium text-white">{student.class_name || "N/A"}</dd>
+              <dd className="font-medium text-white">
+                {student.class_name || "N/A"}
+              </dd>
             </div>
           </dl>
         </div>
@@ -93,24 +105,40 @@ const StudentPortalPage = () => {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Student email</p>
-              <p className="mt-2 text-white">{student.student_mail || student.school_email || "Not provided"}</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Student email
+              </p>
+              <p className="mt-2 text-white">
+                {student.student_mail || student.school_email || "Not provided"}
+              </p>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Phone</p>
-              <p className="mt-2 text-white">{student.phone_no || "Not provided"}</p>
-            </div>
-            <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4 md:col-span-2">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Address</p>
-              <p className="mt-2 flex items-start gap-2 text-white">
-                <MapPin className="mt-0.5 h-4 w-4 text-indigo-300" />
-                {student.current_address || student.address || student.home_full_address || "Not provided"}
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Phone
+              </p>
+              <p className="mt-2 text-white">
+                {student.phone_no || "Not provided"}
               </p>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4 md:col-span-2">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Guardian</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Address
+              </p>
+              <p className="mt-2 flex items-start gap-2 text-white">
+                <MapPin className="mt-0.5 h-4 w-4 text-indigo-300" />
+                {student.current_address ||
+                  student.address ||
+                  student.home_full_address ||
+                  "Not provided"}
+              </p>
+            </div>
+            <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4 md:col-span-2">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Guardian
+              </p>
               <p className="mt-2 text-white">
-                {student.guardian_name || "Not provided"} {student.guardian_phone ? `• ${student.guardian_phone}` : ""}
+                {student.guardian_name || "Not provided"}{" "}
+                {student.guardian_phone ? `• ${student.guardian_phone}` : ""}
               </p>
             </div>
           </div>

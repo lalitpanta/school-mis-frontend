@@ -136,7 +136,11 @@ const StudentRoute = ({ element }) => {
     );
   }
 
-  return isAuthenticated && isStudent() ? element : <Navigate to="/login" replace />;
+  return isAuthenticated && isStudent() ? (
+    element
+  ) : (
+    <Navigate to="/login" replace />
+  );
 };
 
 const ProtectedRoute = ({ element }) => {

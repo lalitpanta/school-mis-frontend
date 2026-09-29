@@ -300,8 +300,7 @@ const Students = () => {
     const isUniv = viewStudent.student_type === "university";
     const className =
       viewStudent.class_name || viewStudent.classroom_name || "N/A";
-    const sectionName =
-      viewStudent.section_name || "N/A";
+    const sectionName = viewStudent.section_name || "N/A";
 
     const win = window.open("", "_blank", "width=900,height=800");
     if (!win) return;
@@ -766,14 +765,12 @@ const Students = () => {
         if (mode === "create") {
           const response = await createStudent(fd);
           setStudentCreateNotice(response.data?.data?.portal_login);
-        }
-        else await updateStudent(selected.id, fd);
+        } else await updateStudent(selected.id, fd);
       } else {
         if (mode === "create") {
           const response = await createStudent(payload);
           setStudentCreateNotice(response.data?.data?.portal_login);
-        }
-        else await updateStudent(selected.id, payload);
+        } else await updateStudent(selected.id, payload);
       }
       await load();
       setShowModal(false);
@@ -1305,9 +1302,7 @@ const Students = () => {
                   <td className="px-4 py-3 text-slate-400 text-xs">
                     {s.class_name || s.classroom_name
                       ? (s.class_name || s.classroom_name) +
-                        (s.section_name
-                          ? " / " + s.section_name
-                          : "")
+                        (s.section_name ? " / " + s.section_name : "")
                       : "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-400 text-xs">
@@ -1733,7 +1728,9 @@ const Students = () => {
                         Create student portal login and email credentials
                       </span>
                       <span className="mt-1 block text-xs text-slate-400">
-                        A temporary password will be sent to the student email above. Email delivery requires SMTP to be configured in Settings &gt; Integrations.
+                        A temporary password will be sent to the student email
+                        above. Email delivery requires SMTP to be configured in
+                        Settings &gt; Integrations.
                       </span>
                     </span>
                   </label>
@@ -2471,11 +2468,11 @@ const Students = () => {
                     Classroom
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {renderDetail("Classroom", viewStudent.classroom_name || viewStudent.class_name)}
                     {renderDetail(
-                      "Section",
-                      viewStudent.section_name,
+                      "Classroom",
+                      viewStudent.classroom_name || viewStudent.class_name,
                     )}
+                    {renderDetail("Section", viewStudent.section_name)}
                     {renderDetail(
                       "Status",
                       viewStudent.is_active ? "Active" : "Inactive",
