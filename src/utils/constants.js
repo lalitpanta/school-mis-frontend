@@ -65,6 +65,7 @@ export const ROUTES = {
   ATTENDANCE: "/attendance",
   TEACHER: "/teacher",
   STUDENT: "/student",
+  STUDENT_PORTAL: "/student-portal",
   EMPLOYEE: "/employee",
   SETTINGS: "/settings",
   RESULTS: "/results",

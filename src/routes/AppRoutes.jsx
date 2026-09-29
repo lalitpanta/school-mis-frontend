@@ -214,7 +214,7 @@ const AppRoutes = () => {
       <Route path="/system/login" element={<SystemLoginPage />} />
       <Route path="/login" element={<TenantStaffLoginPage />} />
       <Route
-        path="/student"
+        path={ROUTES.STUDENT_PORTAL}
         element={
           <StudentRoute
             element={
@@ -569,7 +569,7 @@ const AppRoutes = () => {
             isAdmin() ? (
               <Navigate to="/admin/dashboard" replace />
             ) : isStudent() ? (
-              <Navigate to="/student" replace />
+              <Navigate to={ROUTES.STUDENT_PORTAL} replace />
             ) : (
               <Navigate to={getFirstModuleRoute()} replace />
             )
