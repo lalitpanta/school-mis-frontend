@@ -337,9 +337,13 @@ const Integrations = () => {
       setSendingTest(true);
       await sendTestEmail({
         to: testRecipient.trim(),
-        eventType: selectedTemplateKey,
+        config,
       });
-      toast.success("Test email sent.");
+      toast.success(
+        config.enabled
+          ? "SMTP verified and test email sent. Check the recipient inbox."
+          : "SMTP test email sent. Enable and save email notifications to send automated emails.",
+      );
     } catch (err) {
       toast.error(
         err.response?.data?.message ||

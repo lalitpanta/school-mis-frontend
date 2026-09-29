@@ -807,14 +807,15 @@ const Students = () => {
       existing_account: `A student account already exists for ${portalLogin.email}. Credentials were not re-sent; use the account password reset flow if access is needed.`,
       missing_email:
         "The student record was saved, but no login account was created because it has no student or school email address.",
-      account_error:
-        "The student record was saved, but portal account setup failed. Check the backend logs and existing account email conflicts.",
       email_not_sent: `The portal account was created, but the credentials email was not sent to ${portalLogin.email || "the student"}. Check Settings > Integrations, SMTP configuration, and the student registration notification.`,
     };
     setNotice({
       success: false,
-      message: messages[portalLogin.status] ||
-        "Student portal credentials could not be sent. Check Settings > Integrations and backend logs.",
+      message:
+        portalLogin.status === "account_error"
+          ? `The student record was saved, but portal account setup failed: ${portalLogin.error || "check the backend logs and existing account email conflicts."}`
+          : messages[portalLogin.status] ||
+            "Student portal credentials could not be sent. Check Settings > Integrations and backend logs.",
     });
   };
 
