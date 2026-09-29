@@ -39,6 +39,7 @@ const emptyStudent = {
   category_stream: "",
   student_mail: "",
   school_email: "",
+  provide_login_credentials: true,
   phone_no: "",
   address: "",
   current_address: "",
@@ -200,6 +201,7 @@ const Students = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState(null);
   const [classesList, setClassesList] = useState([]);
   const [sectionsList, setSectionsList] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -640,6 +642,7 @@ const Students = () => {
 
   const openCreate = () => {
     setError("");
+    setNotice("");
     setMode("create");
     setSelected(null);
     setForm(emptyStudent);
@@ -654,6 +657,7 @@ const Students = () => {
 
   const openEdit = (s) => {
     setError("");
+    setNotice("");
     setMode("edit");
     setSelected(s);
     const formatDateForInput = (dStr) => {
@@ -759,10 +763,16 @@ const Students = () => {
         } else if (form.document_titles) {
           fd.append("document_titles", form.document_titles);
         }
-        if (mode === "create") await createStudent(fd);
+        if (mode === "create") {
+          const response = await createStudent(fd);
+          setStudentCreateNotice(response.data?.data?.portal_login);
+        }
         else await updateStudent(selected.id, fd);
       } else {
-        if (mode === "create") await createStudent(payload);
+        if (mode === "create") {
+          const response = await createStudent(payload);
+          setStudentCreateNotice(response.data?.data?.portal_login);
+        }
         else await updateStudent(selected.id, payload);
       }
       await load();
@@ -782,6 +792,30 @@ const Students = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const setStudentCreateNotice = (portalLogin) => {
+    if (!portalLogin?.requested) return;
+    if (portalLogin.email_sent) {
+      setNotice({
+        success: true,
+        message: `Student portal credentials sent to ${portalLogin.email}.`,
+      });
+      return;
+    }
+    const messages = {
+      existing_account: `A student account already exists for ${portalLogin.email}. Credentials were not re-sent; use the account password reset flow if access is needed.`,
+      missing_email:
+        "The student record was saved, but no login account was created because it has no student or school email address.",
+      account_error:
+        "The student record was saved, but portal account setup failed. Check the backend logs and existing account email conflicts.",
+      email_not_sent: `The portal account was created, but the credentials email was not sent to ${portalLogin.email || "the student"}. Check Settings > Integrations, SMTP configuration, and the student registration notification.`,
+    };
+    setNotice({
+      success: false,
+      message: messages[portalLogin.status] ||
+        "Student portal credentials could not be sent. Check Settings > Integrations and backend logs.",
+    });
   };
 
   const remove = async (id) => {
@@ -1156,6 +1190,14 @@ const Students = () => {
           >
             ✕
           </button>
+        </div>
+      )}
+
+      {notice && (
+        <div
+          className={`mb-4 p-3 rounded text-sm ${notice.success ? "bg-emerald-900/20 border border-emerald-500/50 text-emerald-200" : "bg-amber-900/20 border border-amber-500/50 text-amber-200"}`}
+        >
+          {notice.message}
         </div>
       )}
 
@@ -1645,7 +1687,11 @@ const Students = () => {
                   onChange={(e) =>
                     setForm({ ...form, student_mail: e.target.value })
                   }
-                  required
+                  required={
+                    mode === "create" &&
+                    form.provide_login_credentials &&
+                    !form.school_email
+                  }
                 />
                 <InputField
                   label="Phone Number"
@@ -1662,7 +1708,35 @@ const Students = () => {
                   onChange={(e) =>
                     setForm({ ...form, school_email: e.target.value })
                   }
+                  required={
+                    mode === "create" &&
+                    form.provide_login_credentials &&
+                    !form.student_mail
+                  }
                 />
+                {mode === "create" && (
+                  <label className="md:col-span-3 flex items-start gap-3 rounded border border-indigo-500/40 bg-indigo-500/10 p-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={form.provide_login_credentials === true}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          provide_login_credentials: e.target.checked,
+                        })
+                      }
+                      className="mt-1 h-4 w-4 accent-indigo-500"
+                    />
+                    <span>
+                      <span className="block text-sm font-medium text-slate-100">
+                        Create student portal login and email credentials
+                      </span>
+                      <span className="mt-1 block text-xs text-slate-400">
+                        A temporary password will be sent to the student email above. Email delivery requires SMTP to be configured in Settings &gt; Integrations.
+                      </span>
+                    </span>
+                  </label>
+                )}
                 <TextAreaField
                   label="Permanent Address"
                   value={form.address}

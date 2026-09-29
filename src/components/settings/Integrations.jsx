@@ -51,7 +51,7 @@ const DEFAULT_EMAIL_CONFIG = {
 const DEFAULT_EMAIL_TEMPLATES = {
   student_created: {
     subject: "🎉 Admission Confirmed — Welcome to {{schoolName}}",
-    body: `<div style="font-family:Arial,Helvetica,sans-serif;color:#333"><div style="background:#f3f4f6;padding:24px;border-radius:8px"><h1 style="color:#0f172a">Welcome to {{schoolName}}</h1><p style="color:#374151">Hello <strong>{{studentName}}</strong>,</p><p style="color:#374151">We are delighted to inform you that your admission has been confirmed.</p><ul style="color:#374151"><li><strong>Admission No:</strong> {{admissionNo}}</li></ul><p style="color:#374151">You can now log into the student portal to view more details.</p><p style="color:#6b7280">— {{schoolName}} Admissions Team</p></div></div>`,
+    body: `<div style="font-family:Arial,Helvetica,sans-serif;color:#333"><div style="background:#f3f4f6;padding:24px;border-radius:8px"><h1 style="color:#0f172a">Welcome to {{schoolName}}</h1><p style="color:#374151">Hello <strong>{{studentName}}</strong>,</p><p style="color:#374151">Your admission has been confirmed. Admission No: {{admissionNo}}</p><h3>Student Portal Login</h3><p><strong>Login email:</strong> {{loginEmail}}<br/><strong>Temporary password:</strong> {{password}}</p><p>Please change your password after signing in.</p><p style="color:#6b7280">— {{schoolName}} Admissions Team</p></div></div>`,
   },
   user_created: {
     subject: "🔐 New User Account Created",
@@ -115,7 +115,7 @@ const TEMPLATE_KEYS = [
 ];
 
 const DEFAULT_VARIABLES = {
-  student_created: ["schoolName", "studentName", "admissionNo"],
+  student_created: ["schoolName", "studentName", "admissionNo", "loginEmail", "password"],
   user_created: ["name", "username", "password"],
   fee_payment_success: ["studentName", "amount", "receiptNo"],
   exam_results_published: ["studentName", "examName"],
