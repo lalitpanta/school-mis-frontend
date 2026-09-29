@@ -32,9 +32,13 @@ const parseSettingsValue = (value) => {
 
 const DEFAULT_EMAIL_CONFIG = {
   enabled: false,
+  email_provider: "smtp",
   email_address: "",
   admin_email: "",
   app_password: "",
+  gmail_client_id: "",
+  gmail_client_secret: "",
+  gmail_refresh_token: "",
   sender_name: "School Admin",
   smtp_host: "smtp.gmail.com",
   smtp_port: 465,
@@ -341,14 +345,12 @@ const Integrations = () => {
     }
     try {
       setSendingTest(true);
-      await sendTestEmail({
+      const response = await sendTestEmail({
         to: testRecipient.trim(),
         config,
       });
       toast.success(
-        config.enabled
-          ? "SMTP verified and test email sent. Check the recipient inbox."
-          : "SMTP test email sent. Enable and save email notifications to send automated emails.",
+        response.data?.message || "Test email sent. Check the recipient inbox.",
       );
     } catch (err) {
       const errorMessage =
@@ -471,6 +473,21 @@ const Integrations = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
+                  Email Delivery
+                </label>
+                <select
+                  value={config.email_provider}
+                  onChange={(event) =>
+                    updateConfig("email_provider", event.target.value)
+                  }
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="smtp">SMTP</option>
+                  <option value="gmail_api">Gmail API (OAuth)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
@@ -515,7 +532,7 @@ const Integrations = () => {
                 </p>
               </div>
 
-              <div>
+              {config.email_provider !== "gmail_api" && <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
                   SMTP Password
                 </label>
@@ -538,7 +555,7 @@ const Integrations = () => {
                   For hosted mailboxes, use the mailbox account password. Use an
                   app password only when your email provider requires one.
                 </p>
-              </div>
+              </div>}
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -675,6 +692,55 @@ const Integrations = () => {
               </div>
             </div>
 
+            {config.email_provider === "gmail_api" ? (
+              <div className="space-y-4">
+                <p className="text-sm text-slate-400">
+                  Gmail API sends over HTTPS, avoiding Render’s blocked SMTP route. Configure an OAuth client with the Gmail send scope, then enter its refresh-token credentials here.
+                </p>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Google OAuth Client ID
+                  </label>
+                  <input
+                    type="text"
+                    autoComplete="off"
+                    value={config.gmail_client_id}
+                    onChange={(event) =>
+                      updateConfig("gmail_client_id", event.target.value)
+                    }
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Google OAuth Client Secret
+                  </label>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    value={config.gmail_client_secret}
+                    onChange={(event) =>
+                      updateConfig("gmail_client_secret", event.target.value)
+                    }
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Gmail API Refresh Token
+                  </label>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    value={config.gmail_refresh_token}
+                    onChange={(event) =>
+                      updateConfig("gmail_refresh_token", event.target.value)
+                    }
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+            ) : (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -728,6 +794,7 @@ const Integrations = () => {
                 </div>
               </div>
             </div>
+            )}
           </div>
         )}
 
