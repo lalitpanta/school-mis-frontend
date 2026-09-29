@@ -39,6 +39,21 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("mis_tenant_id");
       localStorage.removeItem("mis_database_name");
       localStorage.removeItem("mis_staff_id");
+      localStorage.removeItem("mis_student_id");
+      return;
+    }
+
+    if (type === "student") {
+      if (userData?.tenantId) {
+        localStorage.setItem("mis_tenant_id", userData.tenantId);
+      }
+      if (userData?.databaseName) {
+        localStorage.setItem("mis_database_name", userData.databaseName);
+      }
+      if (userData?.studentId) {
+        localStorage.setItem("mis_student_id", userData.studentId);
+      }
+      localStorage.removeItem("mis_staff_id");
       return;
     }
 
@@ -67,7 +82,10 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     endCurrentSession().catch((error) => {
-      console.warn("Could not close server session during sign out:", error.message);
+      console.warn(
+        "Could not close server session during sign out:",
+        error.message,
+      );
     });
     setUser(null);
     setToken(null);
@@ -78,6 +96,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("mis_tenant_id");
     localStorage.removeItem("mis_database_name");
     localStorage.removeItem("mis_admin_id");
+    localStorage.removeItem("mis_student_id");
+    localStorage.removeItem("mis_staff_id");
   };
 
   const isAdmin = () =>
@@ -87,6 +107,7 @@ export const AuthProvider = ({ children }) => {
     user?.type === "super_admin";
   const isTenant = () => userType === "tenant" || user?.type === "tenant";
   const isStaff = () => userType === "staff" || user?.type === "staff";
+  const isStudent = () => userType === "student" || user?.type === "student";
   const isAuthenticated = !!user && !!token;
   const hasModule = (moduleKey) => {
     const modules = user?.modules || [];
@@ -114,6 +135,7 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         isTenant,
         isStaff,
+        isStudent,
         isAuthenticated,
         hasModule,
       }}

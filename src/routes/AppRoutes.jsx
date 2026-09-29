@@ -23,6 +23,7 @@ import EmployeePage from "../pages/EmployeePage";
 import ResultManagement from "../pages/ResultManagement";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import DailyReportPage from "../pages/DailyReportPage";
+import StudentPortalPage from "../pages/StudentPortalPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
 import LeaveManagementPage from "../pages/LeaveManagementPage";
@@ -117,6 +118,27 @@ const TenantRoute = ({ element }) => {
 /**
  * Protected Route Component - requires authentication
  */
+const StudentRoute = ({ element }) => {
+  const { isAuthenticated, isStudent, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          background: "var(--bg-main)",
+          minHeight: "100vh",
+          color: "var(--text-1)",
+        }}
+        className="flex items-center justify-center"
+      >
+        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return isAuthenticated && isStudent() ? element : <Navigate to="/login" replace />;
+};
+
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -170,8 +192,15 @@ const ModuleRoute = ({ element, moduleKey }) => {
 };
 
 const AppRoutes = () => {
-  const { isAuthenticated, isAdmin, isTenant, isStaff, hasModule, loading } =
-    useAuth();
+  const {
+    isAuthenticated,
+    isAdmin,
+    isTenant,
+    isStaff,
+    isStudent,
+    hasModule,
+    loading,
+  } = useAuth();
 
   const getFirstModuleRoute = () => {
     const moduleOrder = ["dashboard", "calendar", "attendance", "settings"];
@@ -184,6 +213,18 @@ const AppRoutes = () => {
       {/* Login pages */}
       <Route path="/system/login" element={<SystemLoginPage />} />
       <Route path="/login" element={<TenantStaffLoginPage />} />
+      <Route
+        path="/student"
+        element={
+          <StudentRoute
+            element={
+              <MainLayout>
+                <StudentPortalPage />
+              </MainLayout>
+            }
+          />
+        }
+      />
       <Route path="/result-portal" element={<ResultPortalPage />} />
       <Route
         path={ROUTES.RESULT_PORTAL}
@@ -527,6 +568,8 @@ const AppRoutes = () => {
           ) : isAuthenticated ? (
             isAdmin() ? (
               <Navigate to="/admin/dashboard" replace />
+            ) : isStudent() ? (
+              <Navigate to="/student" replace />
             ) : (
               <Navigate to={getFirstModuleRoute()} replace />
             )

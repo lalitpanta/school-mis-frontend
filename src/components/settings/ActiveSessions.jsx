@@ -55,7 +55,9 @@ const ActiveSessions = () => {
       toast.success("Session signed out");
     } catch (error) {
       console.error("Active session revoke failed", error);
-      toast.error(error.response?.data?.message || "Failed to sign out session");
+      toast.error(
+        error.response?.data?.message || "Failed to sign out session",
+      );
     } finally {
       setBusySessionId(null);
     }
@@ -76,7 +78,9 @@ const ActiveSessions = () => {
       );
     } catch (error) {
       console.error("Other session revoke failed", error);
-      toast.error(error.response?.data?.message || "Failed to sign out other sessions");
+      toast.error(
+        error.response?.data?.message || "Failed to sign out other sessions",
+      );
     } finally {
       setRevokingOthers(false);
     }
@@ -147,13 +151,17 @@ const ActiveSessions = () => {
                     </div>
                     <p
                       className="mt-1 max-w-full overflow-hidden text-ellipsis text-xs leading-5 text-(--text-3) sm:whitespace-nowrap"
-                      title={session.user_agent || "Browser information unavailable"}
+                      title={
+                        session.user_agent || "Browser information unavailable"
+                      }
                     >
                       {session.user_agent || "Browser information unavailable"}
                     </p>
                     <p className="text-xs leading-5 text-(--text-3)">
-                      {session.user_email} · Signed in {formatDateTime(session.signed_in_at)}
-                      {" · "}Last active {formatDateTime(session.last_active_at)}
+                      {session.user_email} · Signed in{" "}
+                      {formatDateTime(session.signed_in_at)}
+                      {" · "}Last active{" "}
+                      {formatDateTime(session.last_active_at)}
                     </p>
                   </div>
                   {!isCurrent && (
@@ -163,7 +171,9 @@ const ActiveSessions = () => {
                       disabled={busySessionId === session.session_id}
                       className="inline-flex shrink-0 items-center justify-center rounded-lg border border-(--border-card) px-4 py-2 text-sm font-semibold text-(--text-1) transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-50"
                     >
-                      {busySessionId === session.session_id ? "Signing out..." : "Sign out"}
+                      {busySessionId === session.session_id
+                        ? "Signing out..."
+                        : "Sign out"}
                     </button>
                   )}
                 </div>
@@ -179,7 +189,9 @@ const ActiveSessions = () => {
             disabled={revokingOthers || otherSessionCount === 0 || loading}
             className="rounded-lg border border-(--border-card) px-4 py-2 text-sm font-semibold text-(--text-1) transition hover:bg-(--bg-surface) disabled:cursor-not-allowed disabled:opacity-45"
           >
-            {revokingOthers ? "Signing out sessions..." : "Sign out all other sessions"}
+            {revokingOthers
+              ? "Signing out sessions..."
+              : "Sign out all other sessions"}
           </button>
         </footer>
       </div>

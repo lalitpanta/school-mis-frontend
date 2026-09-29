@@ -1,6 +1,7 @@
 import axiosInstance from "./axiosInstance";
 
 export const getStudents = () => axiosInstance.get("/v1/settings/students");
+export const getCurrentStudent = () => axiosInstance.get("/v1/students/me");
 const withMultipart = (data) =>
   data instanceof FormData
     ? { headers: { "Content-Type": "multipart/form-data" } }
