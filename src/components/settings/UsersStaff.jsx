@@ -10,7 +10,7 @@ import { Plus, Trash2, Edit, X } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 
 const UsersStaff = () => {
-  const { fetchRoles } = useRolesPermissions();
+  const { fetchRoles, roles: availableRoles } = useRolesPermissions();
 
   const [users, setUsers] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -45,6 +45,22 @@ const UsersStaff = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
+
+  const getStudentPortalModules = () => [
+    "dashboard",
+    "attendance",
+    "results",
+    "profile",
+    "notices",
+  ];
+
+  const getStudentRoleIds = (roleList = availableRoles) => {
+    const studentRole = (roleList || []).find(
+      (role) => (role.role_name || "").toLowerCase() === "student",
+    );
+
+    return studentRole ? [studentRole.id] : [];
+  };
 
   useEffect(() => {
     loadData();
@@ -163,6 +179,25 @@ const UsersStaff = () => {
       newErrors.employee_id = "Please select an employee";
     }
 
+    if (formData.user_type === "student") {
+      const selectedStudent = students.find(
+        (student) => student.id === formData.student_id,
+      );
+      const linkedEmail = (
+        selectedStudent?.student_mail ||
+        selectedStudent?.school_email ||
+        selectedStudent?.email ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
+
+      if (linkedEmail && formData.email.trim().toLowerCase() !== linkedEmail) {
+        newErrors.email =
+          "Student login email must match the selected student's registered email.";
+      }
+    }
+
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -278,6 +313,7 @@ const UsersStaff = () => {
       teacher_id: "",
       student_id: "",
       employee_id: "",
+      section_id: "",
       name: "",
       email: "",
       phone: "",
@@ -290,6 +326,11 @@ const UsersStaff = () => {
     setFormErrors({});
     setShowModal(true);
   };
+
+  const selectedStudent =
+    formData.user_type === "student" && formData.student_id
+      ? students.find((student) => student.id === formData.student_id)
+      : null;
 
   const openEditModal = (user) => {
     let userType = "custom";
@@ -527,8 +568,13 @@ const UsersStaff = () => {
                           student_id: "",
                           employee_id: "",
                           section_id: "",
+                          module_access: [],
+                          role_ids: [],
                         };
-                        // Auto-select first section if Student is chosen
+                        if (e.target.value === "student") {
+                          newFormData.module_access = getStudentPortalModules();
+                          newFormData.role_ids = getStudentRoleIds();
+                        }
                         if (
                           e.target.value === "student" &&
                           sections.length > 0
@@ -558,8 +604,11 @@ const UsersStaff = () => {
                   setFormErrors({ ...formErrors, name: "" });
                 }}
                 placeholder="John Doe"
-                disabled={formData.user_type === "teacher"}
-                className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${formData.user_type === "teacher" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
+                disabled={
+                  formData.user_type === "teacher" ||
+                  formData.user_type === "student"
+                }
+                className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
               />
             </div>
 
@@ -576,15 +625,23 @@ const UsersStaff = () => {
                   setFormErrors({ ...formErrors, email: "" });
                 }}
                 placeholder="user@example.com"
-                disabled={formData.user_type === "teacher"}
+                disabled={
+                  formData.user_type === "teacher" ||
+                  formData.user_type === "student"
+                }
                 className={`w-full px-3 py-2 bg-slate-700/40 border rounded-lg text-white text-sm focus:outline-none focus:ring-2 ${
                   formErrors.email
                     ? "border-red-500 focus:ring-red-500"
                     : "border-slate-600/50 focus:ring-indigo-500"
-                } ${formData.user_type === "teacher" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
+                } ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
               />
               {formErrors.email && (
                 <p className="text-red-400 text-sm mt-1">{formErrors.email}</p>
+              )}
+              {selectedStudent && (
+                <p className="text-xs text-emerald-300 mt-1">
+                  Student portal login will use the linked email: {selectedStudent.student_mail || selectedStudent.school_email || "not provided"}
+                </p>
               )}
             </div>
 
@@ -601,8 +658,11 @@ const UsersStaff = () => {
                   setFormErrors({ ...formErrors, phone: "" });
                 }}
                 placeholder="+977 9841234567"
-                disabled={formData.user_type === "teacher"}
-                className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${formData.user_type === "teacher" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
+                disabled={
+                  formData.user_type === "teacher" ||
+                  formData.user_type === "student"
+                }
+                className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
               />
             </div>
 
@@ -699,8 +759,14 @@ const UsersStaff = () => {
                       };
                       if (student) {
                         nextState.name = student.full_name || nextState.name;
-                        nextState.email = student.email || nextState.email;
-                        nextState.phone = student.phone || nextState.phone;
+                        nextState.email =
+                          student.student_mail ||
+                          student.school_email ||
+                          student.email ||
+                          nextState.email;
+                        nextState.phone = student.phone_no || nextState.phone;
+                        nextState.module_access = getStudentPortalModules();
+                        nextState.role_ids = getStudentRoleIds();
                       }
                       setFormData(nextState);
                     }}
@@ -724,6 +790,11 @@ const UsersStaff = () => {
                       {formErrors.student_id}
                     </p>
                   )}
+                    {selectedStudent && (
+                      <p className="text-xs text-emerald-300 mt-2">
+                        Student access will be created using the student portal login email and the default student permissions.
+                      </p>
+                    )}
                 </div>
               </>
             )}
