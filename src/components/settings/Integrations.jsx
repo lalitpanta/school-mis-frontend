@@ -347,7 +347,7 @@ const Integrations = () => {
     } catch (err) {
       toast.error(
         err.response?.data?.message ||
-          "Could not send test email. Check SMTP settings and this event trigger.",
+          `SMTP test request failed${err.response?.status ? ` (HTTP ${err.response.status})` : ""}. Check that the backend is updated and reachable, then review the SMTP settings.`,
       );
     } finally {
       setSendingTest(false);
@@ -508,7 +508,7 @@ const Integrations = () => {
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
-                  App Password
+                  SMTP Password
                 </label>
                 <div className="relative">
                   <Key
@@ -521,13 +521,13 @@ const Integrations = () => {
                     onChange={(e) =>
                       updateConfig("app_password", e.target.value)
                     }
-                    placeholder="16-character App Password"
+                    placeholder="Mailbox password or provider app password"
                     className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Use an App Password (not your normal password) for
-                  Google/Microsoft accounts.
+                  For hosted mailboxes, use the mailbox account password. Use
+                  an app password only when your email provider requires one.
                 </p>
               </div>
 
