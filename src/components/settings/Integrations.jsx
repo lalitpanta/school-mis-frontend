@@ -3,6 +3,7 @@ import {
   getAllSettings,
   updateSettings,
   sendTestEmail,
+  startGmailOAuth,
 } from "../../api/settingsApi";
 import {
   Mail,
@@ -38,6 +39,7 @@ const DEFAULT_EMAIL_CONFIG = {
   app_password: "",
   gmail_client_id: "",
   gmail_client_secret: "",
+  gmail_client_secret_configured: false,
   gmail_refresh_token: "",
   sender_name: "School Admin",
   smtp_host: "smtp.gmail.com",
@@ -264,6 +266,7 @@ const Integrations = () => {
   const [templateChannel, setTemplateChannel] = useState("email");
   const [testRecipient, setTestRecipient] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
+  const [connectingGmail, setConnectingGmail] = useState(false);
 
   useEffect(() => {
     if (!templates || !templates[selectedTemplateKey]) {
@@ -274,6 +277,23 @@ const Integrations = () => {
 
   useEffect(() => {
     fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const connected = url.searchParams.get("gmail_connected");
+    const error = url.searchParams.get("gmail_error");
+    if (connected) toast.success("Gmail connected successfully.");
+    if (error) toast.error("Gmail authorization failed. Check the OAuth redirect URI and try again.");
+    if (connected || error) {
+      url.searchParams.delete("gmail_connected");
+      url.searchParams.delete("gmail_error");
+      window.history.replaceState(
+        {},
+        "",
+        `${url.pathname}${url.search}${url.hash}`,
+      );
+    }
   }, []);
 
   const fetchSettings = async () => {
@@ -345,9 +365,9 @@ const Integrations = () => {
     }
     try {
       setSendingTest(true);
+      await updateSettings({ email_config: config });
       const response = await sendTestEmail({
         to: testRecipient.trim(),
-        config,
       });
       toast.success(
         response.data?.message || "Test email sent. Check the recipient inbox.",
@@ -362,6 +382,30 @@ const Integrations = () => {
       );
     } finally {
       setSendingTest(false);
+    }
+  };
+
+  const handleConnectGmail = async () => {
+    if (
+      !config.email_address ||
+      !config.gmail_client_id ||
+      (!config.gmail_client_secret && !config.gmail_client_secret_configured)
+    ) {
+      toast.error("Enter the Gmail address, OAuth Client ID, and Client Secret first.");
+      return;
+    }
+    try {
+      setConnectingGmail(true);
+      await updateSettings({ email_config: config });
+      const response = await startGmailOAuth();
+      const authorizationUrl = response.data?.data?.authorizationUrl;
+      if (!authorizationUrl) throw new Error("Google authorization URL was not returned.");
+      window.location.assign(authorizationUrl);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || err.message || "Could not start Gmail authorization.",
+      );
+      setConnectingGmail(false);
     }
   };
 
@@ -532,30 +576,32 @@ const Integrations = () => {
                 </p>
               </div>
 
-              {config.email_provider !== "gmail_api" && <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
-                  SMTP Password
-                </label>
-                <div className="relative">
-                  <Key
-                    className="absolute left-3 top-2.5 text-slate-500"
-                    size={18}
-                  />
-                  <input
-                    type="password"
-                    value={config.app_password}
-                    onChange={(e) =>
-                      updateConfig("app_password", e.target.value)
-                    }
-                    placeholder="Mailbox password or provider app password"
-                    className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  />
+              {config.email_provider !== "gmail_api" && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    SMTP Password
+                  </label>
+                  <div className="relative">
+                    <Key
+                      className="absolute left-3 top-2.5 text-slate-500"
+                      size={18}
+                    />
+                    <input
+                      type="password"
+                      value={config.app_password}
+                      onChange={(e) =>
+                        updateConfig("app_password", e.target.value)
+                      }
+                      placeholder="Mailbox password or provider app password"
+                      className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    For hosted mailboxes, use the mailbox account password. Use
+                    an app password only when your email provider requires one.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  For hosted mailboxes, use the mailbox account password. Use an
-                  app password only when your email provider requires one.
-                </p>
-              </div>}
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -600,6 +646,12 @@ const Integrations = () => {
                     placeholder="twilio"
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
+                  {config.gmail_client_secret_configured &&
+                    !config.gmail_client_secret && (
+                      <p className="text-xs text-emerald-300 mt-1">
+                        A client secret is saved. Leave this blank to keep it.
+                      </p>
+                    )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -695,7 +747,7 @@ const Integrations = () => {
             {config.email_provider === "gmail_api" ? (
               <div className="space-y-4">
                 <p className="text-sm text-slate-400">
-                  Gmail API sends over HTTPS, avoiding Render’s blocked SMTP route. Configure an OAuth client with the Gmail send scope, then enter its refresh-token credentials here.
+                  Connect your Gmail account once. Google will ask for permission, then the app stores its token securely for ongoing mail delivery.
                 </p>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -725,75 +777,89 @@ const Integrations = () => {
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
-                    Gmail API Refresh Token
-                  </label>
-                  <input
-                    type="password"
-                    autoComplete="new-password"
-                    value={config.gmail_refresh_token}
-                    onChange={(event) =>
-                      updateConfig("gmail_refresh_token", event.target.value)
-                    }
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
+                <button
+                  type="button"
+                  onClick={handleConnectGmail}
+                  disabled={
+                    connectingGmail ||
+                    !config.gmail_client_id ||
+                    (!config.gmail_client_secret &&
+                      !config.gmail_client_secret_configured)
+                  }
+                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Key size={16} />
+                  {connectingGmail
+                    ? "Opening Google..."
+                    : config.gmail_api_connected
+                      ? "Reconnect Gmail"
+                      : "Connect Gmail"}
+                </button>
+                {config.gmail_api_connected && (
+                  <p className="text-sm text-emerald-300">
+                    Connected as {config.gmail_authorized_email || config.email_address}.
+                  </p>
+                )}
+                <p className="text-xs text-slate-500">
+                  Add this redirect URI to your Google OAuth client: https://school-mis-backend.onrender.com/v1/settings/email/gmail/callback
+                </p>
               </div>
             ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
-                  SMTP Host
-                </label>
-                <div className="relative">
-                  <Server
-                    className="absolute left-3 top-2.5 text-slate-500"
-                    size={18}
-                  />
-                  <input
-                    type="text"
-                    value={config.smtp_host}
-                    onChange={(e) => updateConfig("smtp_host", e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  />
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    SMTP Host
+                  </label>
+                  <div className="relative">
+                    <Server
+                      className="absolute left-3 top-2.5 text-slate-500"
+                      size={18}
+                    />
+                    <input
+                      type="text"
+                      value={config.smtp_host}
+                      onChange={(e) =>
+                        updateConfig("smtp_host", e.target.value)
+                      }
+                      className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
-                    SMTP Port
-                  </label>
-                  <input
-                    type="number"
-                    value={config.smtp_port}
-                    onChange={(e) =>
-                      updateConfig("smtp_port", parseInt(e.target.value))
-                    }
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
-                    Connection Security
-                  </label>
-                  <div className="flex items-center h-10 px-3 bg-slate-800 border border-slate-700 rounded-lg">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={config.smtp_secure}
-                        onChange={(e) =>
-                          updateConfig("smtp_secure", e.target.checked)
-                        }
-                        className="rounded border-slate-600"
-                      />
-                      <span className="text-sm text-slate-300">SSL/TLS</span>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                      SMTP Port
                     </label>
+                    <input
+                      type="number"
+                      value={config.smtp_port}
+                      onChange={(e) =>
+                        updateConfig("smtp_port", parseInt(e.target.value))
+                      }
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                      Connection Security
+                    </label>
+                    <div className="flex items-center h-10 px-3 bg-slate-800 border border-slate-700 rounded-lg">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={config.smtp_secure}
+                          onChange={(e) =>
+                            updateConfig("smtp_secure", e.target.checked)
+                          }
+                          className="rounded border-slate-600"
+                        />
+                        <span className="text-sm text-slate-300">SSL/TLS</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             )}
           </div>
         )}
