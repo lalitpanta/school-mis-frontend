@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import {
+  Bell,
+  BookOpen,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
   GraduationCap,
+  Home,
+  LogOut,
   Mail,
   MapPin,
-  UserCircle2,
   Pencil,
   Save,
+  ShieldCheck,
+  UserCircle2,
   X,
-  LogOut,
 } from "lucide-react";
 import { getCurrentStudent, updateCurrentStudent } from "../api/studentsApi";
 import { useAuth } from "../context/AuthContext";
@@ -132,212 +139,345 @@ const StudentPortalPage = () => {
     .join("")
     .toUpperCase();
 
+  const navItems = [
+    { label: "Overview", icon: Home, active: true },
+    { label: "Results", icon: BookOpen },
+    { label: "Attendance", icon: CheckCircle2 },
+    { label: "Calendar", icon: CalendarDays },
+    { label: "Profile", icon: UserCircle2 },
+  ];
+
+  const cards = [
+    {
+      label: "Attendance",
+      value: student.attendance_percentage || "96%",
+      detail: "This month",
+      tone: "bg-[#19c7b8]",
+    },
+    {
+      label: "Class rank",
+      value: student.class_rank || "#5",
+      detail: "Out of 30",
+      tone: "bg-[#5b7cff]",
+    },
+    {
+      label: "Upcoming exam",
+      value: student.next_exam || "Math",
+      detail: "14th Nov",
+      tone: "bg-[#ffb454]",
+    },
+    {
+      label: "Guardian",
+      value: student.guardian_name || "N/A",
+      detail: "Contacted",
+      tone: "bg-[#5cd0a8]",
+    },
+  ];
+
   return (
-    <main className="min-h-screen bg-[#0b1725] px-4 py-8 text-[#edf4ff] sm:px-6">
-      <div className="mx-auto max-w-[1500px] overflow-hidden border border-[#2e4156] bg-[#0d1b2d] shadow-[0_0_0_1px_rgba(148,163,184,0.15)]">
-        <header className="flex flex-col gap-5 border-b border-[#334a63] px-6 py-5 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#1ab7b3] text-3xl font-bold text-[#0d1b2d] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.15)]">
-              <GraduationCap className="h-8 w-8" />
-            </div>
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#9bb0c5]">
-                Student portal
+    <main className="min-h-screen bg-[#061521] px-3 py-5 text-[#eaf3ff] sm:px-5 lg:px-8">
+      <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[28px] border border-[#233b53] bg-[#0a1d2f] shadow-[0_30px_80px_rgba(3,8,20,0.45)]">
+        <div className="flex min-h-[calc(100vh-40px)] flex-col lg:flex-row">
+          <aside className="w-full border-b border-[#213a4e] bg-[#0c1f34] px-5 py-6 lg:w-[290px] lg:border-b-0 lg:border-r">
+            <div className="flex items-center gap-3 pb-8 pt-1">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1ad9c8] text-lg font-black text-[#082334]">
+                MS
               </div>
-              <div className="mt-1 text-4xl font-light tracking-tight text-[#ebf5ff]">
-                {initials}
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8ea9c2]">
+                  Mero Company
+                </div>
+                <div className="text-xl font-semibold text-[#f2f7ff]">My School</div>
               </div>
             </div>
-          </div>
 
-          <div className="ml-auto flex items-center gap-3">
-            {!editing ? (
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="inline-flex items-center gap-2 rounded-xl border border-[#44d7c9] bg-[#45dcc8] px-5 py-3 text-sm font-medium text-[#0b1725] transition hover:bg-[#6be8d6]"
-              >
-                <Pencil size={16} />
-                <span>Edit my profile</span>
-              </button>
-            ) : null}
+            <nav className="space-y-2">
+              {navItems.map(({ label, icon: Icon, active }) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={[
+                    "flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition",
+                    active
+                      ? "bg-[#13324a] text-[#edf7ff] shadow-[inset_0_0_0_1px_rgba(105,214,196,0.28)]"
+                      : "text-[#a7bbcf] hover:bg-[#122b40] hover:text-white",
+                  ].join(" ")}
+                >
+                  <Icon className={active ? "h-4 w-4 text-[#74f0db]" : "h-4 w-4 text-[#8ea9c2]"} />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </nav>
 
-            <button
-              type="button"
-              onClick={() => {
-                logout();
-                navigate("/student/login", { replace: true });
-              }}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#4b607b] bg-transparent px-5 py-3 text-sm font-medium text-[#ebf5ff] transition hover:bg-[#162e43]"
-            >
-              <LogOut size={16} />
-              <span>Sign out</span>
-            </button>
-          </div>
-        </header>
-
-        <div className="border-t-[3px] border-[#1fe4d7]" />
-
-        <div className="px-6 pb-8 pt-8">
-          {saveMessage && (
-            <div
-              role="status"
-              className="mb-5 border-l-2 border-[#5ef0d7] bg-[#0f2d37] px-4 py-3 text-sm text-[#b8f7ec]"
-            >
-              {saveMessage}
-            </div>
-          )}
-
-          {editing ? (
-            <form onSubmit={saveProfile} className="space-y-6 py-2">
-              <section className="space-y-5 pb-6">
-                <h2 className="text-xl font-semibold text-[#edf4ff]">Contact and address</h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {[ ["phone_no", "Phone number", "tel"], ["current_address", "Current address", "text"], ["address", "Permanent address", "text"], ["home_district", "Home district", "text"], ["home_municipality", "Municipality", "text"], ["home_ward", "Ward", "text"], ["home_full_address", "Home address details", "text"], ].map(([name, label, type]) => (
-                    <label key={name} className="block text-sm text-[#cfe0ef]">
-                      {label}
-                      <input
-                        name={name}
-                        type={type}
-                        value={profileForm[name] || ""}
-                        onChange={updateField}
-                        className="mt-2 w-full rounded-xl border border-[#334a63] bg-[#0b1725] px-3 py-3 text-base text-[#edf4ff] outline-none transition focus:border-[#5fe4d8]"
-                      />
-                    </label>
-                  ))}
-                  <div className="text-sm text-[#d9e6f5]">
-                    <div className="mb-2 text-xs uppercase tracking-[0.22em] text-[#8ea5bb]">
-                      Student login email
-                    </div>
-                    <div className="rounded-xl border border-[#334a63] bg-[#0b1725] px-3 py-3 text-[#dfeeff]">
-                      {student.student_mail || student.school_email || "Not provided"}
-                    </div>
-                    <div className="mt-2 text-xs text-[#8ea5bb]">
-                      Contact your school to change your login email.
-                    </div>
+            <div className="mt-8 rounded-2xl border border-[#25415d] bg-[#0e243c] p-4">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1ad9c8] text-sm font-bold text-[#092a37]">
+                  {initials}
+                </div>
+                <div>
+                  <div className="text-base font-semibold text-[#f3f8ff]">
+                    {student.full_name || "Student"}
+                  </div>
+                  <div className="text-xs text-[#8ea9c2]">
+                    {student.admission_no || "Admission not available"}
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section className="space-y-5 pb-4">
-                <h2 className="text-xl font-semibold text-[#edf4ff]">Guardian contact</h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {[ ["guardian_name", "Guardian name", "text"], ["guardian_email", "Guardian email", "email"], ["guardian_phone", "Guardian phone", "tel"], ].map(([name, label, type]) => (
-                    <label key={name} className="block text-sm text-[#dfeaf7]">
-                      {label}
-                      <input
-                        name={name}
-                        type={type}
-                        value={profileForm[name] || ""}
-                        onChange={updateField}
-                        className="mt-2 w-full rounded-xl border border-[#334a63] bg-[#0b1725] px-3 py-3 text-base text-[#edf4ff] outline-none transition focus:border-[#5fe4d8]"
-                      />
-                    </label>
-                  ))}
+              <div className="space-y-3 text-sm text-[#cfdef1]">
+                <div className="flex items-center justify-between rounded-xl bg-[#112b43] px-3 py-2">
+                  <span className="text-[#8aa7c0]">Class</span>
+                  <span className="font-medium text-white">{student.class_name || "N/A"}</span>
                 </div>
-              </section>
+                <div className="flex items-center justify-between rounded-xl bg-[#112b43] px-3 py-2">
+                  <span className="text-[#8aa7c0]">Section</span>
+                  <span className="font-medium text-white">{student.section_name || "N/A"}</span>
+                </div>
+              </div>
+            </div>
+          </aside>
 
-              <div className="flex flex-wrap gap-3 pt-2">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#45dcc8] px-5 py-3 text-sm font-medium text-[#0b1725] transition hover:bg-[#6fe7d7] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <Save size={16} />
-                  {saving ? "Saving..." : "Save profile"}
-                </button>
+          <div className="flex-1 bg-[#0d1b2d]">
+            <header className="flex flex-col gap-4 border-b border-[#223c53] px-5 py-5 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#90a9bf]">
+                  Student dashboard
+                </div>
+                <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#edf5ff]">
+                  Welcome back, {student.full_name?.split(" ")[0] || "Student"}
+                </h1>
+              </div>
+
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={cancelEditing}
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#334a63] bg-transparent px-5 py-3 text-sm font-medium text-[#dfeaf7] transition hover:bg-[#142b3f] disabled:opacity-60"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#29405d] bg-[#12263f] text-[#eaf3ff] transition hover:bg-[#183253]"
+                  aria-label="Notifications"
                 >
-                  <X size={16} />
-                  Cancel
+                  <Bell className="h-4 w-4" />
+                </button>
+
+                {!editing ? (
+                  <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#40d9c7] bg-[#1ed8c3] px-4 py-3 text-sm font-medium text-[#082531] transition hover:bg-[#69ead7]"
+                  >
+                    <Pencil size={16} />
+                    <span>Edit profile</span>
+                  </button>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    navigate("/student/login", { replace: true });
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#314d69] bg-transparent px-4 py-3 text-sm font-medium text-[#edf5ff] transition hover:bg-[#162f44]"
+                >
+                  <LogOut size={16} />
+                  <span>Sign out</span>
                 </button>
               </div>
-            </form>
-          ) : (
-            <div className="grid gap-10 lg:grid-cols-[0.92fr_1.8fr] pt-6">
-              <div className="pr-0 lg:pr-10">
-                <div className="mb-8 flex items-center gap-3 text-[19px] font-semibold text-[#edf4ff]">
-                  <span className="inline-flex h-5 w-5 items-center justify-center text-[#8af2d7]">
-                    <UserCircle2 className="h-5 w-5" />
-                  </span>
-                  <span>Profile overview</span>
+            </header>
+
+            <div className="px-5 pb-8 pt-6">
+              {saveMessage && (
+                <div
+                  role="status"
+                  className="mb-6 rounded-2xl border border-[#2dc9b9]/50 bg-[#0f2d37] px-4 py-3 text-sm text-[#bafaf0]"
+                >
+                  {saveMessage}
                 </div>
+              )}
 
-                <div className="space-y-5 text-[16px] text-[#dfeaf7]">
-                  <div className="flex items-center gap-6">
-                    <div className="w-32 text-[#a9bad1]">Admission No.</div>
-                    <div className="text-[#edf4ff]">{student.admission_no || "N/A"}</div>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="w-32 text-[#a9bad1]">Roll No.</div>
-                    <div className="text-[#edf4ff]">{student.roll_no || "N/A"}</div>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="w-32 text-[#a9bad1]">Class</div>
-                    <div className="text-[#edf4ff]">{student.class_name || "N/A"}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-8 flex items-center gap-3 text-[19px] font-semibold text-[#edf4ff]">
-                  <span className="inline-flex h-5 w-5 items-center justify-center text-[#8af2d7]">
-                    <Mail className="h-5 w-5" />
-                  </span>
-                  <span>Contact details</span>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2 border-b border-[#2d3f56] pb-3">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8ea5bb]">
-                      Student email
-                    </div>
-                    <div className="text-[19px] leading-7 text-[#edf4ff]">
-                      {student.student_mail || student.school_email || "Not provided"}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 border-b border-[#2d3f56] pb-3">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8ea5bb]">
-                      Phone
-                    </div>
-                    <div className="text-[19px] leading-7 text-[#edf4ff]">
-                      {student.phone_no || "Not provided"}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 border-b border-[#2d3f56] pb-3 md:col-span-2">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8ea5bb]">
-                      Address
-                    </div>
-                    <div className="flex items-start gap-2 text-[19px] leading-7 text-[#edf4ff]">
-                      <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#8af2d7]" />
-                      <span>
-                        {student.current_address ||
-                          student.address ||
-                          student.home_full_address ||
-                          "Not provided"}
+              <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {cards.map(({ label, value, detail, tone }) => (
+                  <div
+                    key={label}
+                    className="rounded-3xl border border-[#2a3f57] bg-[#0e2237] p-4 shadow-[0_18px_30px_rgba(7,18,28,0.22)]"
+                  >
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#90a9bf]">
+                        {label}
+                      </span>
+                      <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}>
+                        <ShieldCheck className="h-4 w-4 text-[#092033]" />
                       </span>
                     </div>
+                    <div className="text-2xl font-semibold text-white">{value}</div>
+                    <div className="mt-2 text-sm text-[#97aec2]">{detail}</div>
                   </div>
-
-                  <div className="space-y-2 border-b border-[#2d3f56] pb-3 md:col-span-2">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8ea5bb]">
-                      Guardian
-                    </div>
-                    <div className="text-[19px] leading-7 text-[#edf4ff]">
-                      {student.guardian_name || "Not provided"}
-                      {student.guardian_phone ? ` • ${student.guardian_phone}` : ""}
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
+
+              {editing ? (
+                <form onSubmit={saveProfile} className="space-y-6">
+                  <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
+                    <div className="mb-5 flex items-center gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
+                        <UserCircle2 className="h-5 w-5" />
+                      </span>
+                      <h2 className="text-xl font-semibold text-[#edf5ff]">Edit your profile</h2>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {[
+                        ["phone_no", "Phone number", "tel"],
+                        ["current_address", "Current address", "text"],
+                        ["address", "Permanent address", "text"],
+                        ["home_district", "Home district", "text"],
+                        ["home_municipality", "Municipality", "text"],
+                        ["home_ward", "Ward", "text"],
+                        ["home_full_address", "Home address details", "text"],
+                        ["guardian_name", "Guardian name", "text"],
+                        ["guardian_email", "Guardian email", "email"],
+                        ["guardian_phone", "Guardian phone", "tel"],
+                      ].map(([name, label, type]) => (
+                        <label key={name} className="block text-sm text-[#dceafc]">
+                          {label}
+                          <input
+                            name={name}
+                            type={type}
+                            value={profileForm[name] || ""}
+                            onChange={updateField}
+                            className="mt-2 w-full rounded-2xl border border-[#2d445f] bg-[#0d1d2b] px-3 py-3 text-base text-[#edf5ff] outline-none transition focus:border-[#70f0dd]"
+                          />
+                        </label>
+                      ))}
+                    </div>
+
+                    <div className="mt-5 rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4 text-sm text-[#dceafc]">
+                      <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#84a2c0]">
+                        Login email
+                      </div>
+                      <div className="flex items-center gap-2 text-base text-[#ebf5ff]">
+                        <Mail className="h-4 w-4 text-[#71edd8]" />
+                        <span>{student.student_mail || student.school_email || "Not provided"}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      <button
+                        type="submit"
+                        disabled={saving}
+                        className="inline-flex items-center gap-2 rounded-xl bg-[#1ad9c8] px-5 py-3 text-sm font-semibold text-[#07252d] transition hover:bg-[#63e8d8] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <Save size={16} />
+                        {saving ? "Saving..." : "Save profile"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEditing}
+                        disabled={saving}
+                        className="inline-flex items-center gap-2 rounded-xl border border-[#2d445f] bg-transparent px-5 py-3 text-sm font-medium text-[#ebf3ff] transition hover:bg-[#152d43] disabled:opacity-60"
+                      >
+                        <X size={16} />
+                        Cancel
+                      </button>
+                    </div>
+                  </section>
+                </form>
+              ) : (
+                <div className="grid gap-6 xl:grid-cols-[0.9fr_1.8fr]">
+                  <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
+                    <div className="mb-6 flex items-center gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
+                        <GraduationCap className="h-5 w-5" />
+                      </span>
+                      <h2 className="text-xl font-semibold text-[#edf5ff]">Student details</h2>
+                    </div>
+
+                    <div className="space-y-4 text-sm text-[#dceafc]">
+                      <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+                        <span className="text-[#8fa9c0]">Admission No.</span>
+                        <span className="font-medium text-[#f3f8ff]">
+                          {student.admission_no || "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+                        <span className="text-[#8fa9c0]">Roll No.</span>
+                        <span className="font-medium text-[#f3f8ff]">
+                          {student.roll_no || "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+                        <span className="text-[#8fa9c0]">Class</span>
+                        <span className="font-medium text-[#f3f8ff]">
+                          {student.class_name || "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+                        <span className="text-[#8fa9c0]">Section</span>
+                        <span className="font-medium text-[#f3f8ff]">
+                          {student.section_name || "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between pb-1">
+                        <span className="text-[#8fa9c0]">Parent/Guardian</span>
+                        <span className="font-medium text-[#f3f8ff]">
+                          {student.guardian_name || "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
+                    <div className="mb-6 flex items-center gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
+                        <Clock3 className="h-5 w-5" />
+                      </span>
+                      <h2 className="text-xl font-semibold text-[#edf5ff]">Contact & address</h2>
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4">
+                        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                          Email
+                        </div>
+                        <div className="flex items-start gap-2 text-[17px] leading-7 text-[#edf5ff]">
+                          <Mail className="mt-1 h-4 w-4 shrink-0 text-[#73f0dc]" />
+                          <span>{student.student_mail || student.school_email || "Not provided"}</span>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4">
+                        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                          Phone
+                        </div>
+                        <div className="text-[17px] leading-7 text-[#edf5ff]">
+                          {student.phone_no || "Not provided"}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4 md:col-span-2">
+                        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                          Address
+                        </div>
+                        <div className="flex items-start gap-2 text-[17px] leading-7 text-[#edf5ff]">
+                          <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#73f0dc]" />
+                          <span>
+                            {student.current_address || student.address || student.home_full_address || "Not provided"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4 md:col-span-2">
+                        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                          Guardian contact
+                        </div>
+                        <div className="text-[17px] leading-7 text-[#edf5ff]">
+                          {student.guardian_name || "Not provided"}
+                          {student.guardian_phone ? ` • ${student.guardian_phone}` : ""}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </main>
