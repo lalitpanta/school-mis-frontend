@@ -34,18 +34,14 @@ const StudentPasswordResetPage = () => {
         }
         const result = await resetStudentPassword(tenantSlug, token, password);
         toast.success(result.message || "Password updated.");
-        navigate(
-          `/student/login?tenantSlug=${encodeURIComponent(tenantSlug)}`,
-          {
-            replace: true,
-          },
-        );
+        navigate(`/student/login?tenantSlug=${encodeURIComponent(tenantSlug)}`, {
+          replace: true,
+        });
       } else {
         const result = await requestStudentPasswordReset(tenantSlug, email);
         setSent(true);
         setMessage(
-          result.message ||
-            "If the student account exists, a reset link will be emailed.",
+          result.message || "If the student account exists, a reset link will be emailed.",
         );
       }
     } catch (requestError) {
@@ -72,10 +68,7 @@ const StudentPasswordResetPage = () => {
               {token ? "Choose a new password." : "Get back into your portal."}
             </h1>
           </div>
-          <Link
-            to="/student/login"
-            className="inline-flex items-center gap-2 text-sm text-emerald-200 hover:text-white"
-          >
+          <Link to="/student/login" className="inline-flex items-center gap-2 text-sm text-emerald-200 hover:text-white">
             <ArrowLeft size={16} /> Student sign in
           </Link>
         </section>
@@ -86,9 +79,7 @@ const StudentPasswordResetPage = () => {
               <GraduationCap className="text-emerald-300" size={26} />
               <span className="text-sm font-semibold">STUDENT PORTAL</span>
             </div>
-            <p className="text-sm font-medium text-emerald-300">
-              PASSWORD RESET
-            </p>
+            <p className="text-sm font-medium text-emerald-300">PASSWORD RESET</p>
             <h2 className="mt-2 text-3xl font-semibold">
               {token ? "Set a new password" : "Request a reset link"}
             </h2>
@@ -99,18 +90,12 @@ const StudentPasswordResetPage = () => {
             </p>
 
             {message && (
-              <div
-                role="status"
-                className="mt-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"
-              >
+              <div role="status" className="mt-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
                 {message}
               </div>
             )}
             {error && (
-              <div
-                role="alert"
-                className="mt-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
-              >
+              <div role="alert" className="mt-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                 {error}
               </div>
             )}
@@ -132,10 +117,7 @@ const StudentPasswordResetPage = () => {
                     <label className="block text-sm text-slate-300">
                       Student email
                       <span className="relative mt-2 block">
-                        <Mail
-                          className="absolute left-3 top-3.5 text-slate-500"
-                          size={17}
-                        />
+                        <Mail className="absolute left-3 top-3.5 text-slate-500" size={17} />
                         <input
                           required
                           type="email"
@@ -153,10 +135,7 @@ const StudentPasswordResetPage = () => {
                     <label className="block text-sm text-slate-300">
                       New password
                       <span className="relative mt-2 block">
-                        <KeyRound
-                          className="absolute left-3 top-3.5 text-slate-500"
-                          size={17}
-                        />
+                        <KeyRound className="absolute left-3 top-3.5 text-slate-500" size={17} />
                         <input
                           required
                           minLength={8}
@@ -176,9 +155,7 @@ const StudentPasswordResetPage = () => {
                         type="password"
                         autoComplete="new-password"
                         value={confirmPassword}
-                        onChange={(event) =>
-                          setConfirmPassword(event.target.value)
-                        }
+                        onChange={(event) => setConfirmPassword(event.target.value)}
                         className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white outline-none focus:border-emerald-400"
                       />
                     </label>

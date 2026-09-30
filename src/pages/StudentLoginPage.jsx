@@ -26,17 +26,12 @@ const StudentLoginPage = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await studentLogin(
-        tenantSlug.trim(),
-        email.trim(),
-        password,
-      );
+      const response = await studentLogin(tenantSlug.trim(), email.trim(), password);
       loginUser(response.data.user, response.data.token, "student");
       toast.success("Welcome to your student portal.");
       navigate("/student-portal", { replace: true });
     } catch (loginError) {
-      const message =
-        loginError.message || "Check your school, email, and password.";
+      const message = loginError.message || "Check your school, email, and password.";
       setError(message);
       toast.error(message);
     } finally {
@@ -52,9 +47,7 @@ const StudentLoginPage = () => {
             <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-400 text-emerald-950">
               <GraduationCap size={25} />
             </span>
-            <span className="text-sm font-semibold tracking-wide">
-              SCHOOLMIS
-            </span>
+            <span className="text-sm font-semibold tracking-wide">SCHOOLMIS</span>
           </div>
           <div className="max-w-md">
             <p className="text-sm font-medium uppercase tracking-widest text-emerald-300">
@@ -67,9 +60,7 @@ const StudentLoginPage = () => {
               Sign in to view your profile and personal academic information.
             </p>
           </div>
-          <p className="text-xs text-emerald-200/60">
-            Private access for students
-          </p>
+          <p className="text-xs text-emerald-200/60">Private access for students</p>
         </section>
 
         <section className="flex items-center justify-center p-6 sm:p-10">
@@ -78,24 +69,16 @@ const StudentLoginPage = () => {
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-400 text-emerald-950">
                 <GraduationCap size={23} />
               </span>
-              <span className="text-sm font-semibold tracking-wide">
-                SCHOOLMIS STUDENT
-              </span>
+              <span className="text-sm font-semibold tracking-wide">SCHOOLMIS STUDENT</span>
             </div>
-            <p className="text-sm font-medium text-emerald-300">
-              STUDENT PORTAL
-            </p>
+            <p className="text-sm font-medium text-emerald-300">STUDENT PORTAL</p>
             <h2 className="mt-2 text-3xl font-semibold">Sign in</h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              Use the school slug and the email address where your credentials
-              were sent.
+              Use the school slug and the email address where your credentials were sent.
             </p>
 
             {error && (
-              <div
-                role="alert"
-                className="mt-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
-              >
+              <div role="alert" className="mt-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                 {error}
               </div>
             )}
@@ -115,10 +98,7 @@ const StudentLoginPage = () => {
               <label className="block text-sm text-slate-300">
                 Student email
                 <span className="relative mt-2 block">
-                  <Mail
-                    className="absolute left-3 top-3.5 text-slate-500"
-                    size={17}
-                  />
+                  <Mail className="absolute left-3 top-3.5 text-slate-500" size={17} />
                   <input
                     required
                     type="email"
@@ -133,10 +113,7 @@ const StudentLoginPage = () => {
               <label className="block text-sm text-slate-300">
                 Password
                 <span className="relative mt-2 block">
-                  <LockKeyhole
-                    className="absolute left-3 top-3.5 text-slate-500"
-                    size={17}
-                  />
+                  <LockKeyhole className="absolute left-3 top-3.5 text-slate-500" size={17} />
                   <input
                     required
                     type="password"
