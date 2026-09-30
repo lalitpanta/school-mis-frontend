@@ -94,7 +94,8 @@ const StudentPortalExperience = () => {
   const [monthIndex, setMonthIndex] = useState(0);
   const [calendarDays, setCalendarDays] = useState([]);
   const [calendarError, setCalendarError] = useState("");
-  const [calendarFilter, setCalendarFilter] = useState("all");
+  const [calendarCategoryFilter, setCalendarCategoryFilter] = useState("all");
+  const [calendarDayTypeFilter, setCalendarDayTypeFilter] = useState("all");
   const [calendarDateMode, setCalendarDateMode] = useState("both");
   const [fees, setFees] = useState([]);
   const [feeError, setFeeError] = useState("");
@@ -494,6 +495,9 @@ const StudentPortalExperience = () => {
   const panelClass = `rounded-2xl border p-5 ${isDark ? "border-slate-700 bg-slate-900/70" : "border-slate-200 bg-white"}`;
   const mutedClass = isDark ? "text-slate-400" : "text-slate-500";
   const headingClass = isDark ? "text-slate-100" : "text-slate-900";
+  const accentTextClass = isDark ? "text-teal-300" : "text-teal-800";
+  const subtleBorderClass = isDark ? "border-slate-700/50" : "border-slate-200";
+  const warningTextClass = isDark ? "text-amber-200" : "text-amber-900";
 
   const resultSubjects = useMemo(
     () =>
@@ -526,7 +530,7 @@ const StudentPortalExperience = () => {
             {student.roll_no || "-"}
           </p>
         </div>
-        <div className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+        <div className={`rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm ${warningTextClass}`}>
           {results.length
             ? `${results.length} result subject${results.length === 1 ? "" : "s"} available`
             : "Exam countdown unavailable"}
@@ -660,24 +664,81 @@ const StudentPortalExperience = () => {
         ? new Date(month.month_start_date_AD)
         : null);
     const offset = firstDay?.getDay() ?? 0;
-    const classification = (day) =>
-      `${day.day_type || ""} ${day.category_name || ""}`.trim();
-    const isExamDay = (day) => /exam/i.test(classification(day));
-    const matchesCalendarFilter = (day) =>
-      calendarFilter === "all" ||
-      (calendarFilter === "exam" && isExamDay(day)) ||
-      (calendarFilter === "other" &&
-        Boolean(classification(day)) &&
-        !isExamDay(day));
-    const examCount = sorted.filter(isExamDay).length;
-    const otherCount = sorted.filter(
-      (day) => Boolean(classification(day)) && !isExamDay(day),
-    ).length;
-    const filteredEvents = sorted.filter(
-      (day) =>
-        matchesCalendarFilter(day) &&
-        (day.day_type || day.category_name || day.event_name || day.event),
+    const categories = [
+      ...new Set(
+        sorted
+          .map((day) => String(day.category_name || "").trim())
+          .filter(Boolean),
+      ),
+    ].sort((left, right) => left.localeCompare(right));
+    const dayTypes = [
+      ...new Set(
+        sorted
+          .map((day) => String(day.day_type || "").trim())
+          .filter(Boolean),
+      ),
+    ].sort((left, right) => left.localeCompare(right));
+    const matchesCalendarFilters = (day) => {
+      const category = String(day.category_name || "").trim();
+      const dayType = String(day.day_type || "").trim();
+      const matchesCategory =
+        calendarCategoryFilter === "all" ||
+        (calendarCategoryFilter === "unclassified"
+          ? !category
+          : category === calendarCategoryFilter);
+      const matchesDayType =
+        calendarDayTypeFilter === "all" ||
+        (calendarDayTypeFilter === "unclassified"
+          ? !dayType
+          : dayType === calendarDayTypeFilter);
+      return matchesCategory && matchesDayType;
+    };
+    const filteredDays = sorted.filter(matchesCalendarFilters);
+    const filteredEvents = filteredDays.filter(
+      (day) => day.day_type || day.category_name || day.event_name || day.event,
     );
+    const colorClasses = (day) => {
+      const normalized = `${day.category_name || ""} ${day.day_type || ""}`.toLowerCase();
+      const customPalettes = isDark
+        ? [
+            ["border-cyan-400/40 bg-cyan-950/30", "text-cyan-200"],
+            ["border-lime-400/40 bg-lime-950/30", "text-lime-200"],
+            ["border-orange-400/40 bg-orange-950/30", "text-orange-200"],
+            ["border-blue-400/40 bg-blue-950/30", "text-blue-200"],
+          ]
+        : [
+            ["border-cyan-200 bg-cyan-50", "text-cyan-900"],
+            ["border-lime-200 bg-lime-50", "text-lime-900"],
+            ["border-orange-200 bg-orange-50", "text-orange-900"],
+            ["border-blue-200 bg-blue-50", "text-blue-900"],
+          ];
+      let palette;
+      if (normalized.includes("exam") || normalized.includes("test")) {
+        palette = isDark
+          ? ["border-amber-400/40 bg-amber-950/30", "text-amber-200"]
+          : ["border-amber-200 bg-amber-50", "text-amber-900"];
+      } else if (normalized.includes("holiday") || normalized.includes("vacation")) {
+        palette = isDark
+          ? ["border-rose-400/40 bg-rose-950/30", "text-rose-200"]
+          : ["border-rose-200 bg-rose-50", "text-rose-900"];
+      } else if (normalized.includes("school") || normalized.includes("working")) {
+        palette = isDark
+          ? ["border-emerald-400/40 bg-emerald-950/25", "text-emerald-200"]
+          : ["border-emerald-200 bg-emerald-50", "text-emerald-900"];
+      } else if (normalized.includes("event") || normalized.includes("annual")) {
+        palette = isDark
+          ? ["border-sky-400/40 bg-sky-950/30", "text-sky-200"]
+          : ["border-sky-200 bg-sky-50", "text-sky-900"];
+      } else if (normalized.includes("weekend") || normalized.includes("saturday")) {
+        palette = isDark
+          ? ["border-slate-600 bg-slate-800/70", "text-slate-200"]
+          : ["border-slate-200 bg-slate-100", "text-slate-800"];
+      } else {
+        const hash = [...normalized].reduce((value, character) => value + character.charCodeAt(0), 0);
+        palette = customPalettes[hash % customPalettes.length];
+      }
+      return { cell: palette[0], text: palette[1] };
+    };
     return (
       <section className={panelClass}>
         <div className="mb-5 flex items-center justify-between gap-3">
@@ -744,28 +805,29 @@ const StudentPortalExperience = () => {
               : `${calendarDateMode.toUpperCase()} dates`}
           </span>
         </div>
-        <div
-          className={`mb-4 flex flex-wrap items-center gap-2 border-b pb-4 ${isDark ? "border-slate-800" : "border-slate-200"}`}
-          aria-label="Filter calendar days"
-        >
-          {[
-            ["all", "All days", dayCount],
-            ["exam", "Exam days", examCount],
-            ["other", "Other days", otherCount],
-          ].map(([filter, label, count]) => (
-            <button
-              key={filter}
-              type="button"
-              aria-pressed={calendarFilter === filter}
-              onClick={() => setCalendarFilter(filter)}
-              className={`rounded-full border px-3 py-1.5 text-sm transition ${calendarFilter === filter ? "border-teal-400 bg-teal-400/15 text-teal-300" : isDark ? "border-slate-700 text-slate-300 hover:bg-slate-800" : "border-slate-300 text-slate-600 hover:bg-slate-100"}`}
-            >
-              {label} <span className="ml-1 tabular-nums opacity-70">{count}</span>
-            </button>
-          ))}
+        <div className={`mb-4 flex flex-wrap items-end gap-3 border-b pb-4 ${isDark ? "border-slate-800" : "border-slate-200"}`}>
+          <label className={`text-xs font-medium ${mutedClass}`}>
+            Category
+            <select value={calendarCategoryFilter} onChange={(event) => setCalendarCategoryFilter(event.target.value)} className={`${fieldClass} mt-1 min-w-44 py-2`}>
+              <option value="all">All categories ({dayCount})</option>
+              {categories.map((category) => <option key={category} value={category}>{category} ({sorted.filter((day) => day.category_name === category).length})</option>)}
+              {sorted.some((day) => !day.category_name) && <option value="unclassified">Uncategorized ({sorted.filter((day) => !day.category_name).length})</option>}
+            </select>
+          </label>
+          <label className={`text-xs font-medium ${mutedClass}`}>
+            Day type
+            <select value={calendarDayTypeFilter} onChange={(event) => setCalendarDayTypeFilter(event.target.value)} className={`${fieldClass} mt-1 min-w-44 py-2`}>
+              <option value="all">All day types</option>
+              {dayTypes.map((dayType) => <option key={dayType} value={dayType}>{dayType} ({sorted.filter((day) => day.day_type === dayType).length})</option>)}
+              {sorted.some((day) => !day.day_type) && <option value="unclassified">Unspecified type ({sorted.filter((day) => !day.day_type).length})</option>}
+            </select>
+          </label>
+          <p className={`pb-2 text-xs ${mutedClass}`} aria-live="polite">
+            Showing {filteredDays.length} of {dayCount} days
+          </p>
         </div>
         {calendarError ? (
-          <p className="rounded-xl bg-amber-400/10 p-3 text-sm text-amber-200">
+          <p className={`rounded-xl bg-amber-400/10 p-3 text-sm ${warningTextClass}`}>
             {calendarError}
           </p>
         ) : !dayCount ? (
@@ -781,7 +843,7 @@ const StudentPortalExperience = () => {
               <div className={mutedClass}>Wed</div>
               <div className={mutedClass}>Thu</div>
               <div className={mutedClass}>Fri</div>
-              <div className="text-rose-400">Sat</div>
+              <div className={isDark ? "text-rose-300" : "text-rose-700"}>Sat</div>
             </div>
             <div className="mt-2 grid grid-cols-7 gap-1">
               {Array.from({ length: offset }, (_, index) => (
@@ -790,6 +852,9 @@ const StudentPortalExperience = () => {
               {sorted.map((day) => {
                 const number = Number(day.day_number || day.day);
                 const adDate = bsToAd(yearNumber, monthNumber, number);
+                const matchesFilters = matchesCalendarFilters(day);
+                const hasClassification = Boolean(day.day_type || day.category_name || day.event_name || day.event);
+                const dayColors = colorClasses(day);
                 const label =
                   day.day_type ||
                   day.category_name ||
@@ -821,7 +886,7 @@ const StudentPortalExperience = () => {
                 return (
                   <div
                     key={day.id || number}
-                    className={`min-h-16 rounded-lg border p-2 ${isToday ? "border-teal-400 ring-1 ring-teal-400" : isDark ? "border-slate-800" : "border-slate-200"} ${isSaturday ? "opacity-45" : ""}`}
+                    className={`min-h-16 rounded-lg border p-2 ${hasClassification && matchesFilters ? dayColors.cell : isDark ? "border-slate-800 bg-slate-900/40" : "border-slate-200 bg-white"} ${isToday ? "ring-2 ring-teal-400" : ""} ${!matchesFilters ? "opacity-35" : isSaturday && !hasClassification ? "opacity-60" : ""}`}
                   >
                     <div className="flex items-baseline justify-between gap-1">
                       {calendarDateMode !== "ad" && (
@@ -842,13 +907,12 @@ const StudentPortalExperience = () => {
                         </span>
                       )}
                     </div>
-                    {label && matchesCalendarFilter(day) && (
-                      <span
-                        className="mt-1 block truncate rounded bg-amber-400/10 px-1 py-0.5 text-[10px] text-amber-300"
-                        title={label}
-                      >
-                        {label}
-                      </span>
+                    {label && matchesFilters && (
+                      <div className={`mt-1 space-y-0.5 text-[10px] leading-tight ${dayColors.text}`}>
+                        {day.day_type && <div className="truncate font-semibold" title={day.day_type}>{day.day_type}</div>}
+                        {day.category_name && day.category_name !== day.day_type && <div className="truncate opacity-75" title={day.category_name}>{day.category_name}</div>}
+                        {!day.day_type && !day.category_name && <div className="truncate" title={label}>{label}</div>}
+                      </div>
                     )}
                   </div>
                 );
@@ -861,12 +925,7 @@ const StudentPortalExperience = () => {
                   key={event.id}
                   className={`mt-2 flex justify-between gap-3 border-b py-2 text-sm ${isDark ? "border-slate-800" : "border-slate-200"}`}
                 >
-                  <span>
-                    {event.day_type ||
-                      event.category_name ||
-                      event.event_name ||
-                      event.event}
-                  </span>
+                  <span>{[event.day_type, event.category_name, event.event_name || event.event].filter(Boolean).filter((value, index, values) => values.indexOf(value) === index).join(" · ")}</span>
                   <span className={mutedClass}>
                     {event.day_number || event.day}
                   </span>
@@ -900,7 +959,7 @@ const StudentPortalExperience = () => {
               <button
                 key={value}
                 onClick={() => setTerm(value)}
-                className={`rounded-lg border px-3 py-2 text-sm ${term === value ? "border-teal-400 bg-teal-500/15 text-teal-300" : "border-slate-600"}`}
+                className={`rounded-lg border px-3 py-2 text-sm ${term === value ? `border-teal-400 ${isDark ? "bg-teal-500/15 text-teal-300" : "bg-teal-50 text-teal-800"}` : isDark ? "border-slate-600" : "border-slate-300"}`}
               >
                 Term {index + 1}
               </button>
@@ -924,11 +983,13 @@ const StudentPortalExperience = () => {
             <Metric
               title="Average"
               value={average === null ? "-" : `${average.toFixed(1)}%`}
+              isDark={isDark}
             />
-            <Metric title="GPA" value="Not provided" />
+            <Metric title="GPA" value="Not provided" isDark={isDark} />
             <Metric
               title="Result"
               value={passed === null ? "-" : passed ? "Pass" : "Needs review"}
+              isDark={isDark}
             />
           </div>
           {resultSubjects.length ? (
@@ -982,10 +1043,10 @@ const StudentPortalExperience = () => {
           <Printer size={16} />
         </button>
       </div>
-      {feeError && <p className="mb-4 text-sm text-amber-300">{feeError}</p>}
+      {feeError && <p className={`mb-4 text-sm ${warningTextClass}`}>{feeError}</p>}
       <div className="mb-5 grid gap-3 sm:grid-cols-2">
-        <Metric title="Total due" value={`Rs. ${dueFees.toLocaleString()}`} />
-        <Metric title="Total paid" value={`Rs. ${paidFees.toLocaleString()}`} />
+        <Metric title="Total due" value={`Rs. ${dueFees.toLocaleString()}`} isDark={isDark} />
+        <Metric title="Total paid" value={`Rs. ${paidFees.toLocaleString()}`} isDark={isDark} />
       </div>
       {fees.length ? (
         <div className="overflow-x-auto">
@@ -1001,7 +1062,7 @@ const StudentPortalExperience = () => {
             </thead>
             <tbody>
               {fees.map((fee) => (
-                <tr key={fee.id} className="border-t border-slate-700/50">
+                <tr key={fee.id} className={`border-t ${subtleBorderClass}`}>
                   <td className="py-3">
                     {fee.fee_category_name || fee.name || "School fee"}
                   </td>
@@ -1015,13 +1076,13 @@ const StudentPortalExperience = () => {
                   </td>
                   <td className="print:hidden">
                     {String(fee.status).toLowerCase() === "paid" ? (
-                      <button onClick={printPage} className="text-teal-400">
+                      <button onClick={printPage} className={accentTextClass}>
                         Receipt
                       </button>
                     ) : (
                       <button
                         onClick={() => setPaymentFee(fee)}
-                        className="text-teal-400"
+                        className={accentTextClass}
                       >
                         Pay now
                       </button>
@@ -1072,7 +1133,7 @@ const StudentPortalExperience = () => {
                 ))}
               </select>
             </label>
-            <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
+            <div className={`mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm ${warningTextClass}`}>
               Online payment is not enabled for this school. No payment has been
               taken or recorded.
             </div>
@@ -1107,7 +1168,7 @@ const StudentPortalExperience = () => {
               resultSubjects.map((subject, index) => (
                 <div
                   key={`${subject.name}-${index}`}
-                  className="rounded-xl border border-slate-700/50 p-4"
+                  className={`rounded-xl border ${subtleBorderClass} p-4`}
                 >
                   <div className="flex justify-between gap-4">
                     <strong>{subject.name}</strong>
@@ -1115,7 +1176,7 @@ const StudentPortalExperience = () => {
                       {subject.score}/100 · {subject.grade}
                     </span>
                   </div>
-                  <div className="mt-3 h-2 rounded-full bg-slate-700">
+                  <div className={`mt-3 h-2 rounded-full ${isDark ? "bg-slate-700" : "bg-slate-100"}`}>
                     <div
                       className="h-2 rounded-full bg-teal-400"
                       style={{ width: `${Math.min(100, subject.score)}%` }}
@@ -1222,7 +1283,7 @@ const StudentPortalExperience = () => {
               leaveRequests.map((request) => (
                 <div
                   key={request.id}
-                  className="mt-3 rounded-xl border border-slate-700/50 p-3"
+                  className={`mt-3 rounded-xl border ${subtleBorderClass} p-3`}
                 >
                   <div className="flex justify-between">
                     <strong>{request.type}</strong>
@@ -1253,7 +1314,7 @@ const StudentPortalExperience = () => {
           {homework.map((item) => (
             <div
               key={item.id}
-              className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/50 py-3"
+              className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-b ${subtleBorderClass} py-3`}
             >
               <button
                 onClick={() => toggleHomework(item.id)}
@@ -1442,7 +1503,7 @@ const StudentPortalExperience = () => {
                 ["Phone", student.phone_no],
                 ["Email", student.student_mail || student.school_email],
               ].map(([label, value]) => (
-                <div key={label} className="border-b border-slate-700/50 py-2">
+                <div key={label} className={`border-b ${subtleBorderClass} py-2`}>
                   <div className={`text-xs ${mutedClass}`}>{label}</div>
                   <div className="mt-1">{value || "Not provided"}</div>
                 </div>
@@ -1597,22 +1658,22 @@ const StudentPortalExperience = () => {
         {leaveLoading ? (
           <p className={`mt-3 text-sm ${mutedClass}`}>Loading requests…</p>
         ) : leaveError ? (
-          <p className="mt-3 text-sm text-rose-300">{leaveError}</p>
+          <p className={`mt-3 text-sm ${isDark ? "text-rose-300" : "text-rose-800"}`}>{leaveError}</p>
         ) : leaveRequests.length ? (
           leaveRequests.map((request) => (
             <article
               key={request.id}
-              className="mt-3 rounded-xl border border-slate-700/50 p-3"
+              className={`mt-3 rounded-xl border ${subtleBorderClass} p-3`}
             >
               <div className="flex justify-between gap-3">
                 <strong>{request.leave_type || "Leave request"}</strong>
                 <span
                   className={
                     request.status === "approved"
-                      ? "text-emerald-400"
+                      ? isDark ? "text-emerald-300" : "text-emerald-800"
                       : request.status === "rejected"
-                        ? "text-rose-400"
-                        : "text-amber-300"
+                        ? isDark ? "text-rose-300" : "text-rose-800"
+                        : warningTextClass
                   }
                 >
                   {request.status}
@@ -1681,7 +1742,7 @@ const StudentPortalExperience = () => {
         Course & marks
       </h2>
       {courseError ? (
-        <p className="mt-4 text-sm text-amber-300">{courseError}</p>
+        <p className={`mt-4 text-sm ${warningTextClass}`}>{courseError}</p>
       ) : courses.length ? (
         <div className="mt-5 space-y-4">
           {courses.map((course) => {
@@ -1705,7 +1766,7 @@ const StudentPortalExperience = () => {
             return (
               <article
                 key={course.id || course.course_code || title}
-                className="rounded-xl border border-slate-700/50 p-4"
+                className={`rounded-xl border ${subtleBorderClass} p-4`}
               >
                 <div className="flex flex-wrap justify-between gap-3">
                   <div>
@@ -1761,7 +1822,7 @@ const StudentPortalExperience = () => {
           <Printer size={16} />
         </button>
       </div>
-      <div className="mt-5 rounded-xl border border-slate-700/50 p-4">
+      <div className={`mt-5 rounded-xl border ${subtleBorderClass} p-4`}>
         <h3 className="font-semibold">Admit card</h3>
         <p className={`mt-2 text-sm ${mutedClass}`}>
           {student.full_name} · {student.class_name || "Class not assigned"} ·
@@ -1773,9 +1834,9 @@ const StudentPortalExperience = () => {
         </p>
       </div>
       {examError ? (
-        <p className="mt-4 text-sm text-amber-300">{examError}</p>
+        <p className={`mt-4 text-sm ${warningTextClass}`}>{examError}</p>
       ) : exams.length ? (
-        <div className="mt-4 divide-y divide-slate-700/50">
+        <div className={`mt-4 divide-y ${isDark ? "divide-slate-700/50" : "divide-slate-200"}`}>
           {exams.map((exam) => (
             <article
               key={exam.id}
@@ -1833,7 +1894,7 @@ const StudentPortalExperience = () => {
     );
   if (loadError || !student)
     return (
-      <div className="m-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-5 text-rose-200">
+      <div className={`m-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-5 ${isDark ? "text-rose-200" : "text-rose-900"}`}>
         {loadError || "No student profile found."}
       </div>
     );
@@ -1958,7 +2019,7 @@ const StudentPortalExperience = () => {
                 <button
                   key={id}
                   onClick={() => openSection(id)}
-                  className={`relative flex shrink-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition lg:w-full ${active === id ? "bg-teal-400/15 text-teal-300" : isDark ? "text-slate-300 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-100"}`}
+                  className={`relative flex shrink-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition lg:w-full ${active === id ? isDark ? "bg-teal-400/15 text-teal-300" : "bg-teal-50 text-teal-800" : isDark ? "text-slate-300 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-100"}`}
                 >
                   <Icon size={16} />
                   <span className="flex-1">{label}</span>
@@ -1982,7 +2043,7 @@ const StudentPortalExperience = () => {
       {toast && (
         <div
           role="status"
-          className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl"
+          className={`fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl px-4 py-3 text-sm shadow-xl ${isDark ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"}`}
         >
           {toast}
         </div>
@@ -1991,10 +2052,10 @@ const StudentPortalExperience = () => {
   );
 };
 
-const Metric = ({ title, value }) => (
-  <div className="rounded-xl border border-slate-700/50 p-4">
-    <p className="text-xs uppercase tracking-wide text-slate-400">{title}</p>
-    <p className="mt-2 text-xl font-semibold">{value}</p>
+const Metric = ({ title, value, isDark }) => (
+  <div className={`rounded-xl border p-4 ${isDark ? "border-slate-700/50" : "border-slate-200"}`}>
+    <p className={`text-xs uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>{title}</p>
+    <p className={`mt-2 text-xl font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{value}</p>
   </div>
 );
 
