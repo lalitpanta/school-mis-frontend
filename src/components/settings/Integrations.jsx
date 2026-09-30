@@ -284,7 +284,10 @@ const Integrations = () => {
     const connected = url.searchParams.get("gmail_connected");
     const error = url.searchParams.get("gmail_error");
     if (connected) toast.success("Gmail connected successfully.");
-    if (error) toast.error("Gmail authorization failed. Check the OAuth redirect URI and try again.");
+    if (error)
+      toast.error(
+        "Gmail authorization failed. Check the OAuth redirect URI and try again.",
+      );
     if (connected || error) {
       url.searchParams.delete("gmail_connected");
       url.searchParams.delete("gmail_error");
@@ -391,7 +394,9 @@ const Integrations = () => {
       !config.gmail_client_id ||
       (!config.gmail_client_secret && !config.gmail_client_secret_configured)
     ) {
-      toast.error("Enter the Gmail address, OAuth Client ID, and Client Secret first.");
+      toast.error(
+        "Enter the Gmail address, OAuth Client ID, and Client Secret first.",
+      );
       return;
     }
     try {
@@ -399,11 +404,14 @@ const Integrations = () => {
       await updateSettings({ email_config: config });
       const response = await startGmailOAuth();
       const authorizationUrl = response.data?.data?.authorizationUrl;
-      if (!authorizationUrl) throw new Error("Google authorization URL was not returned.");
+      if (!authorizationUrl)
+        throw new Error("Google authorization URL was not returned.");
       window.location.assign(authorizationUrl);
     } catch (err) {
       toast.error(
-        err.response?.data?.message || err.message || "Could not start Gmail authorization.",
+        err.response?.data?.message ||
+          err.message ||
+          "Could not start Gmail authorization.",
       );
       setConnectingGmail(false);
     }
@@ -747,7 +755,9 @@ const Integrations = () => {
             {config.email_provider === "gmail_api" ? (
               <div className="space-y-4">
                 <p className="text-sm text-slate-400">
-                  Connect your Gmail account once. Google will ask for permission, then the app stores its token securely for ongoing mail delivery.
+                  Connect your Gmail account once. Google will ask for
+                  permission, then the app stores its token securely for ongoing
+                  mail delivery.
                 </p>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -797,11 +807,13 @@ const Integrations = () => {
                 </button>
                 {config.gmail_api_connected && (
                   <p className="text-sm text-emerald-300">
-                    Connected as {config.gmail_authorized_email || config.email_address}.
+                    Connected as{" "}
+                    {config.gmail_authorized_email || config.email_address}.
                   </p>
                 )}
                 <p className="text-xs text-slate-500">
-                  Add this redirect URI to your Google OAuth client: https://school-mis-backend.onrender.com/v1/settings/email/gmail/callback
+                  Add this redirect URI to your Google OAuth client:
+                  https://school-mis-backend.onrender.com/v1/settings/email/gmail/callback
                 </p>
               </div>
             ) : (
