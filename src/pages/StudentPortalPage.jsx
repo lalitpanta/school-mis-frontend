@@ -1,18 +1,50 @@
 import { useEffect, useState } from "react";
-import { GraduationCap, Mail, Phone, MapPin, UserCircle2 } from "lucide-react";
-import { getCurrentStudent } from "../api/studentsApi";
+import {
+  GraduationCap,
+  Mail,
+  MapPin,
+  UserCircle2,
+  Pencil,
+  Save,
+  X,
+  LogOut,
+} from "lucide-react";
+import { getCurrentStudent, updateCurrentStudent } from "../api/studentsApi";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const StudentPortalPage = () => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [profileForm, setProfileForm] = useState({});
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadStudent = async () => {
       try {
         setLoading(true);
         const response = await getCurrentStudent();
-        setStudent(response?.data?.data || null);
+        const profile = response?.data?.data || null;
+        setStudent(profile);
+        if (profile) {
+          setProfileForm({
+            phone_no: profile.phone_no || "",
+            address: profile.address || "",
+            current_address: profile.current_address || "",
+            home_district: profile.home_district || "",
+            home_municipality: profile.home_municipality || "",
+            home_ward: profile.home_ward || "",
+            home_full_address: profile.home_full_address || "",
+            guardian_name: profile.guardian_name || "",
+            guardian_email: profile.guardian_email || "",
+            guardian_phone: profile.guardian_phone || "",
+          });
+        }
       } catch (err) {
         setError(
           err?.response?.data?.message || "Unable to load student profile.",
@@ -49,29 +81,174 @@ const StudentPortalPage = () => {
     );
   }
 
+  const updateField = (event) => {
+    setProfileForm((current) => ({
+      ...current,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const cancelEditing = () => {
+    setProfileForm({
+      phone_no: student.phone_no || "",
+      address: student.address || "",
+      current_address: student.current_address || "",
+      home_district: student.home_district || "",
+      home_municipality: student.home_municipality || "",
+      home_ward: student.home_ward || "",
+      home_full_address: student.home_full_address || "",
+      guardian_name: student.guardian_name || "",
+      guardian_email: student.guardian_email || "",
+      guardian_phone: student.guardian_phone || "",
+    });
+    setEditing(false);
+    setSaveMessage("");
+  };
+
+  const saveProfile = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setError("");
+    setSaveMessage("");
+    try {
+      const response = await updateCurrentStudent(profileForm);
+      const updated = response?.data?.data || { ...student, ...profileForm };
+      setStudent(updated);
+      setEditing(false);
+      setSaveMessage("Your profile has been updated.");
+    } catch (saveError) {
+      setError(
+        saveError?.response?.data?.message || "Unable to save your profile.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-3xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/30 md:flex-row md:items-center md:justify-between">
+    <main className="min-h-screen bg-slate-950 px-4 py-6 text-white sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-6">
+      <div className="flex flex-col gap-4 border-b border-slate-800 pb-5 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/15 text-indigo-300">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-400 text-emerald-950">
             <GraduationCap className="h-7 w-7" />
           </div>
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+            <p className="text-xs font-medium uppercase tracking-widest text-emerald-300">
               Student portal
             </p>
-            <h1 className="text-2xl font-semibold text-white">
+            <h1 className="mt-1 text-2xl font-semibold text-white">
               {student.full_name || "Student"}
             </h1>
           </div>
         </div>
-        <div className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300">
-          Active student account
+        <div className="flex flex-wrap items-center gap-3">
+          {!editing ? (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-400 px-4 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-300"
+            >
+              <Pencil size={16} /> Edit my profile
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              navigate("/student/login", { replace: true });
+            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+          >
+            <LogOut size={16} /> Sign out
+          </button>
         </div>
       </div>
 
+      {saveMessage && (
+        <div role="status" className="border-l-2 border-emerald-400 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+          {saveMessage}
+        </div>
+      )}
+
+      {editing ? (
+        <form onSubmit={saveProfile} className="space-y-6">
+          <section className="border-b border-slate-800 pb-6">
+            <h2 className="text-lg font-semibold">Contact and address</h2>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {[
+                ["phone_no", "Phone number", "tel"],
+                ["current_address", "Current address", "text"],
+                ["address", "Permanent address", "text"],
+                ["home_district", "Home district", "text"],
+                ["home_municipality", "Municipality", "text"],
+                ["home_ward", "Ward", "text"],
+                ["home_full_address", "Home address details", "text"],
+              ].map(([name, label, type]) => (
+                <label key={name} className="block text-sm text-slate-300">
+                  {label}
+                  <input
+                    name={name}
+                    type={type}
+                    value={profileForm[name] || ""}
+                    onChange={updateField}
+                    className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2.5 text-white outline-none focus:border-emerald-400"
+                  />
+                </label>
+              ))}
+              <div className="text-sm text-slate-300">
+                Student login email
+                <p className="mt-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2.5 text-slate-400">
+                  {student.student_mail || student.school_email || "Not provided"}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Contact your school to change your login email.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section className="border-b border-slate-800 pb-6">
+            <h2 className="text-lg font-semibold">Guardian contact</h2>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {[
+                ["guardian_name", "Guardian name", "text"],
+                ["guardian_email", "Guardian email", "email"],
+                ["guardian_phone", "Guardian phone", "tel"],
+              ].map(([name, label, type]) => (
+                <label key={name} className="block text-sm text-slate-300">
+                  {label}
+                  <input
+                    name={name}
+                    type={type}
+                    value={profileForm[name] || ""}
+                    onChange={updateField}
+                    className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2.5 text-white outline-none focus:border-emerald-400"
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-emerald-950 hover:bg-emerald-300 disabled:opacity-60"
+            >
+              <Save size={16} /> {saving ? "Saving..." : "Save profile"}
+            </button>
+            <button
+              type="button"
+              onClick={cancelEditing}
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800"
+            >
+              <X size={16} /> Cancel
+            </button>
+          </div>
+        </form>
+      ) : (
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5">
+        <section className="border-t-2 border-emerald-400 py-5">
           <div className="mb-4 flex items-center gap-3 text-lg font-medium text-white">
             <UserCircle2 className="h-5 w-5 text-indigo-300" />
             Profile overview
@@ -96,15 +273,15 @@ const StudentPortalPage = () => {
               </dd>
             </div>
           </dl>
-        </div>
+        </section>
 
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 lg:col-span-2">
+        <section className="border-t-2 border-slate-700 py-5 lg:col-span-2">
           <div className="mb-4 flex items-center gap-3 text-lg font-medium text-white">
             <Mail className="h-5 w-5 text-indigo-300" />
             Contact details
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4">
+            <div className="border-b border-slate-800 py-3">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Student email
               </p>
@@ -112,7 +289,7 @@ const StudentPortalPage = () => {
                 {student.student_mail || student.school_email || "Not provided"}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4">
+            <div className="border-b border-slate-800 py-3">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Phone
               </p>
@@ -120,7 +297,7 @@ const StudentPortalPage = () => {
                 {student.phone_no || "Not provided"}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4 md:col-span-2">
+            <div className="border-b border-slate-800 py-3 md:col-span-2">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Address
               </p>
@@ -132,7 +309,7 @@ const StudentPortalPage = () => {
                   "Not provided"}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4 md:col-span-2">
+            <div className="border-b border-slate-800 py-3 md:col-span-2">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Guardian
               </p>
@@ -142,9 +319,11 @@ const StudentPortalPage = () => {
               </p>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
     </div>
+      )}
+      </div>
+    </main>
   );
 };
 

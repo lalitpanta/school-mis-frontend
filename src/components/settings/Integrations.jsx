@@ -57,7 +57,7 @@ const DEFAULT_EMAIL_CONFIG = {
 const DEFAULT_EMAIL_TEMPLATES = {
   student_created: {
     subject: "🎉 Admission Confirmed — Welcome to {{schoolName}}",
-    body: `<div style="font-family:Arial,Helvetica,sans-serif;color:#333"><div style="background:#f3f4f6;padding:24px;border-radius:8px"><h1 style="color:#0f172a">Welcome to {{schoolName}}</h1><p style="color:#374151">Hello <strong>{{studentName}}</strong>,</p><p style="color:#374151">Your admission has been confirmed. Admission No: {{admissionNo}}</p><h3>Student Portal Login</h3><p><strong>Login email:</strong> {{loginEmail}}<br/><strong>Temporary password:</strong> {{password}}</p><p>Please change your password after signing in.</p><p style="color:#6b7280">— {{schoolName}} Admissions Team</p></div></div>`,
+    body: `<div style="font-family:Arial,Helvetica,sans-serif;color:#333"><div style="background:#f3f4f6;padding:24px;border-radius:8px"><h1 style="color:#0f172a">Welcome to {{schoolName}}</h1><p style="color:#374151">Hello <strong>{{studentName}}</strong>,</p><p style="color:#374151">Your admission has been confirmed. Admission No: {{admissionNo}}</p><h3>Student Portal Login</h3><p><strong>Login email:</strong> {{loginEmail}}<br/><strong>Temporary password:</strong> {{password}}</p><p><a href="{{studentLoginUrl}}">Open Student Login</a></p><p><a href="{{passwordResetUrl}}">Set or reset your password</a></p><p>This secure password link expires in 60 minutes.</p><p style="color:#6b7280">— {{schoolName}} Admissions Team</p></div></div>`,
   },
   user_created: {
     subject: "🔐 New User Account Created",
@@ -127,6 +127,8 @@ const DEFAULT_VARIABLES = {
     "admissionNo",
     "loginEmail",
     "password",
+    "studentLoginUrl",
+    "passwordResetUrl",
   ],
   user_created: ["name", "username", "password"],
   fee_payment_success: ["studentName", "amount", "receiptNo"],

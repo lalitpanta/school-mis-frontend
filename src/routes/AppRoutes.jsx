@@ -24,6 +24,8 @@ import ResultManagement from "../pages/ResultManagement";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import DailyReportPage from "../pages/DailyReportPage";
 import StudentPortalPage from "../pages/StudentPortalPage";
+import StudentLoginPage from "../pages/StudentLoginPage";
+import StudentPasswordResetPage from "../pages/StudentPasswordResetPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
 import LeaveManagementPage from "../pages/LeaveManagementPage";
@@ -139,7 +141,7 @@ const StudentRoute = ({ element }) => {
   return isAuthenticated && isStudent() ? (
     element
   ) : (
-    <Navigate to="/login" replace />
+    <Navigate to="/student/login" replace />
   );
 };
 
@@ -217,16 +219,12 @@ const AppRoutes = () => {
       {/* Login pages */}
       <Route path="/system/login" element={<SystemLoginPage />} />
       <Route path="/login" element={<TenantStaffLoginPage />} />
+      <Route path="/student/login" element={<StudentLoginPage />} />
+      <Route path="/student/reset-password" element={<StudentPasswordResetPage />} />
       <Route
         path={ROUTES.STUDENT_PORTAL}
         element={
-          <StudentRoute
-            element={
-              <MainLayout>
-                <StudentPortalPage />
-              </MainLayout>
-            }
-          />
+          <StudentRoute element={<StudentPortalPage />} />
         }
       />
       <Route path="/result-portal" element={<ResultPortalPage />} />

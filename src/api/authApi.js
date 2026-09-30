@@ -238,6 +238,43 @@ export const unifiedLogin = async (email, password, tenantSlug = null) => {
   }
 };
 
+export const studentLogin = async (tenantSlug, email, password) => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_BASE}/student/login`, {
+      tenantSlug,
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const requestStudentPasswordReset = async (tenantSlug, email) => {
+  try {
+    const response = await axiosInstance.post(
+      `${AUTH_BASE}/student/password/forgot`,
+      { tenantSlug, email },
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const resetStudentPassword = async (tenantSlug, token, newPassword) => {
+  try {
+    const response = await axiosInstance.post(
+      `${AUTH_BASE}/student/password/reset`,
+      { tenantSlug, token, newPassword },
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const requestPasswordReset = async (email, tenantSlug = "") => {
   try {
     const response = await axiosInstance.post(`${AUTH_BASE}/password/forgot`, {

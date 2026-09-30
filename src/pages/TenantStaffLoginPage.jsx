@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
@@ -459,6 +459,14 @@ const TenantStaffLoginPage = () => {
                   )}
                 </button>
               </form>
+              <div className="mt-5 border-t border-white/10 pt-4 text-center">
+                <Link
+                  to="/student/login"
+                  className="text-sm font-medium text-emerald-300 transition-colors hover:text-emerald-200"
+                >
+                  Student portal sign in
+                </Link>
+              </div>
             </div>
           </div>
         </div>
