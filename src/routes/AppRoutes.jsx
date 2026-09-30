@@ -217,8 +217,9 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Login pages */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/tenant/login" element={<LoginPage />} />
       <Route path="/system/login" element={<SystemLoginPage />} />
-          <StudentRoute element={<StudentPortalDashboardPage />} />
       <Route path="/student/login" element={<StudentLoginPage />} />
       <Route
         path="/student/reset-password"
@@ -226,7 +227,7 @@ const AppRoutes = () => {
       />
       <Route
         path={ROUTES.STUDENT_PORTAL}
-        element={<StudentRoute element={<StudentPortalPage />} />}
+        element={<StudentRoute element={<StudentPortalDashboardPage />} />}
       />
       <Route path="/result-portal" element={<ResultPortalPage />} />
       <Route
@@ -577,11 +578,11 @@ const AppRoutes = () => {
               <Navigate to={getFirstModuleRoute()} replace />
             )
           ) : (
-            <Navigate to="/system/login" replace />
+            <Navigate to="/login" replace />
           )
         }
       />
-      <Route path="*" element={<Navigate to="/system/login" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
