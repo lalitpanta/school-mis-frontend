@@ -9,13 +9,9 @@ import {
 
 const StudentPasswordResetPage = () => {
   const [searchParams] = useSearchParams();
-  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const token = searchParams.get("token") || hashParams.get("token") || "";
+  const token = searchParams.get("token") || "";
   const [tenantSlug, setTenantSlug] = useState(
-    searchParams.get("tenant") ||
-      searchParams.get("tenantSlug") ||
-      hashParams.get("tenant") ||
-      "",
+    searchParams.get("tenant") || searchParams.get("tenantSlug") || "",
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

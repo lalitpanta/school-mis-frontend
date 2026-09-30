@@ -23,7 +23,7 @@ import EmployeePage from "../pages/EmployeePage";
 import ResultManagement from "../pages/ResultManagement";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import DailyReportPage from "../pages/DailyReportPage";
-import StudentPortalDashboardPage from "../pages/StudentPortalDashboardPage";
+import StudentPortalPage from "../pages/StudentPortalPage";
 import StudentLoginPage from "../pages/StudentLoginPage";
 import StudentPasswordResetPage from "../pages/StudentPasswordResetPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
@@ -217,9 +217,8 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Login pages */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/tenant/login" element={<LoginPage />} />
       <Route path="/system/login" element={<SystemLoginPage />} />
+      <Route path="/login" element={<TenantStaffLoginPage />} />
       <Route path="/student/login" element={<StudentLoginPage />} />
       <Route
         path="/student/reset-password"
@@ -227,7 +226,7 @@ const AppRoutes = () => {
       />
       <Route
         path={ROUTES.STUDENT_PORTAL}
-        element={<StudentRoute element={<StudentPortalDashboardPage />} />}
+        element={<StudentRoute element={<StudentPortalPage />} />}
       />
       <Route path="/result-portal" element={<ResultPortalPage />} />
       <Route
@@ -578,11 +577,11 @@ const AppRoutes = () => {
               <Navigate to={getFirstModuleRoute()} replace />
             )
           ) : (
-            <Navigate to="/login" replace />
+            <Navigate to="/system/login" replace />
           )
         }
       />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/system/login" replace />} />
     </Routes>
   );
 };
