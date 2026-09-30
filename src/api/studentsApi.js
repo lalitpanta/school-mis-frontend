@@ -2,6 +2,10 @@ import axiosInstance from "./axiosInstance";
 
 export const getStudents = () => axiosInstance.get("/v1/settings/students");
 export const getCurrentStudent = () => axiosInstance.get("/v1/students/me");
+export const getStudentCalendarMonths = () =>
+  axiosInstance.get("/v1/students/me/calendar/months");
+export const getStudentCalendarDays = (monthId) =>
+  axiosInstance.get(`/v1/students/me/calendar/months/${monthId}/days`);
 export const updateCurrentStudent = (data) =>
   axiosInstance.patch(
     "/v1/students/me",

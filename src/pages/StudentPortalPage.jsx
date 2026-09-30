@@ -117,7 +117,8 @@ const StudentPortalPage = () => {
 
         try {
           const monthResponse = await getMonths();
-          const monthList = monthResponse?.data?.data || monthResponse?.data || [];
+          const monthList =
+            monthResponse?.data?.data || monthResponse?.data || [];
           const months = Array.isArray(monthList) ? monthList : [];
           setCalendarMonths(months);
 
@@ -126,9 +127,14 @@ const StudentPortalPage = () => {
             months.find(
               (month) =>
                 Number(
-                  month.bs_month_index ?? month.month_index ?? month.month_number ?? 1,
+                  month.bs_month_index ??
+                    month.month_index ??
+                    month.month_number ??
+                    1,
                 ) === currentMonthIndex,
-            ) || months[0] || null;
+            ) ||
+            months[0] ||
+            null;
 
           setCalendarMonth(matchedMonth);
 
@@ -138,7 +144,8 @@ const StudentPortalPage = () => {
           }
 
           const calendarResponse = await getCalendarDays(matchedMonth.id, "BS");
-          const days = calendarResponse?.data?.data || calendarResponse?.data || [];
+          const days =
+            calendarResponse?.data?.data || calendarResponse?.data || [];
           setCalendarDays(Array.isArray(days) ? days : []);
         } catch (err) {
           setCalendarDays([]);
@@ -290,12 +297,16 @@ const StudentPortalPage = () => {
           ].filter((value) => Number.isFinite(value));
           const average =
             points.length > 0
-              ? points.reduce((total, value) => total + value, 0) / points.length
+              ? points.reduce((total, value) => total + value, 0) /
+                points.length
               : 0;
           return {
             subjects: acc.subjects + 1,
             average: acc.average + average,
-            best: Math.max(acc.best, Number(item.final_marks ?? item.total_marks ?? 0)),
+            best: Math.max(
+              acc.best,
+              Number(item.final_marks ?? item.total_marks ?? 0),
+            ),
           };
         },
         { subjects: 0, average: 0, best: 0 },
@@ -337,77 +348,110 @@ const StudentPortalPage = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.8fr]">
-      <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
-            <GraduationCap className="h-5 w-5" />
-          </span>
-          <h2 className="text-xl font-semibold text-[#edf5ff]">Student details</h2>
-        </div>
+        <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
+              <GraduationCap className="h-5 w-5" />
+            </span>
+            <h2 className="text-xl font-semibold text-[#edf5ff]">
+              Student details
+            </h2>
+          </div>
 
-        <div className="space-y-4 text-sm text-[#dceafc]">
-          <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
-            <span className="text-[#8fa9c0]">Admission No.</span>
-            <span className="font-medium text-[#f3f8ff]">{student.admission_no || "N/A"}</span>
-          </div>
-          <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
-            <span className="text-[#8fa9c0]">Roll No.</span>
-            <span className="font-medium text-[#f3f8ff]">{student.roll_no || "N/A"}</span>
-          </div>
-          <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
-            <span className="text-[#8fa9c0]">Class</span>
-            <span className="font-medium text-[#f3f8ff]">{student.class_name || "N/A"}</span>
-          </div>
-          <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
-            <span className="text-[#8fa9c0]">Section</span>
-            <span className="font-medium text-[#f3f8ff]">{student.section_name || "N/A"}</span>
-          </div>
-          <div className="flex items-center justify-between pb-1">
-            <span className="text-[#8fa9c0]">Parent/Guardian</span>
-            <span className="font-medium text-[#f3f8ff]">{student.guardian_name || "N/A"}</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
-            <Clock3 className="h-5 w-5" />
-          </span>
-          <h2 className="text-xl font-semibold text-[#edf5ff]">Contact & address</h2>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">Email</div>
-            <div className="flex items-start gap-2 text-[17px] leading-7 text-[#edf5ff]">
-              <Mail className="mt-1 h-4 w-4 shrink-0 text-[#73f0dc]" />
-              <span>{student.student_mail || student.school_email || "Not provided"}</span>
+          <div className="space-y-4 text-sm text-[#dceafc]">
+            <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+              <span className="text-[#8fa9c0]">Admission No.</span>
+              <span className="font-medium text-[#f3f8ff]">
+                {student.admission_no || "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+              <span className="text-[#8fa9c0]">Roll No.</span>
+              <span className="font-medium text-[#f3f8ff]">
+                {student.roll_no || "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+              <span className="text-[#8fa9c0]">Class</span>
+              <span className="font-medium text-[#f3f8ff]">
+                {student.class_name || "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-b border-[#223b53] pb-3">
+              <span className="text-[#8fa9c0]">Section</span>
+              <span className="font-medium text-[#f3f8ff]">
+                {student.section_name || "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between pb-1">
+              <span className="text-[#8fa9c0]">Parent/Guardian</span>
+              <span className="font-medium text-[#f3f8ff]">
+                {student.guardian_name || "N/A"}
+              </span>
             </div>
           </div>
+        </section>
 
-          <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">Phone</div>
-            <div className="text-[17px] leading-7 text-[#edf5ff]">{student.phone_no || "Not provided"}</div>
+        <section className="rounded-[28px] border border-[#2b4058] bg-[#0b1c2f] p-5 lg:p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
+              <Clock3 className="h-5 w-5" />
+            </span>
+            <h2 className="text-xl font-semibold text-[#edf5ff]">
+              Contact & address
+            </h2>
           </div>
 
-          <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4 md:col-span-2">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">Address</div>
-            <div className="flex items-start gap-2 text-[17px] leading-7 text-[#edf5ff]">
-              <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#73f0dc]" />
-              <span>{student.current_address || student.address || student.home_full_address || "Not provided"}</span>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                Email
+              </div>
+              <div className="flex items-start gap-2 text-[17px] leading-7 text-[#edf5ff]">
+                <Mail className="mt-1 h-4 w-4 shrink-0 text-[#73f0dc]" />
+                <span>
+                  {student.student_mail ||
+                    student.school_email ||
+                    "Not provided"}
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                Phone
+              </div>
+              <div className="text-[17px] leading-7 text-[#edf5ff]">
+                {student.phone_no || "Not provided"}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4 md:col-span-2">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                Address
+              </div>
+              <div className="flex items-start gap-2 text-[17px] leading-7 text-[#edf5ff]">
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#73f0dc]" />
+                <span>
+                  {student.current_address ||
+                    student.address ||
+                    student.home_full_address ||
+                    "Not provided"}
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4 md:col-span-2">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">
+                Guardian contact
+              </div>
+              <div className="text-[17px] leading-7 text-[#edf5ff]">
+                {student.guardian_name || "Not provided"}
+                {student.guardian_phone ? ` • ${student.guardian_phone}` : ""}
+              </div>
             </div>
           </div>
-
-          <div className="rounded-2xl border border-[#29415d] bg-[#0d2339] p-4 md:col-span-2">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8ea9c2]">Guardian contact</div>
-            <div className="text-[17px] leading-7 text-[#edf5ff]">
-              {student.guardian_name || "Not provided"}
-              {student.guardian_phone ? ` • ${student.guardian_phone}` : ""}
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
       </div>
     </>
   );
@@ -419,7 +463,9 @@ const StudentPortalPage = () => {
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
             <BookOpen className="h-5 w-5" />
           </span>
-          <h2 className="text-xl font-semibold text-[#edf5ff]">Academic results</h2>
+          <h2 className="text-xl font-semibold text-[#edf5ff]">
+            Academic results
+          </h2>
         </div>
 
         <div className="rounded-full border border-[#2d445f] bg-[#10263c] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9bb8d2]">
@@ -439,16 +485,28 @@ const StudentPortalPage = () => {
         <>
           <div className="mb-6 grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Subjects</div>
-              <div className="mt-2 text-2xl font-semibold text-white">{renderedResultsSummary.subjects}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+                Subjects
+              </div>
+              <div className="mt-2 text-2xl font-semibold text-white">
+                {renderedResultsSummary.subjects}
+              </div>
             </div>
             <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Average</div>
-              <div className="mt-2 text-2xl font-semibold text-[#73f0dc]">{renderedResultsSummary.average}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+                Average
+              </div>
+              <div className="mt-2 text-2xl font-semibold text-[#73f0dc]">
+                {renderedResultsSummary.average}
+              </div>
             </div>
             <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Best score</div>
-              <div className="mt-2 text-2xl font-semibold text-[#f9d88e]">{renderedResultsSummary.best}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+                Best score
+              </div>
+              <div className="mt-2 text-2xl font-semibold text-[#f9d88e]">
+                {renderedResultsSummary.best}
+              </div>
             </div>
           </div>
 
@@ -466,11 +524,25 @@ const StudentPortalPage = () => {
                 </thead>
                 <tbody>
                   {results.map((item) => (
-                    <tr key={item.id || `${item.subject}-${item.student_id}`} className="border-t border-[#223b53] bg-[#0d2238]">
-                      <td className="px-4 py-3 text-white">{item.subject || "N/A"}</td>
-                      <td className="px-4 py-3">{item.first_term_marks ?? item.first_term ?? "-"}</td>
-                      <td className="px-4 py-3">{item.second_term_marks ?? item.second_term ?? "-"}</td>
-                      <td className="px-4 py-3">{item.final_marks ?? item.final ?? item.total_marks ?? "-"}</td>
+                    <tr
+                      key={item.id || `${item.subject}-${item.student_id}`}
+                      className="border-t border-[#223b53] bg-[#0d2238]"
+                    >
+                      <td className="px-4 py-3 text-white">
+                        {item.subject || "N/A"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {item.first_term_marks ?? item.first_term ?? "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {item.second_term_marks ?? item.second_term ?? "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {item.final_marks ??
+                          item.final ??
+                          item.total_marks ??
+                          "-"}
+                      </td>
                       <td className="px-4 py-3">
                         <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-xs font-semibold text-emerald-200">
                           {item.grade || "-"}
@@ -497,38 +569,62 @@ const StudentPortalPage = () => {
         <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
           <CheckCircle2 className="h-5 w-5" />
         </span>
-        <h2 className="text-xl font-semibold text-[#edf5ff]">Attendance overview</h2>
+        <h2 className="text-xl font-semibold text-[#edf5ff]">
+          Attendance overview
+        </h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Percentage</div>
-          <div className="mt-2 text-3xl font-semibold text-[#73f0dc]">{student.attendance_percentage || "96%"}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+            Percentage
+          </div>
+          <div className="mt-2 text-3xl font-semibold text-[#73f0dc]">
+            {student.attendance_percentage || "96%"}
+          </div>
         </div>
         <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Present days</div>
-          <div className="mt-2 text-3xl font-semibold text-white">{student.present_days || "28"}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+            Present days
+          </div>
+          <div className="mt-2 text-3xl font-semibold text-white">
+            {student.present_days || "28"}
+          </div>
         </div>
         <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Absent days</div>
-          <div className="mt-2 text-3xl font-semibold text-white">{student.absent_days || "1"}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+            Absent days
+          </div>
+          <div className="mt-2 text-3xl font-semibold text-white">
+            {student.absent_days || "1"}
+          </div>
         </div>
         <div className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">Late days</div>
-          <div className="mt-2 text-3xl font-semibold text-white">{student.late_days || "2"}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8ea9c2]">
+            Late days
+          </div>
+          <div className="mt-2 text-3xl font-semibold text-white">
+            {student.late_days || "2"}
+          </div>
         </div>
       </div>
 
       <div className="mt-6 rounded-2xl border border-[#2d445f] bg-[#0d2238] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-[#edf5ff]">Monthly regularity</h3>
+          <h3 className="text-lg font-semibold text-[#edf5ff]">
+            Monthly regularity
+          </h3>
           <span className="text-sm text-[#8ea9c2]">This month</span>
         </div>
 
         <div className="h-3 overflow-hidden rounded-full bg-[#142c43]">
           <div
             className="h-full rounded-full bg-gradient-to-r from-[#1dd9c8] to-[#7ebeff]"
-            style={{ width: student.attendance_percentage ? student.attendance_percentage.replace("%", "") + "%" : "96%" }}
+            style={{
+              width: student.attendance_percentage
+                ? student.attendance_percentage.replace("%", "") + "%"
+                : "96%",
+            }}
           />
         </div>
 
@@ -547,7 +643,9 @@ const StudentPortalPage = () => {
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
             <CalendarDays className="h-5 w-5" />
           </span>
-          <h2 className="text-xl font-semibold text-[#edf5ff]">School calendar</h2>
+          <h2 className="text-xl font-semibold text-[#edf5ff]">
+            School calendar
+          </h2>
         </div>
 
         {calendarMonth ? (
@@ -564,16 +662,25 @@ const StudentPortalPage = () => {
       ) : calendarDays.length ? (
         <>
           <div className="mb-4 grid grid-cols-7 gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[#88a7c2]">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="py-2">{day}</div>
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div key={day} className="py-2">
+                {day}
+              </div>
             ))}
           </div>
 
           <div className="grid grid-cols-7 gap-2">
             {calendarDays.map((day) => (
-              <div key={day.id || `${day.day_number}-${day.day_type || 'day'}`} className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-3">
-                <div className="text-sm font-semibold text-[#edf5ff]">{day.day_number || "-"}</div>
-                <div className={`mt-2 rounded-full px-2 py-1 text-[10px] font-medium ${dayTypeStyles(day.day_type || day.dayType)}`}>
+              <div
+                key={day.id || `${day.day_number}-${day.day_type || "day"}`}
+                className="rounded-2xl border border-[#2d445f] bg-[#0d2238] p-3"
+              >
+                <div className="text-sm font-semibold text-[#edf5ff]">
+                  {day.day_number || "-"}
+                </div>
+                <div
+                  className={`mt-2 rounded-full px-2 py-1 text-[10px] font-medium ${dayTypeStyles(day.day_type || day.dayType)}`}
+                >
                   {day.day_type || day.dayType || "School day"}
                 </div>
               </div>
@@ -595,7 +702,9 @@ const StudentPortalPage = () => {
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#13324a] text-[#73f0dc]">
             <UserCircle2 className="h-5 w-5" />
           </span>
-          <h2 className="text-xl font-semibold text-[#edf5ff]">Edit your profile</h2>
+          <h2 className="text-xl font-semibold text-[#edf5ff]">
+            Edit your profile
+          </h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -625,10 +734,14 @@ const StudentPortalPage = () => {
         </div>
 
         <div className="mt-5 rounded-2xl border border-[#2d445f] bg-[#0d2238] p-4 text-sm text-[#dceafc]">
-          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#84a2c0]">Login email</div>
+          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#84a2c0]">
+            Login email
+          </div>
           <div className="flex items-center gap-2 text-base text-[#ebf5ff]">
             <Mail className="h-4 w-4 text-[#71edd8]" />
-            <span>{student.student_mail || student.school_email || "Not provided"}</span>
+            <span>
+              {student.student_mail || student.school_email || "Not provided"}
+            </span>
           </div>
         </div>
 
