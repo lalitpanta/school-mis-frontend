@@ -95,6 +95,7 @@ const StudentPortalExperience = () => {
   const [calendarDays, setCalendarDays] = useState([]);
   const [calendarError, setCalendarError] = useState("");
   const [calendarFilter, setCalendarFilter] = useState("all");
+  const [calendarDateMode, setCalendarDateMode] = useState("both");
   const [fees, setFees] = useState([]);
   const [feeError, setFeeError] = useState("");
   const [dailyReports, setDailyReports] = useState([]);
@@ -642,6 +643,17 @@ const StudentPortalExperience = () => {
       month?.year_label_BS || month?.year_label || todayBs?.year || "";
     const yearNumber =
       Number(String(yearLabel).match(/\d{4}/)?.[0]) || todayBs?.year || 2083;
+    const monthName = month?.month_name || month?.name || "Calendar";
+    const adStart = month?.month_start_date_AD;
+    const adEnd = month?.month_end_date_AD;
+    const formatAdDate = (date) =>
+      date
+        ? new Date(date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "";
     const firstDay =
       bsToAd(yearNumber, monthNumber, 1) ||
       (month?.month_start_date_AD
@@ -674,7 +686,10 @@ const StudentPortalExperience = () => {
               School calendar
             </h2>
             <p className={`mt-1 text-sm ${mutedClass}`}>
-              Academic events and school days
+              {monthName} {yearNumber}
+              {adStart && adEnd
+                ? ` · ${formatAdDate(adStart)} – ${formatAdDate(adEnd)}`
+                : " · Academic events and school days"}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -689,7 +704,7 @@ const StudentPortalExperience = () => {
             <span
               className={`min-w-28 text-center text-sm font-medium ${headingClass}`}
             >
-              {month?.month_name || month?.name || "Calendar"} {yearNumber}
+              {monthName} {yearNumber}
             </span>
             <button
               aria-label="Next month"
@@ -704,6 +719,30 @@ const StudentPortalExperience = () => {
               <ChevronRight size={16} />
             </button>
           </div>
+        </div>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div
+            className={`inline-flex rounded-lg border p-1 ${isDark ? "border-slate-700 bg-slate-950" : "border-slate-200 bg-slate-50"}`}
+            role="group"
+            aria-label="Calendar date format"
+          >
+            {["BS", "AD", "Both"].map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={calendarDateMode === mode.toLowerCase()}
+                onClick={() => setCalendarDateMode(mode.toLowerCase())}
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold ${calendarDateMode === mode.toLowerCase() ? "bg-teal-400 text-slate-950" : mutedClass}`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+          <span className={`text-xs ${mutedClass}`}>
+            {calendarDateMode === "both"
+              ? "Academic date with Gregorian date"
+              : `${calendarDateMode.toUpperCase()} dates`}
+          </span>
         </div>
         <div
           className={`mb-4 flex flex-wrap items-center gap-2 border-b pb-4 ${isDark ? "border-slate-800" : "border-slate-200"}`}
@@ -750,6 +789,7 @@ const StudentPortalExperience = () => {
               ))}
               {sorted.map((day) => {
                 const number = Number(day.day_number || day.day);
+                const adDate = bsToAd(yearNumber, monthNumber, number);
                 const label =
                   day.day_type ||
                   day.category_name ||
@@ -774,19 +814,34 @@ const StudentPortalExperience = () => {
                     ? weekdayIndex
                     : (offset + number - 1) % 7) === 6;
                 const isToday =
-                  yearNumber === todayBs?.year &&
-                  monthNumber === todayBs?.month &&
-                  number === todayBs?.day;
+                  adDate &&
+                  adDate.getFullYear() === new Date().getFullYear() &&
+                  adDate.getMonth() === new Date().getMonth() &&
+                  adDate.getDate() === new Date().getDate();
                 return (
                   <div
                     key={day.id || number}
                     className={`min-h-16 rounded-lg border p-2 ${isToday ? "border-teal-400 ring-1 ring-teal-400" : isDark ? "border-slate-800" : "border-slate-200"} ${isSaturday ? "opacity-45" : ""}`}
                   >
-                    <span
-                      className={`text-sm font-semibold ${isToday ? "text-teal-400" : headingClass}`}
-                    >
-                      {number}
-                    </span>
+                    <div className="flex items-baseline justify-between gap-1">
+                      {calendarDateMode !== "ad" && (
+                        <span
+                          className={`text-sm font-semibold ${isToday ? "text-teal-400" : headingClass}`}
+                        >
+                          {number}
+                        </span>
+                      )}
+                      {calendarDateMode !== "bs" && adDate && (
+                        <span
+                          className={`text-[10px] ${calendarDateMode === "ad" ? `text-sm font-semibold ${isToday ? "text-teal-400" : headingClass}` : mutedClass}`}
+                          title={adDate.toLocaleDateString()}
+                        >
+                          {calendarDateMode === "ad"
+                            ? `${adDate.getDate()} ${adDate.toLocaleDateString("en-US", { month: "short" })}`
+                            : `${adDate.toLocaleDateString("en-US", { month: "short" })} ${adDate.getDate()}`}
+                        </span>
+                      )}
+                    </div>
                     {label && matchesCalendarFilter(day) && (
                       <span
                         className="mt-1 block truncate rounded bg-amber-400/10 px-1 py-0.5 text-[10px] text-amber-300"
