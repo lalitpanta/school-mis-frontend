@@ -23,6 +23,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import config from "../config/config";
 import { getCurrentStudent, updateCurrentStudent } from "../api/studentsApi";
 import { getCalendarDays, getMonths } from "../api/calendarApi";
 
@@ -68,6 +69,7 @@ const StudentPortalExperience = () => {
   const [student, setStudent] = useState(null);
   const [profileForm, setProfileForm] = useState({});
   const [profileEditing, setProfileEditing] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [active, setActive] = useState("dashboard");
@@ -85,7 +87,13 @@ const StudentPortalExperience = () => {
   const [feeError, setFeeError] = useState("");
   const [dailyReports, setDailyReports] = useState([]);
   const [reportsError, setReportsError] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [courseError, setCourseError] = useState("");
+  const [exams, setExams] = useState([]);
+  const [examError, setExamError] = useState("");
   const [leaveRequests, setLeaveRequests] = useState([]);
+  const [leaveLoading, setLeaveLoading] = useState(false);
+  const [leaveError, setLeaveError] = useState("");
   const [homework, setHomework] = useState([]);
   const [preferences, setPreferences] = useState({ email: true, sms: false, homework: true });
   const [leaveForm, setLeaveForm] = useState({ from: "", to: "", type: "Sick leave", reason: "" });
@@ -144,10 +152,32 @@ const StudentPortalExperience = () => {
 
   useEffect(() => {
     if (!studentId) return;
-    setLeaveRequests(readStored(`${storagePrefix}:leave`, []));
-    setHomework(readStored(`${storagePrefix}:homework`, []));
     setPreferences(readStored(`${storagePrefix}:preferences`, { email: true, sms: false, homework: true }));
   }, [studentId]);
+
+  useEffect(() => {
+    if (active !== "leave") return;
+    let cancelled = false;
+    setLeaveLoading(true);
+    axiosInstance
+      .get("/v1/students/me/leave")
+      .then((response) => {
+        if (!cancelled) {
+          setLeaveRequests(unwrapList(response));
+          setLeaveError("");
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setLeaveRequests([]);
+          setLeaveError(error?.response?.data?.message || "Unable to load leave requests.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLeaveLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [active]);
 
   useEffect(() => {
     if (!student) return;
@@ -236,6 +266,34 @@ const StudentPortalExperience = () => {
       });
   }, [studentId, active]);
 
+  useEffect(() => {
+    if (active !== "courses" && active !== "dashboard") return;
+    axiosInstance
+      .get("/v1/students/me/courses")
+      .then((response) => {
+        setCourses(unwrapList(response));
+        setCourseError("");
+      })
+      .catch((error) => {
+        setCourses([]);
+        setCourseError(error?.response?.data?.message || "Unable to load your class courses.");
+      });
+  }, [active]);
+
+  useEffect(() => {
+    if (active !== "exams") return;
+    axiosInstance
+      .get("/v1/students/me/exams")
+      .then((response) => {
+        setExams(unwrapList(response));
+        setExamError("");
+      })
+      .catch((error) => {
+        setExams([]);
+        setExamError(error?.response?.data?.message || "Unable to load published exams.");
+      });
+  }, [active]);
+
   const unreadCount = 0;
   const todoCount = homework.filter((item) => item.status !== "Done").length;
   const dueFees = fees.reduce((total, fee) => total + Number(fee.balance ?? fee.amount ?? 0), 0);
@@ -264,14 +322,47 @@ const StudentPortalExperience = () => {
     }
   };
 
-  const submitLeave = (event) => {
+  const uploadProfilePhoto = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      notify("Choose an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      notify("Profile photos must be 5 MB or smaller");
+      return;
+    }
+    const payload = new FormData();
+    payload.append("profile_picture_file", file);
+    setUploadingPhoto(true);
+    try {
+      const response = await updateCurrentStudent(payload);
+      setStudent(response?.data?.data || student);
+      notify("Profile photo updated");
+    } catch (error) {
+      notify(error?.response?.data?.message || "Unable to upload profile photo");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const submitLeave = async (event) => {
     event.preventDefault();
     if (!leaveForm.from || !leaveForm.to || !leaveForm.reason.trim()) return;
-    const next = [{ ...leaveForm, id: Date.now(), status: "Pending", submittedAt: new Date().toISOString() }, ...leaveRequests];
-    setLeaveRequests(next);
-    persist("leave", next);
-    setLeaveForm({ from: "", to: "", type: "Sick leave", reason: "" });
-    notify("Leave request saved on this device");
+    try {
+      const response = await axiosInstance.post("/v1/students/me/leave", {
+        start_date: leaveForm.from,
+        end_date: leaveForm.to,
+        leave_type: leaveForm.type,
+        reason: leaveForm.reason.trim(),
+      });
+      const request = response?.data?.data;
+      setLeaveRequests((current) => [request, ...current]);
+      setLeaveForm({ from: "", to: "", type: "Sick leave", reason: "" });
+      notify("Leave request sent");
+    } catch (error) {
+      notify(error?.response?.data?.message || "Unable to submit leave request");
+    }
   };
 
   const toggleHomework = (id) => {
@@ -389,7 +480,7 @@ const StudentPortalExperience = () => {
     {paymentFee && <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 print:hidden" role="dialog" aria-modal="true" aria-label="Payment options"><div className={`${panelClass} w-full max-w-md`}><div className="flex items-center justify-between"><h3 className={`font-semibold ${headingClass}`}>Pay fee</h3><button onClick={() => setPaymentFee(null)} aria-label="Close payment"><span aria-hidden="true">×</span></button></div><p className={`mt-2 text-sm ${mutedClass}`}>{paymentFee.fee_category_name || "Fee"} · Rs. {Number(paymentFee.balance ?? paymentFee.amount ?? 0).toLocaleString()}</p><label className={`mt-4 block text-sm ${mutedClass}`}>Payment method<select value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)} className={`${fieldClass} mt-2`}>{["eSewa", "Khalti", "ConnectIPS", "Card"].map((method) => <option key={method}>{method}</option>)}</select></label><div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">Online payment is not enabled for this school. No payment has been taken or recorded.</div><button onClick={() => { setPaymentFee(null); notify("Contact the school office to complete payment"); }} className="mt-4 w-full rounded-xl bg-teal-400 px-4 py-3 font-semibold text-slate-950">Close</button></div></div>}
   </section>;
 
-  const renderContent = () => {
+  const renderContentLegacy = () => {
     if (active === "dashboard") return renderDashboard();
     if (active === "calendar") return renderCalendar();
     if (active === "results") return renderResults();
@@ -406,10 +497,106 @@ const StudentPortalExperience = () => {
     return null;
   };
 
+  const renderLeave = () => (
+    <div className="grid gap-5 xl:grid-cols-2">
+      <section className={panelClass}>
+        <h2 className={`text-xl font-semibold ${headingClass}`}>Request leave</h2>
+        <form
+          onSubmit={submitLeave}
+          className="mt-4 space-y-3"
+        >
+          <label className={`block text-sm ${mutedClass}`}>
+            From
+            <input required type="date" value={leaveForm.from} onChange={(event) => setLeaveForm({ ...leaveForm, from: event.target.value })} className={`${fieldClass} mt-1`} />
+          </label>
+          <label className={`block text-sm ${mutedClass}`}>
+            To
+            <input required type="date" min={leaveForm.from} value={leaveForm.to} onChange={(event) => setLeaveForm({ ...leaveForm, to: event.target.value })} className={`${fieldClass} mt-1`} />
+          </label>
+          <label className={`block text-sm ${mutedClass}`}>
+            Type
+            <select value={leaveForm.type} onChange={(event) => setLeaveForm({ ...leaveForm, type: event.target.value })} className={`${fieldClass} mt-1`}>
+              <option>Sick leave</option>
+              <option>Personal leave</option>
+              <option>Family emergency</option>
+            </select>
+          </label>
+          <label className={`block text-sm ${mutedClass}`}>
+            Reason
+            <textarea required rows={3} value={leaveForm.reason} onChange={(event) => setLeaveForm({ ...leaveForm, reason: event.target.value })} className={`${fieldClass} mt-1`} />
+          </label>
+          <button className="rounded-xl bg-teal-400 px-4 py-2.5 font-semibold text-slate-950">Submit request</button>
+        </form>
+      </section>
+      <section className={panelClass}>
+        <h3 className={`font-semibold ${headingClass}`}>Request history</h3>
+        {leaveLoading ? <p className={`mt-3 text-sm ${mutedClass}`}>Loading requests…</p> : leaveError ? <p className="mt-3 text-sm text-rose-300">{leaveError}</p> : leaveRequests.length ? leaveRequests.map((request) => (
+          <article key={request.id} className="mt-3 rounded-xl border border-slate-700/50 p-3">
+            <div className="flex justify-between gap-3">
+              <strong>{request.leave_type || "Leave request"}</strong>
+              <span className={request.status === "approved" ? "text-emerald-400" : request.status === "rejected" ? "text-rose-400" : "text-amber-300"}>{request.status}</span>
+            </div>
+            <p className={`mt-1 text-sm ${mutedClass}`}>{dateLabel(request.start_date)} – {dateLabel(request.end_date)}</p>
+            <p className="mt-2 text-sm">{request.reason}</p>
+            {request.admin_reply && <p className={`mt-2 text-sm ${mutedClass}`}>School reply: {request.admin_reply}</p>}
+          </article>
+        )) : <p className={`mt-3 text-sm ${mutedClass}`}>No leave requests have been submitted.</p>}
+      </section>
+    </div>
+  );
+
+  const renderProfilePhoto = () => (
+    <section className={`${panelClass} mt-5`}>
+      <h3 className={`font-semibold ${headingClass}`}>Profile photo</h3>
+      <div className="mt-4 flex flex-wrap items-center gap-4">
+        {profilePhotoUrl ? <img src={profilePhotoUrl} alt="Student profile" className="h-16 w-16 rounded-full object-cover" /> : <span className="grid h-16 w-16 place-items-center rounded-full bg-teal-400 font-bold text-slate-950">{initials}</span>}
+        <label className={`cursor-pointer rounded-lg border px-4 py-2 text-sm ${isDark ? "border-slate-600" : "border-slate-300"}`}>
+          {uploadingPhoto ? "Uploading…" : "Choose photo"}
+          <input type="file" accept="image/*" className="sr-only" disabled={uploadingPhoto} onChange={(event) => { uploadProfilePhoto(event.target.files?.[0]); event.target.value = ""; }} />
+        </label>
+        <span className={`text-xs ${mutedClass}`}>JPG, PNG, or another image format. Maximum 5 MB.</span>
+      </div>
+    </section>
+  );
+
+  const renderCourses = () => (
+    <section className={panelClass}>
+      <h2 className={`text-xl font-semibold ${headingClass}`}>Course & marks</h2>
+      {courseError ? <p className="mt-4 text-sm text-amber-300">{courseError}</p> : courses.length ? <div className="mt-5 space-y-4">{courses.map((course) => {
+        const title = course.course_name || course.subject_name || course.course_code || "Course";
+        const result = results.find((item) => String(item.subject || item.subject_name || "").toLowerCase() === title.toLowerCase());
+        const mark = result?.final_marks ?? result?.second_term_marks ?? result?.first_term_marks;
+        const score = mark === null || mark === undefined ? null : Number(mark);
+        return <article key={course.id || course.course_code || title} className="rounded-xl border border-slate-700/50 p-4"><div className="flex flex-wrap justify-between gap-3"><div><h3 className="font-semibold">{title}</h3><p className={`mt-1 text-xs ${mutedClass}`}>{course.course_code || ""}</p></div><span className="text-sm">{score === null ? "Marks not published" : `${score}/100 · ${result.grade || "Grade pending"}`}</span></div>{score !== null && <div className={`mt-3 h-2 rounded-full ${isDark ? "bg-slate-800" : "bg-slate-100"}`}><div className="h-2 rounded-full bg-teal-400" style={{ width: `${Math.max(0, Math.min(100, score))}%` }} /></div>}</article>;
+      })}</div> : <p className={`mt-4 text-sm ${mutedClass}`}>No active courses are assigned to your class.</p>}
+    </section>
+  );
+
+  const renderExams = () => (
+    <section className={panelClass}>
+      <div className="flex items-center justify-between"><div><h2 className={`text-xl font-semibold ${headingClass}`}>Exams & admit card</h2><p className={`mt-1 text-sm ${mutedClass}`}>Published exams for your class</p></div><button onClick={printPage} className="rounded-lg border border-slate-600 p-2 print:hidden" aria-label="Print admit card"><Printer size={16}/></button></div>
+      <div className="mt-5 rounded-xl border border-slate-700/50 p-4"><h3 className="font-semibold">Admit card</h3><p className={`mt-2 text-sm ${mutedClass}`}>{student.full_name} · {student.class_name || "Class not assigned"} · Roll {student.roll_no || "-"}</p><p className={`mt-1 text-sm ${mutedClass}`}>Admission: {student.admission_no || "-"} · Date of birth: {dateLabel(student.date_of_birth)}</p></div>
+      {examError ? <p className="mt-4 text-sm text-amber-300">{examError}</p> : exams.length ? <div className="mt-4 divide-y divide-slate-700/50">{exams.map((exam) => <article key={exam.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><h3 className="font-semibold">{exam.exam_type || exam.name || "Exam"}{exam.term ? ` · ${exam.term}` : ""}</h3><p className={`mt-1 text-sm ${mutedClass}`}>{exam.class_name || student.class_name} {exam.section_name ? `· ${exam.section_name}` : ""}</p></div><div className="text-right"><p className="text-sm">{dateLabel(exam.exam_date)}</p>{exam.pass_mark_percentage != null && <p className={`mt-1 text-xs ${mutedClass}`}>Pass mark {exam.pass_mark_percentage}%</p>}</div></article>)}</div> : <p className={`mt-4 text-sm ${mutedClass}`}>No published exams are available for your class.</p>}
+    </section>
+  );
+
+  const renderContent = () => {
+    if (active === "leave") return renderLeave();
+    if (active === "courses") return renderCourses();
+    if (active === "exams") return renderExams();
+    const content = renderContentLegacy();
+    return active === "profile" ? <>{content}{renderProfilePhoto()}</> : content;
+  };
+
   if (loading) return <div className="grid min-h-screen place-items-center">Loading student portal…</div>;
   if (loadError || !student) return <div className="m-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-5 text-rose-200">{loadError || "No student profile found."}</div>;
 
   const initials = (student.full_name || "Student").split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase();
+  const profilePhotoUrl = student.profile_picture
+    ? student.profile_picture.startsWith("http")
+      ? student.profile_picture
+      : `${config.API_BASE_URL}${student.profile_picture}`
+    : "";
 
   return <main className={`student-portal min-h-screen ${isDark ? "bg-[#071522] text-slate-100" : "bg-[#eef4f4] text-slate-900"}`}>
     <style>{`@media print { .print\\:hidden, .portal-menu, .portal-header-actions { display: none !important; } .student-portal { background: white !important; color: #111827 !important; } .print-area { break-inside: avoid; } }`}</style>
