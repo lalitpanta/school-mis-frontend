@@ -23,7 +23,7 @@ import EmployeePage from "../pages/EmployeePage";
 import ResultManagement from "../pages/ResultManagement";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import DailyReportPage from "../pages/DailyReportPage";
-import StudentPortalPage from "../pages/StudentPortalPage";
+import StudentPortalPage from "../pages/StudentPortalExperience";
 import StudentLoginPage from "../pages/StudentLoginPage";
 import StudentPasswordResetPage from "../pages/StudentPasswordResetPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
