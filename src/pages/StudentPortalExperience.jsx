@@ -105,6 +105,9 @@ const StudentPortalExperience = () => {
   const [courseError, setCourseError] = useState("");
   const [exams, setExams] = useState([]);
   const [examError, setExamError] = useState("");
+  const [upcomingCalendarExam, setUpcomingCalendarExam] = useState(null);
+  const [calendarExamLoading, setCalendarExamLoading] = useState(false);
+  const [calendarExamError, setCalendarExamError] = useState("");
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [leaveError, setLeaveError] = useState("");
@@ -375,6 +378,81 @@ const StudentPortalExperience = () => {
       });
   }, [active]);
 
+  useEffect(() => {
+    if (!student || active !== "dashboard") return;
+    let cancelled = false;
+    setCalendarExamLoading(true);
+    setCalendarExamError("");
+    axiosInstance
+      .get("/v1/students/me/calendar/exam-days")
+      .then((response) => {
+        if (cancelled) return;
+        const today = new Date();
+        const todayStart = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+        );
+        const upcoming = unwrapList(response)
+          .map((day) => {
+            const yearLabel = String(day.year_label_BS || day.year_label || "");
+            const bsYear = Number(yearLabel.match(/\d{4}/)?.[0]);
+            const bsMonth = Number(day.bs_month_index);
+            const dayNumber = Number(day.day_number);
+            let date =
+              bsYear && bsMonth
+                ? bsToAd(bsYear, bsMonth, dayNumber)
+                : null;
+
+            if (!date && day.month_start_date_AD) {
+              const [year, month, startDay] = String(
+                day.month_start_date_AD,
+              )
+                .slice(0, 10)
+                .split("-")
+                .map(Number);
+              if (year && month && startDay) {
+                date = new Date(year, month - 1, startDay + dayNumber - 1);
+              }
+            }
+
+            if (!date || Number.isNaN(date.getTime())) return null;
+            const localDate = new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+            );
+            const daysRemaining = Math.round(
+              (localDate.getTime() - todayStart.getTime()) / 86400000,
+            );
+            return {
+              date: localDate,
+              daysRemaining,
+              label: day.day_type || day.category_name || "Exam",
+              bsLabel: `${day.month_name || ""} ${dayNumber} ${day.year_label_BS || yearLabel}`.trim(),
+            };
+          })
+          .filter((event) => event && event.daysRemaining >= 0)
+          .sort((left, right) => left.date - right.date);
+        setUpcomingCalendarExam(upcoming[0] || null);
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setUpcomingCalendarExam(null);
+          setCalendarExamError(
+            error?.response?.data?.message ||
+              "Unable to check the school calendar.",
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setCalendarExamLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [student, active]);
+
   const unreadCount = 0;
   const todoCount = homework.filter((item) => item.status !== "Done").length;
   const dueFees = fees.reduce(
@@ -530,11 +608,34 @@ const StudentPortalExperience = () => {
             {student.roll_no || "-"}
           </p>
         </div>
-        <div className={`rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm ${warningTextClass}`}>
-          {results.length
-            ? `${results.length} result subject${results.length === 1 ? "" : "s"} available`
-            : "Exam countdown unavailable"}
-        </div>
+        <button
+          type="button"
+          onClick={() => openSection("calendar")}
+          className={`min-w-56 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-left ${warningTextClass}`}
+          aria-label="Open calendar"
+        >
+          <span className="block text-[10px] font-bold uppercase tracking-[0.16em]">
+            {calendarExamLoading
+              ? "Checking calendar"
+              : upcomingCalendarExam
+                ? upcomingCalendarExam.daysRemaining === 0
+                  ? "Exam today"
+                  : `Exam in ${upcomingCalendarExam.daysRemaining} ${upcomingCalendarExam.daysRemaining === 1 ? "day" : "days"}`
+                : calendarExamError
+                  ? "Calendar unavailable"
+                  : "No upcoming exam"}
+          </span>
+          {upcomingCalendarExam && (
+            <span className="mt-1 block text-sm font-semibold">
+              {upcomingCalendarExam.label} · {upcomingCalendarExam.date.toLocaleDateString()}
+            </span>
+          )}
+          {upcomingCalendarExam && (
+            <span className="mt-0.5 block text-xs opacity-75">
+              {upcomingCalendarExam.bsLabel}
+            </span>
+          )}
+        </button>
       </section>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

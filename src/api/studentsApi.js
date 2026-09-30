@@ -6,6 +6,8 @@ export const getStudentCalendarMonths = () =>
   axiosInstance.get("/v1/students/me/calendar/months");
 export const getStudentCalendarDays = (monthId) =>
   axiosInstance.get(`/v1/students/me/calendar/months/${monthId}/days`);
+export const getStudentExamCalendarDays = () =>
+  axiosInstance.get("/v1/students/me/calendar/exam-days");
 export const updateCurrentStudent = (data) =>
   axiosInstance.patch(
     "/v1/students/me",
