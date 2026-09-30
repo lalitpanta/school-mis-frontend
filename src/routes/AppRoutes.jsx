@@ -220,12 +220,13 @@ const AppRoutes = () => {
       <Route path="/system/login" element={<SystemLoginPage />} />
       <Route path="/login" element={<TenantStaffLoginPage />} />
       <Route path="/student/login" element={<StudentLoginPage />} />
-      <Route path="/student/reset-password" element={<StudentPasswordResetPage />} />
+      <Route
+        path="/student/reset-password"
+        element={<StudentPasswordResetPage />}
+      />
       <Route
         path={ROUTES.STUDENT_PORTAL}
-        element={
-          <StudentRoute element={<StudentPortalPage />} />
-        }
+        element={<StudentRoute element={<StudentPortalPage />} />}
       />
       <Route path="/result-portal" element={<ResultPortalPage />} />
       <Route
