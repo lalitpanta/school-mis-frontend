@@ -23,7 +23,7 @@ import EmployeePage from "../pages/EmployeePage";
 import ResultManagement from "../pages/ResultManagement";
 import ResultManagementModule from "../components/settings/ResultManagementModule";
 import DailyReportPage from "../pages/DailyReportPage";
-import StudentPortalPage from "../pages/StudentPortalPage";
+import StudentPortalDashboardPage from "../pages/StudentPortalDashboardPage";
 import StudentLoginPage from "../pages/StudentLoginPage";
 import StudentPasswordResetPage from "../pages/StudentPasswordResetPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
@@ -218,14 +218,15 @@ const AppRoutes = () => {
     <Routes>
       {/* Login pages */}
       <Route path="/system/login" element={<SystemLoginPage />} />
-      <Route path="/login" element={<TenantStaffLoginPage />} />
+          <StudentRoute element={<StudentPortalDashboardPage />} />
       <Route path="/student/login" element={<StudentLoginPage />} />
-      <Route path="/student/reset-password" element={<StudentPasswordResetPage />} />
+      <Route
+        path="/student/reset-password"
+        element={<StudentPasswordResetPage />}
+      />
       <Route
         path={ROUTES.STUDENT_PORTAL}
-        element={
-          <StudentRoute element={<StudentPortalPage />} />
-        }
+        element={<StudentRoute element={<StudentPortalPage />} />}
       />
       <Route path="/result-portal" element={<ResultPortalPage />} />
       <Route
