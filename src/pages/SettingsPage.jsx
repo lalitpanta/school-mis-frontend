@@ -70,6 +70,13 @@ const SETTINGS_NAV = [
     ],
   },
   {
+    title: "Facilities & Classrooms",
+    items: [
+      { key: "classrooms", label: "Classrooms" },
+      { key: "rooms", label: "Rooms" },
+    ],
+  },
+  {
     title: "System",
     items: [
       { key: "devices", label: "Device Integration" },
