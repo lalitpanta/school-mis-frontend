@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import {
   getStudents,
   createStudent,
@@ -16,6 +16,10 @@ import {
   Download,
   Upload,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Eye,
   Search,
   Columns3,
@@ -247,6 +251,9 @@ const Students = () => {
   ]);
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
+  const [expandedStudentIds, setExpandedStudentIds] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const [viewStudent, setViewStudent] = useState(null);
   const [showDocumentViewer, setShowDocumentViewer] = useState(false);
   const fileRef = useRef();
@@ -1238,9 +1245,19 @@ const Students = () => {
           });
     return sortConfig.direction === "asc" ? comparison : -comparison;
   });
+  const pageCount = Math.max(1, Math.ceil(sortedStudents.length / pageSize));
+  const visiblePage = Math.min(currentPage, pageCount);
+  const pageStudents = sortedStudents.slice(
+    (visiblePage - 1) * pageSize,
+    visiblePage * pageSize,
+  );
+  const firstRecord = sortedStudents.length
+    ? (visiblePage - 1) * pageSize + 1
+    : 0;
+  const lastRecord = Math.min(visiblePage * pageSize, sortedStudents.length);
   const allVisibleStudentsSelected =
-    sortedStudents.length > 0 &&
-    sortedStudents.every((student) => selectedStudentIds.includes(student.id));
+    pageStudents.length > 0 &&
+    pageStudents.every((student) => selectedStudentIds.includes(student.id));
   const activeFilterCount = [typeFilter, statusFilter, classroomFilter].filter(
     (value) => value !== "all",
   ).length;
@@ -1254,7 +1271,7 @@ const Students = () => {
 
   return (
     <div
-      className={`rounded-2xl p-6 ${showModal && mode === "edit" ? "w-[calc(52%-0.5rem)] max-lg:w-full" : "w-full"}`}
+      className={`flex h-full min-h-0 flex-col rounded-2xl p-6 ${showModal && mode === "edit" ? "w-[calc(52%-0.5rem)] max-lg:w-full" : "w-full"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
@@ -1322,8 +1339,8 @@ const Students = () => {
         </div>
       )}
 
-      <div className="rounded-lg border border-slate-700/60 overflow-visible">
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3 border-b border-slate-700/60">
+      <div className="flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
             <label className="relative min-w-55 max-w-[320px] flex-1">
               <Search
@@ -1501,7 +1518,7 @@ const Students = () => {
           </div>
         </div>
         {selectedStudentIds.length > 0 && (
-          <div className="flex items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
+          <div className="flex shrink-0 items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
             <span className="text-slate-300">
               {selectedStudentIds.length} selected
             </span>
@@ -1514,16 +1531,17 @@ const Students = () => {
             </button>
           </div>
         )}
-      <div className="overflow-x-auto">
+      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="h-full overflow-auto">
         {filteredStudents.length === 0 ? (
           <div className="p-6 text-center text-slate-400">
             {loading ? "Loading..." : "No students found."}
           </div>
         ) : (
           <table className="w-full min-w-225 text-sm">
-            <thead className="bg-slate-800/60 border-b border-slate-700/60 sticky top-0">
+            <thead className="sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
               <tr>
-                <th className="w-12 px-3 py-3 text-center">
+                <th className="w-24 px-3 py-3 text-center">
                   <input
                     type="checkbox"
                     aria-label="Select all visible students"
@@ -1534,12 +1552,12 @@ const Students = () => {
                           ? Array.from(
                               new Set([
                                 ...current,
-                                ...sortedStudents.map((student) => student.id),
+                                ...pageStudents.map((student) => student.id),
                               ]),
                             )
                           : current.filter(
                               (id) =>
-                                !sortedStudents.some((student) => student.id === id),
+                                !pageStudents.some((student) => student.id === id),
                             ),
                       )
                     }
@@ -1549,7 +1567,7 @@ const Students = () => {
                 {displayedColumns.map((column) => (
                   <th
                     key={column.key}
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-400"
+                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600"
                   >
                     <button
                       type="button"
@@ -1563,34 +1581,52 @@ const Students = () => {
                               : "asc",
                         }))
                       }
-                      className="inline-flex items-center gap-1 hover:text-slate-200"
+                      className="inline-flex items-center gap-1 hover:text-slate-950"
                     >
                       {column.label}
                       <ArrowUpDown
                         size={13}
                         className={
                           sortConfig.key === column.key
-                            ? "text-indigo-300"
+                            ? "text-indigo-700"
                             : "text-slate-500"
                         }
                       />
                     </button>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-right text-xs font-medium">
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/60">
-              {sortedStudents.map((student) => (
+              {pageStudents.map((student) => (
+                <Fragment key={student.id}>
                 <tr
-                  key={student.id}
-                  className="hover:bg-slate-800/40 transition"
+                  className="h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40"
                 >
                   <td className="px-3 py-3 text-center">
-                    <div className="inline-flex items-center gap-2 text-slate-600">
+                    <div className="inline-flex items-center gap-1 text-slate-500">
                       <GripVertical size={14} aria-hidden="true" />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedStudentIds((current) =>
+                            current.includes(student.id)
+                              ? current.filter((id) => id !== student.id)
+                              : [...current, student.id],
+                          )
+                        }
+                        aria-label={`${expandedStudentIds.includes(student.id) ? "Collapse" : "Expand"} ${student.full_name}`}
+                        aria-expanded={expandedStudentIds.includes(student.id)}
+                        className="rounded p-1 hover:bg-slate-700/60 hover:text-slate-200"
+                      >
+                        <ChevronRight
+                          size={15}
+                          className={`transition-transform ${expandedStudentIds.includes(student.id) ? "rotate-90" : ""}`}
+                        />
+                      </button>
                       <input
                         type="checkbox"
                         aria-label={`Select ${student.full_name}`}
@@ -1619,7 +1655,7 @@ const Students = () => {
                       onClick={() => setViewStudent(student)}
                       title="View student"
                       aria-label={`View ${student.full_name}`}
-                      className="p-2 text-indigo-300 hover:bg-indigo-500/10 rounded"
+                      className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
                     >
                       <Eye size={15} />
                     </button>
@@ -1642,17 +1678,78 @@ const Students = () => {
                     </div>
                   </td>
                 </tr>
+                {expandedStudentIds.includes(student.id) && (
+                  <tr>
+                    <td
+                      colSpan={displayedColumns.length + 2}
+                      className="border-b border-slate-700/50 bg-slate-800/20 px-6 py-3"
+                    >
+                      <div className="grid gap-3 text-xs text-slate-400 sm:grid-cols-2 lg:grid-cols-4">
+                        <span>Email: {student.student_mail || "—"}</span>
+                        <span>Phone: {student.phone_no || "—"}</span>
+                        <span>Guardian: {student.guardian_name || "—"}</span>
+                        <span>
+                          Class: {student.class_name || student.classroom_name || "—"}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               ))}
             </tbody>
           </table>
         )}
       </div>
-      <div className="flex items-center gap-4 px-4 py-3 text-xs text-slate-400">
-        <span className="h-px flex-1 bg-slate-700/60" />
-        <span>
-          {filteredStudents.length} of {students.length} records
-        </span>
-        <span className="h-px flex-1 bg-slate-700/60" />
+      </div>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 px-4 py-3 text-xs text-slate-400">
+        <label className="flex items-center gap-2">
+          Rows per page
+          <select
+            value={pageSize}
+            onChange={(event) => {
+              setPageSize(Number(event.target.value));
+              setCurrentPage(1);
+            }}
+            className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
+          >
+            {[10, 25, 50].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="flex items-center gap-4">
+          <span>
+            {firstRecord}-{lastRecord} of {sortedStudents.length}
+          </span>
+          <span>Page {visiblePage} of {pageCount}</span>
+          <div className="flex items-center gap-1">
+            {[
+              { label: "First page", Icon: ChevronsLeft, page: 1 },
+              { label: "Previous page", Icon: ChevronLeft, page: visiblePage - 1 },
+              { label: "Next page", Icon: ChevronRight, page: visiblePage + 1 },
+              { label: "Last page", Icon: ChevronsRight, page: pageCount },
+            ].map(({ label, Icon, page }) => (
+              <button
+                key={label}
+                type="button"
+                aria-label={label}
+                title={label}
+                disabled={
+                  label.includes("First") || label.includes("Previous")
+                    ? visiblePage === 1
+                    : visiblePage === pageCount
+                }
+                onClick={() => setCurrentPage(page)}
+                className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Icon size={15} />
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
       </div>
 
