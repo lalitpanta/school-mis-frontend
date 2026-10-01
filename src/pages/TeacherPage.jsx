@@ -578,7 +578,9 @@ const TeacherPage = () => {
       key: "full_name",
       label: "Name",
       value: (teacher) => teacher.full_name,
-      render: (teacher) => <span className="font-medium text-white">{teacher.full_name}</span>,
+      render: (teacher) => (
+        <span className="font-medium text-white">{teacher.full_name}</span>
+      ),
     },
     {
       key: "designation",
@@ -660,305 +662,326 @@ const TeacherPage = () => {
       <div
         className={`min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
       >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Manage Teachers</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Manage teacher and staff records with full personal, professional,
-            qualification, and emergency details.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="cursor-pointer rounded-xl bg-slate-700 px-3 py-2 text-sm text-white">
-            Import
-            <input
-              type="file"
-              accept=".csv"
-              onChange={async (e) => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                const fd = new FormData();
-                fd.append("file", f);
-                try {
-                  await teachersApi.importTeachers(fd);
-                  await loadData();
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
-              className="hidden"
-            />
-          </label>
-          <button
-            onClick={openCreateModal}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
-          >
-            <Plus size={16} /> Add Teacher
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-200">
-          {error}
-        </div>
-      )}
-
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
-        <RecordTableToolbar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          searchPlaceholder="Search teachers..."
-          columns={teacherColumns}
-          visibleColumns={visibleTeacherColumns}
-          onToggleColumn={(key) =>
-            setVisibleTeacherColumns((current) =>
-              current.includes(key)
-                ? current.filter((columnKey) => columnKey !== key)
-                : [...current, key],
-            )
-          }
-          filterContent={
-            <>
-              <label className="grid gap-1 text-xs text-slate-400">
-                Designation
-                <input
-                  value={filterDesignation}
-                  onChange={(event) => setFilterDesignation(event.target.value)}
-                  className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
-                />
-              </label>
-              <label className="grid gap-1 text-xs text-slate-400">
-                Status
-                <select
-                  value={teacherStatusFilter}
-                  onChange={(event) => setTeacherStatusFilter(event.target.value)}
-                  className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
-                >
-                  <option value="all">All statuses</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </label>
-              <button
-                type="button"
-                onClick={() => loadData()}
-                className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
-              >
-                Apply filters
-              </button>
-            </>
-          }
-          views={[
-            {
-              label: "All teachers",
-              onSelect: () => setTeacherStatusFilter("all"),
-            },
-            {
-              label: "Active teachers",
-              onSelect: () => setTeacherStatusFilter("active"),
-            },
-            {
-              label: "Inactive teachers",
-              onSelect: () => setTeacherStatusFilter("inactive"),
-            },
-          ]}
-          recordCount={filteredTeachers.length}
-          rightContent={
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Manage Teachers</h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Manage teacher and staff records with full personal, professional,
+              qualification, and emergency details.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="cursor-pointer rounded-xl bg-slate-700 px-3 py-2 text-sm text-white">
+              Import
+              <input
+                type="file"
+                accept=".csv"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const fd = new FormData();
+                  fd.append("file", f);
+                  try {
+                    await teachersApi.importTeachers(fd);
+                    await loadData();
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }}
+                className="hidden"
+              />
+            </label>
             <button
-              onClick={async () => {
-                try {
-                  const resp = await teachersApi.exportTeachers({
-                    search: searchTerm,
-                    designation: filterDesignation,
-                  });
-                  const url = window.URL.createObjectURL(new Blob([resp.data]));
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.setAttribute("download", "teachers_export.csv");
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                } catch (e) {
-                  console.error(e);
-                }
-              }}
-              className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-slate-300 hover:bg-slate-800"
+              onClick={openCreateModal}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
             >
-              <Download size={16} /> Export CSV
+              <Plus size={16} /> Add Teacher
             </button>
-          }
-        />
-        <div
-          className={`min-h-0 flex-1 ${isEditingTeacher ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
-        >
-          <table
-            className={`text-left text-sm text-slate-300 ${isEditingTeacher ? "w-full min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
-          >
-            <thead className="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-800 text-slate-400">
-              <tr>
-                {!isEditingTeacher && (
-                <th className="w-12 px-3 py-3 text-center">
+          </div>
+        </div>
+
+        {error && (
+          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-200">
+            {error}
+          </div>
+        )}
+
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
+          <RecordTableToolbar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder="Search teachers..."
+            columns={teacherColumns}
+            visibleColumns={visibleTeacherColumns}
+            onToggleColumn={(key) =>
+              setVisibleTeacherColumns((current) =>
+                current.includes(key)
+                  ? current.filter((columnKey) => columnKey !== key)
+                  : [...current, key],
+              )
+            }
+            filterContent={
+              <>
+                <label className="grid gap-1 text-xs text-slate-400">
+                  Designation
                   <input
-                    type="checkbox"
-                    aria-label="Select all visible teachers"
-                    checked={
-                      sortedTeachers.length > 0 &&
-                      sortedTeachers.every((teacher) =>
-                        selectedTeacherIds.includes(teacher.id),
-                      )
-                    }
+                    value={filterDesignation}
                     onChange={(event) =>
-                      setSelectedTeacherIds((current) =>
-                        event.target.checked
-                          ? Array.from(
-                              new Set([
-                                ...current,
-                                ...sortedTeachers.map((teacher) => teacher.id),
-                              ]),
-                            )
-                          : current.filter(
-                              (id) =>
-                                !sortedTeachers.some(
-                                  (teacher) => teacher.id === id,
-                                ),
-                            ),
-                      )
+                      setFilterDesignation(event.target.value)
                     }
-                    className="accent-indigo-500"
+                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   />
-                </th>
-                )}
-                {displayedTeacherColumns.map((column) => (
-                  <th
-                    key={column.key}
-                    className={`px-2 py-3 text-xs font-medium uppercase tracking-wide ${isEditingTeacher ? column.key === "id" ? "w-16" : column.key === "status" ? "w-24" : "" : "px-4"}`}
+                </label>
+                <label className="grid gap-1 text-xs text-slate-400">
+                  Status
+                  <select
+                    value={teacherStatusFilter}
+                    onChange={(event) =>
+                      setTeacherStatusFilter(event.target.value)
+                    }
+                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setTeacherSort((current) => ({
-                          key: column.key,
-                          direction:
-                            current.key === column.key &&
-                            current.direction === "asc"
-                              ? "desc"
-                              : "asc",
-                        }))
-                      }
-                      className="inline-flex items-center gap-1 hover:text-slate-200"
-                    >
-                      {column.label}
-                      <ArrowUpDown size={13} />
-                    </button>
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedTeachers.length === 0 ? (
+                    <option value="all">All statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => loadData()}
+                  className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                >
+                  Apply filters
+                </button>
+              </>
+            }
+            views={[
+              {
+                label: "All teachers",
+                onSelect: () => setTeacherStatusFilter("all"),
+              },
+              {
+                label: "Active teachers",
+                onSelect: () => setTeacherStatusFilter("active"),
+              },
+              {
+                label: "Inactive teachers",
+                onSelect: () => setTeacherStatusFilter("inactive"),
+              },
+            ]}
+            recordCount={filteredTeachers.length}
+            rightContent={
+              <button
+                onClick={async () => {
+                  try {
+                    const resp = await teachersApi.exportTeachers({
+                      search: searchTerm,
+                      designation: filterDesignation,
+                    });
+                    const url = window.URL.createObjectURL(
+                      new Blob([resp.data]),
+                    );
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.setAttribute("download", "teachers_export.csv");
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-slate-300 hover:bg-slate-800"
+              >
+                <Download size={16} /> Export CSV
+              </button>
+            }
+          />
+          <div
+            className={`min-h-0 flex-1 ${isEditingTeacher ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+          >
+            <table
+              className={`text-left text-sm text-slate-300 ${isEditingTeacher ? "w-full min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
+            >
+              <thead className="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-800 text-slate-400">
                 <tr>
-                  <td
-                    colSpan={displayedTeacherColumns.length + (isEditingTeacher ? 1 : 2)}
-                    className="px-4 py-8 text-center text-slate-500"
-                  >
-                    {loading ? "Loading teachers..." : "No teacher records yet."}
-                  </td>
-                </tr>
-              ) : (
-                sortedTeachers.map((teacher) => (
-                  <tr
-                    key={teacher.id}
-                    className="border-t border-slate-800/70 hover:bg-slate-900/80"
-                  >
-                    {!isEditingTeacher && (
-                    <td className="px-3 py-4 text-center">
-                      <div className="inline-flex items-center gap-2 text-slate-500">
-                        <GripVertical size={14} aria-hidden="true" />
-                        <input
-                          type="checkbox"
-                          aria-label={`Select ${teacher.full_name}`}
-                          checked={selectedTeacherIds.includes(teacher.id)}
-                          onChange={(event) =>
-                            setSelectedTeacherIds((current) =>
-                              event.target.checked
-                                ? [...current, teacher.id]
-                                : current.filter((id) => id !== teacher.id),
-                            )
-                          }
-                          className="accent-indigo-500"
-                        />
-                      </div>
-                    </td>
-                    )}
-                    {displayedTeacherColumns.map((column) => (
-                      <td
-                        key={column.key}
-                        className={`px-2 py-4 ${isEditingTeacher ? "truncate" : "px-4"}`}
+                  {!isEditingTeacher && (
+                    <th className="w-12 px-3 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        aria-label="Select all visible teachers"
+                        checked={
+                          sortedTeachers.length > 0 &&
+                          sortedTeachers.every((teacher) =>
+                            selectedTeacherIds.includes(teacher.id),
+                          )
+                        }
+                        onChange={(event) =>
+                          setSelectedTeacherIds((current) =>
+                            event.target.checked
+                              ? Array.from(
+                                  new Set([
+                                    ...current,
+                                    ...sortedTeachers.map(
+                                      (teacher) => teacher.id,
+                                    ),
+                                  ]),
+                                )
+                              : current.filter(
+                                  (id) =>
+                                    !sortedTeachers.some(
+                                      (teacher) => teacher.id === id,
+                                    ),
+                                ),
+                          )
+                        }
+                        className="accent-indigo-500"
+                      />
+                    </th>
+                  )}
+                  {displayedTeacherColumns.map((column) => (
+                    <th
+                      key={column.key}
+                      className={`px-2 py-3 text-xs font-medium uppercase tracking-wide ${isEditingTeacher ? (column.key === "id" ? "w-16" : column.key === "status" ? "w-24" : "") : "px-4"}`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setTeacherSort((current) => ({
+                            key: column.key,
+                            direction:
+                              current.key === column.key &&
+                              current.direction === "asc"
+                                ? "desc"
+                                : "asc",
+                          }))
+                        }
+                        className="inline-flex items-center gap-1 hover:text-slate-200"
                       >
-                        {column.render
-                          ? column.render(teacher)
-                          : column.value(teacher) || "—"}
-                      </td>
-                    ))}
-                    <td className="px-4 py-3 text-right">
-                      <div className="inline-flex items-center gap-1">
-                        <button
-                          onClick={() => {
-                            setViewTeacher(teacher);
-                            setShowViewModal(true);
-                          }}
-                          title="View teacher"
-                          aria-label={`View ${teacher.full_name}`}
-                          className="rounded p-2 text-slate-300 hover:bg-slate-700/60"
-                        >
-                          <Eye size={15} />
-                        </button>
-                        <button
-                          onClick={() => openEditModal(teacher)}
-                          title="Edit teacher"
-                          aria-label={`Edit ${teacher.full_name}`}
-                          className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
-                        >
-                          <Edit size={15} />
-                        </button>
-                        <button
-                          onClick={async () => {
-                            try {
-                              await teachersApi.updateTeacher(teacher.id, {
-                                is_active: !teacher.is_active,
-                              });
-                              await loadData();
-                            } catch (e) {
-                              console.error(e);
-                            }
-                          }}
-                          title={teacher.is_active ? "Deactivate teacher" : "Activate teacher"}
-                          aria-label={teacher.is_active ? "Deactivate teacher" : "Activate teacher"}
-                          className={`rounded p-2 ${teacher.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
-                        >
-                          <Power size={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(teacher.id)}
-                          title="Delete teacher"
-                          aria-label={`Delete ${teacher.full_name}`}
-                          className="rounded p-2 text-red-300 hover:bg-red-500/10"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                        {column.label}
+                        <ArrowUpDown size={13} />
+                      </button>
+                    </th>
+                  ))}
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedTeachers.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={
+                        displayedTeacherColumns.length +
+                        (isEditingTeacher ? 1 : 2)
+                      }
+                      className="px-4 py-8 text-center text-slate-500"
+                    >
+                      {loading
+                        ? "Loading teachers..."
+                        : "No teacher records yet."}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  sortedTeachers.map((teacher) => (
+                    <tr
+                      key={teacher.id}
+                      className="border-t border-slate-800/70 hover:bg-slate-900/80"
+                    >
+                      {!isEditingTeacher && (
+                        <td className="px-3 py-4 text-center">
+                          <div className="inline-flex items-center gap-2 text-slate-500">
+                            <GripVertical size={14} aria-hidden="true" />
+                            <input
+                              type="checkbox"
+                              aria-label={`Select ${teacher.full_name}`}
+                              checked={selectedTeacherIds.includes(teacher.id)}
+                              onChange={(event) =>
+                                setSelectedTeacherIds((current) =>
+                                  event.target.checked
+                                    ? [...current, teacher.id]
+                                    : current.filter((id) => id !== teacher.id),
+                                )
+                              }
+                              className="accent-indigo-500"
+                            />
+                          </div>
+                        </td>
+                      )}
+                      {displayedTeacherColumns.map((column) => (
+                        <td
+                          key={column.key}
+                          className={`px-2 py-4 ${isEditingTeacher ? "truncate" : "px-4"}`}
+                        >
+                          {column.render
+                            ? column.render(teacher)
+                            : column.value(teacher) || "—"}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 text-right">
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            onClick={() => {
+                              setViewTeacher(teacher);
+                              setShowViewModal(true);
+                            }}
+                            title="View teacher"
+                            aria-label={`View ${teacher.full_name}`}
+                            className="rounded p-2 text-slate-300 hover:bg-slate-700/60"
+                          >
+                            <Eye size={15} />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(teacher)}
+                            title="Edit teacher"
+                            aria-label={`Edit ${teacher.full_name}`}
+                            className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
+                          >
+                            <Edit size={15} />
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await teachersApi.updateTeacher(teacher.id, {
+                                  is_active: !teacher.is_active,
+                                });
+                                await loadData();
+                              } catch (e) {
+                                console.error(e);
+                              }
+                            }}
+                            title={
+                              teacher.is_active
+                                ? "Deactivate teacher"
+                                : "Activate teacher"
+                            }
+                            aria-label={
+                              teacher.is_active
+                                ? "Deactivate teacher"
+                                : "Activate teacher"
+                            }
+                            className={`rounded p-2 ${teacher.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                          >
+                            <Power size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(teacher.id)}
+                            title="Delete teacher"
+                            aria-label={`Delete ${teacher.full_name}`}
+                            className="rounded p-2 text-red-300 hover:bg-red-500/10"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       </div>
 
       {showModal && (

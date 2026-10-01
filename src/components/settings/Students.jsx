@@ -242,6 +242,8 @@ const Students = () => {
     "id",
     "full_name",
     "phone_no",
+    "classroom",
+    "section",
     "status",
   ]);
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
@@ -1159,7 +1161,9 @@ const Students = () => {
       key: "full_name",
       label: "Name",
       sortValue: (student) => student.full_name,
-      render: (student) => <span className="font-medium">{student.full_name}</span>,
+      render: (student) => (
+        <span className="font-medium">{student.full_name}</span>
+      ),
     },
     {
       key: "student_type",
@@ -1177,30 +1181,49 @@ const Students = () => {
       key: "student_mail",
       label: "Email",
       sortValue: (student) => student.student_mail,
-      render: (student) => <span className="text-slate-400 text-xs">{student.student_mail || "—"}</span>,
+      render: (student) => (
+        <span className="text-slate-400 text-xs">
+          {student.student_mail || "—"}
+        </span>
+      ),
     },
     {
       key: "phone_no",
       label: "Phone",
       sortValue: (student) => student.phone_no,
-      render: (student) => <span className="text-slate-400 text-xs">{student.phone_no || "—"}</span>,
+      render: (student) => (
+        <span className="text-slate-400 text-xs">
+          {student.phone_no || "—"}
+        </span>
+      ),
     },
     {
       key: "guardian_name",
       label: "Guardian",
       sortValue: (student) => student.guardian_name,
-      render: (student) => <span className="text-slate-400 text-xs">{student.guardian_name || "—"}</span>,
+      render: (student) => (
+        <span className="text-slate-400 text-xs">
+          {student.guardian_name || "—"}
+        </span>
+      ),
     },
     {
       key: "classroom",
-      label: "Classroom",
+      label: "Class",
       sortValue: (student) => student.class_name || student.classroom_name,
       render: (student) => (
         <span className="text-slate-400 text-xs">
-          {student.class_name || student.classroom_name
-            ? (student.class_name || student.classroom_name) +
-              (student.section_name ? " / " + student.section_name : "")
-            : "—"}
+          {student.class_name || student.classroom_name || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "section",
+      label: "Section",
+      sortValue: (student) => student.section_name,
+      render: (student) => (
+        <span className="text-slate-400 text-xs">
+          {student.section_name || "—"}
         </span>
       ),
     },
@@ -1208,7 +1231,9 @@ const Students = () => {
       key: "roll_no",
       label: "Roll No.",
       sortValue: (student) => student.roll_no,
-      render: (student) => <span className="text-slate-400 text-xs">{student.roll_no || "—"}</span>,
+      render: (student) => (
+        <span className="text-slate-400 text-xs">{student.roll_no || "—"}</span>
+      ),
     },
     {
       key: "status",
@@ -1226,7 +1251,14 @@ const Students = () => {
   const isEditingStudent = showModal && mode === "edit";
   const displayedColumns = studentColumns.filter((column) =>
     isEditingStudent
-      ? ["id", "full_name", "phone_no", "status"].includes(column.key)
+      ? [
+          "id",
+          "full_name",
+          "phone_no",
+          "classroom",
+          "section",
+          "status",
+        ].includes(column.key)
       : visibleColumns.includes(column.key),
   );
   const sortedStudents = [...filteredStudents].sort((first, second) => {
@@ -1277,492 +1309,525 @@ const Students = () => {
       <div
         className={`min-w-0 ${isEditingStudent ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
-      <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
-        <div>
-          <h2
-            className="text-lg font-semibold"
-            style={{ color: "var(--text-1)" }}
-          >
-            Manage Students
-          </h2>
-          <p className="text-sm text-slate-400">Live data from database</p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".csv"
-            className="hidden"
-            id="studentsFile"
-          />
-          <label
-            htmlFor="studentsFile"
-            title="Choose CSV to import"
-            className="inline-flex items-center justify-center p-2 border border-slate-700 rounded cursor-pointer text-slate-300 hover:bg-slate-800"
-          >
-            <Upload size={16} />
-          </label>
-          <button
-            onClick={handleImport}
-            title="Import students"
-            aria-label="Import students"
-            className="inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
-          >
-            <Download size={16} className="rotate-180" />
-          </button>
-          <button
-            onClick={openCreate}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium"
-          >
-            <Plus size={16} /> Add Student
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
-          <span>⚠️ {error}</span>
-          <button
-            onClick={() => setError("")}
-            className="text-red-400 hover:text-red-300"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {notice && (
-        <div
-          className={`mb-4 p-3 rounded text-sm ${notice.success ? "bg-emerald-900/20 border border-emerald-500/50 text-emerald-200" : "bg-amber-900/20 border border-amber-500/50 text-amber-200"}`}
-        >
-          {notice.message}
-        </div>
-      )}
-
-      <div className="flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60">
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            <label className="relative min-w-55 max-w-[320px] flex-1">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search students..."
-                aria-label="Search students"
-                className="w-full pl-9 pr-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-              />
+        <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
+          <div>
+            <h2
+              className="text-lg font-semibold"
+              style={{ color: "var(--text-1)" }}
+            >
+              Manage Students
+            </h2>
+            <p className="text-sm text-slate-400">Live data from database</p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".csv"
+              className="hidden"
+              id="studentsFile"
+            />
+            <label
+              htmlFor="studentsFile"
+              title="Choose CSV to import"
+              className="inline-flex items-center justify-center p-2 border border-slate-700 rounded cursor-pointer text-slate-300 hover:bg-slate-800"
+            >
+              <Upload size={16} />
             </label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowColumnMenu((open) => !open);
-                  setShowViewMenu(false);
-                  setShowFilterMenu(false);
-                }}
-                aria-expanded={showColumnMenu}
-                className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
-              >
-                <Columns3 size={16} /> Columns
-              </button>
-              {showColumnMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
-                  {studentColumns.map((column) => (
-                    <label
-                      key={column.key}
-                      className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.includes(column.key)}
-                        disabled={
-                          visibleColumns.includes(column.key) &&
-                          visibleColumns.length === 1
-                        }
-                        onChange={() =>
-                          setVisibleColumns((current) =>
-                            current.includes(column.key)
-                              ? current.filter((key) => key !== column.key)
-                              : [...current, column.key],
-                          )
-                        }
-                        className="accent-indigo-500"
-                      />
-                      {column.label}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowViewMenu((open) => !open);
-                  setShowColumnMenu(false);
-                  setShowFilterMenu(false);
-                }}
-                aria-expanded={showViewMenu}
-                className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
-              >
-                <Bookmark size={16} /> Views
-              </button>
-              {showViewMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
-                  {[
-                    { label: "All students", type: "all" },
-                    { label: "Active students", status: "active" },
-                    { label: "Inactive students", status: "inactive" },
-                    { label: "School students", type: "school" },
-                    { label: "University students", type: "university" },
-                  ].map((view) => (
-                    <button
-                      key={view.label}
-                      type="button"
-                      onClick={() => applyStudentView(view)}
-                      className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
-                    >
-                      {view.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowFilterMenu((open) => !open);
-                  setShowColumnMenu(false);
-                  setShowViewMenu(false);
-                }}
-                aria-label="Filter students"
-                aria-expanded={showFilterMenu}
-                className={`relative inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
-              >
-                <SlidersHorizontal size={17} />
-                {activeFilterCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] text-white">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-              {showFilterMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
-                  <label className="grid gap-1 text-xs text-slate-400">
-                    Student type
-                    <select
-                      value={typeFilter}
-                      onChange={(e) => setTypeFilter(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-                    >
-                      <option value="all">All types</option>
-                      <option value="school">School</option>
-                      <option value="university">University</option>
-                    </select>
-                  </label>
-                  <label className="grid gap-1 text-xs text-slate-400">
-                    Status
-                    <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-                    >
-                      <option value="all">All statuses</option>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </label>
-                  <label className="grid gap-1 text-xs text-slate-400">
-                    Classroom
-                    <select
-                      value={classroomFilter}
-                      onChange={(e) => setClassroomFilter(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-                    >
-                      <option value="all">All classes</option>
-                      {classesList.map((classroom) => (
-                        <option key={classroom.id} value={String(classroom.id)}>
-                          {classroom.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTypeFilter("all");
-                      setStatusFilter("all");
-                      setClassroomFilter("all");
-                    }}
-                    className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
-                  >
-                    Clear filters
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-slate-400">
-            <span>{filteredStudents.length} records</span>
             <button
-              onClick={handleExport}
-              className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
+              onClick={handleImport}
+              title="Import students"
+              aria-label="Import students"
+              className="inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
             >
-              <Download size={16} /> Export CSV
+              <Download size={16} className="rotate-180" />
+            </button>
+            <button
+              onClick={openCreate}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium"
+            >
+              <Plus size={16} /> Add Student
             </button>
           </div>
         </div>
-        {selectedStudentIds.length > 0 && (
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
-            <span className="text-slate-300">
-              {selectedStudentIds.length} selected
-            </span>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
+            <span>⚠️ {error}</span>
             <button
-              type="button"
-              onClick={() => setSelectedStudentIds([])}
-              className="text-xs text-indigo-300 hover:text-indigo-200"
+              onClick={() => setError("")}
+              className="text-red-400 hover:text-red-300"
             >
-              Clear selection
+              ✕
             </button>
           </div>
         )}
-      <div className="min-h-0 flex-1 overflow-hidden">
-      <div
-        className={`h-full min-w-0 ${isEditingStudent ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
-      >
-        {filteredStudents.length === 0 ? (
-          <div className="p-6 text-center text-slate-400">
-            {loading ? "Loading..." : "No students found."}
-          </div>
-        ) : (
-          <table
-            className={`text-sm ${isEditingStudent ? "w-full min-w-0 table-fixed" : "w-full min-w-225 whitespace-nowrap"}`}
+
+        {notice && (
+          <div
+            className={`mb-4 p-3 rounded text-sm ${notice.success ? "bg-emerald-900/20 border border-emerald-500/50 text-emerald-200" : "bg-amber-900/20 border border-amber-500/50 text-amber-200"}`}
           >
-            <thead className="sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
-              <tr>
-                {!isEditingStudent && (
-                <th className="w-24 px-3 py-3 text-center">
-                  <input
-                    type="checkbox"
-                    aria-label="Select all visible students"
-                    checked={allVisibleStudentsSelected}
-                    onChange={(event) =>
-                      setSelectedStudentIds((current) =>
-                        event.target.checked
-                          ? Array.from(
-                              new Set([
-                                ...current,
-                                ...pageStudents.map((student) => student.id),
-                              ]),
-                            )
-                          : current.filter(
-                              (id) =>
-                                !pageStudents.some((student) => student.id === id),
-                            ),
-                      )
-                    }
-                    className="accent-indigo-500"
-                  />
-                </th>
-                )}
-                {displayedColumns.map((column) => (
-                  <th
-                    key={column.key}
-                    className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? column.key === "id" ? "w-14" : column.key === "status" ? "w-24" : "" : ""}`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSortConfig((current) => ({
-                          key: column.key,
-                          direction:
-                            current.key === column.key &&
-                            current.direction === "asc"
-                              ? "desc"
-                              : "asc",
-                        }))
-                      }
-                      className="inline-flex items-center gap-1 hover:text-slate-950"
-                    >
-                      {column.label}
-                      <ArrowUpDown
-                        size={13}
-                        className={
-                          sortConfig.key === column.key
-                            ? "text-indigo-700"
-                            : "text-slate-500"
-                        }
-                      />
-                    </button>
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700/60">
-              {pageStudents.map((student) => (
-                <Fragment key={student.id}>
-                <tr
-                  className="h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40"
+            {notice.message}
+          </div>
+        )}
+
+        <div className="flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+              <label className="relative min-w-55 max-w-[320px] flex-1">
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search students..."
+                  aria-label="Search students"
+                  className="w-full pl-9 pr-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                />
+              </label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowColumnMenu((open) => !open);
+                    setShowViewMenu(false);
+                    setShowFilterMenu(false);
+                  }}
+                  aria-expanded={showColumnMenu}
+                  className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
                 >
-                    {!isEditingStudent && (
-                  <td className="px-3 py-3 text-center">
-                    <div className="inline-flex items-center gap-1 text-slate-500">
-                      <GripVertical size={14} aria-hidden="true" />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedStudentIds((current) =>
-                            current.includes(student.id)
-                              ? current.filter((id) => id !== student.id)
-                              : [...current, student.id],
-                          )
-                        }
-                        aria-label={`${expandedStudentIds.includes(student.id) ? "Collapse" : "Expand"} ${student.full_name}`}
-                        aria-expanded={expandedStudentIds.includes(student.id)}
-                        className="rounded p-1 hover:bg-slate-700/60 hover:text-slate-200"
+                  <Columns3 size={16} /> Columns
+                </button>
+                {showColumnMenu && (
+                  <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
+                    {studentColumns.map((column) => (
+                      <label
+                        key={column.key}
+                        className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
                       >
-                        <ChevronRight
-                          size={15}
-                          className={`transition-transform ${expandedStudentIds.includes(student.id) ? "rotate-90" : ""}`}
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns.includes(column.key)}
+                          disabled={
+                            visibleColumns.includes(column.key) &&
+                            visibleColumns.length === 1
+                          }
+                          onChange={() =>
+                            setVisibleColumns((current) =>
+                              current.includes(column.key)
+                                ? current.filter((key) => key !== column.key)
+                                : [...current, column.key],
+                            )
+                          }
+                          className="accent-indigo-500"
                         />
-                      </button>
-                      <input
-                        type="checkbox"
-                        aria-label={`Select ${student.full_name}`}
-                        checked={selectedStudentIds.includes(student.id)}
-                        onChange={(event) =>
-                          setSelectedStudentIds((current) =>
-                            event.target.checked
-                              ? [...current, student.id]
-                              : current.filter((id) => id !== student.id),
-                          )
-                        }
-                        className="accent-indigo-500"
-                      />
-                    </div>
-                  </td>
-                    )}
-                  {displayedColumns.map((column) => (
-                    <td
-                      key={column.key}
-                      className={`px-3 py-3 text-slate-300 ${isEditingStudent ? "truncate" : ""}`}
-                    >
-                      {column.render
-                        ? column.render(student)
-                        : student[column.key] ?? "—"}
-                    </td>
-                  ))}
-                  <td className="px-4 py-3 text-right">
-                    <div className="inline-flex items-center gap-1">
-                    <button
-                      onClick={() => setViewStudent(student)}
-                      title="View student"
-                      aria-label={`View ${student.full_name}`}
-                      className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
-                    >
-                      <Eye size={15} />
-                    </button>
-                    <button
-                      onClick={() => openEdit(student)}
-                      title="Edit student"
-                      aria-label={`Edit ${student.full_name}`}
-                      className="p-2 text-slate-300 hover:bg-slate-700/60 rounded"
-                    >
-                      <Edit size={15} />
-                    </button>
-                    <button
-                      onClick={() => remove(student.id)}
-                      title="Delete student"
-                      aria-label={`Delete ${student.full_name}`}
-                      className="p-2 text-red-300 hover:bg-red-500/10 rounded"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                    </div>
-                  </td>
-                </tr>
-                {expandedStudentIds.includes(student.id) && (
-                  <tr>
-                    <td
-                      colSpan={displayedColumns.length + (isEditingStudent ? 1 : 2)}
-                      className="border-b border-slate-700/50 bg-slate-800/20 px-6 py-3"
-                    >
-                      <div className="grid gap-3 text-xs text-slate-400 sm:grid-cols-2 lg:grid-cols-4">
-                        <span>Email: {student.student_mail || "—"}</span>
-                        <span>Phone: {student.phone_no || "—"}</span>
-                        <span>Guardian: {student.guardian_name || "—"}</span>
-                        <span>
-                          Class: {student.class_name || student.classroom_name || "—"}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
+                        {column.label}
+                      </label>
+                    ))}
+                  </div>
                 )}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-      </div>
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 px-4 py-3 text-xs text-slate-400">
-        <label className="flex items-center gap-2">
-          Rows per page
-          <select
-            value={pageSize}
-            onChange={(event) => {
-              setPageSize(Number(event.target.value));
-              setCurrentPage(1);
-            }}
-            className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
-          >
-            {[10, 25, 50].map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="flex items-center gap-4">
-          <span>
-            {firstRecord}-{lastRecord} of {sortedStudents.length}
-          </span>
-          <span>Page {visiblePage} of {pageCount}</span>
-          <div className="flex items-center gap-1">
-            {[
-              { label: "First page", Icon: ChevronsLeft, page: 1 },
-              { label: "Previous page", Icon: ChevronLeft, page: visiblePage - 1 },
-              { label: "Next page", Icon: ChevronRight, page: visiblePage + 1 },
-              { label: "Last page", Icon: ChevronsRight, page: pageCount },
-            ].map(({ label, Icon, page }) => (
+              </div>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowViewMenu((open) => !open);
+                    setShowColumnMenu(false);
+                    setShowFilterMenu(false);
+                  }}
+                  aria-expanded={showViewMenu}
+                  className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+                >
+                  <Bookmark size={16} /> Views
+                </button>
+                {showViewMenu && (
+                  <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
+                    {[
+                      { label: "All students", type: "all" },
+                      { label: "Active students", status: "active" },
+                      { label: "Inactive students", status: "inactive" },
+                      { label: "School students", type: "school" },
+                      { label: "University students", type: "university" },
+                    ].map((view) => (
+                      <button
+                        key={view.label}
+                        type="button"
+                        onClick={() => applyStudentView(view)}
+                        className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                      >
+                        {view.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFilterMenu((open) => !open);
+                    setShowColumnMenu(false);
+                    setShowViewMenu(false);
+                  }}
+                  aria-label="Filter students"
+                  aria-expanded={showFilterMenu}
+                  className={`relative inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
+                >
+                  <SlidersHorizontal size={17} />
+                  {activeFilterCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] text-white">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+                {showFilterMenu && (
+                  <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
+                    <label className="grid gap-1 text-xs text-slate-400">
+                      Student type
+                      <select
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                      >
+                        <option value="all">All types</option>
+                        <option value="school">School</option>
+                        <option value="university">University</option>
+                      </select>
+                    </label>
+                    <label className="grid gap-1 text-xs text-slate-400">
+                      Status
+                      <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                      >
+                        <option value="all">All statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </label>
+                    <label className="grid gap-1 text-xs text-slate-400">
+                      Classroom
+                      <select
+                        value={classroomFilter}
+                        onChange={(e) => setClassroomFilter(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                      >
+                        <option value="all">All classes</option>
+                        {classesList.map((classroom) => (
+                          <option
+                            key={classroom.id}
+                            value={String(classroom.id)}
+                          >
+                            {classroom.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTypeFilter("all");
+                        setStatusFilter("all");
+                        setClassroomFilter("all");
+                      }}
+                      className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                    >
+                      Clear filters
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-slate-400">
+              <span>{filteredStudents.length} records</span>
               <button
-                key={label}
-                type="button"
-                aria-label={label}
-                title={label}
-                disabled={
-                  label.includes("First") || label.includes("Previous")
-                    ? visiblePage === 1
-                    : visiblePage === pageCount
-                }
-                onClick={() => setCurrentPage(page)}
-                className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={handleExport}
+                className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
               >
-                <Icon size={15} />
+                <Download size={16} /> Export CSV
               </button>
-            ))}
+            </div>
+          </div>
+          {selectedStudentIds.length > 0 && (
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
+              <span className="text-slate-300">
+                {selectedStudentIds.length} selected
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedStudentIds([])}
+                className="text-xs text-indigo-300 hover:text-indigo-200"
+              >
+                Clear selection
+              </button>
+            </div>
+          )}
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <div
+              className={`h-full min-w-0 ${isEditingStudent ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+            >
+              {filteredStudents.length === 0 ? (
+                <div className="p-6 text-center text-slate-400">
+                  {loading ? "Loading..." : "No students found."}
+                </div>
+              ) : (
+                <table
+                  className={`text-sm ${isEditingStudent ? "w-full min-w-0 table-fixed" : "w-full min-w-225 whitespace-nowrap"}`}
+                >
+                  <thead className="sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
+                    <tr>
+                      {!isEditingStudent && (
+                        <th className="w-24 px-3 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            aria-label="Select all visible students"
+                            checked={allVisibleStudentsSelected}
+                            onChange={(event) =>
+                              setSelectedStudentIds((current) =>
+                                event.target.checked
+                                  ? Array.from(
+                                      new Set([
+                                        ...current,
+                                        ...pageStudents.map(
+                                          (student) => student.id,
+                                        ),
+                                      ]),
+                                    )
+                                  : current.filter(
+                                      (id) =>
+                                        !pageStudents.some(
+                                          (student) => student.id === id,
+                                        ),
+                                    ),
+                              )
+                            }
+                            className="accent-indigo-500"
+                          />
+                        </th>
+                      )}
+                      {displayedColumns.map((column) => (
+                        <th
+                          key={column.key}
+                          className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? (column.key === "id" ? "w-14" : column.key === "phone_no" ? "w-24" : column.key === "classroom" ? "w-20" : column.key === "section" ? "w-20" : column.key === "status" ? "w-24" : "") : ""}`}
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSortConfig((current) => ({
+                                key: column.key,
+                                direction:
+                                  current.key === column.key &&
+                                  current.direction === "asc"
+                                    ? "desc"
+                                    : "asc",
+                              }))
+                            }
+                            className="inline-flex items-center gap-1 hover:text-slate-950"
+                          >
+                            {column.label}
+                            <ArrowUpDown
+                              size={13}
+                              className={
+                                sortConfig.key === column.key
+                                  ? "text-indigo-700"
+                                  : "text-slate-500"
+                              }
+                            />
+                          </button>
+                        </th>
+                      ))}
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700/60">
+                    {pageStudents.map((student) => (
+                      <Fragment key={student.id}>
+                        <tr className="h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40">
+                          {!isEditingStudent && (
+                            <td className="px-3 py-3 text-center">
+                              <div className="inline-flex items-center gap-1 text-slate-500">
+                                <GripVertical size={14} aria-hidden="true" />
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedStudentIds((current) =>
+                                      current.includes(student.id)
+                                        ? current.filter(
+                                            (id) => id !== student.id,
+                                          )
+                                        : [...current, student.id],
+                                    )
+                                  }
+                                  aria-label={`${expandedStudentIds.includes(student.id) ? "Collapse" : "Expand"} ${student.full_name}`}
+                                  aria-expanded={expandedStudentIds.includes(
+                                    student.id,
+                                  )}
+                                  className="rounded p-1 hover:bg-slate-700/60 hover:text-slate-200"
+                                >
+                                  <ChevronRight
+                                    size={15}
+                                    className={`transition-transform ${expandedStudentIds.includes(student.id) ? "rotate-90" : ""}`}
+                                  />
+                                </button>
+                                <input
+                                  type="checkbox"
+                                  aria-label={`Select ${student.full_name}`}
+                                  checked={selectedStudentIds.includes(
+                                    student.id,
+                                  )}
+                                  onChange={(event) =>
+                                    setSelectedStudentIds((current) =>
+                                      event.target.checked
+                                        ? [...current, student.id]
+                                        : current.filter(
+                                            (id) => id !== student.id,
+                                          ),
+                                    )
+                                  }
+                                  className="accent-indigo-500"
+                                />
+                              </div>
+                            </td>
+                          )}
+                          {displayedColumns.map((column) => (
+                            <td
+                              key={column.key}
+                              className={`px-3 py-3 text-slate-300 ${isEditingStudent ? "truncate" : ""}`}
+                            >
+                              {column.render
+                                ? column.render(student)
+                                : (student[column.key] ?? "—")}
+                            </td>
+                          ))}
+                          <td className="px-4 py-3 text-right">
+                            <div className="inline-flex items-center gap-1">
+                              <button
+                                onClick={() => setViewStudent(student)}
+                                title="View student"
+                                aria-label={`View ${student.full_name}`}
+                                className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
+                              >
+                                <Eye size={15} />
+                              </button>
+                              <button
+                                onClick={() => openEdit(student)}
+                                title="Edit student"
+                                aria-label={`Edit ${student.full_name}`}
+                                className="p-2 text-slate-300 hover:bg-slate-700/60 rounded"
+                              >
+                                <Edit size={15} />
+                              </button>
+                              <button
+                                onClick={() => remove(student.id)}
+                                title="Delete student"
+                                aria-label={`Delete ${student.full_name}`}
+                                className="p-2 text-red-300 hover:bg-red-500/10 rounded"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        {expandedStudentIds.includes(student.id) && (
+                          <tr>
+                            <td
+                              colSpan={
+                                displayedColumns.length +
+                                (isEditingStudent ? 1 : 2)
+                              }
+                              className="border-b border-slate-700/50 bg-slate-800/20 px-6 py-3"
+                            >
+                              <div className="grid gap-3 text-xs text-slate-400 sm:grid-cols-2 lg:grid-cols-4">
+                                <span>
+                                  Email: {student.student_mail || "—"}
+                                </span>
+                                <span>Phone: {student.phone_no || "—"}</span>
+                                <span>
+                                  Guardian: {student.guardian_name || "—"}
+                                </span>
+                                <span>
+                                  Class:{" "}
+                                  {student.class_name ||
+                                    student.classroom_name ||
+                                    "—"}
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 px-4 py-3 text-xs text-slate-400">
+            <label className="flex items-center gap-2">
+              Rows per page
+              <select
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(Number(event.target.value));
+                  setCurrentPage(1);
+                }}
+                className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
+              >
+                {[10, 25, 50].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-center gap-4">
+              <span>
+                {firstRecord}-{lastRecord} of {sortedStudents.length}
+              </span>
+              <span>
+                Page {visiblePage} of {pageCount}
+              </span>
+              <div className="flex items-center gap-1">
+                {[
+                  { label: "First page", Icon: ChevronsLeft, page: 1 },
+                  {
+                    label: "Previous page",
+                    Icon: ChevronLeft,
+                    page: visiblePage - 1,
+                  },
+                  {
+                    label: "Next page",
+                    Icon: ChevronRight,
+                    page: visiblePage + 1,
+                  },
+                  { label: "Last page", Icon: ChevronsRight, page: pageCount },
+                ].map(({ label, Icon, page }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-label={label}
+                    title={label}
+                    disabled={
+                      label.includes("First") || label.includes("Previous")
+                        ? visiblePage === 1
+                        : visiblePage === pageCount
+                    }
+                    onClick={() => setCurrentPage(page)}
+                    className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Icon size={15} />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      </div>
       </div>
 
       <SettingsModal

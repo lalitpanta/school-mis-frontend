@@ -50,7 +50,8 @@ const RecordTableToolbar = ({
                 type="checkbox"
                 checked={visibleColumns.includes(column.key)}
                 disabled={
-                  visibleColumns.includes(column.key) && visibleColumns.length === 1
+                  visibleColumns.includes(column.key) &&
+                  visibleColumns.length === 1
                 }
                 onChange={() => onToggleColumn(column.key)}
                 className="accent-indigo-500"

@@ -488,7 +488,9 @@ export default function EmployeePage() {
       key: "full_name",
       label: "Name",
       value: (employee) => employee.full_name,
-      render: (employee) => <span className="font-medium">{employee.full_name}</span>,
+      render: (employee) => (
+        <span className="font-medium">{employee.full_name}</span>
+      ),
     },
     {
       key: "designation",
@@ -542,7 +544,9 @@ export default function EmployeePage() {
       : visibleEmployeeColumns.includes(column.key),
   );
   const sortedEmployees = [...filteredEmployees].sort((first, second) => {
-    const column = employeeColumns.find((item) => item.key === employeeSort.key);
+    const column = employeeColumns.find(
+      (item) => item.key === employeeSort.key,
+    );
     if (!column) return 0;
     const firstValue = column.value(first) ?? "";
     const secondValue = column.value(second) ?? "";
@@ -639,7 +643,9 @@ export default function EmployeePage() {
                   Department
                   <select
                     value={departmentFilter}
-                    onChange={(event) => setDepartmentFilter(event.target.value)}
+                    onChange={(event) =>
+                      setDepartmentFilter(event.target.value)
+                    }
                     className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
                     <option value="all">All departments</option>
@@ -681,167 +687,183 @@ export default function EmployeePage() {
           <div
             className={`min-h-0 flex-1 ${isEditingEmployee ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
           >
-          <table
-            className={`w-full ${isEditingEmployee ? "min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
-          >
-            <thead
-              className="sticky top-0 z-10 border-b"
-              style={{
-                borderBottom: "1px solid var(--border-card)",
-                background: "var(--bg-card)",
-              }}
+            <table
+              className={`w-full ${isEditingEmployee ? "min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
             >
-              <tr>
-                {!isEditingEmployee && (
-                <th className="w-12 px-3 py-4 text-center">
-                  <input
-                    type="checkbox"
-                    aria-label="Select all visible employees"
-                    checked={
-                      sortedEmployees.length > 0 &&
-                      sortedEmployees.every((employee) =>
-                        selectedEmployeeIds.includes(employee.id),
-                      )
-                    }
-                    onChange={(event) =>
-                      setSelectedEmployeeIds((current) =>
-                        event.target.checked
-                          ? Array.from(
-                              new Set([
-                                ...current,
-                                ...sortedEmployees.map((employee) => employee.id),
-                              ]),
-                            )
-                          : current.filter(
-                              (id) =>
-                                !sortedEmployees.some(
-                                  (employee) => employee.id === id,
+              <thead
+                className="sticky top-0 z-10 border-b"
+                style={{
+                  borderBottom: "1px solid var(--border-card)",
+                  background: "var(--bg-card)",
+                }}
+              >
+                <tr>
+                  {!isEditingEmployee && (
+                    <th className="w-12 px-3 py-4 text-center">
+                      <input
+                        type="checkbox"
+                        aria-label="Select all visible employees"
+                        checked={
+                          sortedEmployees.length > 0 &&
+                          sortedEmployees.every((employee) =>
+                            selectedEmployeeIds.includes(employee.id),
+                          )
+                        }
+                        onChange={(event) =>
+                          setSelectedEmployeeIds((current) =>
+                            event.target.checked
+                              ? Array.from(
+                                  new Set([
+                                    ...current,
+                                    ...sortedEmployees.map(
+                                      (employee) => employee.id,
+                                    ),
+                                  ]),
+                                )
+                              : current.filter(
+                                  (id) =>
+                                    !sortedEmployees.some(
+                                      (employee) => employee.id === id,
+                                    ),
                                 ),
-                            ),
-                      )
-                    }
-                    className="accent-indigo-500"
-                  />
-                </th>
-                )}
-                {displayedEmployeeColumns.map((column) => (
+                          )
+                        }
+                        className="accent-indigo-500"
+                      />
+                    </th>
+                  )}
+                  {displayedEmployeeColumns.map((column) => (
+                    <th
+                      key={column.key}
+                      className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? (column.key === "employee_id" ? "w-24" : column.key === "status" ? "w-24" : "") : "px-4"}`}
+                      style={{ color: "var(--text-2)" }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEmployeeSort((current) => ({
+                            key: column.key,
+                            direction:
+                              current.key === column.key &&
+                              current.direction === "asc"
+                                ? "desc"
+                                : "asc",
+                          }))
+                        }
+                        className="inline-flex items-center gap-1 hover:text-white"
+                      >
+                        {column.label}
+                        <ArrowUpDown size={13} />
+                      </button>
+                    </th>
+                  ))}
                   <th
-                    key={column.key}
-                    className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? column.key === "employee_id" ? "w-24" : column.key === "status" ? "w-24" : "" : "px-4"}`}
+                    className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-36" : "px-6 text-sm"}`}
                     style={{ color: "var(--text-2)" }}
                   >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setEmployeeSort((current) => ({
-                          key: column.key,
-                          direction:
-                            current.key === column.key &&
-                            current.direction === "asc"
-                              ? "desc"
-                              : "asc",
-                        }))
-                      }
-                      className="inline-flex items-center gap-1 hover:text-white"
-                    >
-                      {column.label}
-                      <ArrowUpDown size={13} />
-                    </button>
+                    Actions
                   </th>
-                ))}
-                <th
-                  className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-36" : "px-6 text-sm"}`}
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700/50">
-              {filteredEmployees.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={displayedEmployeeColumns.length + (isEditingEmployee ? 1 : 2)}
-                    className="px-6 py-8 text-center text-slate-400"
-                  >
-                    {loading ? "Loading..." : "No employees found"}
-                  </td>
                 </tr>
-              ) : (
-                sortedEmployees.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-slate-800/30 transition">
-                    {!isEditingEmployee && (
-                    <td className="px-3 py-4 text-center">
-                      <div className="inline-flex items-center gap-2 text-slate-500">
-                        <GripVertical size={14} aria-hidden="true" />
-                        <input
-                          type="checkbox"
-                          aria-label={`Select ${emp.full_name}`}
-                          checked={selectedEmployeeIds.includes(emp.id)}
-                          onChange={(event) =>
-                            setSelectedEmployeeIds((current) =>
-                              event.target.checked
-                                ? [...current, emp.id]
-                                : current.filter((id) => id !== emp.id),
-                            )
-                          }
-                          className="accent-indigo-500"
-                        />
-                      </div>
-                    </td>
-                    )}
-                    {displayedEmployeeColumns.map((column) => (
-                      <td
-                        key={column.key}
-                        className={`px-2 py-4 text-sm text-slate-300 ${isEditingEmployee ? "truncate" : "px-4"}`}
-                      >
-                        {column.render
-                          ? column.render(emp)
-                          : column.value(emp) || "—"}
-                      </td>
-                    ))}
-                    <td className="px-6 py-4 text-center space-x-2">
-                      <button
-                        onClick={() => openViewModal(emp)}
-                        title="View employee"
-                        aria-label={`View ${emp.full_name}`}
-                        className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
-                      >
-                        <Eye size={14} />
-                        {!isEditingEmployee && "View"}
-                      </button>
-                      <button
-                        onClick={() => handleEditClick(emp)}
-                        title="Edit employee"
-                        aria-label={`Edit ${emp.full_name}`}
-                        className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
-                      >
-                        <Edit size={14} />
-                        {!isEditingEmployee && "Edit"}
-                      </button>
-                      <button
-                        onClick={() => toggleEmployeeStatus(emp)}
-                        title={emp.is_active ? "Deactivate employee" : "Activate employee"}
-                        aria-label={emp.is_active ? "Deactivate employee" : "Activate employee"}
-                        className={`inline-flex items-center justify-center rounded p-2 transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
-                      >
-                        <Power size={15} />
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(emp.id)}
-                        title="Delete employee"
-                        aria-label={`Delete ${emp.full_name}`}
-                        className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-red-500/20 text-red-300 hover:bg-red-500/30`}
-                      >
-                        <Trash2 size={14} />
-                        {!isEditingEmployee && "Delete"}
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-slate-700/50">
+                {filteredEmployees.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={
+                        displayedEmployeeColumns.length +
+                        (isEditingEmployee ? 1 : 2)
+                      }
+                      className="px-6 py-8 text-center text-slate-400"
+                    >
+                      {loading ? "Loading..." : "No employees found"}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  sortedEmployees.map((emp) => (
+                    <tr
+                      key={emp.id}
+                      className="hover:bg-slate-800/30 transition"
+                    >
+                      {!isEditingEmployee && (
+                        <td className="px-3 py-4 text-center">
+                          <div className="inline-flex items-center gap-2 text-slate-500">
+                            <GripVertical size={14} aria-hidden="true" />
+                            <input
+                              type="checkbox"
+                              aria-label={`Select ${emp.full_name}`}
+                              checked={selectedEmployeeIds.includes(emp.id)}
+                              onChange={(event) =>
+                                setSelectedEmployeeIds((current) =>
+                                  event.target.checked
+                                    ? [...current, emp.id]
+                                    : current.filter((id) => id !== emp.id),
+                                )
+                              }
+                              className="accent-indigo-500"
+                            />
+                          </div>
+                        </td>
+                      )}
+                      {displayedEmployeeColumns.map((column) => (
+                        <td
+                          key={column.key}
+                          className={`px-2 py-4 text-sm text-slate-300 ${isEditingEmployee ? "truncate" : "px-4"}`}
+                        >
+                          {column.render
+                            ? column.render(emp)
+                            : column.value(emp) || "—"}
+                        </td>
+                      ))}
+                      <td className="px-6 py-4 text-center space-x-2">
+                        <button
+                          onClick={() => openViewModal(emp)}
+                          title="View employee"
+                          aria-label={`View ${emp.full_name}`}
+                          className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
+                        >
+                          <Eye size={14} />
+                          {!isEditingEmployee && "View"}
+                        </button>
+                        <button
+                          onClick={() => handleEditClick(emp)}
+                          title="Edit employee"
+                          aria-label={`Edit ${emp.full_name}`}
+                          className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
+                        >
+                          <Edit size={14} />
+                          {!isEditingEmployee && "Edit"}
+                        </button>
+                        <button
+                          onClick={() => toggleEmployeeStatus(emp)}
+                          title={
+                            emp.is_active
+                              ? "Deactivate employee"
+                              : "Activate employee"
+                          }
+                          aria-label={
+                            emp.is_active
+                              ? "Deactivate employee"
+                              : "Activate employee"
+                          }
+                          className={`inline-flex items-center justify-center rounded p-2 transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                        >
+                          <Power size={15} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(emp.id)}
+                          title="Delete employee"
+                          aria-label={`Delete ${emp.full_name}`}
+                          className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-red-500/20 text-red-300 hover:bg-red-500/30`}
+                        >
+                          <Trash2 size={14} />
+                          {!isEditingEmployee && "Delete"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
