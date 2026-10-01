@@ -9,68 +9,74 @@ import {
   BookOpen,
   GraduationCap,
   Briefcase,
+  Blocks,
 } from "lucide-react";
+import { AVAILABLE_MODULES } from "../../utils/constants";
 
 /**
  * Application modules — these ARE the permissions.
  * Each module has a set of granular actions.
  */
-const APP_MODULES = [
-  {
-    key: "dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    actions: ["view"],
-  },
-  {
-    key: "calendar",
-    label: "Calendar",
-    icon: CalendarDays,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "attendance",
-    label: "Attendance",
-    icon: ClipboardList,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "users",
-    label: "Users",
-    icon: Users,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "roles",
-    label: "Roles",
-    icon: Shield,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "teacher",
-    label: "Teacher",
-    icon: BookOpen,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "student",
-    label: "Student",
-    icon: GraduationCap,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "employee",
-    label: "Employee",
-    icon: Briefcase,
-    actions: ["view", "create", "edit", "delete"],
-  },
-  {
-    key: "settings",
-    label: "Settings",
-    icon: Settings,
-    actions: ["view", "edit"],
-  },
-];
+const SETTINGS_MODULES = new Set([
+  "school",
+  "academic",
+  "calendarSettings",
+  "notices",
+  "integrations",
+  "devices",
+  "backup",
+  "activityLog",
+  "activeSessions",
+  "security",
+  "departments",
+  "classrooms",
+  "courses",
+  "rooms",
+  "students",
+  "theme",
+  "profile",
+]);
+
+const MODULE_ICONS = {
+  dashboard: LayoutDashboard,
+  calendar: CalendarDays,
+  attendance: ClipboardList,
+  users: Users,
+  roles: Shield,
+  teacher: BookOpen,
+  student: GraduationCap,
+  employee: Briefcase,
+  settings: Settings,
+};
+
+const SETTINGS_ACTIONS = new Set([
+  "settings",
+  "school",
+  "academic",
+  "calendarSettings",
+  "theme",
+  "profile",
+  "security",
+  "integrations",
+  "devices",
+]);
+
+const APP_MODULES = AVAILABLE_MODULES.map(({ key, label }) => {
+  const permissionKey = SETTINGS_MODULES.has(key) ? `settings.${key}` : key;
+  const Icon = MODULE_ICONS[key] || Blocks;
+
+  return {
+    key: permissionKey,
+    label,
+    icon: Icon,
+    actions:
+      key === "dashboard"
+        ? ["view"]
+        : SETTINGS_ACTIONS.has(key) || SETTINGS_MODULES.has(key)
+          ? ["view", "edit"]
+          : ["view", "create", "edit", "delete"],
+  };
+});
 
 const ACTION_LABELS = {
   view: "View",

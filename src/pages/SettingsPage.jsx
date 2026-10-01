@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import SchoolProfile from "../components/settings/SchoolProfile";
 import CalendarSettings from "../components/settings/CalendarSettings";
 import UsersStaff from "../components/settings/UsersStaff";
@@ -52,6 +53,7 @@ const SETTINGS_NAV = [
       { key: "school", label: "School Profile" },
       { key: "calendarSettings", label: "Calendar Settings" },
       { key: "theme", label: "Theme" },
+      { key: "profile", label: "My Profile" },
     ],
   },
   {
@@ -72,8 +74,11 @@ const SETTINGS_NAV = [
   {
     title: "Facilities & Classrooms",
     items: [
+      { key: "departments", label: "Departments" },
       { key: "classrooms", label: "Classrooms" },
+      { key: "courses", label: "Courses" },
       { key: "rooms", label: "Rooms" },
+      { key: "students", label: "Students" },
     ],
   },
   {
@@ -111,10 +116,51 @@ const TAB_LABELS = {
   accounts: "Accounts",
 };
 
+const SETTINGS_TAB_PERMISSIONS = {
+  school: ["settings.school.view", "school.view"],
+  profile: ["settings.profile.view", "profile.view"],
+  calendarSettings: [
+    "settings.calendarsettings.view",
+    "settings.academic.view",
+    "calendarSettings.view",
+    "academic.view",
+  ],
+  theme: ["settings.theme.view", "theme.view"],
+  users: ["settings.users.view", "users.view"],
+  roles: ["settings.roles.view", "roles.view"],
+  security: ["settings.security.view", "security.view"],
+  notices: ["settings.notices.view", "notices.view"],
+  integrations: ["settings.integrations.view", "integrations.view"],
+  devices: ["settings.devices.view", "devices.view"],
+  backup: ["settings.backup.view", "backup.view"],
+  activityLog: ["settings.activitylog.view", "activityLog.view"],
+  activeSessions: ["settings.activesessions.view", "activeSessions.view"],
+  departments: ["settings.departments.view", "departments.view"],
+  classrooms: ["settings.classrooms.view", "classrooms.view"],
+  courses: ["settings.courses.view", "courses.view"],
+  rooms: ["settings.rooms.view", "rooms.view"],
+  students: ["settings.students.view", "students.view"],
+};
+
 const SettingsPage = () => {
   const [params, setParams] = useSearchParams();
+  const { user, isTenant } = useAuth();
   const tab = params.get("tab") || "school";
   const label = TAB_LABELS[tab] ?? "Settings";
+  const permissions = Array.isArray(user?.permissions)
+    ? user.permissions.map((permission) => String(permission).toLowerCase())
+    : [];
+  const canViewAllSettings = isTenant() || permissions.includes("settings.view");
+  const visibleSettingsNav = SETTINGS_NAV.map((group) => ({
+    ...group,
+    items: group.items.filter(
+      (item) =>
+        canViewAllSettings ||
+        (SETTINGS_TAB_PERMISSIONS[item.key] || []).some((permission) =>
+          permissions.includes(permission),
+        ),
+    ),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -153,7 +199,7 @@ const SettingsPage = () => {
           }}
           className="h-full overflow-y-auto p-3"
         >
-          {SETTINGS_NAV.map((group) => (
+          {visibleSettingsNav.map((group) => (
             <div key={group.title} className="mb-4">
               <div
                 className="px-3 pb-2 pt-2 text-[9px] font-semibold uppercase tracking-[0.18em]"

@@ -849,6 +849,8 @@ const Sidebar = () => {
 
   const showSettings =
     user?.type !== "super_admin" && (!isTenant() || hasModule("settings"));
+  const showResults =
+    user?.type !== "super_admin" && (!isTenant() || hasModule("results"));
 
   // Initials from user name
   const name = user?.name || user?.firstName || user?.email || "User";
@@ -1010,7 +1012,7 @@ const Sidebar = () => {
             )}
 
           {/* ── Configuration section ── */}
-          {showSettings && (
+          {showResults && (
             <>
               <div className="sb-subsection-title">Exam &amp; Result</div>
 
@@ -1034,6 +1036,11 @@ const Sidebar = () => {
                 <span className="sb-tooltip">Course &amp; Marks</span>
               </button>
 
+            </>
+          )}
+
+          {showSettings && (
+            <>
               <div className="sb-section-label">Configuration</div>
 
               <button

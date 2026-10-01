@@ -275,6 +275,19 @@ export const resetStudentPassword = async (tenantSlug, token, newPassword) => {
   }
 };
 
+export const resetTenantUserPassword = async (tenantSlug, token, newPassword) => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_BASE}/user/password/reset`, {
+      tenantSlug,
+      token,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const requestPasswordReset = async (email, tenantSlug = "") => {
   try {
     const response = await axiosInstance.post(`${AUTH_BASE}/password/forgot`, {

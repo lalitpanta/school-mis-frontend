@@ -116,9 +116,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const permissions = user?.permissions || [];
-    return permissions.some(
-      (permission) => String(permission).split(".")[0] === moduleKey,
-    );
+    return permissions.includes(`${moduleKey}.view`);
   };
 
   return (

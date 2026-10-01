@@ -224,6 +224,7 @@ const AppRoutes = () => {
         path="/student/reset-password"
         element={<StudentPasswordResetPage />}
       />
+      <Route path="/reset-password" element={<StudentPasswordResetPage />} />
       <Route
         path={ROUTES.STUDENT_PORTAL}
         element={<StudentRoute element={<StudentPortalPage />} />}

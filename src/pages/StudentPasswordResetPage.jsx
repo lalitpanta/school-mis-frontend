@@ -1,19 +1,22 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, GraduationCap, KeyRound, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   requestStudentPasswordReset,
   resetStudentPassword,
+  resetTenantUserPassword,
 } from "../api/authApi";
 
 const StudentPasswordResetPage = () => {
   const [searchParams] = useSearchParams();
+  const { pathname } = useLocation();
+  const isTenantUserFlow = pathname === "/reset-password";
   const token = searchParams.get("token") || "";
   const [tenantSlug, setTenantSlug] = useState(
     searchParams.get("tenant") || searchParams.get("tenantSlug") || "",
   );
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,11 +35,16 @@ const StudentPasswordResetPage = () => {
         if (password !== confirmPassword) {
           throw new Error("Passwords do not match.");
         }
-        const result = await resetStudentPassword(tenantSlug, token, password);
+        const result = isTenantUserFlow
+          ? await resetTenantUserPassword(tenantSlug, token, password)
+          : await resetStudentPassword(tenantSlug, token, password);
         toast.success(result.message || "Password updated.");
-        navigate(`/student/login?tenantSlug=${encodeURIComponent(tenantSlug)}`, {
-          replace: true,
-        });
+        const loginParams = new URLSearchParams({ tenantSlug });
+        if (isTenantUserFlow && email) loginParams.set("email", email);
+        navigate(
+          `${isTenantUserFlow ? "/login" : "/student/login"}?${loginParams.toString()}`,
+          { replace: true },
+        );
       } else {
         const result = await requestStudentPasswordReset(tenantSlug, email);
         setSent(true);
@@ -68,8 +76,8 @@ const StudentPasswordResetPage = () => {
               {token ? "Choose a new password." : "Get back into your portal."}
             </h1>
           </div>
-          <Link to="/student/login" className="inline-flex items-center gap-2 text-sm text-emerald-200 hover:text-white">
-            <ArrowLeft size={16} /> Student sign in
+          <Link to={isTenantUserFlow ? "/login" : "/student/login"} className="inline-flex items-center gap-2 text-sm text-emerald-200 hover:text-white">
+            <ArrowLeft size={16} /> {isTenantUserFlow ? "School portal sign in" : "Student sign in"}
           </Link>
         </section>
 
@@ -77,15 +85,23 @@ const StudentPasswordResetPage = () => {
           <div className="w-full max-w-sm">
             <div className="mb-6 flex items-center gap-3 md:hidden">
               <GraduationCap className="text-emerald-300" size={26} />
-              <span className="text-sm font-semibold">STUDENT PORTAL</span>
+              <span className="text-sm font-semibold">
+                {isTenantUserFlow ? "SCHOOL PORTAL" : "STUDENT PORTAL"}
+              </span>
             </div>
-            <p className="text-sm font-medium text-emerald-300">PASSWORD RESET</p>
+            <p className="text-sm font-medium text-emerald-300">
+              {isTenantUserFlow ? "ACCOUNT SETUP" : "PASSWORD RESET"}
+            </p>
             <h2 className="mt-2 text-3xl font-semibold">
-              {token ? "Set a new password" : "Request a reset link"}
+              {token
+                ? isTenantUserFlow
+                  ? "Set your portal password"
+                  : "Set a new password"
+                : "Request a reset link"}
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
               {token
-                ? "Choose a new password for your student account. This link can only be used once."
+                ? `Choose a new password for your ${isTenantUserFlow ? "school portal" : "student portal"} account. This link can only be used once.`
                 : "Enter your school slug and student email. If the account exists, we’ll email a secure reset link."}
             </p>
 
@@ -100,7 +116,13 @@ const StudentPasswordResetPage = () => {
               </div>
             )}
 
-            {!sent && (
+            {isTenantUserFlow && !token && (
+              <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                This setup link is missing its token. Request a new invitation from your school administrator.
+              </div>
+            )}
+
+            {!sent && (!isTenantUserFlow || token) && (
               <form onSubmit={submit} className="mt-7 space-y-5">
                 {!token && (
                   <>
@@ -176,10 +198,10 @@ const StudentPasswordResetPage = () => {
             )}
 
             <Link
-              to={`/student/login${tenantSlug ? `?tenantSlug=${encodeURIComponent(tenantSlug)}` : ""}`}
+              to={`${isTenantUserFlow ? "/login" : "/student/login"}${tenantSlug ? `?tenantSlug=${encodeURIComponent(tenantSlug)}` : ""}`}
               className="mt-6 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white"
             >
-              <ArrowLeft size={16} /> Back to student sign in
+              <ArrowLeft size={16} /> Back to {isTenantUserFlow ? "school" : "student"} sign in
             </Link>
           </div>
         </section>

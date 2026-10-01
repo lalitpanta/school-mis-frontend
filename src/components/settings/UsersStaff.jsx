@@ -9,6 +9,21 @@ import { RoleSelector } from "../common/RoleSelector";
 import { Plus, Trash2, Edit, X } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 
+const DEFAULT_MODULE_ACCESS = [
+  "dashboard",
+  "calendar",
+  "attendance",
+  "teacher",
+  "student",
+  "employee",
+  "results",
+  "result_portal",
+  "daily_reports",
+  "leave_management",
+  "accounts",
+  "settings",
+];
+
 const UsersStaff = () => {
   const { fetchRoles, roles: availableRoles } = useRolesPermissions();
 
@@ -26,6 +41,7 @@ const UsersStaff = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
+  const [notice, setNotice] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -140,31 +156,11 @@ const UsersStaff = () => {
       }
 
       // Ultimate fallback: use all common modules
-      setAvailableModules([
-        "dashboard",
-        "calendar",
-        "attendance",
-        "settings",
-        "results",
-        "notices",
-        "students",
-        "teachers",
-        "employees",
-      ]);
+      setAvailableModules(DEFAULT_MODULE_ACCESS);
     } catch (err) {
       console.error("Failed to load available modules:", err);
       // Fallback to default modules
-      setAvailableModules([
-        "dashboard",
-        "calendar",
-        "attendance",
-        "settings",
-        "results",
-        "notices",
-        "students",
-        "teachers",
-        "employees",
-      ]);
+      setAvailableModules(DEFAULT_MODULE_ACCESS);
     }
   };
 
@@ -204,14 +200,6 @@ const UsersStaff = () => {
       newErrors.email = "Invalid email format";
     }
 
-    if (modalMode === "create") {
-      if (!formData.password) {
-        newErrors.password = "Password is required";
-      } else if (formData.password.length < 6) {
-        newErrors.password = "Password must be at least 6 characters";
-      }
-    }
-
     setFormErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -227,7 +215,6 @@ const UsersStaff = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        password: formData.password,
         department_store: formData.department_store,
         authority_mode: formData.authority_mode,
         module_access: formData.module_access,
@@ -243,7 +230,19 @@ const UsersStaff = () => {
         payload.employee_id = formData.employee_id;
       }
 
-      await usersApi.createUser(payload);
+      const response = await usersApi.createUser(payload);
+      setNotice(
+        response.invitation?.email_sent
+          ? {
+              success: true,
+              message: `Portal setup email sent to ${formData.email}.`,
+            }
+          : {
+              success: false,
+              message:
+                "The user was created, but the setup email could not be sent. Check Settings > Integrations and the server email logs.",
+            },
+      );
 
       await loadData();
       closeModal();
@@ -395,7 +394,7 @@ const UsersStaff = () => {
       <div>
         <h2 className="text-lg font-semibold text-white mb-2">Users & Staff</h2>
         <p className="text-sm text-slate-400">
-          Create and manage users with password and role assignments
+          Create users, assign roles, and send secure portal setup links
         </p>
       </div>
 
@@ -409,6 +408,15 @@ const UsersStaff = () => {
           >
             <X size={16} />
           </button>
+        </div>
+      )}
+
+      {notice && (
+        <div
+          role="status"
+          className={`rounded-lg border px-3 py-2 text-sm ${notice.success ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : "border-amber-500/30 bg-amber-500/10 text-amber-200"}`}
+        >
+          {notice.message}
         </div>
       )}
 
@@ -853,32 +861,12 @@ const UsersStaff = () => {
               </div>
             )}
 
-            {/* Password - Only for create */}
+            {/* New users set their password through the secure email link. */}
             {modalMode === "create" && (
-              <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
-                  Password *
-                </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => {
-                    setFormData({ ...formData, password: e.target.value });
-                    setFormErrors({ ...formErrors, password: "" });
-                  }}
-                  placeholder="Minimum 6 characters"
-                  className={`w-full px-3 py-2 bg-slate-700/40 border rounded-lg text-white text-sm focus:outline-none focus:ring-2 ${
-                    formErrors.password
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-slate-600/50 focus:ring-indigo-500"
-                  }`}
-                />
-                {formErrors.password && (
-                  <p className="text-red-400 text-sm mt-1">
-                    {formErrors.password}
-                  </p>
-                )}
-              </div>
+              <p className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 px-3 py-2 text-xs leading-5 text-slate-400">
+                The user will receive a secure link to set their password and
+                sign in to this school portal.
+              </p>
             )}
 
             {/* Department/Store - Hidden for students */}

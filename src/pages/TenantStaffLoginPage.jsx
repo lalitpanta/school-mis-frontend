@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
@@ -39,6 +39,7 @@ const TenantStaffLoginPage = () => {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState("");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { loginUser } = useAuth();
 
   const {
@@ -47,7 +48,11 @@ const TenantStaffLoginPage = () => {
     formState: { errors },
     reset,
   } = useForm({
-    defaultValues: { tenantSlug: "", email: "", password: "" },
+    defaultValues: {
+      tenantSlug: searchParams.get("tenantSlug") || "",
+      email: searchParams.get("email") || "",
+      password: "",
+    },
   });
 
   const onSubmit = async (data) => {

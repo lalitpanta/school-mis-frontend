@@ -153,6 +153,21 @@ export const AVAILABLE_MODULES = [
     description: "Device and access integration management",
   },
   {
+    key: "backup",
+    label: "Backup",
+    description: "Backup and restore settings",
+  },
+  {
+    key: "activityLog",
+    label: "Activity Log",
+    description: "Review administrator activity",
+  },
+  {
+    key: "activeSessions",
+    label: "Active Sessions",
+    description: "Review active user sessions",
+  },
+  {
     key: "security",
     label: "Security",
     description: "Security and account controls",
