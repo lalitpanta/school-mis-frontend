@@ -111,12 +111,17 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!user && !!token;
   const hasModule = (moduleKey) => {
     const modules = user?.modules || [];
-    if (Array.isArray(modules) && modules.includes(moduleKey)) {
-      return true;
-    }
-
     const permissions = user?.permissions || [];
-    return permissions.includes(`${moduleKey}.view`);
+    if (isStaff()) {
+      return (
+        Array.isArray(modules) &&
+        modules.includes(moduleKey) &&
+        Array.isArray(permissions) &&
+        permissions.includes(`${moduleKey}.view`)
+      );
+    }
+    if (Array.isArray(modules) && modules.includes(moduleKey)) return true;
+    return Array.isArray(permissions) && permissions.includes(`${moduleKey}.view`);
   };
 
   return (
