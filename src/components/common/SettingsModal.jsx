@@ -9,11 +9,14 @@ const SettingsModal = ({
   width = "max-w-lg",
   sidePanel = false,
   inlinePanel = false,
+  closeOnOverlayClick = true,
   children,
   footer,
 }) => {
   const overlayRef = useRef(null);
   const bodyRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (open && !inlinePanel && bodyRef.current) {
@@ -22,7 +25,7 @@ const SettingsModal = ({
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
-        onClose?.();
+        onCloseRef.current?.();
       }
     };
 
@@ -37,7 +40,7 @@ const SettingsModal = ({
       document.removeEventListener("keydown", handleKeyDown);
       if (!inlinePanel) document.body.style.overflow = "";
     };
-  }, [open, onClose, inlinePanel]);
+  }, [open, inlinePanel]);
 
   if (!open) return null;
 
@@ -45,7 +48,7 @@ const SettingsModal = ({
     <div
       ref={overlayRef}
       onClick={(event) => {
-        if (event.target === overlayRef.current) {
+        if (closeOnOverlayClick && event.target === overlayRef.current) {
           onClose?.();
         }
       }}

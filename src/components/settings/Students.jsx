@@ -96,19 +96,21 @@ const emptyStudent = {
 };
 
 const Section = ({ title, open, onToggle, children }) => (
-  <div className="mb-4 border border-slate-700/40 rounded">
-    <div
-      className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-800/30"
+  <div className="mb-4 overflow-hidden rounded-lg border border-slate-700/60">
+    <button
+      type="button"
+      aria-expanded={open}
+      className="flex w-full items-center justify-between bg-slate-800/40 p-4 text-left transition hover:bg-slate-800/70"
       onClick={onToggle}
     >
-      <div className="font-medium text-slate-200">{title}</div>
+      <span className="font-semibold text-slate-100">{title}</span>
       <ChevronDown
         size={18}
-        className={`transform transition ${open ? "rotate-180" : ""} text-slate-400`}
+        className={`shrink-0 transform text-slate-400 transition ${open ? "rotate-180" : ""}`}
       />
-    </div>
+    </button>
     {open && (
-      <div className="p-4 border-t border-slate-700/20 bg-slate-900/50">
+      <div className="border-t border-slate-700/60 bg-slate-900/30 p-4 sm:p-5">
         {children}
       </div>
     )}
@@ -1836,6 +1838,7 @@ const Students = () => {
         title={mode === "create" ? "Create New Student" : "Edit Student"}
         width="max-w-6xl"
         inlinePanel={isEditingStudent}
+        closeOnOverlayClick={false}
       >
         <div className="flex justify-between items-center p-4 border-b border-slate-700">
           <h3 className="text-lg font-bold">
@@ -1849,7 +1852,7 @@ const Students = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto p-4">
+        <div className="p-4 sm:p-6">
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
               <span>⚠️ {error}</span>
@@ -1861,7 +1864,22 @@ const Students = () => {
               </button>
             </div>
           )}
-          <form onSubmit={submit}>
+          <form
+            onSubmit={submit}
+            onKeyDown={(event) => {
+              const target = event.target;
+              if (
+                event.key === "Enter" &&
+                target instanceof HTMLInputElement &&
+                !["button", "submit", "checkbox", "radio", "file"].includes(
+                  target.type,
+                )
+              ) {
+                event.preventDefault();
+              }
+            }}
+            className="mx-auto max-w-5xl"
+          >
             {/* STUDENT TYPE SELECTOR */}
             <div className="mb-6 p-4 bg-slate-800/50 rounded border border-slate-700">
               <h3 className="font-semibold text-slate-200 mb-3">
@@ -2199,31 +2217,6 @@ const Students = () => {
                     !form.student_mail
                   }
                 />
-                {mode === "create" && (
-                  <label className="md:col-span-3 flex items-start gap-3 rounded border border-indigo-500/40 bg-indigo-500/10 p-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form.provide_login_credentials === true}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          provide_login_credentials: e.target.checked,
-                        })
-                      }
-                      className="mt-1 h-4 w-4 accent-indigo-500"
-                    />
-                    <span>
-                      <span className="block text-sm font-medium text-slate-100">
-                        Create student portal login and email credentials
-                      </span>
-                      <span className="mt-1 block text-xs text-slate-400">
-                        A temporary password will be sent to the student email
-                        above. Email delivery requires SMTP to be configured in
-                        Settings &gt; Integrations.
-                      </span>
-                    </span>
-                  </label>
-                )}
                 <TextAreaField
                   label="Permanent Address"
                   value={form.address}
@@ -2821,7 +2814,39 @@ const Students = () => {
               </div>
             </Section>
 
-            <div className="mt-6 flex justify-end gap-3 border-t border-slate-700 pt-4">
+            {mode === "create" && (
+              <section className="mb-4 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-4 sm:p-5">
+                <label
+                  htmlFor="student-portal-credentials"
+                  className="flex cursor-pointer items-start gap-3"
+                >
+                  <input
+                    id="student-portal-credentials"
+                    type="checkbox"
+                    checked={form.provide_login_credentials === true}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        provide_login_credentials: e.target.checked,
+                      })
+                    }
+                    className="mt-1 h-4 w-4 shrink-0 accent-indigo-500"
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-slate-100">
+                      Create student portal login and email credentials
+                    </span>
+                    <span className="mt-1 block text-sm leading-5 text-slate-400">
+                      A temporary password will be sent to the student email
+                      above. Email delivery requires SMTP to be configured in
+                      Settings &gt; Integrations.
+                    </span>
+                  </span>
+                </label>
+              </section>
+            )}
+
+            <div className="sticky bottom-0 z-20 -mx-4 mt-6 flex justify-end gap-3 border-t border-slate-700 bg-slate-950/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
