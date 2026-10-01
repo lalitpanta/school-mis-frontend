@@ -2815,10 +2815,10 @@ const Students = () => {
             </Section>
 
             {mode === "create" && (
-              <section className="mb-4 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-4 sm:p-5">
+              <section className="mb-4 rounded-lg border border-indigo-500/30 bg-indigo-500/5 px-4 py-3">
                 <label
                   htmlFor="student-portal-credentials"
-                  className="flex cursor-pointer items-start gap-3"
+                  className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 sm:grid-cols-[auto_minmax(220px,0.9fr)_minmax(0,1.4fr)] sm:gap-x-4"
                 >
                   <input
                     id="student-portal-credentials"
@@ -2830,17 +2830,15 @@ const Students = () => {
                         provide_login_credentials: e.target.checked,
                       })
                     }
-                    className="mt-1 h-4 w-4 shrink-0 accent-indigo-500"
+                    className="row-span-2 h-4 w-4 shrink-0 accent-indigo-500 sm:row-span-1"
                   />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-slate-100">
-                      Create student portal login and email credentials
-                    </span>
-                    <span className="mt-1 block text-sm leading-5 text-slate-400">
-                      A temporary password will be sent to the student email
-                      above. Email delivery requires SMTP to be configured in
-                      Settings &gt; Integrations.
-                    </span>
+                  <span className="min-w-0 text-sm font-semibold leading-5 text-slate-100">
+                    Create student portal login and email credentials
+                  </span>
+                  <span className="col-start-2 min-w-0 text-xs leading-5 text-slate-400 sm:col-start-auto sm:text-sm">
+                    A temporary password will be sent to the student email above.
+                    Email delivery requires SMTP to be configured in Settings
+                    &gt; Integrations.
                   </span>
                 </label>
               </section>
