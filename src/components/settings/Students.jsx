@@ -1268,15 +1268,19 @@ const Students = () => {
     setClassroomFilter("all");
     setShowViewMenu(false);
   };
+  const isEditingStudent = showModal && mode === "edit";
 
   return (
     <div
-      className={`flex h-full min-h-0 flex-col rounded-2xl p-6 ${showModal && mode === "edit" ? "w-[calc(52%-0.5rem)] max-lg:w-full" : "w-full"}`}
+      className={`min-w-0 rounded-2xl p-4 ${isEditingStudent ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
       }}
     >
+      <div
+        className={`min-w-0 ${isEditingStudent ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
       <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
         <div>
           <h2
@@ -1538,7 +1542,7 @@ const Students = () => {
             {loading ? "Loading..." : "No students found."}
           </div>
         ) : (
-          <table className="w-full min-w-225 text-sm">
+          <table className="w-full min-w-225 whitespace-nowrap text-sm">
             <thead className="sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
               <tr>
                 <th className="w-24 px-3 py-3 text-center">
@@ -1752,13 +1756,14 @@ const Students = () => {
         </div>
       </div>
       </div>
+      </div>
 
       <SettingsModal
         open={showModal}
         onClose={() => setShowModal(false)}
         title={mode === "create" ? "Create New Student" : "Edit Student"}
         width="max-w-6xl"
-        sidePanel={showModal && mode === "edit"}
+        inlinePanel={isEditingStudent}
       >
         <div className="flex justify-between items-center p-4 border-b border-slate-700">
           <h3 className="text-lg font-bold">

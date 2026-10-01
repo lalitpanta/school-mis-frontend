@@ -633,10 +633,15 @@ const TeacherPage = () => {
     return teacherSort.direction === "asc" ? comparison : -comparison;
   });
 
+  const isEditingTeacher = showModal && modalMode === "edit";
+
   return (
     <div
-      className={`${showModal && modalMode === "edit" ? "w-[calc(52%-0.5rem)] max-lg:w-full" : "w-full"} space-y-6`}
+      className={`${isEditingTeacher ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "space-y-6"}`}
     >
+      <div
+        className={`min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
+      >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Manage Teachers</h1>
@@ -681,7 +686,7 @@ const TeacherPage = () => {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
         <RecordTableToolbar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -766,9 +771,9 @@ const TeacherPage = () => {
             </button>
           }
         />
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm text-slate-300">
-            <thead className="border-b border-slate-700/60 bg-slate-800/60 text-slate-400">
+        <div className="min-h-0 flex-1 overflow-auto">
+          <table className="min-w-225 whitespace-nowrap text-left text-sm text-slate-300">
+            <thead className="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-800 text-slate-400">
               <tr>
                 <th className="w-12 px-3 py-3 text-center">
                   <input
@@ -925,13 +930,14 @@ const TeacherPage = () => {
           </table>
         </div>
       </div>
+      </div>
 
       {showModal && (
         <div
-          className={`${modalMode === "edit" ? "fixed inset-y-0 right-0 z-50 flex w-[48vw] justify-center overflow-y-auto border-l border-slate-700/70 bg-slate-950 max-lg:inset-0 max-lg:w-full" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "h-dvh max-h-dvh w-full max-w-none rounded-none" : "max-h-[95vh] w-full max-w-5xl rounded-3xl"} overflow-y-auto border border-slate-700/70 bg-slate-950 shadow-2xl`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-2xl" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl"} overflow-hidden border border-slate-700/70 bg-slate-950 shadow-2xl`}
           >
             <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-5">
               <div>
@@ -950,7 +956,10 @@ const TeacherPage = () => {
                 <X size={24} />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
+            <form
+              onSubmit={handleSubmit}
+              className={`space-y-6 px-6 py-6 ${modalMode === "edit" ? "min-h-0 flex-1 overflow-y-auto" : ""}`}
+            >
               <div className="space-y-4">
                 <button
                   type="button"

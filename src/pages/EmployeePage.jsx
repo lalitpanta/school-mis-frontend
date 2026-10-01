@@ -552,11 +552,15 @@ export default function EmployeePage() {
           });
     return employeeSort.direction === "asc" ? comparison : -comparison;
   });
+  const isEditingEmployee = showModal && modalMode === "edit";
 
   return (
-    <div className="min-h-screen p-6" style={{ background: "var(--bg-main)" }}>
+    <div
+      className={`${isEditingEmployee ? "grid h-[calc(100vh-8rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "min-h-screen"} p-4`}
+      style={{ background: "var(--bg-main)" }}
+    >
       <div
-        className={`${showModal && modalMode === "edit" ? "mx-0 w-[calc(52%-0.5rem)] max-w-none max-lg:w-full" : "mx-auto max-w-7xl"} space-y-6`}
+        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
       >
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -595,7 +599,7 @@ export default function EmployeePage() {
 
         {/* Employees Table */}
         <div
-          className="overflow-hidden rounded-lg"
+          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg"
           style={{
             background: "var(--bg-card)",
             border: "1px solid var(--border-card)",
@@ -673,8 +677,8 @@ export default function EmployeePage() {
             ]}
             recordCount={filteredEmployees.length}
           />
-          <div className="overflow-x-auto">
-          <table className="w-full min-w-225">
+          <div className="min-h-0 flex-1 overflow-auto">
+          <table className="w-full min-w-225 whitespace-nowrap">
             <thead
               className="border-b"
               style={{
@@ -827,10 +831,10 @@ export default function EmployeePage() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div
-          className={`${modalMode === "edit" ? "fixed inset-y-0 right-0 z-50 flex w-[48vw] justify-center overflow-y-auto border-l border-slate-700 bg-slate-900 max-lg:inset-0 max-lg:w-full" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "h-dvh max-h-dvh w-full max-w-none rounded-none" : "max-h-[90vh] w-full max-w-4xl rounded-lg"} flex flex-col border border-slate-700 bg-slate-900`}
+            className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none rounded-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg"} flex flex-col overflow-hidden border border-slate-700 bg-slate-900`}
           >
             <div className="sticky top-0 flex justify-between items-center p-6 border-b border-slate-700 bg-slate-900 z-10">
               <h2 className="text-2xl font-bold text-white">

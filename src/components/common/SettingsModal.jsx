@@ -8,6 +8,7 @@ const SettingsModal = ({
   subtitle,
   width = "max-w-lg",
   sidePanel = false,
+  inlinePanel = false,
   children,
   footer,
 }) => {
@@ -15,7 +16,7 @@ const SettingsModal = ({
   const bodyRef = useRef(null);
 
   useEffect(() => {
-    if (open && bodyRef.current) {
+    if (open && !inlinePanel && bodyRef.current) {
       bodyRef.current.scrollTop = 0;
     }
 
@@ -27,14 +28,16 @@ const SettingsModal = ({
 
     if (open) {
       document.addEventListener("keydown", handleKeyDown);
+    }
+    if (open && !inlinePanel) {
       document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      if (!inlinePanel) document.body.style.overflow = "";
     };
-  }, [open, onClose]);
+  }, [open, onClose, inlinePanel]);
 
   if (!open) return null;
 
@@ -46,14 +49,18 @@ const SettingsModal = ({
           onClose?.();
         }
       }}
-      className={`fixed inset-0 z-50 flex overflow-y-auto ${sidePanel ? "justify-end p-0 max-lg:justify-center max-lg:p-0" : "items-center justify-center p-4"}`}
+      className={
+        inlinePanel
+          ? "h-full min-h-0 min-w-0"
+          : `fixed inset-0 z-50 flex overflow-y-auto ${sidePanel ? "justify-end p-0 max-lg:justify-center max-lg:p-0" : "items-center justify-center p-4"}`
+      }
       style={{
-        background: sidePanel ? "transparent" : "var(--overlay)",
-        backdropFilter: sidePanel ? "none" : "blur(10px)",
+        background: sidePanel || inlinePanel ? "transparent" : "var(--overlay)",
+        backdropFilter: sidePanel || inlinePanel ? "none" : "blur(10px)",
       }}
     >
       <div
-        className={`app-modal-surface relative ${sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl`} overflow-hidden border border-slate-700/70 shadow-xl`}
+        className={`app-modal-surface relative ${inlinePanel ? "flex h-full min-h-0 w-full min-w-0 flex-col rounded-xl" : sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl`} overflow-hidden border border-slate-700/70 shadow-xl`}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-700/70 px-6 py-4">
           <div>
@@ -74,7 +81,7 @@ const SettingsModal = ({
 
         <div
           ref={bodyRef}
-          className={`app-modal-body overflow-y-auto px-6 py-5 ${sidePanel ? "min-h-0 flex-1 max-h-none" : "max-h-[calc(100vh-10rem)]"}`}
+          className={`app-modal-body overflow-y-auto px-6 py-5 ${sidePanel || inlinePanel ? "min-h-0 flex-1 max-h-none" : "max-h-[calc(100vh-10rem)]"}`}
         >
           {children}
         </div>
