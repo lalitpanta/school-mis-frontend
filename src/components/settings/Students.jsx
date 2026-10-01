@@ -241,12 +241,7 @@ const Students = () => {
   const [visibleColumns, setVisibleColumns] = useState([
     "id",
     "full_name",
-    "student_type",
-    "student_mail",
     "phone_no",
-    "guardian_name",
-    "classroom",
-    "roll_no",
     "status",
   ]);
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
@@ -1231,7 +1226,7 @@ const Students = () => {
   const isEditingStudent = showModal && mode === "edit";
   const displayedColumns = studentColumns.filter((column) =>
     isEditingStudent
-      ? ["id", "full_name", "status"].includes(column.key)
+      ? ["id", "full_name", "phone_no", "status"].includes(column.key)
       : visibleColumns.includes(column.key),
   );
   const sortedStudents = [...filteredStudents].sort((first, second) => {
