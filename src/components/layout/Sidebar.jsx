@@ -803,7 +803,7 @@ const css = `
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { hasModule, isTenant, logout, user } = useAuth();
+  const { hasModule, isTenant, isStaff, logout, user } = useAuth();
   const { settings } = useSettings();
 
   const schoolProfile = settings?.school_profile || {};
@@ -843,14 +843,18 @@ const Sidebar = () => {
   const visibleNav = (() => {
     if (user?.type === "super_admin")
       return MAIN_NAV.filter((i) => i.module === "dashboard");
-    if (isTenant()) return MAIN_NAV.filter((i) => hasModule(i.module));
+    if (isTenant() || isStaff()) {
+      return MAIN_NAV.filter((item) => hasModule(item.module));
+    }
     return MAIN_NAV;
   })();
 
   const showSettings =
-    user?.type !== "super_admin" && (!isTenant() || hasModule("settings"));
+    user?.type !== "super_admin" &&
+    (!(isTenant() || isStaff()) || hasModule("settings"));
   const showResults =
-    user?.type !== "super_admin" && (!isTenant() || hasModule("results"));
+    user?.type !== "super_admin" &&
+    (!(isTenant() || isStaff()) || hasModule("results"));
 
   // Initials from user name
   const name = user?.name || user?.firstName || user?.email || "User";
