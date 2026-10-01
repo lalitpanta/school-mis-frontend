@@ -143,6 +143,27 @@ const SETTINGS_TAB_PERMISSIONS = {
   students: ["settings.students.view", "students.view"],
 };
 
+const SETTINGS_TAB_PERMISSION_PREFIXES = {
+  school: ["settings.school", "school"],
+  profile: ["settings.profile", "profile"],
+  calendarSettings: ["settings.calendarsettings", "settings.academic", "academic"],
+  theme: ["settings.theme", "theme"],
+  users: ["users", "settings.users"],
+  roles: ["roles", "settings.roles"],
+  security: ["settings.security", "security"],
+  notices: ["settings.notices", "notices"],
+  integrations: ["settings.integrations", "integrations"],
+  devices: ["settings.devices", "devices"],
+  backup: ["settings.backup", "backup"],
+  activityLog: ["settings.activitylog", "activitylog"],
+  activeSessions: ["settings.activesessions", "activesessions"],
+  departments: ["settings.departments", "departments"],
+  classrooms: ["settings.classrooms", "classrooms"],
+  courses: ["settings.courses", "courses"],
+  rooms: ["settings.rooms", "rooms"],
+  students: ["settings.students", "students"],
+};
+
 const SettingsPage = () => {
   const [params, setParams] = useSearchParams();
   const { user, isTenant } = useAuth();
@@ -168,6 +189,15 @@ const SettingsPage = () => {
     ? requestedTab
     : visibleTabKeys[0] || "school";
   const label = TAB_LABELS[tab] ?? "Settings";
+  const permissionPrefixes = SETTINGS_TAB_PERMISSION_PREFIXES[tab] || [];
+  const canEditTab =
+    canViewAllSettings ||
+    permissions.includes("settings.edit") ||
+    permissionPrefixes.some((prefix) =>
+      ["create", "edit", "delete"].some((action) =>
+        permissions.includes(`${prefix}.${action}`),
+      ),
+    );
 
   useEffect(() => {
     if (tab !== requestedTab && visibleTabKeys.length > 0) {
@@ -267,7 +297,12 @@ const SettingsPage = () => {
         </aside>
 
         <main className="h-full overflow-y-auto p-4 md:p-5">
-          {PANEL_MAP[tab] ?? PANEL_MAP.school}
+          <fieldset
+            disabled={!canEditTab}
+            className="m-0 min-w-0 border-0 p-0 disabled:opacity-100"
+          >
+            {PANEL_MAP[tab] ?? PANEL_MAP.school}
+          </fieldset>
         </main>
       </div>
     </div>
