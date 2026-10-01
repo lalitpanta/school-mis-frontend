@@ -133,9 +133,12 @@ const TenantStaffLoginPage = () => {
         forgotEmail,
         forgotTenantSlug,
       );
-      setForgotMessage(response.message || "OTP sent successfully.");
+      const message = response.otp
+        ? `${response.message || "Email delivery is unavailable."} Development OTP: ${response.otp}`
+        : response.message || "OTP sent successfully.";
+      setForgotMessage(message);
       setForgotStep("verify");
-      toast.success(response.message || "OTP sent successfully.");
+      toast.success(message);
     } catch (err) {
       const message = err?.message || "Unable to send OTP.";
       setForgotMessage(message);
