@@ -7,6 +7,7 @@ const SettingsModal = ({
   title,
   subtitle,
   width = "max-w-lg",
+  sidePanel = false,
   children,
   footer,
 }) => {
@@ -45,14 +46,14 @@ const SettingsModal = ({
           onClose?.();
         }
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4"
+      className={`fixed inset-0 z-50 flex overflow-y-auto ${sidePanel ? "justify-end p-0 max-lg:justify-center max-lg:p-0" : "items-center justify-center p-4"}`}
       style={{
-        background: "var(--overlay)",
-        backdropFilter: "blur(10px)",
+        background: sidePanel ? "transparent" : "var(--overlay)",
+        backdropFilter: sidePanel ? "none" : "blur(10px)",
       }}
     >
       <div
-        className={`app-modal-surface relative w-full ${width} max-h-[calc(100vh-2rem)] overflow-hidden rounded-2xl border border-slate-700/70 shadow-xl`}
+        className={`app-modal-surface relative w-full ${sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none" : `${width} max-h-[calc(100vh-2rem)] rounded-2xl`} overflow-hidden border border-slate-700/70 shadow-xl`}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-700/70 px-6 py-4">
           <div>
@@ -73,7 +74,7 @@ const SettingsModal = ({
 
         <div
           ref={bodyRef}
-          className="app-modal-body max-h-[calc(100vh-10rem)] overflow-y-auto px-6 py-5"
+          className={`app-modal-body overflow-y-auto px-6 py-5 ${sidePanel ? "min-h-0 flex-1 max-h-none" : "max-h-[calc(100vh-10rem)]"}`}
         >
           {children}
         </div>

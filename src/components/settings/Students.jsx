@@ -1254,7 +1254,7 @@ const Students = () => {
 
   return (
     <div
-      className="rounded-2xl p-6"
+      className={`rounded-2xl p-6 ${showModal && mode === "edit" ? "w-[calc(52%-0.5rem)] max-lg:w-full" : "w-full"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
@@ -1661,6 +1661,7 @@ const Students = () => {
         onClose={() => setShowModal(false)}
         title={mode === "create" ? "Create New Student" : "Edit Student"}
         width="max-w-6xl"
+        sidePanel={showModal && mode === "edit"}
       >
         <div className="flex justify-between items-center p-4 border-b border-slate-700">
           <h3 className="text-lg font-bold">

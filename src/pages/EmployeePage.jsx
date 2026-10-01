@@ -1,8 +1,19 @@
 import { useState, useEffect } from "react";
 import { employeesApi } from "../api/employeesApi";
 import { getDepartments } from "../api/departmentsApi";
-import { Plus, Edit, Trash2, X, Download, Eye } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  X,
+  Download,
+  Eye,
+  ArrowUpDown,
+  GripVertical,
+  Power,
+} from "lucide-react";
 import config from "../config/config";
+import RecordTableToolbar from "../components/common/RecordTableToolbar";
 
 const emptyEmployee = {
   employee_id: "",
@@ -106,6 +117,21 @@ export default function EmployeePage() {
   const [modalMode, setModalMode] = useState("create");
   const [formData, setFormData] = useState(emptyEmployee);
   const [searchTerm, setSearchTerm] = useState("");
+  const [employeeStatusFilter, setEmployeeStatusFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [visibleEmployeeColumns, setVisibleEmployeeColumns] = useState([
+    "employee_id",
+    "full_name",
+    "designation",
+    "department",
+    "email_address",
+    "status",
+  ]);
+  const [employeeSort, setEmployeeSort] = useState({
+    key: "employee_id",
+    direction: "asc",
+  });
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState([]);
   const [viewEmployee, setViewEmployee] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showAllDocumentsModal, setShowAllDocumentsModal] = useState(false);
@@ -124,7 +150,7 @@ export default function EmployeePage() {
     try {
       setLoading(true);
       console.log("[EmployeePage] Loading employees...");
-      const response = await employeesApi.getEmployees();
+      const response = await employeesApi.getEmployees({ is_active: "all" });
       console.log("[EmployeePage] API Response:", response.data);
       const data = response.data?.data || [];
       console.log("[EmployeePage] Employees loaded:", data.length, "employees");
@@ -293,6 +319,23 @@ export default function EmployeePage() {
     }
   };
 
+  const toggleEmployeeStatus = async (employee) => {
+    try {
+      await employeesApi.updateEmployee(employee.id, {
+        is_active: !employee.is_active,
+      });
+      showToast(
+        `Employee ${employee.is_active ? "deactivated" : "activated"}.`,
+      );
+      await loadEmployees();
+    } catch (error) {
+      showToast(
+        error.response?.data?.message || "Failed to update employee status",
+        "error",
+      );
+    }
+  };
+
   const openViewModal = (emp) => {
     setViewEmployee(emp);
     setShowViewModal(true);
@@ -435,15 +478,86 @@ export default function EmployeePage() {
     printWindow.print();
   };
 
-  const filteredEmployees = employees.filter(
-    (emp) =>
-      emp.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.employee_id?.toLowerCase().includes(searchTerm.toLowerCase()),
+  const employeeColumns = [
+    {
+      key: "employee_id",
+      label: "Employee ID",
+      value: (employee) => employee.employee_id,
+    },
+    {
+      key: "full_name",
+      label: "Name",
+      value: (employee) => employee.full_name,
+      render: (employee) => <span className="font-medium">{employee.full_name}</span>,
+    },
+    {
+      key: "designation",
+      label: "Designation",
+      value: (employee) => employee.designation,
+    },
+    {
+      key: "department",
+      label: "Department",
+      value: (employee) =>
+        employee.department_name ||
+        getDepartmentName(employee.department_id, departments),
+    },
+    {
+      key: "email_address",
+      label: "Email",
+      value: (employee) => employee.email_address,
+    },
+    {
+      key: "status",
+      label: "Status",
+      value: (employee) => employee.is_active,
+      render: (employee) => (
+        <span
+          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${employee.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+        >
+          {employee.is_active ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
+  ];
+  const filteredEmployees = employees.filter((employee) => {
+    const query = searchTerm.trim().toLowerCase();
+    const matchesSearch =
+      !query ||
+      [employee.full_name, employee.employee_id, employee.email_address]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(query));
+    const matchesStatus =
+      employeeStatusFilter === "all" ||
+      (employee.is_active ? "active" : "inactive") === employeeStatusFilter;
+    const matchesDepartment =
+      departmentFilter === "all" ||
+      String(employee.department_id || "") === departmentFilter;
+    return matchesSearch && matchesStatus && matchesDepartment;
+  });
+  const displayedEmployeeColumns = employeeColumns.filter((column) =>
+    visibleEmployeeColumns.includes(column.key),
   );
+  const sortedEmployees = [...filteredEmployees].sort((first, second) => {
+    const column = employeeColumns.find((item) => item.key === employeeSort.key);
+    if (!column) return 0;
+    const firstValue = column.value(first) ?? "";
+    const secondValue = column.value(second) ?? "";
+    const comparison =
+      typeof firstValue === "number" && typeof secondValue === "number"
+        ? firstValue - secondValue
+        : String(firstValue).localeCompare(String(secondValue), undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+    return employeeSort.direction === "asc" ? comparison : -comparison;
+  });
 
   return (
     <div className="min-h-screen p-6" style={{ background: "var(--bg-main)" }}>
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div
+        className={`${showModal && modalMode === "edit" ? "mx-0 w-[calc(52%-0.5rem)] max-w-none max-lg:w-full" : "mx-auto max-w-7xl"} space-y-6`}
+      >
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -451,7 +565,7 @@ export default function EmployeePage() {
               className="text-3xl font-bold"
               style={{ color: "var(--text-1)" }}
             >
-              Employee Management
+              Manage Employees
             </h1>
             <p className="mt-1" style={{ color: "var(--text-2)" }}>
               Manage employee records and information
@@ -479,31 +593,88 @@ export default function EmployeePage() {
           </div>
         )}
 
-        {/* Search Bar */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search employees by name or ID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
-              color: "var(--text-1)",
-            }}
-          />
-        </div>
-
         {/* Employees Table */}
         <div
-          className="rounded-lg overflow-hidden"
+          className="overflow-hidden rounded-lg"
           style={{
             background: "var(--bg-card)",
             border: "1px solid var(--border-card)",
           }}
         >
-          <table className="w-full">
+          <RecordTableToolbar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder="Search employees..."
+            columns={employeeColumns}
+            visibleColumns={visibleEmployeeColumns}
+            onToggleColumn={(key) =>
+              setVisibleEmployeeColumns((current) =>
+                current.includes(key)
+                  ? current.filter((columnKey) => columnKey !== key)
+                  : [...current, key],
+              )
+            }
+            filterContent={
+              <>
+                <label className="grid gap-1 text-xs text-slate-400">
+                  Status
+                  <select
+                    value={employeeStatusFilter}
+                    onChange={(event) =>
+                      setEmployeeStatusFilter(event.target.value)
+                    }
+                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
+                  >
+                    <option value="all">All statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </label>
+                <label className="grid gap-1 text-xs text-slate-400">
+                  Department
+                  <select
+                    value={departmentFilter}
+                    onChange={(event) => setDepartmentFilter(event.target.value)}
+                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
+                  >
+                    <option value="all">All departments</option>
+                    {departments.map((department) => (
+                      <option key={department.id} value={String(department.id)}>
+                        {department.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmployeeStatusFilter("all");
+                    setDepartmentFilter("all");
+                  }}
+                  className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                >
+                  Clear filters
+                </button>
+              </>
+            }
+            views={[
+              {
+                label: "All employees",
+                onSelect: () => setEmployeeStatusFilter("all"),
+              },
+              {
+                label: "Active employees",
+                onSelect: () => setEmployeeStatusFilter("active"),
+              },
+              {
+                label: "Inactive employees",
+                onSelect: () => setEmployeeStatusFilter("inactive"),
+              },
+            ]}
+            recordCount={filteredEmployees.length}
+          />
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-225">
             <thead
               className="border-b"
               style={{
@@ -512,42 +683,61 @@ export default function EmployeePage() {
               }}
             >
               <tr>
-                <th
-                  className="px-6 py-4 text-left text-sm font-semibold"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Employee ID
+                <th className="w-12 px-3 py-4 text-center">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all visible employees"
+                    checked={
+                      sortedEmployees.length > 0 &&
+                      sortedEmployees.every((employee) =>
+                        selectedEmployeeIds.includes(employee.id),
+                      )
+                    }
+                    onChange={(event) =>
+                      setSelectedEmployeeIds((current) =>
+                        event.target.checked
+                          ? Array.from(
+                              new Set([
+                                ...current,
+                                ...sortedEmployees.map((employee) => employee.id),
+                              ]),
+                            )
+                          : current.filter(
+                              (id) =>
+                                !sortedEmployees.some(
+                                  (employee) => employee.id === id,
+                                ),
+                            ),
+                      )
+                    }
+                    className="accent-indigo-500"
+                  />
                 </th>
-                <th
-                  className="px-6 py-4 text-left text-sm font-semibold"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Name
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-sm font-semibold"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Designation
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-sm font-semibold"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Department
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-sm font-semibold"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Email
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-sm font-semibold"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  Status
-                </th>
+                {displayedEmployeeColumns.map((column) => (
+                  <th
+                    key={column.key}
+                    className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: "var(--text-2)" }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setEmployeeSort((current) => ({
+                          key: column.key,
+                          direction:
+                            current.key === column.key &&
+                            current.direction === "asc"
+                              ? "desc"
+                              : "asc",
+                        }))
+                      }
+                      className="inline-flex items-center gap-1 hover:text-white"
+                    >
+                      {column.label}
+                      <ArrowUpDown size={13} />
+                    </button>
+                  </th>
+                ))}
                 <th
                   className="px-6 py-4 text-center text-sm font-semibold"
                   style={{ color: "var(--text-2)" }}
@@ -560,44 +750,40 @@ export default function EmployeePage() {
               {filteredEmployees.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="7"
+                    colSpan={displayedEmployeeColumns.length + 2}
                     className="px-6 py-8 text-center text-slate-400"
                   >
                     {loading ? "Loading..." : "No employees found"}
                   </td>
                 </tr>
               ) : (
-                filteredEmployees.map((emp) => (
+                sortedEmployees.map((emp) => (
                   <tr key={emp.id} className="hover:bg-slate-800/30 transition">
-                    <td className="px-6 py-4 text-sm font-medium text-white">
-                      {emp.employee_id}
+                    <td className="px-3 py-4 text-center">
+                      <div className="inline-flex items-center gap-2 text-slate-500">
+                        <GripVertical size={14} aria-hidden="true" />
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${emp.full_name}`}
+                          checked={selectedEmployeeIds.includes(emp.id)}
+                          onChange={(event) =>
+                            setSelectedEmployeeIds((current) =>
+                              event.target.checked
+                                ? [...current, emp.id]
+                                : current.filter((id) => id !== emp.id),
+                            )
+                          }
+                          className="accent-indigo-500"
+                        />
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-white">
-                      {emp.full_name}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-300">
-                      {emp.designation || "—"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-300">
-                      {emp.department_name ||
-                        departments.find((d) => d.id === emp.department_id)
-                          ?.name ||
-                        "—"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-300">
-                      {emp.email_address || "—"}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          emp.is_active
-                            ? "bg-green-500/20 text-green-300"
-                            : "bg-red-500/20 text-red-300"
-                        }`}
-                      >
-                        {emp.is_active ? "Active" : "Inactive"}
-                      </span>
-                    </td>
+                    {displayedEmployeeColumns.map((column) => (
+                      <td key={column.key} className="px-4 py-4 text-sm text-slate-300">
+                        {column.render
+                          ? column.render(emp)
+                          : column.value(emp) || "—"}
+                      </td>
+                    ))}
                     <td className="px-6 py-4 text-center space-x-2">
                       <button
                         onClick={() => openViewModal(emp)}
@@ -614,6 +800,14 @@ export default function EmployeePage() {
                         Edit
                       </button>
                       <button
+                        onClick={() => toggleEmployeeStatus(emp)}
+                        title={emp.is_active ? "Deactivate employee" : "Activate employee"}
+                        aria-label={emp.is_active ? "Deactivate employee" : "Activate employee"}
+                        className={`inline-flex items-center justify-center rounded p-2 transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                      >
+                        <Power size={15} />
+                      </button>
+                      <button
                         onClick={() => setDeleteConfirm(emp.id)}
                         className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded text-xs transition"
                       >
@@ -626,13 +820,18 @@ export default function EmployeePage() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 rounded-lg border border-slate-700 w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div
+          className={`${modalMode === "edit" ? "fixed inset-y-0 right-0 z-50 flex w-[48vw] justify-center overflow-y-auto border-l border-slate-700 bg-slate-900 max-lg:inset-0 max-lg:w-full" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+        >
+          <div
+            className={`${modalMode === "edit" ? "h-dvh max-h-dvh w-full max-w-none rounded-none" : "max-h-[90vh] w-full max-w-4xl rounded-lg"} flex flex-col border border-slate-700 bg-slate-900`}
+          >
             <div className="sticky top-0 flex justify-between items-center p-6 border-b border-slate-700 bg-slate-900 z-10">
               <h2 className="text-2xl font-bold text-white">
                 {modalMode === "create" ? "Add New Employee" : "Edit Employee"}
