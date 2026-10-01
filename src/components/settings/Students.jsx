@@ -17,6 +17,12 @@ import {
   Upload,
   ChevronDown,
   Eye,
+  Search,
+  Columns3,
+  Bookmark,
+  SlidersHorizontal,
+  ArrowUpDown,
+  GripVertical,
 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 
@@ -225,6 +231,22 @@ const Students = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [classroomFilter, setClassroomFilter] = useState("all");
+  const [showColumnMenu, setShowColumnMenu] = useState(false);
+  const [showViewMenu, setShowViewMenu] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState([
+    "id",
+    "full_name",
+    "student_type",
+    "student_mail",
+    "phone_no",
+    "guardian_name",
+    "classroom",
+    "roll_no",
+    "status",
+  ]);
+  const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
+  const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [viewStudent, setViewStudent] = useState(null);
   const [showDocumentViewer, setShowDocumentViewer] = useState(false);
   const fileRef = useRef();
@@ -1129,6 +1151,107 @@ const Students = () => {
     return haystack.includes(normalizedSearch);
   });
 
+  const studentColumns = [
+    { key: "id", label: "ID", sortValue: (student) => student.id },
+    {
+      key: "full_name",
+      label: "Name",
+      sortValue: (student) => student.full_name,
+      render: (student) => <span className="font-medium">{student.full_name}</span>,
+    },
+    {
+      key: "student_type",
+      label: "Type",
+      sortValue: (student) => student.student_type,
+      render: (student) => (
+        <span
+          className={`px-2 py-1 rounded text-xs font-medium ${student.student_type === "university" ? "bg-blue-500/20 text-blue-300" : "bg-purple-500/20 text-purple-300"}`}
+        >
+          {student.student_type === "university" ? "University" : "School"}
+        </span>
+      ),
+    },
+    {
+      key: "student_mail",
+      label: "Email",
+      sortValue: (student) => student.student_mail,
+      render: (student) => <span className="text-slate-400 text-xs">{student.student_mail || "—"}</span>,
+    },
+    {
+      key: "phone_no",
+      label: "Phone",
+      sortValue: (student) => student.phone_no,
+      render: (student) => <span className="text-slate-400 text-xs">{student.phone_no || "—"}</span>,
+    },
+    {
+      key: "guardian_name",
+      label: "Guardian",
+      sortValue: (student) => student.guardian_name,
+      render: (student) => <span className="text-slate-400 text-xs">{student.guardian_name || "—"}</span>,
+    },
+    {
+      key: "classroom",
+      label: "Classroom",
+      sortValue: (student) => student.class_name || student.classroom_name,
+      render: (student) => (
+        <span className="text-slate-400 text-xs">
+          {student.class_name || student.classroom_name
+            ? (student.class_name || student.classroom_name) +
+              (student.section_name ? " / " + student.section_name : "")
+            : "—"}
+        </span>
+      ),
+    },
+    {
+      key: "roll_no",
+      label: "Roll No.",
+      sortValue: (student) => student.roll_no,
+      render: (student) => <span className="text-slate-400 text-xs">{student.roll_no || "—"}</span>,
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortValue: (student) => student.is_active,
+      render: (student) => (
+        <span
+          className={`px-2 py-1 rounded text-xs font-medium ${student.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+        >
+          {student.is_active ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
+  ];
+  const displayedColumns = studentColumns.filter((column) =>
+    visibleColumns.includes(column.key),
+  );
+  const sortedStudents = [...filteredStudents].sort((first, second) => {
+    const column = studentColumns.find((item) => item.key === sortConfig.key);
+    if (!column) return 0;
+    const firstValue = column.sortValue(first) ?? "";
+    const secondValue = column.sortValue(second) ?? "";
+    const comparison =
+      typeof firstValue === "number" && typeof secondValue === "number"
+        ? firstValue - secondValue
+        : String(firstValue).localeCompare(String(secondValue), undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+    return sortConfig.direction === "asc" ? comparison : -comparison;
+  });
+  const allVisibleStudentsSelected =
+    sortedStudents.length > 0 &&
+    sortedStudents.every((student) => selectedStudentIds.includes(student.id));
+  const activeFilterCount = [typeFilter, statusFilter, classroomFilter].filter(
+    (value) => value !== "all",
+  ).length;
+
+  const applyStudentView = (view) => {
+    setTypeFilter(view.type || "all");
+    setStatusFilter(view.status || "all");
+    setClassroomFilter("all");
+    setShowViewMenu(false);
+  };
+
   return (
     <div
       className="rounded-2xl p-6"
@@ -1137,13 +1260,16 @@ const Students = () => {
         border: "1px solid var(--border-card)",
       }}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2
-          className="text-lg font-semibold"
-          style={{ color: "var(--text-1)" }}
-        >
-          Students Management
-        </h2>
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
+        <div>
+          <h2
+            className="text-lg font-semibold"
+            style={{ color: "var(--text-1)" }}
+          >
+            Manage Students
+          </h2>
+          <p className="text-sm text-slate-400">Live data from database</p>
+        </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input
             ref={fileRef}
@@ -1154,27 +1280,24 @@ const Students = () => {
           />
           <label
             htmlFor="studentsFile"
-            className="inline-flex items-center gap-2 px-3 py-1 bg-slate-700/60 text-white rounded cursor-pointer hover:bg-slate-700 text-xs"
+            title="Choose CSV to import"
+            className="inline-flex items-center justify-center p-2 border border-slate-700 rounded cursor-pointer text-slate-300 hover:bg-slate-800"
           >
-            <Upload size={14} /> Choose CSV
+            <Upload size={16} />
           </label>
           <button
             onClick={handleImport}
-            className="px-3 py-1 bg-indigo-600 text-white rounded inline-flex items-center gap-2 hover:bg-indigo-700 text-xs"
+            title="Import students"
+            aria-label="Import students"
+            className="inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
           >
-            <Upload size={14} /> Import
-          </button>
-          <button
-            onClick={handleExport}
-            className="px-3 py-1 bg-slate-700/60 text-white rounded inline-flex items-center gap-2 hover:bg-slate-700 text-xs"
-          >
-            <Download size={14} /> Export
+            <Download size={16} className="rotate-180" />
           </button>
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium"
           >
-            <Plus size={14} /> Create
+            <Plus size={16} /> Add Student
           </button>
         </div>
       </div>
@@ -1199,147 +1322,338 @@ const Students = () => {
         </div>
       )}
 
-      <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search name, email, phone, roll, guardian..."
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        >
-          <option value="all">All Types</option>
-          <option value="school">School</option>
-          <option value="university">University</option>
-        </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <select
-          value={classroomFilter}
-          onChange={(e) => setClassroomFilter(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        >
-          <option value="all">All Classes</option>
-          {classesList.map((c) => (
-            <option key={c.id} value={String(c.id)}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="overflow-x-auto rounded-lg border border-slate-700/60">
+      <div className="rounded-lg border border-slate-700/60 overflow-visible">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3 border-b border-slate-700/60">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            <label className="relative min-w-55 max-w-[320px] flex-1">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search students..."
+                aria-label="Search students"
+                className="w-full pl-9 pr-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+              />
+            </label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowColumnMenu((open) => !open);
+                  setShowViewMenu(false);
+                  setShowFilterMenu(false);
+                }}
+                aria-expanded={showColumnMenu}
+                className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+              >
+                <Columns3 size={16} /> Columns
+              </button>
+              {showColumnMenu && (
+                <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
+                  {studentColumns.map((column) => (
+                    <label
+                      key={column.key}
+                      className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.includes(column.key)}
+                        disabled={
+                          visibleColumns.includes(column.key) &&
+                          visibleColumns.length === 1
+                        }
+                        onChange={() =>
+                          setVisibleColumns((current) =>
+                            current.includes(column.key)
+                              ? current.filter((key) => key !== column.key)
+                              : [...current, column.key],
+                          )
+                        }
+                        className="accent-indigo-500"
+                      />
+                      {column.label}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowViewMenu((open) => !open);
+                  setShowColumnMenu(false);
+                  setShowFilterMenu(false);
+                }}
+                aria-expanded={showViewMenu}
+                className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+              >
+                <Bookmark size={16} /> Views
+              </button>
+              {showViewMenu && (
+                <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
+                  {[
+                    { label: "All students", type: "all" },
+                    { label: "Active students", status: "active" },
+                    { label: "Inactive students", status: "inactive" },
+                    { label: "School students", type: "school" },
+                    { label: "University students", type: "university" },
+                  ].map((view) => (
+                    <button
+                      key={view.label}
+                      type="button"
+                      onClick={() => applyStudentView(view)}
+                      className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      {view.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFilterMenu((open) => !open);
+                  setShowColumnMenu(false);
+                  setShowViewMenu(false);
+                }}
+                aria-label="Filter students"
+                aria-expanded={showFilterMenu}
+                className={`relative inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
+              >
+                <SlidersHorizontal size={17} />
+                {activeFilterCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] text-white">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+              {showFilterMenu && (
+                <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Student type
+                    <select
+                      value={typeFilter}
+                      onChange={(e) => setTypeFilter(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All types</option>
+                      <option value="school">School</option>
+                      <option value="university">University</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Status
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All statuses</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Classroom
+                    <select
+                      value={classroomFilter}
+                      onChange={(e) => setClassroomFilter(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All classes</option>
+                      {classesList.map((classroom) => (
+                        <option key={classroom.id} value={String(classroom.id)}>
+                          {classroom.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTypeFilter("all");
+                      setStatusFilter("all");
+                      setClassroomFilter("all");
+                    }}
+                    className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-slate-400">
+            <span>{filteredStudents.length} records</span>
+            <button
+              onClick={handleExport}
+              className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
+            >
+              <Download size={16} /> Export CSV
+            </button>
+          </div>
+        </div>
+        {selectedStudentIds.length > 0 && (
+          <div className="flex items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
+            <span className="text-slate-300">
+              {selectedStudentIds.length} selected
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedStudentIds([])}
+              className="text-xs text-indigo-300 hover:text-indigo-200"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+      <div className="overflow-x-auto">
         {filteredStudents.length === 0 ? (
           <div className="p-6 text-center text-slate-400">
             {loading ? "Loading..." : "No students found."}
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-slate-800/60 border-b sticky top-0">
+          <table className="w-full min-w-225 text-sm">
+            <thead className="bg-slate-800/60 border-b border-slate-700/60 sticky top-0">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Type
+                <th className="w-12 px-3 py-3 text-center">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all visible students"
+                    checked={allVisibleStudentsSelected}
+                    onChange={(event) =>
+                      setSelectedStudentIds((current) =>
+                        event.target.checked
+                          ? Array.from(
+                              new Set([
+                                ...current,
+                                ...sortedStudents.map((student) => student.id),
+                              ]),
+                            )
+                          : current.filter(
+                              (id) =>
+                                !sortedStudents.some((student) => student.id === id),
+                            ),
+                      )
+                    }
+                    className="accent-indigo-500"
+                  />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Phone
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Guardian
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Classroom
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Roll No.
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Status
-                </th>
+                {displayedColumns.map((column) => (
+                  <th
+                    key={column.key}
+                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-400"
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSortConfig((current) => ({
+                          key: column.key,
+                          direction:
+                            current.key === column.key &&
+                            current.direction === "asc"
+                              ? "desc"
+                              : "asc",
+                        }))
+                      }
+                      className="inline-flex items-center gap-1 hover:text-slate-200"
+                    >
+                      {column.label}
+                      <ArrowUpDown
+                        size={13}
+                        className={
+                          sortConfig.key === column.key
+                            ? "text-indigo-300"
+                            : "text-slate-500"
+                        }
+                      />
+                    </button>
+                  </th>
+                ))}
                 <th className="px-4 py-3 text-right text-xs font-medium">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/60">
-              {filteredStudents.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-800/40 transition">
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${s.student_type === "university" ? "bg-blue-500/20 text-blue-300" : "bg-purple-500/20 text-purple-300"}`}
-                    >
-                      {s.student_type === "university"
-                        ? "University"
-                        : "School"}
-                    </span>
+              {sortedStudents.map((student) => (
+                <tr
+                  key={student.id}
+                  className="hover:bg-slate-800/40 transition"
+                >
+                  <td className="px-3 py-3 text-center">
+                    <div className="inline-flex items-center gap-2 text-slate-600">
+                      <GripVertical size={14} aria-hidden="true" />
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${student.full_name}`}
+                        checked={selectedStudentIds.includes(student.id)}
+                        onChange={(event) =>
+                          setSelectedStudentIds((current) =>
+                            event.target.checked
+                              ? [...current, student.id]
+                              : current.filter((id) => id !== student.id),
+                          )
+                        }
+                        className="accent-indigo-500"
+                      />
+                    </div>
                   </td>
-                  <td className="px-4 py-3 font-medium">{s.full_name}</td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">
-                    {s.student_mail || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">
-                    {s.phone_no || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">
-                    {s.guardian_name || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">
-                    {s.class_name || s.classroom_name
-                      ? (s.class_name || s.classroom_name) +
-                        (s.section_name ? " / " + s.section_name : "")
-                      : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">
-                    {s.roll_no || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${s.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
-                    >
-                      {s.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right space-x-2">
+                  {displayedColumns.map((column) => (
+                    <td key={column.key} className="px-4 py-3 text-slate-300">
+                      {column.render
+                        ? column.render(student)
+                        : student[column.key] ?? "—"}
+                    </td>
+                  ))}
+                  <td className="px-4 py-3 text-right">
+                    <div className="inline-flex items-center gap-1">
                     <button
-                      onClick={() => setViewStudent(s)}
-                      className="px-3 py-1 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 rounded inline-flex items-center gap-1 text-xs"
+                      onClick={() => setViewStudent(student)}
+                      title="View student"
+                      aria-label={`View ${student.full_name}`}
+                      className="p-2 text-indigo-300 hover:bg-indigo-500/10 rounded"
                     >
-                      <Eye size={12} /> View
+                      <Eye size={15} />
                     </button>
                     <button
-                      onClick={() => openEdit(s)}
-                      className="px-3 py-1 bg-slate-700/60 hover:bg-slate-600/60 text-slate-200 rounded inline-flex items-center gap-1 text-xs"
+                      onClick={() => openEdit(student)}
+                      title="Edit student"
+                      aria-label={`Edit ${student.full_name}`}
+                      className="p-2 text-slate-300 hover:bg-slate-700/60 rounded"
                     >
-                      <Edit size={12} /> Edit
+                      <Edit size={15} />
                     </button>
                     <button
-                      onClick={() => remove(s.id)}
-                      className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded inline-flex items-center gap-1 text-xs"
+                      onClick={() => remove(student.id)}
+                      title="Delete student"
+                      aria-label={`Delete ${student.full_name}`}
+                      className="p-2 text-red-300 hover:bg-red-500/10 rounded"
                     >
-                      <Trash2 size={12} /> Delete
+                      <Trash2 size={15} />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
+      </div>
+      <div className="flex items-center gap-4 px-4 py-3 text-xs text-slate-400">
+        <span className="h-px flex-1 bg-slate-700/60" />
+        <span>
+          {filteredStudents.length} of {students.length} records
+        </span>
+        <span className="h-px flex-1 bg-slate-700/60" />
+      </div>
       </div>
 
       <SettingsModal
