@@ -53,7 +53,7 @@ const SettingsModal = ({
       }}
     >
       <div
-        className={`app-modal-surface relative w-full ${sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none" : `${width} max-h-[calc(100vh-2rem)] rounded-2xl`} overflow-hidden border border-slate-700/70 shadow-xl`}
+        className={`app-modal-surface relative ${sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl`} overflow-hidden border border-slate-700/70 shadow-xl`}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-700/70 px-6 py-4">
           <div>
