@@ -570,6 +570,11 @@ const TeacherPage = () => {
 
   const teacherColumns = [
     {
+      key: "id",
+      label: "ID",
+      value: (teacher) => teacher.id,
+    },
+    {
       key: "full_name",
       label: "Name",
       value: (teacher) => teacher.full_name,
@@ -595,7 +600,20 @@ const TeacherPage = () => {
       label: "Phone",
       value: (teacher) => teacher.personal_phone,
     },
+    {
+      key: "status",
+      label: "Status",
+      value: (teacher) => teacher.is_active,
+      render: (teacher) => (
+        <span
+          className={`inline-flex rounded-full px-2 py-1 text-xs ${teacher.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+        >
+          {teacher.is_active ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
   ];
+  const isEditingTeacher = showModal && modalMode === "edit";
   const filteredTeachers = teachers.filter((teacher) => {
     const query = searchTerm.trim().toLowerCase();
     const matchesSearch =
@@ -620,7 +638,9 @@ const TeacherPage = () => {
     return matchesSearch && matchesDesignation && matchesStatus;
   });
   const displayedTeacherColumns = teacherColumns.filter((column) =>
-    visibleTeacherColumns.includes(column.key),
+    isEditingTeacher
+      ? ["id", "full_name", "status"].includes(column.key)
+      : visibleTeacherColumns.includes(column.key),
   );
   const sortedTeachers = [...filteredTeachers].sort((first, second) => {
     const column = teacherColumns.find((item) => item.key === teacherSort.key);
@@ -632,8 +652,6 @@ const TeacherPage = () => {
     );
     return teacherSort.direction === "asc" ? comparison : -comparison;
   });
-
-  const isEditingTeacher = showModal && modalMode === "edit";
 
   return (
     <div
@@ -771,10 +789,15 @@ const TeacherPage = () => {
             </button>
           }
         />
-        <div className="min-h-0 flex-1 overflow-auto">
-          <table className="min-w-225 whitespace-nowrap text-left text-sm text-slate-300">
+        <div
+          className={`min-h-0 flex-1 ${isEditingTeacher ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+        >
+          <table
+            className={`text-left text-sm text-slate-300 ${isEditingTeacher ? "w-full min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
+          >
             <thead className="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-800 text-slate-400">
               <tr>
+                {!isEditingTeacher && (
                 <th className="w-12 px-3 py-3 text-center">
                   <input
                     type="checkbox"
@@ -805,10 +828,11 @@ const TeacherPage = () => {
                     className="accent-indigo-500"
                   />
                 </th>
+                )}
                 {displayedTeacherColumns.map((column) => (
                   <th
                     key={column.key}
-                    className="px-4 py-3 text-xs font-medium uppercase tracking-wide"
+                    className={`px-2 py-3 text-xs font-medium uppercase tracking-wide ${isEditingTeacher ? column.key === "id" ? "w-16" : column.key === "status" ? "w-24" : "" : "px-4"}`}
                   >
                     <button
                       type="button"
@@ -838,7 +862,7 @@ const TeacherPage = () => {
               {sortedTeachers.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={displayedTeacherColumns.length + 2}
+                    colSpan={displayedTeacherColumns.length + (isEditingTeacher ? 1 : 2)}
                     className="px-4 py-8 text-center text-slate-500"
                   >
                     {loading ? "Loading teachers..." : "No teacher records yet."}
@@ -850,6 +874,7 @@ const TeacherPage = () => {
                     key={teacher.id}
                     className="border-t border-slate-800/70 hover:bg-slate-900/80"
                   >
+                    {!isEditingTeacher && (
                     <td className="px-3 py-4 text-center">
                       <div className="inline-flex items-center gap-2 text-slate-500">
                         <GripVertical size={14} aria-hidden="true" />
@@ -868,8 +893,12 @@ const TeacherPage = () => {
                         />
                       </div>
                     </td>
+                    )}
                     {displayedTeacherColumns.map((column) => (
-                      <td key={column.key} className="px-4 py-4">
+                      <td
+                        key={column.key}
+                        className={`px-2 py-4 ${isEditingTeacher ? "truncate" : "px-4"}`}
+                      >
                         {column.render
                           ? column.render(teacher)
                           : column.value(teacher) || "—"}

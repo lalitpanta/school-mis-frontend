@@ -535,8 +535,11 @@ export default function EmployeePage() {
       String(employee.department_id || "") === departmentFilter;
     return matchesSearch && matchesStatus && matchesDepartment;
   });
+  const isEditingEmployee = showModal && modalMode === "edit";
   const displayedEmployeeColumns = employeeColumns.filter((column) =>
-    visibleEmployeeColumns.includes(column.key),
+    isEditingEmployee
+      ? ["employee_id", "full_name", "status"].includes(column.key)
+      : visibleEmployeeColumns.includes(column.key),
   );
   const sortedEmployees = [...filteredEmployees].sort((first, second) => {
     const column = employeeColumns.find((item) => item.key === employeeSort.key);
@@ -552,8 +555,6 @@ export default function EmployeePage() {
           });
     return employeeSort.direction === "asc" ? comparison : -comparison;
   });
-  const isEditingEmployee = showModal && modalMode === "edit";
-
   return (
     <div
       className={`${isEditingEmployee ? "grid h-[calc(100vh-8rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "min-h-screen"} p-4`}
@@ -677,16 +678,21 @@ export default function EmployeePage() {
             ]}
             recordCount={filteredEmployees.length}
           />
-          <div className="min-h-0 flex-1 overflow-auto">
-          <table className="w-full min-w-225 whitespace-nowrap">
+          <div
+            className={`min-h-0 flex-1 ${isEditingEmployee ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+          >
+          <table
+            className={`w-full ${isEditingEmployee ? "min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
+          >
             <thead
-              className="border-b"
+              className="sticky top-0 z-10 border-b"
               style={{
                 borderBottom: "1px solid var(--border-card)",
                 background: "var(--bg-card)",
               }}
             >
               <tr>
+                {!isEditingEmployee && (
                 <th className="w-12 px-3 py-4 text-center">
                   <input
                     type="checkbox"
@@ -717,10 +723,11 @@ export default function EmployeePage() {
                     className="accent-indigo-500"
                   />
                 </th>
+                )}
                 {displayedEmployeeColumns.map((column) => (
                   <th
                     key={column.key}
-                    className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wide"
+                    className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? column.key === "employee_id" ? "w-24" : column.key === "status" ? "w-24" : "" : "px-4"}`}
                     style={{ color: "var(--text-2)" }}
                   >
                     <button
@@ -743,7 +750,7 @@ export default function EmployeePage() {
                   </th>
                 ))}
                 <th
-                  className="px-6 py-4 text-center text-sm font-semibold"
+                  className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-36" : "px-6 text-sm"}`}
                   style={{ color: "var(--text-2)" }}
                 >
                   Actions
@@ -754,7 +761,7 @@ export default function EmployeePage() {
               {filteredEmployees.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={displayedEmployeeColumns.length + 2}
+                    colSpan={displayedEmployeeColumns.length + (isEditingEmployee ? 1 : 2)}
                     className="px-6 py-8 text-center text-slate-400"
                   >
                     {loading ? "Loading..." : "No employees found"}
@@ -763,6 +770,7 @@ export default function EmployeePage() {
               ) : (
                 sortedEmployees.map((emp) => (
                   <tr key={emp.id} className="hover:bg-slate-800/30 transition">
+                    {!isEditingEmployee && (
                     <td className="px-3 py-4 text-center">
                       <div className="inline-flex items-center gap-2 text-slate-500">
                         <GripVertical size={14} aria-hidden="true" />
@@ -781,8 +789,12 @@ export default function EmployeePage() {
                         />
                       </div>
                     </td>
+                    )}
                     {displayedEmployeeColumns.map((column) => (
-                      <td key={column.key} className="px-4 py-4 text-sm text-slate-300">
+                      <td
+                        key={column.key}
+                        className={`px-2 py-4 text-sm text-slate-300 ${isEditingEmployee ? "truncate" : "px-4"}`}
+                      >
                         {column.render
                           ? column.render(emp)
                           : column.value(emp) || "—"}
@@ -791,17 +803,21 @@ export default function EmployeePage() {
                     <td className="px-6 py-4 text-center space-x-2">
                       <button
                         onClick={() => openViewModal(emp)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 hover:bg-slate-600 text-slate-300 rounded text-xs transition"
+                        title="View employee"
+                        aria-label={`View ${emp.full_name}`}
+                        className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
                       >
                         <Eye size={14} />
-                        View
+                        {!isEditingEmployee && "View"}
                       </button>
                       <button
                         onClick={() => handleEditClick(emp)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 hover:bg-slate-600 text-slate-300 rounded text-xs transition"
+                        title="Edit employee"
+                        aria-label={`Edit ${emp.full_name}`}
+                        className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
                       >
                         <Edit size={14} />
-                        Edit
+                        {!isEditingEmployee && "Edit"}
                       </button>
                       <button
                         onClick={() => toggleEmployeeStatus(emp)}
@@ -813,10 +829,12 @@ export default function EmployeePage() {
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(emp.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded text-xs transition"
+                        title="Delete employee"
+                        aria-label={`Delete ${emp.full_name}`}
+                        className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-red-500/20 text-red-300 hover:bg-red-500/30`}
                       >
                         <Trash2 size={14} />
-                        Delete
+                        {!isEditingEmployee && "Delete"}
                       </button>
                     </td>
                   </tr>

@@ -1228,8 +1228,11 @@ const Students = () => {
       ),
     },
   ];
+  const isEditingStudent = showModal && mode === "edit";
   const displayedColumns = studentColumns.filter((column) =>
-    visibleColumns.includes(column.key),
+    isEditingStudent
+      ? ["id", "full_name", "status"].includes(column.key)
+      : visibleColumns.includes(column.key),
   );
   const sortedStudents = [...filteredStudents].sort((first, second) => {
     const column = studentColumns.find((item) => item.key === sortConfig.key);
@@ -1268,8 +1271,6 @@ const Students = () => {
     setClassroomFilter("all");
     setShowViewMenu(false);
   };
-  const isEditingStudent = showModal && mode === "edit";
-
   return (
     <div
       className={`min-w-0 rounded-2xl p-4 ${isEditingStudent ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
@@ -1536,15 +1537,20 @@ const Students = () => {
           </div>
         )}
       <div className="min-h-0 flex-1 overflow-hidden">
-      <div className="h-full overflow-auto">
+      <div
+        className={`h-full min-w-0 ${isEditingStudent ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+      >
         {filteredStudents.length === 0 ? (
           <div className="p-6 text-center text-slate-400">
             {loading ? "Loading..." : "No students found."}
           </div>
         ) : (
-          <table className="w-full min-w-225 whitespace-nowrap text-sm">
+          <table
+            className={`text-sm ${isEditingStudent ? "w-full min-w-0 table-fixed" : "w-full min-w-225 whitespace-nowrap"}`}
+          >
             <thead className="sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
               <tr>
+                {!isEditingStudent && (
                 <th className="w-24 px-3 py-3 text-center">
                   <input
                     type="checkbox"
@@ -1568,10 +1574,11 @@ const Students = () => {
                     className="accent-indigo-500"
                   />
                 </th>
+                )}
                 {displayedColumns.map((column) => (
                   <th
                     key={column.key}
-                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600"
+                    className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? column.key === "id" ? "w-14" : column.key === "status" ? "w-24" : "" : ""}`}
                   >
                     <button
                       type="button"
@@ -1610,6 +1617,7 @@ const Students = () => {
                 <tr
                   className="h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40"
                 >
+                    {!isEditingStudent && (
                   <td className="px-3 py-3 text-center">
                     <div className="inline-flex items-center gap-1 text-slate-500">
                       <GripVertical size={14} aria-hidden="true" />
@@ -1646,8 +1654,12 @@ const Students = () => {
                       />
                     </div>
                   </td>
+                    )}
                   {displayedColumns.map((column) => (
-                    <td key={column.key} className="px-4 py-3 text-slate-300">
+                    <td
+                      key={column.key}
+                      className={`px-3 py-3 text-slate-300 ${isEditingStudent ? "truncate" : ""}`}
+                    >
                       {column.render
                         ? column.render(student)
                         : student[column.key] ?? "—"}
@@ -1685,7 +1697,7 @@ const Students = () => {
                 {expandedStudentIds.includes(student.id) && (
                   <tr>
                     <td
-                      colSpan={displayedColumns.length + 2}
+                      colSpan={displayedColumns.length + (isEditingStudent ? 1 : 2)}
                       className="border-b border-slate-700/50 bg-slate-800/20 px-6 py-3"
                     >
                       <div className="grid gap-3 text-xs text-slate-400 sm:grid-cols-2 lg:grid-cols-4">
