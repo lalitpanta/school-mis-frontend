@@ -49,7 +49,7 @@ const MODULE_ICONS = {
   settings: Settings,
 };
 
-const SETTINGS_ACTIONS = new Set([
+const SETTINGS_CONFIG_MODULES = new Set([
   "settings",
   "school",
   "academic",
@@ -59,6 +59,9 @@ const SETTINGS_ACTIONS = new Set([
   "security",
   "integrations",
   "devices",
+  "backup",
+  "activityLog",
+  "activeSessions",
 ]);
 
 const APP_MODULES = AVAILABLE_MODULES.map(({ key, label }) => {
@@ -72,7 +75,7 @@ const APP_MODULES = AVAILABLE_MODULES.map(({ key, label }) => {
     actions:
       key === "dashboard"
         ? ["view"]
-        : SETTINGS_ACTIONS.has(key) || SETTINGS_MODULES.has(key)
+        : SETTINGS_CONFIG_MODULES.has(key)
           ? ["view", "edit"]
           : ["view", "create", "edit", "delete"],
   };

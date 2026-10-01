@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import SchoolProfile from "../components/settings/SchoolProfile";
@@ -145,8 +146,7 @@ const SETTINGS_TAB_PERMISSIONS = {
 const SettingsPage = () => {
   const [params, setParams] = useSearchParams();
   const { user, isTenant } = useAuth();
-  const tab = params.get("tab") || "school";
-  const label = TAB_LABELS[tab] ?? "Settings";
+  const requestedTab = params.get("tab") || "school";
   const permissions = Array.isArray(user?.permissions)
     ? user.permissions.map((permission) => String(permission).toLowerCase())
     : [];
@@ -161,6 +161,19 @@ const SettingsPage = () => {
         ),
     ),
   })).filter((group) => group.items.length > 0);
+  const visibleTabKeys = visibleSettingsNav.flatMap((group) =>
+    group.items.map((item) => item.key),
+  );
+  const tab = visibleTabKeys.includes(requestedTab)
+    ? requestedTab
+    : visibleTabKeys[0] || "school";
+  const label = TAB_LABELS[tab] ?? "Settings";
+
+  useEffect(() => {
+    if (tab !== requestedTab && visibleTabKeys.length > 0) {
+      setParams({ tab }, { replace: true });
+    }
+  }, [requestedTab, setParams, tab, visibleTabKeys.length]);
 
   return (
     <div className="h-full flex flex-col gap-4">
