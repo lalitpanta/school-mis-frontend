@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { teachersApi } from "../api/teachersApi";
 import { getDepartments } from "../api/departmentsApi";
+import { getCourses } from "../api/coursesApi";
 import {
   Plus,
   Edit,
@@ -37,6 +38,7 @@ const emptyTeacher = {
   join_date: "",
   subjects_taught: "",
   classes_assigned: "",
+  courses_assigned: [],
   reporting_manager: "",
   work_email: "",
   work_phone: "",
@@ -121,6 +123,8 @@ const handleDownloadDocument = async (teacherId, docUrl, docTitle) => {
 const TeacherPage = () => {
   const [teachers, setTeachers] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [teacherCourses, setTeacherCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,8 +166,12 @@ const TeacherPage = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const deps = await getDepartments();
+        const [deps, coursesRes] = await Promise.all([
+          getDepartments(),
+          getCourses(),
+        ]);
         setDepartments(deps.data?.data || deps.data || []);
+        setCourses(coursesRes.data || []);
       } catch (e) {
         console.error(e);
       }
@@ -210,35 +218,74 @@ const TeacherPage = () => {
     setShowModal(true);
   };
 
-  const openEditModal = (teacher) => {
+  const openEditModal = async (teacher) => {
     setModalMode("edit");
     setSelectedTeacher(teacher);
-    setFormData({
-      ...teacher,
-      date_of_birth: normalizeDateForInput(teacher.date_of_birth),
-      join_date: normalizeDateForInput(teacher.join_date),
-      license_expiry_date: normalizeDateForInput(teacher.license_expiry_date),
-      previous_from_date: normalizeDateForInput(teacher.previous_from_date),
-      previous_to_date: normalizeDateForInput(teacher.previous_to_date),
-      citizenship_issued_date: normalizeDateForInput(
-        teacher.citizenship_issued_date,
-      ),
-      passport_expiry_date: normalizeDateForInput(teacher.passport_expiry_date),
-      subjects_taught: Array.isArray(teacher.subjects_taught)
-        ? teacher.subjects_taught.join(", ")
-        : teacher.subjects_taught || "",
-      classes_assigned: Array.isArray(teacher.classes_assigned)
-        ? teacher.classes_assigned.join(", ")
-        : teacher.classes_assigned || "",
-      additional_certifications: Array.isArray(
-        teacher.additional_certifications,
-      )
-        ? teacher.additional_certifications.join(", ")
-        : teacher.additional_certifications || "",
-      allowances_travel: teacher.allowances?.travel || "",
-      allowances_house: teacher.allowances?.house || "",
-      allowances_medical: teacher.allowances?.medical || "",
-    });
+    
+    // Load teacher courses
+    try {
+      const coursesRes = await teachersApi.getTeacherCourses(teacher.id);
+      setTeacherCourses(coursesRes.data || []);
+      const courseIds = (coursesRes.data || []).map((c) => c.id);
+      setFormData({
+        ...teacher,
+        date_of_birth: normalizeDateForInput(teacher.date_of_birth),
+        join_date: normalizeDateForInput(teacher.join_date),
+        license_expiry_date: normalizeDateForInput(teacher.license_expiry_date),
+        previous_from_date: normalizeDateForInput(teacher.previous_from_date),
+        previous_to_date: normalizeDateForInput(teacher.previous_to_date),
+        citizenship_issued_date: normalizeDateForInput(
+          teacher.citizenship_issued_date,
+        ),
+        passport_expiry_date: normalizeDateForInput(teacher.passport_expiry_date),
+        subjects_taught: Array.isArray(teacher.subjects_taught)
+          ? teacher.subjects_taught.join(", ")
+          : teacher.subjects_taught || "",
+        classes_assigned: Array.isArray(teacher.classes_assigned)
+          ? teacher.classes_assigned.join(", ")
+          : teacher.classes_assigned || "",
+        additional_certifications: Array.isArray(
+          teacher.additional_certifications,
+        )
+          ? teacher.additional_certifications.join(", ")
+          : teacher.additional_certifications || "",
+        allowances_travel: teacher.allowances?.travel || "",
+        allowances_house: teacher.allowances?.house || "",
+        allowances_medical: teacher.allowances?.medical || "",
+        courses_assigned: courseIds,
+      });
+    } catch (err) {
+      console.error("Failed to load teacher courses:", err);
+      setTeacherCourses([]);
+      setFormData({
+        ...teacher,
+        date_of_birth: normalizeDateForInput(teacher.date_of_birth),
+        join_date: normalizeDateForInput(teacher.join_date),
+        license_expiry_date: normalizeDateForInput(teacher.license_expiry_date),
+        previous_from_date: normalizeDateForInput(teacher.previous_from_date),
+        previous_to_date: normalizeDateForInput(teacher.previous_to_date),
+        citizenship_issued_date: normalizeDateForInput(
+          teacher.citizenship_issued_date,
+        ),
+        passport_expiry_date: normalizeDateForInput(teacher.passport_expiry_date),
+        subjects_taught: Array.isArray(teacher.subjects_taught)
+          ? teacher.subjects_taught.join(", ")
+          : teacher.subjects_taught || "",
+        classes_assigned: Array.isArray(teacher.classes_assigned)
+          ? teacher.classes_assigned.join(", ")
+          : teacher.classes_assigned || "",
+        additional_certifications: Array.isArray(
+          teacher.additional_certifications,
+        )
+          ? teacher.additional_certifications.join(", ")
+          : teacher.additional_certifications || "",
+        allowances_travel: teacher.allowances?.travel || "",
+        allowances_house: teacher.allowances?.house || "",
+        allowances_medical: teacher.allowances?.medical || "",
+        courses_assigned: [],
+      });
+    }
+    
     setProfilePhoto(null);
     setProfilePhotoPreview(teacher.profile_photo_url || "");
     setAttachments([]);
@@ -340,7 +387,8 @@ const TeacherPage = () => {
         <div class="detail-row"><span class="detail-label">Reporting Manager</span><span class="detail-value">${viewTeacher.reporting_manager || "—"}</span></div>
         <div class="detail-row"><span class="detail-label">Subjects Taught</span><span class="detail-value">${formatArrayValue(viewTeacher.subjects_taught)}</span></div>
         <div class="detail-row full-width"><span class="detail-label">Classes Assigned</span><span class="detail-value">${formatArrayValue(viewTeacher.classes_assigned)}</span></div>
-      </div>
+      <div class="detail-row full-width"><span class="detail-label">Courses Assigned</span><span class="detail-value">${viewTeacher.courses_assigned && viewTeacher.courses_assigned.length > 0 ? viewTeacher.courses_assigned.map(c => c.name || c).join(", ") : "—"}</span></div>
+    </div>
     </div>
 
     <div class="card">
@@ -492,6 +540,7 @@ const TeacherPage = () => {
       },
       // attachments metadata will be uploaded as files when present
       profile_photo_url: profilePhotoPreview || formData.profile_photo_url,
+      course_ids: formData.courses_assigned || [],
     };
 
     // Normalize date fields and numeric fields before sending
@@ -1463,6 +1512,68 @@ const TeacherPage = () => {
                         placeholder="Comma separated"
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
                       />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="text-sm text-slate-300">
+                        Courses Assigned
+                      </label>
+                      <div className="space-y-3">
+                        {Array.isArray(formData.courses_assigned) && formData.courses_assigned.length > 0 ? (
+                          formData.courses_assigned.map((courseId, index) => {
+                            const course = courses.find((c) => c.id === courseId);
+                            return (
+                              <div key={index} className="flex items-center gap-2">
+                                <select
+                                  value={courseId}
+                                  onChange={(e) => {
+                                    const newCourses = [...formData.courses_assigned];
+                                    newCourses[index] = e.target.value;
+                                    setFormData({
+                                      ...formData,
+                                      courses_assigned: newCourses,
+                                    });
+                                  }}
+                                  className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                                >
+                                  <option value="">Select course</option>
+                                  {courses.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                      {c.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newCourses = formData.courses_assigned.filter((_, i) => i !== index);
+                                    setFormData({
+                                      ...formData,
+                                      courses_assigned: newCourses,
+                                    });
+                                  }}
+                                  className="rounded-xl border border-red-700/50 bg-red-950/30 px-3 py-2 text-sm text-red-300 hover:bg-red-950/50"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="text-sm text-slate-500">No courses assigned</p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData({
+                              ...formData,
+                              courses_assigned: [...(formData.courses_assigned || []), ""],
+                            });
+                          }}
+                          className="rounded-xl border border-indigo-700/50 bg-indigo-950/30 px-3 py-2 text-sm text-indigo-300 hover:bg-indigo-950/50"
+                        >
+                          + Add Another Course
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label className="text-sm text-slate-300">

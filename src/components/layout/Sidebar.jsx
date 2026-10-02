@@ -61,6 +61,7 @@ const MAIN_NAV = [
       </svg>
     ),
   },
+
   {
     label: "Leave",
     to: ROUTES.LEAVE_MANAGEMENT,

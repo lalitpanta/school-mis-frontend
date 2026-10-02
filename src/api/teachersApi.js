@@ -11,4 +11,13 @@ export const teachersApi = {
   importTeachers: (formData) =>
     axiosInstance.post("/v1/teachers/import", formData),
   deleteTeacher: (id) => axiosInstance.delete(`/v1/teachers/${id}`),
+
+  // Course management
+  getTeacherCourses: (id) => axiosInstance.get(`/v1/teachers/${id}/courses`),
+  assignCoursesToTeacher: (id, courseIds) =>
+    axiosInstance.post(`/v1/teachers/${id}/courses`, { course_ids: courseIds }),
+  addCourseToTeacher: (id, courseId) =>
+    axiosInstance.post(`/v1/teachers/${id}/courses/add`, { course_id: courseId }),
+  removeCourseFromTeacher: (id, courseId) =>
+    axiosInstance.delete(`/v1/teachers/${id}/courses/${courseId}`),
 };
