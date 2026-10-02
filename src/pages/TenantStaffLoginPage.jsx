@@ -83,6 +83,14 @@ const TenantStaffLoginPage = () => {
         );
 
         const modules = userData?.modules || [];
+        const isTeacherAccount = Boolean(
+          userData?.teacherId &&
+            userData?.roles?.some((role) =>
+              String(typeof role === "string" ? role : role?.role_name || "")
+                .trim()
+                .toLowerCase() === "teacher",
+            ),
+        );
         const moduleOrder = [
           "dashboard",
           "calendar",
@@ -96,7 +104,9 @@ const TenantStaffLoginPage = () => {
           "daily_reports",
         ];
         const firstAllowed = moduleOrder.find((key) => modules.includes(key));
-        const target = MODULE_ROUTE_MAP[firstAllowed] || "/";
+        const target = isTeacherAccount
+          ? "/teacher-portal"
+          : MODULE_ROUTE_MAP[firstAllowed] || "/";
         navigate(target);
       }
     } catch (err) {

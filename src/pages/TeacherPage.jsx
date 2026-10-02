@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import config from "../config/config";
 import RecordTableToolbar from "../components/common/RecordTableToolbar";
+import toast from "react-hot-toast";
 
 const emptyTeacher = {
   full_name: "",
@@ -75,6 +76,7 @@ const emptyTeacher = {
   emergency_contact_relationship: "",
   emergency_contact_phone: "",
   emergency_contact_address: "",
+  provide_login_credentials: true,
 };
 
 const normalizeDateForInput = (value) => {
@@ -516,6 +518,7 @@ const TeacherPage = () => {
 
     try {
       const hasFiles = profilePhoto || attachments.length > 0;
+      let saveResponse = null;
       if (hasFiles) {
         const fd = new FormData();
         // append payload fields
@@ -533,15 +536,30 @@ const TeacherPage = () => {
         fd.append("document_titles", JSON.stringify(titles));
 
         if (modalMode === "create") {
-          await teachersApi.createTeacher(fd);
+          saveResponse = await teachersApi.createTeacher(fd);
         } else if (selectedTeacher) {
-          await teachersApi.updateTeacher(selectedTeacher.id, fd);
+          saveResponse = await teachersApi.updateTeacher(selectedTeacher.id, fd);
         }
       } else {
         if (modalMode === "create") {
-          await teachersApi.createTeacher(payload);
+          saveResponse = await teachersApi.createTeacher(payload);
         } else if (selectedTeacher) {
-          await teachersApi.updateTeacher(selectedTeacher.id, payload);
+          saveResponse = await teachersApi.updateTeacher(selectedTeacher.id, payload);
+        }
+      }
+      const portalLogin = saveResponse?.data?.data?.portal_login;
+      if (portalLogin?.requested) {
+        if (portalLogin.email_sent) {
+          toast.success(`Teacher portal credentials sent to ${portalLogin.email}.`);
+        } else if (portalLogin.status === "existing_account") {
+          toast.error(`A teacher account already exists for ${portalLogin.email}. Credentials were not re-sent.`);
+        } else {
+          toast.error(
+            portalLogin.error ||
+              (portalLogin.status === "missing_email"
+                ? "The teacher profile was saved, but no work or personal email was provided."
+                : `The teacher profile was saved, but portal credentials could not be sent to ${portalLogin.email || "the teacher"}. Check Settings > Integrations and existing account conflicts.`),
+          );
         }
       }
       await loadData();
@@ -1130,6 +1148,11 @@ const TeacherPage = () => {
                         </label>
                         <input
                           type="email"
+                          required={
+                            modalMode === "create" &&
+                            formData.provide_login_credentials &&
+                            !formData.work_email
+                          }
                           value={formData.personal_email}
                           onChange={(e) =>
                             setFormData({
@@ -1363,6 +1386,11 @@ const TeacherPage = () => {
                       </label>
                       <input
                         type="email"
+                        required={
+                          modalMode === "create" &&
+                          formData.provide_login_credentials &&
+                          !formData.personal_email
+                        }
                         value={formData.work_email}
                         onChange={(e) =>
                           setFormData({
@@ -2191,6 +2219,34 @@ const TeacherPage = () => {
                   </div>
                 )}
               </div>
+              {modalMode === "create" && (
+                <section className="rounded-lg border border-teal-500/30 bg-teal-500/5 px-4 py-3">
+                  <label
+                    htmlFor="teacher-portal-credentials"
+                    className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 sm:grid-cols-[auto_minmax(220px,0.9fr)_minmax(0,1.4fr)] sm:gap-x-4"
+                  >
+                    <input
+                      id="teacher-portal-credentials"
+                      type="checkbox"
+                      checked={formData.provide_login_credentials === true}
+                      onChange={(event) =>
+                        setFormData({
+                          ...formData,
+                          provide_login_credentials: event.target.checked,
+                        })
+                      }
+                      className="row-span-2 h-4 w-4 shrink-0 accent-teal-500 sm:row-span-1"
+                    />
+                    <span className="min-w-0 text-sm font-semibold leading-5 text-slate-100">
+                      Create teacher portal login and email credentials
+                    </span>
+                    <span className="col-start-2 min-w-0 text-xs leading-5 text-slate-400 sm:col-start-auto sm:text-sm">
+                      A temporary password and dedicated teacher portal links will be sent to the work or personal email above.
+                    </span>
+                  </label>
+                </section>
+              )}
+
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"

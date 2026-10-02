@@ -11,7 +11,13 @@ import {
 const StudentPasswordResetPage = () => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
-  const isTenantUserFlow = pathname === "/reset-password";
+  const isTeacherFlow = pathname === "/teacher/reset-password";
+  const isTenantUserFlow = pathname === "/reset-password" || isTeacherFlow;
+  const loginPath = isTeacherFlow
+    ? "/teacher/login"
+    : isTenantUserFlow
+      ? "/login"
+      : "/student/login";
   const token = searchParams.get("token") || "";
   const [tenantSlug, setTenantSlug] = useState(
     searchParams.get("tenant") || searchParams.get("tenantSlug") || "",
@@ -42,7 +48,7 @@ const StudentPasswordResetPage = () => {
         const loginParams = new URLSearchParams({ tenantSlug });
         if (isTenantUserFlow && email) loginParams.set("email", email);
         navigate(
-          `${isTenantUserFlow ? "/login" : "/student/login"}?${loginParams.toString()}`,
+          `${loginPath}?${loginParams.toString()}`,
           { replace: true },
         );
       } else {
@@ -76,8 +82,8 @@ const StudentPasswordResetPage = () => {
               {token ? "Choose a new password." : "Get back into your portal."}
             </h1>
           </div>
-          <Link to={isTenantUserFlow ? "/login" : "/student/login"} className="inline-flex items-center gap-2 text-sm text-emerald-200 hover:text-white">
-            <ArrowLeft size={16} /> {isTenantUserFlow ? "School portal sign in" : "Student sign in"}
+          <Link to={loginPath} className="inline-flex items-center gap-2 text-sm text-emerald-200 hover:text-white">
+            <ArrowLeft size={16} /> {isTeacherFlow ? "Teacher sign in" : isTenantUserFlow ? "School portal sign in" : "Student sign in"}
           </Link>
         </section>
 
@@ -86,11 +92,11 @@ const StudentPasswordResetPage = () => {
             <div className="mb-6 flex items-center gap-3 md:hidden">
               <GraduationCap className="text-emerald-300" size={26} />
               <span className="text-sm font-semibold">
-                {isTenantUserFlow ? "SCHOOL PORTAL" : "STUDENT PORTAL"}
+                {isTeacherFlow ? "TEACHER PORTAL" : isTenantUserFlow ? "SCHOOL PORTAL" : "STUDENT PORTAL"}
               </span>
             </div>
             <p className="text-sm font-medium text-emerald-300">
-              {isTenantUserFlow ? "ACCOUNT SETUP" : "PASSWORD RESET"}
+              {isTeacherFlow ? "TEACHER ACCOUNT SETUP" : isTenantUserFlow ? "ACCOUNT SETUP" : "PASSWORD RESET"}
             </p>
             <h2 className="mt-2 text-3xl font-semibold">
               {token
@@ -101,7 +107,7 @@ const StudentPasswordResetPage = () => {
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
               {token
-                ? `Choose a new password for your ${isTenantUserFlow ? "school portal" : "student portal"} account. This link can only be used once.`
+                ? `Choose a new password for your ${isTeacherFlow ? "teacher portal" : isTenantUserFlow ? "school portal" : "student portal"} account. This link can only be used once.`
                 : "Enter your school slug and student email. If the account exists, we’ll email a secure reset link."}
             </p>
 
@@ -198,10 +204,10 @@ const StudentPasswordResetPage = () => {
             )}
 
             <Link
-              to={`${isTenantUserFlow ? "/login" : "/student/login"}${tenantSlug ? `?tenantSlug=${encodeURIComponent(tenantSlug)}` : ""}`}
+              to={`${loginPath}${tenantSlug ? `?tenantSlug=${encodeURIComponent(tenantSlug)}` : ""}`}
               className="mt-6 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white"
             >
-              <ArrowLeft size={16} /> Back to {isTenantUserFlow ? "school" : "student"} sign in
+              <ArrowLeft size={16} /> Back to {isTeacherFlow ? "teacher" : isTenantUserFlow ? "school" : "student"} sign in
             </Link>
           </div>
         </section>
