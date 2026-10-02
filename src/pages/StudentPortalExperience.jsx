@@ -464,7 +464,23 @@ const StudentPortalExperience = () => {
     0,
   );
   const scoreField = term;
-  const scores = results
+  const legacyResults = results.filter((item) => !item.exam_format_id);
+  const examResultGroups = useMemo(() => {
+    const groups = new Map();
+    results
+      .filter((item) => item.exam_format_id)
+      .forEach((item) => {
+        if (!groups.has(item.exam_format_id)) {
+          groups.set(item.exam_format_id, {
+            ...item,
+            subjects: [],
+          });
+        }
+        groups.get(item.exam_format_id).subjects.push(item);
+      });
+    return [...groups.values()];
+  }, [results]);
+  const scores = legacyResults
     .map((item) => Number(item[scoreField] ?? 0))
     .filter(Number.isFinite);
   const average = scores.length
@@ -579,14 +595,14 @@ const StudentPortalExperience = () => {
 
   const resultSubjects = useMemo(
     () =>
-      results.map((item) => ({
+      legacyResults.map((item) => ({
         name: item.subject || item.subject_name || "Subject",
         score: Number(
           item[scoreField] ?? item.total_marks ?? item.final_marks ?? 0,
         ),
         grade: item.grade || "-",
       })),
-    [results, scoreField],
+    [legacyResults, scoreField],
   );
 
   const renderDashboard = () => (
@@ -1048,24 +1064,25 @@ const StudentPortalExperience = () => {
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className={`text-xl font-semibold ${headingClass}`}>
-            Term results
+            Results
           </h2>
           <p className={`mt-1 text-sm ${mutedClass}`}>
             Published marks for your account
           </p>
         </div>
         <div className="flex gap-2 print:hidden">
-          {["first_term_marks", "second_term_marks", "final_marks"].map(
-            (value, index) => (
-              <button
-                key={value}
-                onClick={() => setTerm(value)}
-                className={`rounded-lg border px-3 py-2 text-sm ${term === value ? `border-teal-400 ${isDark ? "bg-teal-500/15 text-teal-300" : "bg-teal-50 text-teal-800"}` : isDark ? "border-slate-600" : "border-slate-300"}`}
-              >
-                Term {index + 1}
-              </button>
-            ),
-          )}
+          {resultSubjects.length > 0 &&
+            ["first_term_marks", "second_term_marks", "final_marks"].map(
+              (value, index) => (
+                <button
+                  key={value}
+                  onClick={() => setTerm(value)}
+                  className={`rounded-lg border px-3 py-2 text-sm ${term === value ? `border-teal-400 ${isDark ? "bg-teal-500/15 text-teal-300" : "bg-teal-50 text-teal-800"}` : isDark ? "border-slate-600" : "border-slate-300"}`}
+                >
+                  Term {index + 1}
+                </button>
+              ),
+            )}
           <button
             onClick={printPage}
             aria-label="Print report card"
@@ -1080,19 +1097,60 @@ const StudentPortalExperience = () => {
         <p className={`text-sm ${mutedClass}`}>{resultError}</p>
       ) : (
         <>
-          <div className="mb-5 grid gap-3 sm:grid-cols-3">
-            <Metric
-              title="Average"
-              value={average === null ? "-" : `${average.toFixed(1)}%`}
-              isDark={isDark}
-            />
-            <Metric title="GPA" value="Not provided" isDark={isDark} />
-            <Metric
-              title="Result"
-              value={passed === null ? "-" : passed ? "Pass" : "Needs review"}
-              isDark={isDark}
-            />
-          </div>
+          {resultSubjects.length > 0 && (
+            <div className="mb-5 grid gap-3 sm:grid-cols-3">
+              <Metric
+                title="Average"
+                value={average === null ? "-" : `${average.toFixed(1)}%`}
+                isDark={isDark}
+              />
+              <Metric title="GPA" value="Not provided" isDark={isDark} />
+              <Metric
+                title="Result"
+                value={passed === null ? "-" : passed ? "Pass" : "Needs review"}
+                isDark={isDark}
+              />
+            </div>
+          )}
+          {examResultGroups.map((exam) => (
+            <div
+              key={exam.exam_format_id}
+              className={`mb-6 border-b pb-5 ${subtleBorderClass}`}
+            >
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h3 className={`font-semibold ${headingClass}`}>
+                  {exam.exam_type || "Exam"}{exam.term ? ` · ${exam.term}` : ""}
+                </h3>
+                <span className={`text-sm ${mutedClass}`}>
+                  {exam.exam_date ? dateLabel(exam.exam_date) : "Published result"}
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[520px] text-left text-sm">
+                  <thead className={mutedClass}>
+                    <tr>
+                      <th className="py-2 pr-3 font-medium">Subject</th>
+                      <th className="py-2 pr-3 font-medium">Theory</th>
+                      <th className="py-2 pr-3 font-medium">Practical</th>
+                      <th className="py-2 pr-3 font-medium">Total</th>
+                      <th className="py-2 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {exam.subjects.map((subject) => (
+                      <tr key={`${exam.exam_format_id}-${subject.subject}`} className={`border-t ${subtleBorderClass}`}>
+                        <td className="py-2 pr-3">{subject.subject}</td>
+                        <td className="py-2 pr-3">{subject.theory_marks ?? "-"}</td>
+                        <td className="py-2 pr-3">{subject.practical_marks ?? "-"}</td>
+                        <td className="py-2 pr-3">{subject.total_marks ?? "-"} / {subject.total_max_marks ?? "-"}</td>
+                        <td className="py-2">{subject.is_pass ? "Pass" : "Needs review"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
           {resultSubjects.length ? (
             <div className="space-y-3">
               {resultSubjects.map((subject, index) => (
@@ -1117,11 +1175,11 @@ const StudentPortalExperience = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : examResultGroups.length === 0 ? (
             <p className={`text-sm ${mutedClass}`}>
-              No published marks for this term.
+              No published results are available yet.
             </p>
-          )}
+          ) : null}
         </>
       )}
     </section>

@@ -18,6 +18,7 @@ const ResultPortalModulePage = () => {
   const [saving, setSaving] = useState(false);
   const [examFormats, setExamFormats] = useState([]);
   const [publishingExamId, setPublishingExamId] = useState(null);
+  const [publicationFeedback, setPublicationFeedback] = useState("");
   const [copied, setCopied] = useState(false);
 
   const publicLink = useMemo(() => {
@@ -71,12 +72,25 @@ const ResultPortalModulePage = () => {
   const toggleExamPublication = async (exam, nextState) => {
     try {
       setPublishingExamId(exam.id);
-      await axiosInstance.patch(`/v1/results/exam-formats/${exam.id}/publish`, {
+      const response = await axiosInstance.patch(`/v1/results/exam-formats/${exam.id}/publish`, {
         is_published: nextState,
       });
+      const delivery = response.data?.data?.emailNotifications;
+      setPublicationFeedback(
+        nextState && delivery
+          ? delivery.students === 0
+            ? "Result published, but no student marks were available to email."
+            : `Result published. ${delivery.sent} email(s) sent, ${delivery.failed} failed, ${delivery.skipped} student(s) had no email address.`
+          : nextState
+            ? "Result published. No student results were available to email."
+            : "Result unpublished from the public portal.",
+      );
       await loadExamFormats();
     } catch (error) {
       console.error("Failed to update exam publication", error);
+      setPublicationFeedback(
+        error?.response?.data?.message || "Unable to update result publication.",
+      );
     } finally {
       setPublishingExamId(null);
     }
@@ -209,6 +223,11 @@ const ResultPortalModulePage = () => {
               Publish an exam to make its results visible through the public
               portal.
             </p>
+            {publicationFeedback && (
+              <p className="mt-3 text-sm text-[var(--text-2)]" role="status">
+                {publicationFeedback}
+              </p>
+            )}
 
             {loading ? (
               <div className="mt-6 rounded-2xl border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 text-sm text-[var(--text-2)]">
