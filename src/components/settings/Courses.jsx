@@ -77,6 +77,7 @@ const emptyCourse = {
   primary_teacher_id: null,
   classroom_id: null,
   section_id: null,
+  section_ids: [],
   teaching_language: "",
   delivery_mode: "In-person",
   scheduled_days: [],
@@ -174,6 +175,59 @@ const SelectField = ({
     </select>
   </div>
 );
+
+const MultiSelectField = ({ label, value = [], options, onChange, disabled }) => {
+  const selectedIds = new Set(value.map(String));
+  const selectedLabels = options
+    .filter((option) => selectedIds.has(String(option.value)))
+    .map((option) => option.label);
+
+  return (
+    <div>
+      <label className="block text-sm text-slate-300 mb-1">{label}</label>
+      <details className="group relative">
+        <summary
+          className={`list-none w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 cursor-pointer focus:border-indigo-500 focus:outline-none ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+        >
+          <span className="block truncate">
+            {selectedLabels.length ? selectedLabels.join(", ") : "-- Select sections --"}
+          </span>
+        </summary>
+        {!disabled && (
+          <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
+            {options.length ? (
+              options.map((option) => (
+                <label
+                  key={option.value}
+                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-slate-200 hover:bg-slate-800"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(String(option.value))}
+                    onChange={(event) => {
+                      const nextIds = event.target.checked
+                        ? [...value, option.value]
+                        : value.filter(
+                            (id) => String(id) !== String(option.value),
+                          );
+                      onChange(nextIds);
+                    }}
+                    className="h-4 w-4 rounded"
+                  />
+                  {option.label}
+                </label>
+              ))
+            ) : (
+              <p className="px-2 py-1.5 text-sm text-slate-400">
+                No sections available for this class.
+              </p>
+            )}
+          </div>
+        )}
+      </details>
+    </div>
+  );
+};
 
 const TextAreaField = ({
   label,
@@ -273,7 +327,7 @@ const Courses = () => {
     const fetchSections = async () => {
       if (!form.classroom_id) {
         setClassroomSections([]);
-        setForm((prev) => ({ ...prev, section_id: null }));
+        setForm((prev) => ({ ...prev, section_id: null, section_ids: [] }));
         return;
       }
       try {
@@ -300,7 +354,12 @@ const Courses = () => {
     setError("");
     setMode("edit");
     setSelected(course);
-    setForm(course);
+    setForm({
+      ...course,
+      section_ids:
+        course.section_ids?.map(Number) ||
+        (course.section_id ? [Number(course.section_id)] : []),
+    });
     setShowModal(true);
   };
 
@@ -308,7 +367,12 @@ const Courses = () => {
     setError("");
     setMode("view");
     setSelected(course);
-    setForm(course);
+    setForm({
+      ...course,
+      section_ids:
+        course.section_ids?.map(Number) ||
+        (course.section_id ? [Number(course.section_id)] : []),
+    });
     setShowModal(true);
   };
 
@@ -390,6 +454,7 @@ const Courses = () => {
       c.course_code,
       c.department,
       c.teacher_name,
+      c.section_name,
     ]
       .filter(Boolean)
       .map((v) => String(v).toLowerCase())
@@ -485,6 +550,9 @@ const Courses = () => {
                   Class
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium">
+                  Sections
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium">
                   Enrolled
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium">
@@ -520,6 +588,9 @@ const Courses = () => {
                   </td>
                   <td className="px-4 py-3 text-slate-300">
                     {course.class_name || course.classroom_name || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-300">
+                    {course.section_name || "All sections"}
                   </td>
                   <td className="px-4 py-3 text-slate-300">
                     {course.enrolled_count ?? 0}
@@ -941,6 +1012,7 @@ const Courses = () => {
                       ? parseInt(e.target.value)
                       : null,
                     section_id: null,
+                    section_ids: [],
                   })
                 }
                 options={classrooms.map((c) => ({
@@ -948,17 +1020,17 @@ const Courses = () => {
                   value: c.id,
                 }))}
               />
-              <SelectField
-                label="Classroom Section"
-                value={form.section_id || ""}
-                onChange={(e) =>
+              <MultiSelectField
+                label="Classroom Sections"
+                value={form.section_ids || []}
+                onChange={(sectionIds) =>
                   setForm({
                     ...form,
-                    section_id: e.target.value
-                      ? parseInt(e.target.value)
-                      : null,
+                    section_ids: sectionIds,
+                    section_id: sectionIds[0] || null,
                   })
                 }
+                disabled={mode === "view"}
                 options={classroomSections.map((section) => ({
                   label: section.section_name || section.name || "Unknown",
                   value: section.id,

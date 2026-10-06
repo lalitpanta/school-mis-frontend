@@ -42,10 +42,17 @@ const TeacherResults = () => {
   );
   const subjectStudents = useMemo(() => {
     const students = detail?.students || [];
-    const sectionId = selectedSubject?.section_id || detail?.exam?.section_id;
-    return sectionId
+    const sectionIds =
+      selectedSubject?.section_ids?.length > 0
+        ? selectedSubject.section_ids.map(String)
+        : selectedSubject?.section_id
+          ? [String(selectedSubject.section_id)]
+          : detail?.exam?.section_id
+            ? [String(detail.exam.section_id)]
+            : [];
+    return sectionIds.length
       ? students.filter(
-          (student) => String(student.section_id) === String(sectionId),
+          (student) => sectionIds.includes(String(student.section_id)),
         )
       : students;
   }, [detail, selectedSubject]);

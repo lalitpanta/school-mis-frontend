@@ -53,6 +53,7 @@ const TeacherPortalExperience = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [leaveError, setLeaveError] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
   const [classStudents, setClassStudents] = useState([]);
@@ -117,13 +118,14 @@ const TeacherPortalExperience = () => {
     event.preventDefault();
     setLeaveSubmitting(true);
     setNotice("");
+    setLeaveError("");
     try {
       await axiosInstance.post("/v1/teacher-portal/leave", leaveForm);
       setLeaveForm({ leave_type: "Personal", start_date: "", end_date: "", reason: "" });
       setNotice("Leave request submitted.");
       await loadOverview();
     } catch (requestError) {
-      setNotice(requestError?.response?.data?.message || "Unable to submit leave request.");
+      setLeaveError(requestError?.response?.data?.message || "Unable to submit leave request.");
     } finally {
       setLeaveSubmitting(false);
     }
@@ -220,7 +222,7 @@ const TeacherPortalExperience = () => {
 
   const renderLeave = () => (
     <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-      <section className={panel}><h2 className="text-xl font-semibold">Request leave</h2><p className={`mt-1 text-sm ${subdued}`}>Requests are sent to school administrators for review.</p>{notice && <p role="status" className="mt-4 rounded-lg bg-teal-400/10 p-3 text-sm text-teal-100">{notice}</p>}<form onSubmit={submitLeave} className="mt-5 space-y-4"><label className={`block text-sm ${subdued}`}>Leave type<select value={leaveForm.leave_type} onChange={(event) => setLeaveForm({ ...leaveForm, leave_type: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white"><option>Personal</option><option>Sick</option><option>Annual</option><option>Emergency</option><option>Other</option></select></label><div className="grid gap-3 sm:grid-cols-2"><label className={`block text-sm ${subdued}`}>From<input required type="date" value={leaveForm.start_date} onChange={(event) => setLeaveForm({ ...leaveForm, start_date: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" /></label><label className={`block text-sm ${subdued}`}>To<input required type="date" min={leaveForm.start_date || undefined} value={leaveForm.end_date} onChange={(event) => setLeaveForm({ ...leaveForm, end_date: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" /></label></div><label className={`block text-sm ${subdued}`}>Reason<textarea required minLength={5} value={leaveForm.reason} onChange={(event) => setLeaveForm({ ...leaveForm, reason: event.target.value })} rows={4} className="mt-1 w-full resize-y rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" /></label><button type="submit" disabled={leaveSubmitting} className="rounded-lg bg-teal-400 px-4 py-2.5 text-sm font-semibold text-slate-950 disabled:opacity-50">{leaveSubmitting ? "Submitting..." : "Submit request"}</button></form></section>
+      <section className={panel}><h2 className="text-xl font-semibold">Request leave</h2><p className={`mt-1 text-sm ${subdued}`}>Requests are sent to school administrators for review.</p>{notice && <p role="status" className="mt-4 rounded-lg bg-teal-400/10 p-3 text-sm text-teal-100">{notice}</p>}{leaveError && <p role="alert" className="mt-4 rounded-lg bg-rose-400/10 p-3 text-sm text-rose-200">{leaveError}</p>}<form onSubmit={submitLeave} className="mt-5 space-y-4"><label className={`block text-sm ${subdued}`}>Leave type<select value={leaveForm.leave_type} onChange={(event) => setLeaveForm({ ...leaveForm, leave_type: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white"><option>Personal</option><option>Sick</option><option>Annual</option><option>Emergency</option><option>Other</option></select></label><div className="grid gap-3 sm:grid-cols-2"><label className={`block text-sm ${subdued}`}>From<input required type="date" max={leaveForm.end_date || undefined} value={leaveForm.start_date} onChange={(event) => setLeaveForm({ ...leaveForm, start_date: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" /></label><label className={`block text-sm ${subdued}`}>To<input required type="date" min={leaveForm.start_date || undefined} value={leaveForm.end_date} onChange={(event) => setLeaveForm({ ...leaveForm, end_date: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" /></label></div><label className={`block text-sm ${subdued}`}>Reason<textarea required maxLength={2000} value={leaveForm.reason} onChange={(event) => setLeaveForm({ ...leaveForm, reason: event.target.value })} rows={4} className="mt-1 w-full resize-y rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" /></label><button type="submit" disabled={leaveSubmitting} className="rounded-lg bg-teal-400 px-4 py-2.5 text-sm font-semibold text-slate-950 disabled:opacity-50">{leaveSubmitting ? "Submitting..." : "Submit request"}</button></form></section>
       <section className={panel}><h2 className="text-xl font-semibold">My requests</h2>{overview.leaveRequests.length ? <div className="mt-3 divide-y divide-slate-800">{overview.leaveRequests.map((request) => <article key={request.id} className="py-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-medium">{request.leave_type || "Leave"}</h3><p className={`mt-1 text-sm ${subdued}`}>{prettyDate(request.start_date)} to {prettyDate(request.end_date)}</p></div><span className={`rounded-full px-2.5 py-1 text-xs capitalize ${request.status === "approved" ? "bg-emerald-400/10 text-emerald-300" : request.status === "rejected" ? "bg-rose-400/10 text-rose-300" : "bg-amber-400/10 text-amber-200"}`}>{request.status}</span></div><p className="mt-3 text-sm">{request.reason}</p>{request.admin_reply && <p className={`mt-2 text-sm ${subdued}`}>Reply: {request.admin_reply}</p>}</article>)}</div> : <p className={`mt-5 text-sm ${subdued}`}>You have no leave requests yet.</p>}</section>
     </div>
   );

@@ -22,8 +22,11 @@ const LeaveManagementPage = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState(null);
+  const [requestSubmitting, setRequestSubmitting] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
+    leave_type: "Other",
     start_date: "",
     end_date: "",
     reason: "",
@@ -57,21 +60,34 @@ const LeaveManagementPage = () => {
 
   const handleRequestSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.start_date || !formData.end_date || !formData.reason) {
-      toast.error("Please fill all fields");
+    if (
+      !formData.start_date ||
+      !formData.end_date ||
+      formData.end_date < formData.start_date ||
+      !formData.reason.trim()
+    ) {
+      toast.error("Enter a valid date range and reason");
       return;
     }
 
     try {
+      setRequestSubmitting(true);
       const res = await axiosInstance.post("/v1/leave", formData);
       if (res.data.success) {
         toast.success("Leave requested successfully");
         setShowRequestModal(false);
-        setFormData({ start_date: "", end_date: "", reason: "" });
+        setFormData({
+          leave_type: "Other",
+          start_date: "",
+          end_date: "",
+          reason: "",
+        });
         fetchLeaves();
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to submit request");
+    } finally {
+      setRequestSubmitting(false);
     }
   };
 
@@ -83,6 +99,7 @@ const LeaveManagementPage = () => {
     }
 
     try {
+      setReviewSubmitting(true);
       const res = await axiosInstance.put(
         `/v1/leave/${selectedLeave.id}/status`,
         reviewData,
@@ -95,13 +112,15 @@ const LeaveManagementPage = () => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update status");
+    } finally {
+      setReviewSubmitting(false);
     }
   };
 
   const openReviewModal = (leave) => {
     setSelectedLeave(leave);
     setReviewData({
-      status: leave.status === "pending" ? "approved" : leave.status,
+      status: leave.status,
       admin_reply: leave.admin_reply || "",
     });
     setShowReviewModal(true);
@@ -149,7 +168,7 @@ const LeaveManagementPage = () => {
             </h1>
             <p className="text-sm text-slate-400 mt-1">
               {isUserAdmin
-                ? "Manage and review staff leave requests"
+                ? "Review student, teacher, and staff leave requests"
                 : "Request and track your leaves"}
             </p>
           </div>
@@ -264,12 +283,23 @@ const LeaveManagementPage = () => {
                       <p className="text-xs text-slate-500">
                         {leave.user_email || "No email"}
                       </p>
+                      <p className="text-xs text-indigo-300">
+                        {leave.requester_type || "User"}
+                      </p>
                     </div>
                   </div>
                   {getStatusBadge(leave.status)}
                 </div>
 
                 <div className="flex-1 space-y-3 mb-4">
+                  <div>
+                    <p className="text-xs text-slate-500 font-semibold mb-1 uppercase tracking-wider">
+                      Leave type
+                    </p>
+                    <p className="text-sm text-slate-300">
+                      {leave.leave_type || "Other"}
+                    </p>
+                  </div>
                   <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/80">
                     <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
                       <CalendarIcon size={14} /> <span>Duration</span>
@@ -324,7 +354,7 @@ const LeaveManagementPage = () => {
                       onClick={() => openReviewModal(leave)}
                       className="text-xs font-bold text-slate-400 hover:text-slate-300 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition"
                     >
-                      Edit Reply
+                      Manage
                     </button>
                   )}
                 </div>
@@ -348,6 +378,22 @@ const LeaveManagementPage = () => {
               </button>
             </div>
             <form onSubmit={handleRequestSubmit} className="p-6 space-y-4">
+              <label className="block text-xs text-slate-400 font-semibold">
+                Leave Type
+                <select
+                  value={formData.leave_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, leave_type: e.target.value })
+                  }
+                  className="mt-1 w-full bg-[#1e293b] border border-slate-700 rounded-xl px-4 py-2 text-white outline-none focus:border-indigo-500"
+                >
+                  <option>Other</option>
+                  <option>Sick leave</option>
+                  <option>Personal leave</option>
+                  <option>Annual leave</option>
+                  <option>Family emergency</option>
+                </select>
+              </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-slate-400 font-semibold mb-1">
@@ -356,6 +402,7 @@ const LeaveManagementPage = () => {
                   <input
                     type="date"
                     required
+                    max={formData.end_date || undefined}
                     value={formData.start_date}
                     onChange={(e) =>
                       setFormData({ ...formData, start_date: e.target.value })
@@ -370,6 +417,7 @@ const LeaveManagementPage = () => {
                   <input
                     type="date"
                     required
+                    min={formData.start_date || undefined}
                     value={formData.end_date}
                     onChange={(e) =>
                       setFormData({ ...formData, end_date: e.target.value })
@@ -385,6 +433,7 @@ const LeaveManagementPage = () => {
                 <textarea
                   required
                   rows={4}
+                  maxLength={2000}
                   value={formData.reason}
                   onChange={(e) =>
                     setFormData({ ...formData, reason: e.target.value })
@@ -403,9 +452,10 @@ const LeaveManagementPage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition"
+                  disabled={requestSubmitting}
+                  className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition disabled:opacity-50"
                 >
-                  Submit Request
+                  {requestSubmitting ? "Submitting..." : "Submit Request"}
                 </button>
               </div>
             </form>
@@ -441,6 +491,10 @@ const LeaveManagementPage = () => {
                   <p className="text-xs text-slate-400">
                     {selectedLeave.user_email}
                   </p>
+                  <p className="text-xs text-indigo-300">
+                    {selectedLeave.requester_type || "User"} ·{" "}
+                    {selectedLeave.leave_type || "Other"}
+                  </p>
                 </div>
               </div>
               <div className="space-y-2 text-sm text-slate-300">
@@ -467,7 +521,28 @@ const LeaveManagementPage = () => {
                 <label className="block text-xs text-slate-400 font-semibold mb-2">
                   Action
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <label
+                    className={clsx(
+                      "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all",
+                      reviewData.status === "pending"
+                        ? "bg-amber-500/10 border-amber-500 text-amber-300"
+                        : "bg-[#1e293b] border-slate-700 text-slate-400 hover:border-slate-600",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="status"
+                      value="pending"
+                      checked={reviewData.status === "pending"}
+                      onChange={(e) =>
+                        setReviewData({ ...reviewData, status: e.target.value })
+                      }
+                      className="hidden"
+                    />
+                    <Clock size={18} />{" "}
+                    <span className="font-medium">Pending</span>
+                  </label>
                   <label
                     className={clsx(
                       "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all",
@@ -519,6 +594,7 @@ const LeaveManagementPage = () => {
                 </label>
                 <textarea
                   rows={3}
+                  maxLength={2000}
                   value={reviewData.admin_reply}
                   onChange={(e) =>
                     setReviewData({
@@ -540,9 +616,10 @@ const LeaveManagementPage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition"
+                  disabled={reviewSubmitting}
+                  className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition disabled:opacity-50"
                 >
-                  Save Review
+                  {reviewSubmitting ? "Saving..." : "Save Review"}
                 </button>
               </div>
             </form>

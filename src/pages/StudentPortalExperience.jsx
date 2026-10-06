@@ -15,6 +15,7 @@ import {
   Moon,
   Pencil,
   Printer,
+  RotateCw,
   Settings,
   Sun,
   UserRound,
@@ -110,7 +111,9 @@ const StudentPortalExperience = () => {
   const [calendarExamError, setCalendarExamError] = useState("");
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [leaveLoading, setLeaveLoading] = useState(false);
+  const [leaveSubmitting, setLeaveSubmitting] = useState(false);
   const [leaveError, setLeaveError] = useState("");
+  const [leaveRefreshCount, setLeaveRefreshCount] = useState(0);
   const [homework, setHomework] = useState([]);
   const [preferences, setPreferences] = useState({
     email: true,
@@ -220,7 +223,7 @@ const StudentPortalExperience = () => {
     return () => {
       cancelled = true;
     };
-  }, [active]);
+  }, [active, leaveRefreshCount]);
 
   useEffect(() => {
     if (!student) return;
@@ -536,7 +539,16 @@ const StudentPortalExperience = () => {
 
   const submitLeave = async (event) => {
     event.preventDefault();
-    if (!leaveForm.from || !leaveForm.to || !leaveForm.reason.trim()) return;
+    if (
+      !leaveForm.from ||
+      !leaveForm.to ||
+      leaveForm.to < leaveForm.from ||
+      !leaveForm.reason.trim()
+    ) {
+      notify("Enter a valid date range and reason.");
+      return;
+    }
+    setLeaveSubmitting(true);
     try {
       const response = await axiosInstance.post("/v1/students/me/leave", {
         start_date: leaveForm.from,
@@ -552,6 +564,8 @@ const StudentPortalExperience = () => {
       notify(
         error?.response?.data?.message || "Unable to submit leave request",
       );
+    } finally {
+      setLeaveSubmitting(false);
     }
   };
 
@@ -1368,100 +1382,6 @@ const StudentPortalExperience = () => {
           </p>
         </section>
       );
-    if (active === "leave")
-      return (
-        <div className="grid gap-5 xl:grid-cols-2">
-          <section className={panelClass}>
-            <h2 className={`text-xl font-semibold ${headingClass}`}>
-              Request leave
-            </h2>
-            <form onSubmit={submitLeave} className="mt-4 space-y-3">
-              <label className={`block text-sm ${mutedClass}`}>
-                From
-                <input
-                  required
-                  type="date"
-                  value={leaveForm.from}
-                  onChange={(event) =>
-                    setLeaveForm({ ...leaveForm, from: event.target.value })
-                  }
-                  className={`${fieldClass} mt-1`}
-                />
-              </label>
-              <label className={`block text-sm ${mutedClass}`}>
-                To
-                <input
-                  required
-                  type="date"
-                  min={leaveForm.from}
-                  value={leaveForm.to}
-                  onChange={(event) =>
-                    setLeaveForm({ ...leaveForm, to: event.target.value })
-                  }
-                  className={`${fieldClass} mt-1`}
-                />
-              </label>
-              <label className={`block text-sm ${mutedClass}`}>
-                Type
-                <select
-                  value={leaveForm.type}
-                  onChange={(event) =>
-                    setLeaveForm({ ...leaveForm, type: event.target.value })
-                  }
-                  className={`${fieldClass} mt-1`}
-                >
-                  <option>Sick leave</option>
-                  <option>Personal leave</option>
-                  <option>Family emergency</option>
-                </select>
-              </label>
-              <label className={`block text-sm ${mutedClass}`}>
-                Reason
-                <textarea
-                  required
-                  rows={3}
-                  value={leaveForm.reason}
-                  onChange={(event) =>
-                    setLeaveForm({ ...leaveForm, reason: event.target.value })
-                  }
-                  className={`${fieldClass} mt-1`}
-                />
-              </label>
-              <p className="text-xs text-amber-300">
-                Requests are saved on this device only; school submission is not
-                connected.
-              </p>
-              <button className="rounded-xl bg-teal-400 px-4 py-2.5 font-semibold text-slate-950">
-                Save request
-              </button>
-            </form>
-          </section>
-          <section className={panelClass}>
-            <h3 className={`font-semibold ${headingClass}`}>Request history</h3>
-            {leaveRequests.length ? (
-              leaveRequests.map((request) => (
-                <div
-                  key={request.id}
-                  className={`mt-3 rounded-xl border ${subtleBorderClass} p-3`}
-                >
-                  <div className="flex justify-between">
-                    <strong>{request.type}</strong>
-                    <span className="text-amber-300">{request.status}</span>
-                  </div>
-                  <p className={`mt-1 text-sm ${mutedClass}`}>
-                    {dateLabel(request.from)} – {dateLabel(request.to)}
-                  </p>
-                  <p className="mt-2 text-sm">{request.reason}</p>
-                </div>
-              ))
-            ) : (
-              <p className={`mt-3 text-sm ${mutedClass}`}>
-                No leave requests saved.
-              </p>
-            )}
-          </section>
-        </div>
-      );
     if (active === "homework")
       return (
         <section className={panelClass}>
@@ -1800,6 +1720,7 @@ const StudentPortalExperience = () => {
             <textarea
               required
               rows={3}
+              maxLength={2000}
               value={leaveForm.reason}
               onChange={(event) =>
                 setLeaveForm({ ...leaveForm, reason: event.target.value })
@@ -1807,13 +1728,28 @@ const StudentPortalExperience = () => {
               className={`${fieldClass} mt-1`}
             />
           </label>
-          <button className="rounded-xl bg-teal-400 px-4 py-2.5 font-semibold text-slate-950">
-            Submit request
+          <button
+            disabled={leaveSubmitting}
+            className="rounded-xl bg-teal-400 px-4 py-2.5 font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {leaveSubmitting ? "Submitting…" : "Submit request"}
           </button>
         </form>
       </section>
       <section className={panelClass}>
-        <h3 className={`font-semibold ${headingClass}`}>Request history</h3>
+        <div className="flex items-center justify-between gap-3">
+          <h3 className={`font-semibold ${headingClass}`}>Request history</h3>
+          <button
+            type="button"
+            onClick={() => setLeaveRefreshCount((count) => count + 1)}
+            disabled={leaveLoading}
+            aria-label="Refresh leave requests"
+            title="Refresh leave requests"
+            className={`rounded-lg border p-2 disabled:opacity-50 ${isDark ? "border-slate-600 text-slate-300" : "border-slate-300 text-slate-600"}`}
+          >
+            <RotateCw size={16} className={leaveLoading ? "animate-spin" : ""} />
+          </button>
+        </div>
         {leaveLoading ? (
           <p className={`mt-3 text-sm ${mutedClass}`}>Loading requests…</p>
         ) : leaveError ? (
@@ -1827,6 +1763,7 @@ const StudentPortalExperience = () => {
               <div className="flex justify-between gap-3">
                 <strong>{request.leave_type || "Leave request"}</strong>
                 <span
+                  aria-label={`Status: ${request.status || "pending"}`}
                   className={
                     request.status === "approved"
                       ? isDark ? "text-emerald-300" : "text-emerald-800"
@@ -1835,7 +1772,7 @@ const StudentPortalExperience = () => {
                         : warningTextClass
                   }
                 >
-                  {request.status}
+                  {request.status || "pending"}
                 </span>
               </div>
               <p className={`mt-1 text-sm ${mutedClass}`}>
