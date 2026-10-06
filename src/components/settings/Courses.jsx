@@ -9,7 +9,17 @@ import {
 import { getClassrooms, getClassroomSections } from "../../api/classroomsApi";
 import { teachersApi } from "../../api/teachersApi";
 import Button from "../common/Button";
-import { Plus, Trash2, Edit, ChevronDown, Eye } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Edit,
+  ChevronDown,
+  Eye,
+  Power,
+  Search,
+  Bookmark,
+  SlidersHorizontal,
+} from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 
 const SUBJECT_TYPES = [
@@ -281,6 +291,10 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [classroomFilter, setClassroomFilter] = useState("all");
+  const [sectionFilter, setSectionFilter] = useState("all");
+  const [showViewMenu, setShowViewMenu] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     basic: true,
     classification: true,
@@ -442,11 +456,43 @@ const Courses = () => {
   };
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
+  const getSectionNames = (course) =>
+    String(course.section_names || course.section_name || "")
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
+  const classroomOptions = classrooms
+    .map((classroom) => ({
+      id: String(classroom.id),
+      name:
+        classroom.class_name ||
+        classroom.classroom_name ||
+        classroom.name ||
+        `Class ${classroom.id}`,
+    }))
+    .filter((classroom) => classroom.id !== "undefined");
+  const sectionOptions = Array.from(
+    new Set(courses.flatMap((course) => getSectionNames(course))),
+  ).sort((first, second) =>
+    first.localeCompare(second, undefined, { sensitivity: "base" }),
+  );
   const filteredCourses = courses.filter((c) => {
     if (typeFilter !== "all" && c.subject_type !== typeFilter) return false;
     if (statusFilter !== "all") {
       const active = c.is_active ? "active" : "inactive";
       if (active !== statusFilter) return false;
+    }
+    if (
+      classroomFilter !== "all" &&
+      String(c.classroom_id ?? "") !== classroomFilter
+    ) {
+      return false;
+    }
+    if (
+      sectionFilter !== "all" &&
+      !getSectionNames(c).includes(sectionFilter)
+    ) {
+      return false;
     }
     if (!normalizedSearch) return true;
     const haystack = [
@@ -454,78 +500,216 @@ const Courses = () => {
       c.course_code,
       c.department,
       c.teacher_name,
-      c.section_name,
+      c.class_name,
+      c.classroom_name,
+      ...getSectionNames(c),
     ]
       .filter(Boolean)
       .map((v) => String(v).toLowerCase())
       .join(" ");
     return haystack.includes(normalizedSearch);
   });
+  const activeFilterCount = [
+    typeFilter,
+    statusFilter,
+    classroomFilter,
+    sectionFilter,
+  ].filter((value) => value !== "all").length;
+  const isEditingCourse = showModal && mode !== "view";
+
+  const applyCourseView = (view) => {
+    setTypeFilter(view.type || "all");
+    setStatusFilter(view.status || "all");
+    setClassroomFilter("all");
+    setSectionFilter("all");
+    setShowViewMenu(false);
+  };
 
   return (
     <div
-      className="rounded-2xl p-6"
+      className={`min-w-0 rounded-2xl p-4 ${isEditingCourse ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
       }}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2
-          className="text-lg font-semibold"
-          style={{ color: "var(--text-1)" }}
-        >
-          Courses Management
-        </h2>
-        <Button onClick={openCreate} icon={Plus}>
-          Add Course
-        </Button>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded text-red-400 text-sm flex justify-between">
-          {error}
-          <button
-            onClick={() => setError("")}
-            className="text-red-400 hover:text-red-300"
+      <div
+        className={`min-w-0 ${isEditingCourse ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2
+            className="text-lg font-semibold"
+            style={{ color: "var(--text-1)" }}
           >
-            ✕
-          </button>
+            Courses Management
+          </h2>
+          <Button onClick={openCreate} icon={Plus}>
+            Add Course
+          </Button>
         </div>
-      )}
 
-      <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search name, code, department..."
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        >
-          <option value="all">All Types</option>
-          {SUBJECT_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
+        {error && (
+          <div className="mb-4 flex justify-between rounded border border-red-700 bg-red-900/30 p-3 text-sm text-red-400">
+            {error}
+            <button
+              onClick={() => setError("")}
+              className="text-red-400 hover:text-red-300"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
-      <div className="overflow-x-auto rounded-lg border border-slate-700/60">
+        <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            <label className="relative min-w-48 max-w-[320px] flex-1">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search courses..."
+                aria-label="Search courses"
+                className="w-full rounded border border-slate-700 bg-slate-800 py-2 pl-9 pr-3 text-white focus:border-indigo-500 focus:outline-none"
+              />
+            </label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowViewMenu((open) => !open);
+                  setShowFilterMenu(false);
+                }}
+                aria-expanded={showViewMenu}
+                className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
+              >
+                <Bookmark size={16} /> Views
+              </button>
+              {showViewMenu && (
+                <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
+                  {[
+                    { label: "All courses" },
+                    { label: "Active courses", status: "active" },
+                    { label: "Inactive courses", status: "inactive" },
+                    { label: "Core courses", type: "Core" },
+                    { label: "Elective courses", type: "Elective" },
+                  ].map((view) => (
+                    <button
+                      key={view.label}
+                      type="button"
+                      onClick={() => applyCourseView(view)}
+                      className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      {view.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFilterMenu((open) => !open);
+                  setShowViewMenu(false);
+                }}
+                aria-label="Filter courses"
+                aria-expanded={showFilterMenu}
+                className={`relative inline-flex items-center justify-center rounded border border-slate-700 p-2 text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
+              >
+                <SlidersHorizontal size={17} />
+                {activeFilterCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] text-white">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+              {showFilterMenu && (
+                <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Subject type
+                    <select
+                      value={typeFilter}
+                      onChange={(event) => setTypeFilter(event.target.value)}
+                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All types</option>
+                      {SUBJECT_TYPES.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Status
+                    <select
+                      value={statusFilter}
+                      onChange={(event) => setStatusFilter(event.target.value)}
+                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All statuses</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Class
+                    <select
+                      value={classroomFilter}
+                      onChange={(event) =>
+                        setClassroomFilter(event.target.value)
+                      }
+                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All classes</option>
+                      {classroomOptions.map((classroom) => (
+                        <option key={classroom.id} value={classroom.id}>
+                          {classroom.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="grid gap-1 text-xs text-slate-400">
+                    Section
+                    <select
+                      value={sectionFilter}
+                      onChange={(event) => setSectionFilter(event.target.value)}
+                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                    >
+                      <option value="all">All sections</option>
+                      {sectionOptions.map((section) => (
+                        <option key={section} value={section}>
+                          {section}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTypeFilter("all");
+                      setStatusFilter("all");
+                      setClassroomFilter("all");
+                      setSectionFilter("all");
+                    }}
+                    className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          <span className="text-sm text-slate-400">
+            {filteredCourses.length} records
+          </span>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
         {filteredCourses.length === 0 ? (
           <div className="p-6 text-center text-slate-400">
             {loading ? "Loading..." : "No courses found."}
@@ -538,25 +722,10 @@ const Courses = () => {
                   Code
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium">
-                  Course Name
+                  Name
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium">
-                  Type
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Department
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Class
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Sections
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Enrolled
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
-                  Teacher
+                  Class / Section
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium">
                   Status
@@ -576,27 +745,23 @@ const Courses = () => {
                     {course.course_code}
                   </td>
                   <td className="px-4 py-3 text-slate-200">
-                    {course.course_name}
+                    <button
+                      type="button"
+                      onClick={() => openView(course)}
+                      className="text-left text-slate-200 hover:text-indigo-300"
+                      title="View course details"
+                    >
+                      {course.course_name}
+                    </button>
                   </td>
                   <td className="px-4 py-3 text-slate-300">
-                    <span className="px-2 py-1 bg-indigo-900/50 text-indigo-200 rounded text-xs">
-                      {course.subject_type}
+                    <span>
+                      {course.class_name || course.classroom_name || "—"}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    {course.department || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    {course.class_name || course.classroom_name || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    {course.section_name || "All sections"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    {course.enrolled_count ?? 0}
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    {course.teacher_name || "—"}
+                    <span className="text-slate-500"> / </span>
+                    <span>
+                      {getSectionNames(course).join(", ") || "All sections"}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     {course.is_active ? (
@@ -612,34 +777,34 @@ const Courses = () => {
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <button
-                        onClick={() => openView(course)}
-                        className="p-1 text-sky-400 hover:bg-sky-900/30 rounded"
-                        title="View course"
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
                         onClick={() => toggleCourseActive(course)}
-                        className={`px-3 py-1 rounded text-xs font-medium ${course.is_active ? "text-red-400 hover:bg-red-900/30" : "text-emerald-400 hover:bg-emerald-900/30"}`}
+                        className={`rounded p-1 ${course.is_active ? "text-amber-400 hover:bg-amber-900/30" : "text-emerald-400 hover:bg-emerald-900/30"}`}
                         title={
                           course.is_active
                             ? "Deactivate course"
                             : "Activate course"
                         }
+                        aria-label={
+                          course.is_active
+                            ? `Deactivate ${course.course_name}`
+                            : `Activate ${course.course_name}`
+                        }
                       >
-                        {course.is_active ? "Deactivate" : "Activate"}
+                        <Power size={16} />
                       </button>
                       <button
                         onClick={() => openEdit(course)}
-                        className="p-1 text-indigo-400 hover:bg-indigo-900/30 rounded"
+                        className="rounded p-1 text-indigo-400 hover:bg-indigo-900/30"
                         title="Edit course"
+                        aria-label={`Edit ${course.course_name}`}
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => remove(course.id)}
-                        className="p-1 text-red-400 hover:bg-red-900/30 rounded"
+                        className="rounded p-1 text-red-400 hover:bg-red-900/30"
                         title="Delete course"
+                        aria-label={`Delete ${course.course_name}`}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -650,6 +815,7 @@ const Courses = () => {
             </tbody>
           </table>
         )}
+        </div>
       </div>
 
       <SettingsModal
@@ -666,6 +832,7 @@ const Courses = () => {
               : "Edit Course"
         }
         width="max-w-4xl"
+        inlinePanel={isEditingCourse}
       >
         {mode === "view" && (
           <div className="space-y-6 max-h-[70vh] overflow-y-auto">
