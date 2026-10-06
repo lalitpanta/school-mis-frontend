@@ -1836,22 +1836,11 @@ const Students = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         title={mode === "create" ? "Create New Student" : "Edit Student"}
+        subtitle="Fill in the student's personal, academic, family, and emergency details."
         width="max-w-6xl"
         inlinePanel={isEditingStudent}
         closeOnOverlayClick={false}
       >
-        <div className="flex justify-between items-center p-4 border-b border-slate-700">
-          <h3 className="text-lg font-bold">
-            {mode === "create" ? "Create New Student" : "Edit Student"}
-          </h3>
-          <button
-            onClick={() => setShowModal(false)}
-            className="text-slate-400 hover:text-slate-200"
-          >
-            ✕
-          </button>
-        </div>
-
         <div className="p-4 sm:p-6">
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">

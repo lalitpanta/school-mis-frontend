@@ -1069,11 +1069,11 @@ const TeacherPage = () => {
             className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-2xl" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl"} overflow-hidden border border-slate-700/70 bg-slate-950 shadow-2xl`}
           >
             <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-5">
-              <div>
+              <div className="min-w-0 flex-1">
                 <h2 className="text-xl font-semibold text-white">
                   {modalMode === "create" ? "Add Teacher" : "Edit Teacher"}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="mt-1 break-words text-sm leading-relaxed text-slate-300">
                   Fill personal, professional, qualification, experience, legal,
                   and emergency details.
                 </p>
