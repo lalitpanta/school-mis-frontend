@@ -11,11 +11,12 @@ import {
   MessageSquare,
   Plus,
   FileText,
+  RotateCw,
 } from "lucide-react";
 import clsx from "clsx";
 
 const LeaveManagementPage = () => {
-  const { isAdmin, token, user } = useAuth();
+  const { isAdmin, isTenant } = useAuth();
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("pending");
@@ -37,11 +38,11 @@ const LeaveManagementPage = () => {
     admin_reply: "",
   });
 
-  const isUserAdmin = isAdmin();
+  const isUserAdmin = isAdmin() || isTenant();
 
   useEffect(() => {
     fetchLeaves();
-  }, []);
+  }, [isUserAdmin]);
 
   const fetchLeaves = async () => {
     try {
@@ -172,14 +173,26 @@ const LeaveManagementPage = () => {
                 : "Request and track your leaves"}
             </p>
           </div>
-          {!isUserAdmin && (
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowRequestModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg transition-all"
+              type="button"
+              onClick={fetchLeaves}
+              disabled={loading}
+              title="Refresh leave requests"
+              aria-label="Refresh leave requests"
+              className="rounded-xl border border-slate-700 p-2.5 text-slate-300 transition hover:border-indigo-500/50 hover:text-white disabled:opacity-50"
             >
-              <Plus size={18} /> Request Leave
+              <RotateCw size={18} className={loading ? "animate-spin" : ""} />
             </button>
-          )}
+            {!isUserAdmin && (
+              <button
+                onClick={() => setShowRequestModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg transition-all"
+              >
+                <Plus size={18} /> Request Leave
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Stats Row */}
