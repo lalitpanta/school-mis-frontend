@@ -387,9 +387,15 @@ const UsersStaff = () => {
       (user.phone && user.phone.toLowerCase().includes(term))
     );
   });
+  const isEditingUser = showModal;
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 space-y-6">
+    <div
+      className={`min-w-0 rounded-2xl border border-slate-700/60 bg-slate-800/60 p-4 ${isEditingUser ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+    >
+      <div
+        className={`min-w-0 ${isEditingUser ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
       {/* Header */}
       <div>
         <h2 className="text-lg font-semibold text-white mb-2">Users & Staff</h2>
@@ -421,13 +427,14 @@ const UsersStaff = () => {
       )}
 
       {/* Search and Create */}
-      <div className="flex gap-3">
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
         <input
           type="text"
           placeholder="Search by name, email, or phone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-3 py-2 bg-slate-700/40 border border-slate-600/50 text-white text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Search users and staff"
+          className="min-w-48 flex-1 rounded-lg border border-slate-600/50 bg-slate-700/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <button
           onClick={openCreateModal}
@@ -439,7 +446,7 @@ const UsersStaff = () => {
       </div>
 
       {/* Users Table */}
-      <div className="overflow-hidden rounded-lg border border-slate-700/60">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
         {filteredUsers.length === 0 ? (
           <div className="p-6 text-center text-slate-400 bg-slate-800/30">
             {loading
@@ -510,27 +517,32 @@ const UsersStaff = () => {
                       {user.is_active ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEditModal(user)}
-                      className="inline-flex items-center gap-1 px-3 py-1 text-xs bg-slate-700/60 hover:bg-slate-600 text-slate-300 rounded transition"
+                      className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                      title={`Edit ${user.name || user.email}`}
+                      aria-label={`Edit ${user.name || user.email}`}
                     >
-                      <Edit size={12} />
-                      Edit
+                      <Edit size={16} />
                     </button>
                     <button
                       onClick={() => setDeleteConfirm(user.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded transition"
+                      className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                      title={`Delete ${user.name || user.email}`}
+                      aria-label={`Delete ${user.name || user.email}`}
                     >
-                      <Trash2 size={12} />
-                      Delete
+                      <Trash2 size={16} />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
+      </div>
       </div>
 
       {/* User Form Modal */}
@@ -539,8 +551,9 @@ const UsersStaff = () => {
         onClose={closeModal}
         title={modalMode === "create" ? "Create New User" : "Edit User"}
         width="max-w-md"
+        inlinePanel={isEditingUser}
       >
-        <div className="p-6">
+        <div className="p-2">
           <form
             onSubmit={
               modalMode === "create" ? handleCreateUser : handleEditUser

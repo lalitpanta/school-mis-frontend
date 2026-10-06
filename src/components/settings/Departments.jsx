@@ -87,14 +87,19 @@ const Departments = () => {
     }
   };
 
+  const isEditingDepartment = showModal;
+
   return (
     <div
-      className="rounded-2xl p-6"
+      className={`min-w-0 rounded-2xl p-4 ${isEditingDepartment ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
       }}
     >
+      <div
+        className={`min-w-0 ${isEditingDepartment ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
       <div className="flex justify-between items-center mb-4">
         <h2
           className="text-base font-semibold"
@@ -110,7 +115,7 @@ const Departments = () => {
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-700/60">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
         {departments.length === 0 ? (
           <div className="p-6 text-center text-slate-400">
             {loading ? "Loading..." : "No departments yet."}
@@ -133,21 +138,25 @@ const Departments = () => {
                   <td className="px-4 py-3 text-center">
                     {d.is_active ? "Yes" : "No"}
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEdit(d)}
-                      className="px-3 py-1 bg-slate-700/60 text-slate-200 rounded"
+                      className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                      title={`Edit ${d.name}`}
+                      aria-label={`Edit ${d.name}`}
                     >
-                      {" "}
-                      <Edit size={12} /> Edit
+                      <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(d.id)}
-                      className="px-3 py-1 bg-red-500/20 text-red-300 rounded"
+                      className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                      title={`Delete ${d.name}`}
+                      aria-label={`Delete ${d.name}`}
                     >
-                      {" "}
-                      <Trash2 size={12} /> Delete
+                      <Trash2 size={16} />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -155,12 +164,14 @@ const Departments = () => {
           </table>
         )}
       </div>
+      </div>
 
       <SettingsModal
         open={showModal}
         onClose={() => setShowModal(false)}
         title={modalMode === "create" ? "Create Department" : "Edit Department"}
         width="max-w-md"
+        inlinePanel={isEditingDepartment}
       >
         <form onSubmit={submit} className="p-4 space-y-3">
           <div>

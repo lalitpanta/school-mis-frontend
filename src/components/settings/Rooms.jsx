@@ -50,6 +50,7 @@ const Rooms = () => {
   const [viewMode, setViewMode] = useState("list");
   const [form, setForm] = useState(getDefaultForm(floorCount));
   const [editingRoom, setEditingRoom] = useState(null);
+  const isEditingRoom = showModal;
 
   const selectedBlock = useMemo(
     () => blocks.find((block) => block.id === form.block_id) || null,
@@ -218,12 +219,15 @@ const Rooms = () => {
 
   return (
     <div
-      className="rounded-2xl p-6"
+      className={`min-w-0 rounded-2xl p-4 ${isEditingRoom ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
       }}
     >
+      <div
+        className={`min-w-0 ${isEditingRoom ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
         <div>
           <h2
@@ -269,7 +273,7 @@ const Rooms = () => {
       </div>
 
       {viewMode === "list" && (
-        <div className="overflow-hidden rounded-lg border border-slate-700/60">
+        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
           {rooms.length === 0 ? (
             <div className="p-6 text-center text-slate-400">
               {loading
@@ -310,15 +314,19 @@ const Rooms = () => {
                     <td className="px-4 py-3 text-right space-x-2">
                       <button
                         onClick={() => openEdit(room)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 text-slate-200 rounded"
+                        className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                        title={`Edit room ${room.room_number || ""}`}
+                        aria-label={`Edit room ${room.room_number || ""}`}
                       >
-                        <Edit size={12} /> Edit
+                        <Edit size={16} />
                       </button>
                       <button
                         onClick={() => deleteRoom(room)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded"
+                        className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                        title={`Delete room ${room.room_number || ""}`}
+                        aria-label={`Delete room ${room.room_number || ""}`}
                       >
-                        <Trash2 size={12} /> Delete
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
@@ -367,15 +375,19 @@ const Rooms = () => {
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     onClick={() => openEdit(room)}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 text-slate-200 rounded text-xs"
+                    className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                    title={`Edit room ${room.room_number || ""}`}
+                    aria-label={`Edit room ${room.room_number || ""}`}
                   >
-                    <Edit size={12} /> Edit
+                    <Edit size={16} />
                   </button>
                   <button
                     onClick={() => deleteRoom(room)}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs"
+                    className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                    title={`Delete room ${room.room_number || ""}`}
+                    aria-label={`Delete room ${room.room_number || ""}`}
                   >
-                    <Trash2 size={12} /> Delete
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -571,6 +583,7 @@ const Rooms = () => {
         </div>
       )}
 
+      </div>
       <SettingsModal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -581,8 +594,9 @@ const Rooms = () => {
             : "Add a new physical room to the school."
         }
         width="max-w-lg"
+        inlinePanel={isEditingRoom}
       >
-        <form onSubmit={saveRoom} className="p-4 space-y-4">
+        <form onSubmit={saveRoom} className="space-y-4 p-2">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm text-slate-300 mb-1">

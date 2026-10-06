@@ -78,8 +78,15 @@ const RolesPermissions = () => {
     role.role_name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const isEditingRole = showModal;
+
   return (
-    <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 space-y-6">
+    <div
+      className={`min-w-0 rounded-2xl border border-slate-700/60 bg-slate-800/60 p-4 ${isEditingRole ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+    >
+      <div
+        className={`min-w-0 ${isEditingRole ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
       {/* Header */}
       <div>
         <h2 className="text-lg font-semibold text-white mb-2">
@@ -122,7 +129,7 @@ const RolesPermissions = () => {
       </div>
 
       {/* Roles Table */}
-      <div className="overflow-hidden rounded-lg border border-slate-700/60">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
         {filteredRoles.length === 0 ? (
           <div className="p-6 text-center text-slate-400 bg-slate-800/30">
             {loading ? "Loading roles..." : "No roles found."}
@@ -169,29 +176,34 @@ const RolesPermissions = () => {
                       {role.permission_count || 0}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEditModal(role)}
-                      className="inline-flex items-center gap-1 px-3 py-1 text-xs bg-slate-700/60 hover:bg-slate-600 text-slate-300 rounded transition"
+                      className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                      title={`Edit ${role.role_name}`}
+                      aria-label={`Edit ${role.role_name}`}
                     >
-                      <Edit size={12} />
-                      Edit
+                      <Edit size={16} />
                     </button>
                     {!role.is_system && (
                       <button
                         onClick={() => setDeleteConfirm(role.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded transition"
+                        className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                        title={`Delete ${role.role_name}`}
+                        aria-label={`Delete ${role.role_name}`}
                       >
-                        <Trash2 size={12} />
-                        Delete
+                        <Trash2 size={16} />
                       </button>
                     )}
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
+      </div>
       </div>
 
       {/* Role Form Modal */}
@@ -200,8 +212,9 @@ const RolesPermissions = () => {
         onClose={closeModal}
         title={modalMode === "create" ? "Create New Role" : "Edit Role"}
         width="max-w-2xl"
+        inlinePanel={isEditingRole}
       >
-        <div className="p-6">
+        <div className="p-2">
           <RoleForm
             role={selectedRole}
             onSubmit={

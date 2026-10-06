@@ -9,7 +9,14 @@ import { getTeachers } from "../../api/classroomsApi";
 import { sectionsApi } from "../../api/sectionsApi";
 import { roomsApi } from "../../api/roomsApi";
 import Button from "../common/Button";
-import { Plus, Edit, Trash2, LayoutGrid, List, Map } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  LayoutGrid,
+  List,
+  Map,
+} from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import toast from "react-hot-toast";
 import { useSettings } from "../../context/SettingsContext";
@@ -75,6 +82,7 @@ const Classrooms = () => {
   const [sectionForm, setSectionForm] = useState(getDefaultSectionForm());
   const [draggingSectionId, setDraggingSectionId] = useState(null);
   const [sectionView, setSectionView] = useState("list");
+  const isEditingClassroomItem = showClassModal || showSectionModal;
 
   useEffect(() => {
     loadData();
@@ -333,12 +341,15 @@ const Classrooms = () => {
 
   return (
     <div
-      className="rounded-2xl p-6"
+      className={`min-w-0 rounded-2xl p-4 ${isEditingClassroomItem ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
       }}
     >
+      <div
+        className={`min-w-0 ${isEditingClassroomItem ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+      >
       <div className="flex flex-col gap-3 mb-4">
         <div className="flex items-center justify-between">
           <div>
@@ -417,21 +428,27 @@ const Classrooms = () => {
                     <td className="px-4 py-3">
                       {classroom.number_of_sections ?? 0}
                     </td>
-                    <td className="px-4 py-3 text-right space-x-2">
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => openEditClass(classroom)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 text-slate-200 rounded text-xs"
+                        className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                        title={`Edit class ${classroom.name}`}
+                        aria-label={`Edit class ${classroom.name}`}
                       >
-                        <Edit size={12} /> Edit
+                        <Edit size={16} />
                       </button>
                       <button
                         type="button"
                         onClick={() => deleteClassItem(classroom)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs"
+                        className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                        title={`Delete class ${classroom.name}`}
+                        aria-label={`Delete class ${classroom.name}`}
                       >
-                        <Trash2 size={12} /> Delete
+                        <Trash2 size={16} />
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -544,19 +561,25 @@ const Classrooms = () => {
                           <td className="px-4 py-3 text-right">
                             {section.total_students ?? 0}
                           </td>
-                          <td className="px-4 py-3 text-right space-x-2">
+                          <td className="px-4 py-3 text-right">
+                            <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => openEditSection(section)}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 text-slate-200 rounded text-xs"
+                              className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                              title={`Edit section ${section.section_name}`}
+                              aria-label={`Edit section ${section.section_name}`}
                             >
-                              <Edit size={12} /> Edit
+                              <Edit size={16} />
                             </button>
                             <button
                               onClick={() => deleteSection(section)}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs"
+                              className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                              title={`Delete section ${section.section_name}`}
+                              aria-label={`Delete section ${section.section_name}`}
                             >
-                              <Trash2 size={12} /> Delete
+                              <Trash2 size={16} />
                             </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -609,15 +632,19 @@ const Classrooms = () => {
                       <div className="mt-4 flex flex-wrap gap-2">
                         <button
                           onClick={() => openEditSection(section)}
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-slate-700/60 text-slate-200 rounded text-xs"
+                          className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                          title={`Edit section ${section.section_name}`}
+                          aria-label={`Edit section ${section.section_name}`}
                         >
-                          <Edit size={12} /> Edit
+                          <Edit size={16} />
                         </button>
                         <button
                           onClick={() => deleteSection(section)}
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs"
+                          className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                          title={`Delete section ${section.section_name}`}
+                          aria-label={`Delete section ${section.section_name}`}
                         >
-                          <Trash2 size={12} /> Delete
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
@@ -783,13 +810,15 @@ const Classrooms = () => {
         </div>
       )}
 
+      </div>
       <SettingsModal
         open={showClassModal}
         onClose={() => setShowClassModal(false)}
         title={classMode === "edit" ? "Edit Class" : "Create Class"}
         width="max-w-md"
+        inlinePanel={isEditingClassroomItem}
       >
-        <form onSubmit={saveClass} className="p-4 space-y-4">
+        <form onSubmit={saveClass} className="space-y-4 p-2">
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Class name
@@ -855,8 +884,9 @@ const Classrooms = () => {
         title={sectionMode === "edit" ? "Edit Section" : "Create Section"}
         subtitle="Assign a section to class, block, floor, and room."
         width="max-w-lg"
+        inlinePanel={isEditingClassroomItem}
       >
-        <form onSubmit={saveSection} className="p-4 space-y-4">
+        <form onSubmit={saveSection} className="space-y-4 p-2">
           <div>
             <label className="block text-sm text-slate-300 mb-1">Class</label>
             <select
