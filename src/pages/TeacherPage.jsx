@@ -292,6 +292,28 @@ const TeacherPage = () => {
   const formatArrayValue = (value) =>
     Array.isArray(value) ? value.join(", ") : value || "—";
 
+  const normalizeDocuments = (documents) => {
+    if (Array.isArray(documents)) {
+      return documents.filter(
+        (document) => document && typeof document === "object",
+      );
+    }
+    if (typeof documents === "string") {
+      try {
+        const parsed = JSON.parse(documents);
+        return Array.isArray(parsed)
+          ? parsed.filter(
+              (document) => document && typeof document === "object",
+            )
+          : [];
+      } catch (error) {
+        console.error("Failed to parse teacher documents for profile view", error);
+        return [];
+      }
+    }
+    return [];
+  };
+
   const printTeacherInfo = () => {
     if (!viewTeacher) return;
     const html = `<!DOCTYPE html>
@@ -742,10 +764,12 @@ const TeacherPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white">Manage Teachers</h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Manage teacher and staff records with full personal, professional,
-              qualification, and emergency details.
-            </p>
+            {!isEditingTeacher && (
+              <p className="text-sm text-slate-400 mt-1">
+                Manage teacher and staff records with full personal,
+                professional, qualification, and emergency details.
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <label className="cursor-pointer rounded-xl bg-slate-700 px-3 py-2 text-sm text-white">
@@ -999,8 +1023,12 @@ const TeacherPage = () => {
                       <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center gap-1">
                           <button
+                            type="button"
                             onClick={() => {
-                              setViewTeacher(teacher);
+                              setViewTeacher({
+                                ...teacher,
+                                documents: normalizeDocuments(teacher.documents),
+                              });
                               setShowViewModal(true);
                             }}
                             title="View teacher"
