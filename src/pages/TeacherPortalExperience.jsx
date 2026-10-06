@@ -16,6 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
+import TeacherResults from "../components/teacher/TeacherResults";
 
 const navItems = [
   ["Overview", "overview", LayoutDashboard],
@@ -201,13 +202,7 @@ const TeacherPortalExperience = () => {
     </section>
   );
 
-  const renderResults = () => (
-    <section className={panel}>
-      <h2 className="text-xl font-semibold">Exams and results</h2>
-      <p className={`mt-1 text-sm ${subdued}`}>Publication status and marks-entry progress for your assigned classes.</p>
-      {overview.exams.length ? <div className="mt-4 divide-y divide-slate-800">{overview.exams.map((exam) => <article key={exam.id} className="flex flex-wrap items-center justify-between gap-4 py-4"><div><h3 className="font-semibold">{exam.exam_type}{exam.term ? ` · ${exam.term}` : ""}</h3><p className={`mt-1 text-sm ${subdued}`}>{exam.class_name || "Class"}{exam.section_name ? ` · ${exam.section_name}` : ""} · {prettyDate(exam.exam_date)}</p><p className={`mt-1 text-xs ${subdued}`}>{exam.subject_count} subjects · {exam.students_with_marks} students have marks</p></div><span className={`rounded-full px-3 py-1 text-xs font-semibold ${exam.is_published ? "bg-emerald-400/10 text-emerald-300" : "bg-amber-400/10 text-amber-200"}`}>{exam.is_published ? "Published" : "In progress"}</span></article>)}</div> : <p className={`mt-5 text-sm ${subdued}`}>No exam formats are configured for your assigned classes.</p>}
-    </section>
-  );
+  const renderResults = () => <TeacherResults />;
 
   const renderCalendar = () => (
     <section className={panel}>

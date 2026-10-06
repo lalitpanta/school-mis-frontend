@@ -16,6 +16,7 @@ import {
   Search,
   Check,
   ChevronDown,
+  Send,
 } from "lucide-react";
 import axiosInstance from "../../api/axiosInstance";
 import SettingsModal from "../common/SettingsModal";
@@ -186,6 +187,7 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
   const [success, setSuccess] = useState(null);
   const [isImportingCsv, setIsImportingCsv] = useState(false);
   const [isExportingCsv, setIsExportingCsv] = useState(false);
+  const [sharingFormatId, setSharingFormatId] = useState(null);
   const fileInputRef = useRef(null);
 
   const titleMap = {
@@ -369,6 +371,30 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
       } catch (err) {
         setError("Failed to delete exam format");
       }
+    }
+  };
+
+  const handleShareFormat = async (format) => {
+    setSharingFormatId(format.id);
+    setError(null);
+    setSuccess(null);
+    try {
+      const response = await axiosInstance.post(
+        `/v1/results/exam-formats/${format.id}/share`,
+      );
+      const teachers = response.data?.data?.teachers || [];
+      const names = teachers.map((teacher) => teacher.full_name).join(", ");
+      setSuccess(
+        teachers.length
+          ? `Exam shared with ${teachers.length} assigned teacher${teachers.length === 1 ? "" : "s"}${names ? `: ${names}` : ""}.`
+          : "No currently assigned teachers matched the courses in this exam.",
+      );
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Failed to share exam with teachers",
+      );
+    } finally {
+      setSharingFormatId(null);
     }
   };
 
@@ -920,13 +946,14 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                     <th>Exam Date</th>
                     <th>Pass Mark %</th>
                     <th style={{ textAlign: "center" }}>Actions</th>
+                    <th style={{ textAlign: "center" }}>Share</th>
                   </tr>
                 </thead>
                 <tbody>
                   {examFormats.length === 0 ? (
                     <tr>
                       <td
-                        colSpan="8"
+                        colSpan="9"
                         style={{
                           textAlign: "center",
                           padding: "32px",
@@ -974,6 +1001,18 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                               <Trash2 size={16} />
                             </button>
                           </div>
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          <button
+                            type="button"
+                            onClick={() => handleShareFormat(format)}
+                            disabled={sharingFormatId === format.id}
+                            className="icon-btn"
+                            title="Share with teachers assigned to these courses"
+                            aria-label={`Share ${format.exam_type} with assigned teachers`}
+                          >
+                            <Send size={16} />
+                          </button>
                         </td>
                       </tr>
                     ))

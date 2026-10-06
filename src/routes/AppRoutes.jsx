@@ -5,6 +5,8 @@ import SuperAdminLayout from "../components/layout/SuperAdminLayout";
 import LoginPage from "../pages/LoginPage";
 import SystemLoginPage from "../pages/SystemLoginPage";
 import TenantStaffLoginPage from "../pages/TenantStaffLoginPage";
+import TeacherLoginPage from "../pages/TeacherLoginPage";
+import TeacherPortalExperience from "../pages/TeacherPortalExperience";
 import AdminDashboard from "../pages/AdminDashboard";
 import SuperAdminDashboardPage from "../pages/superadmin/Dashboard";
 import SuperAdminTenantsPage from "../pages/superadmin/Tenants";
@@ -25,8 +27,6 @@ import ResultManagementModule from "../components/settings/ResultManagementModul
 import DailyReportPage from "../pages/DailyReportPage";
 import StudentPortalPage from "../pages/StudentPortalExperience";
 import StudentLoginPage from "../pages/StudentLoginPage";
-import TeacherPortalPage from "../pages/TeacherPortalExperience";
-import TeacherLoginPage from "../pages/TeacherLoginPage";
 import StudentPasswordResetPage from "../pages/StudentPasswordResetPage";
 import ResultPortalPage from "../pages/ResultPortalPage";
 import ResultPortalModulePage from "../pages/ResultPortalModulePage";
@@ -147,25 +147,24 @@ const StudentRoute = ({ element }) => {
   );
 };
 
-const isTeacherAccount = (user) =>
-  Boolean(
-    user?.teacherId &&
-      Array.isArray(user?.roles) &&
-      user.roles.some((role) =>
-        String(typeof role === "string" ? role : role?.role_name || "")
-          .trim()
-          .toLowerCase() === "teacher",
-      ),
-  );
-
-const TeacherRoute = ({ element }) => {
+const TeacherPortalRoute = ({ element }) => {
   const { isAuthenticated, isStaff, user, loading } = useAuth();
   if (loading) {
-    return <div className="grid min-h-screen place-items-center bg-slate-950 text-slate-200">Loading teacher portal...</div>;
+    return (
+      <div className="grid min-h-screen place-items-center bg-slate-950 text-slate-200">
+        Loading teacher workspace...
+      </div>
+    );
   }
-  return isAuthenticated && isStaff() && isTeacherAccount(user)
-    ? element
-    : <Navigate to="/teacher/login" replace />;
+  const hasTeacherRole = (user?.roles || []).some((role) => {
+    const name = typeof role === "string" ? role : role?.role_name;
+    return String(name || "").trim().toLowerCase() === "teacher";
+  });
+  return isAuthenticated && isStaff() && user?.teacherId && hasTeacherRole ? (
+    element
+  ) : (
+    <Navigate to="/teacher/login" replace />
+  );
 };
 
 const ProtectedRoute = ({ element }) => {
@@ -193,7 +192,7 @@ const ProtectedRoute = ({ element }) => {
  * Module Route Component - requires tenant or staff access with module permission
  */
 const ModuleRoute = ({ element, moduleKey }) => {
-  const { isAuthenticated, isTenant, isStaff, user, hasModule, loading } = useAuth();
+  const { isAuthenticated, isTenant, isStaff, hasModule, loading } = useAuth();
 
   if (loading) {
     return (
@@ -209,10 +208,6 @@ const ModuleRoute = ({ element, moduleKey }) => {
   // Allow both tenant and staff users
   if (!isAuthenticated || (!isTenant() && !isStaff())) {
     return <Navigate to="/login" replace />;
-  }
-
-  if (isStaff() && isTeacherAccount(user)) {
-    return <Navigate to="/teacher-portal" replace />;
   }
 
   // Check if user has access to this module
@@ -231,13 +226,11 @@ const AppRoutes = () => {
     isTenant,
     isStaff,
     isStudent,
-    user,
     hasModule,
     loading,
   } = useAuth();
 
   const getFirstModuleRoute = () => {
-    if (isTeacherAccount(user)) return "/teacher-portal";
     const moduleOrder = ["dashboard", "calendar", "attendance", "settings"];
     const firstAllowed = moduleOrder.find((key) => hasModule(key));
     return MODULE_ROUTE_MAP[firstAllowed] || "/login";
@@ -249,17 +242,16 @@ const AppRoutes = () => {
       <Route path="/system/login" element={<SystemLoginPage />} />
       <Route path="/login" element={<TenantStaffLoginPage />} />
       <Route path="/teacher/login" element={<TeacherLoginPage />} />
-      <Route path="/teacher/reset-password" element={<StudentPasswordResetPage />} />
+      <Route
+        path="/teacher-portal"
+        element={<TeacherPortalRoute element={<TeacherPortalExperience />} />}
+      />
       <Route path="/student/login" element={<StudentLoginPage />} />
       <Route
         path="/student/reset-password"
         element={<StudentPasswordResetPage />}
       />
       <Route path="/reset-password" element={<StudentPasswordResetPage />} />
-      <Route
-        path="/teacher-portal"
-        element={<TeacherRoute element={<TeacherPortalPage />} />}
-      />
       <Route
         path={ROUTES.STUDENT_PORTAL}
         element={<StudentRoute element={<StudentPortalPage />} />}
@@ -609,8 +601,6 @@ const AppRoutes = () => {
               <Navigate to="/admin/dashboard" replace />
             ) : isStudent() ? (
               <Navigate to={ROUTES.STUDENT_PORTAL} replace />
-            ) : isStaff() && isTeacherAccount(user) ? (
-              <Navigate to="/teacher-portal" replace />
             ) : (
               <Navigate to={getFirstModuleRoute()} replace />
             )
