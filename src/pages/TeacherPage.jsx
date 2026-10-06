@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { teachersApi } from "../api/teachersApi";
 import { getDepartments } from "../api/departmentsApi";
+import { getCourses } from "../api/coursesApi";
 import {
   Plus,
   Edit,
@@ -121,6 +122,9 @@ const handleDownloadDocument = async (teacherId, docUrl, docTitle) => {
 const TeacherPage = () => {
   const [teachers, setTeachers] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [availableCourses, setAvailableCourses] = useState([]);
+  const [coursesLoaded, setCoursesLoaded] = useState(false);
+  const [selectedCourseIds, setSelectedCourseIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -129,6 +133,7 @@ const TeacherPage = () => {
   const [visibleTeacherColumns, setVisibleTeacherColumns] = useState([
     "full_name",
     "designation",
+    "subjects_taught",
     "department",
     "work_email",
     "personal_phone",
@@ -161,11 +166,25 @@ const TeacherPage = () => {
 
   useEffect(() => {
     const init = async () => {
-      try {
-        const deps = await getDepartments();
+      const [departmentsResult, coursesResult] = await Promise.allSettled([
+        getDepartments(),
+        getCourses(),
+      ]);
+      if (departmentsResult.status === "fulfilled") {
+        const deps = departmentsResult.value;
         setDepartments(deps.data?.data || deps.data || []);
-      } catch (e) {
-        console.error(e);
+      } else {
+        console.error(departmentsResult.reason);
+      }
+      if (coursesResult.status === "fulfilled") {
+        const courseResponse = coursesResult.value;
+        setAvailableCourses(
+          (courseResponse.data?.data || []).filter((course) => course.is_active),
+        );
+        setCoursesLoaded(true);
+      } else {
+        console.error(coursesResult.reason);
+        toast.error("Failed to load active courses for teacher assignments.");
       }
       await loadData();
     };
@@ -193,6 +212,7 @@ const TeacherPage = () => {
     setModalMode("create");
     setSelectedTeacher(null);
     setFormData(emptyTeacher);
+    setSelectedCourseIds([]);
     setProfilePhoto(null);
     setProfilePhotoPreview("");
     setAttachments([]);
@@ -210,9 +230,19 @@ const TeacherPage = () => {
     setShowModal(true);
   };
 
-  const openEditModal = (teacher) => {
+  const openEditModal = async (teacher) => {
+    let assignedCourses;
+    try {
+      const response = await teachersApi.getTeacherCourses(teacher.id);
+      assignedCourses = response.data?.data || [];
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to load this teacher's assigned courses.");
+      return;
+    }
     setModalMode("edit");
     setSelectedTeacher(teacher);
+    setSelectedCourseIds(assignedCourses.map((course) => String(course.id)));
     setFormData({
       ...teacher,
       date_of_birth: normalizeDateForInput(teacher.date_of_birth),
@@ -425,6 +455,7 @@ const TeacherPage = () => {
     setShowModal(false);
     setSelectedTeacher(null);
     setFormData(emptyTeacher);
+    setSelectedCourseIds([]);
     setProfilePhoto(null);
     setProfilePhotoPreview("");
     setAttachments([]);
@@ -466,6 +497,12 @@ const TeacherPage = () => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const selectedCourses = selectedCourseIds
+    .map((id) =>
+      availableCourses.find((course) => String(course.id) === id),
+    )
+    .filter(Boolean);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -473,10 +510,24 @@ const TeacherPage = () => {
 
     const payload = {
       ...formData,
-      subjects_taught: formData.subjects_taught
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean),
+      ...(coursesLoaded
+        ? {
+            course_ids: selectedCourseIds.map(Number),
+            subjects_taught: selectedCourseIds
+              .map((id) =>
+                availableCourses.find((course) => String(course.id) === id)
+                  ?.course_name,
+              )
+              .filter(Boolean),
+          }
+        : {
+            subjects_taught: Array.isArray(formData.subjects_taught)
+              ? formData.subjects_taught
+              : formData.subjects_taught
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter(Boolean),
+          }),
       classes_assigned: formData.classes_assigned
         .split(",")
         .map((item) => item.trim())
@@ -604,6 +655,14 @@ const TeacherPage = () => {
       key: "designation",
       label: "Designation",
       value: (teacher) => teacher.designation,
+    },
+    {
+      key: "subjects_taught",
+      label: "Subjects Taught",
+      value: (teacher) =>
+        Array.isArray(teacher.subjects_taught)
+          ? teacher.subjects_taught.join(", ")
+          : teacher.subjects_taught || "—",
     },
     {
       key: "department",
@@ -1436,17 +1495,68 @@ const TeacherPage = () => {
                       <label className="text-sm text-slate-300">
                         Subjects Taught
                       </label>
-                      <input
-                        value={formData.subjects_taught}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            subjects_taught: e.target.value,
-                          })
-                        }
-                        placeholder="Comma separated"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
-                      />
+                      <select
+                        value=""
+                        onChange={(e) => {
+                          const courseId = e.target.value;
+                          if (
+                            courseId &&
+                            !selectedCourseIds.includes(courseId)
+                          ) {
+                            setSelectedCourseIds((current) => [
+                              ...current,
+                              courseId,
+                            ]);
+                          }
+                        }}
+                        disabled={!availableCourses.length}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white disabled:opacity-60"
+                      >
+                        <option value="">
+                          {availableCourses.length
+                            ? "Select a course to assign"
+                            : "No active courses available"}
+                        </option>
+                        {availableCourses.map((course) => (
+                          <option key={course.id} value={course.id}>
+                            {course.course_name}
+                            {course.class_name || course.classroom_name
+                              ? ` — ${course.class_name || course.classroom_name}`
+                              : ""}
+                            {course.classroom_section_name
+                              ? ` (${course.classroom_section_name})`
+                              : ""}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-200">
+                        {selectedCourses.length
+                          ? selectedCourses
+                              .map((course) => course.course_name)
+                              .join(", ")
+                          : "No courses assigned"}
+                      </div>
+                      {selectedCourses.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {selectedCourses.map((course) => (
+                            <button
+                              key={course.id}
+                              type="button"
+                              onClick={() =>
+                                setSelectedCourseIds((current) =>
+                                  current.filter(
+                                    (id) => id !== String(course.id),
+                                  ),
+                                )
+                              }
+                              aria-label={`Remove ${course.course_name}`}
+                              className="rounded-full border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:border-red-500 hover:text-red-300"
+                            >
+                              Remove {course.course_name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-sm text-slate-300">
