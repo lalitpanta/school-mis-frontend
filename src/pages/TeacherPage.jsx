@@ -1073,10 +1073,12 @@ const TeacherPage = () => {
                 <h2 className="text-xl font-semibold text-white">
                   {modalMode === "create" ? "Add Teacher" : "Edit Teacher"}
                 </h2>
-                <p className="mt-1 break-words text-sm leading-relaxed text-slate-300">
-                  Fill personal, professional, qualification, experience, legal,
-                  and emergency details.
-                </p>
+                {modalMode === "create" && (
+                  <p className="mt-1 break-words text-sm leading-relaxed text-slate-300">
+                    Fill personal, professional, qualification, experience,
+                    legal, and emergency details.
+                  </p>
+                )}
               </div>
               <button
                 onClick={closeModal}
