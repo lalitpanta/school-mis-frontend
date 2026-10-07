@@ -4,7 +4,7 @@ import { ATTENDANCE_STATUS } from '../../utils/constants';
 const statusStyles = {
   [ATTENDANCE_STATUS.PRESENT]: { bg:'rgba(16,185,129,0.12)', color:'var(--success-text)', border:'rgba(16,185,129,0.3)' },
   [ATTENDANCE_STATUS.ABSENT]:  { bg:'rgba(239,68,68,0.12)',  color:'var(--danger)', border:'rgba(239,68,68,0.3)'  },
-  [ATTENDANCE_STATUS.LATE]:    { bg:'var(--warning-bg)', color:'var(--warning)', border:'var(--warning)' },
+  [ATTENDANCE_STATUS.LATE]:    { bg:'rgba(245,158,11,0.12)', color:'var(--danger)', border:'rgba(245,158,11,0.3)' },
   [ATTENDANCE_STATUS.EXCUSED]: { bg:'rgba(14,165,233,0.12)', color:'var(--accent)', border:'rgba(14,165,233,0.3)' },
 };
 

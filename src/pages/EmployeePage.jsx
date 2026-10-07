@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import config from "../config/config";
 import RecordTableToolbar from "../components/common/RecordTableToolbar";
-import { getPrintThemeStyles } from "../utils/themePrint";
 
 const emptyEmployee = {
   employee_id: "",
@@ -503,33 +502,32 @@ export default function EmployeePage() {
 <head>
   <meta charset="utf-8" />
   <title>Employee Profile</title>
-  ${getPrintThemeStyles()}
   <style>
-    body { font-family: Inter, Arial, Helvetica, sans-serif; color: var(--text-primary); background: var(--bg-page); margin: 20px; }
+    body { font-family: Inter, Arial, Helvetica, sans-serif; color: #141414; margin: 20px; }
     .page { max-width: 900px; margin: auto; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
     .badge { padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.35px; }
-    .badge-active { background: var(--success-bg); color: var(--success-text); }
-    .badge-inactive { background: var(--danger-bg); color: var(--danger); }
+    .badge-active { background: #d1fae5; color: #065f46; }
+    .badge-inactive { background: #fee2e2; color: #991b1b; }
     .title-block { flex: 1; }
     .title-block h1 { margin: 0; font-size: 32px; letter-spacing: -0.03em; }
-    .title-block p { margin: 8px 0 0; color: var(--text-muted); font-size: 14px; }
-    .profile-photo { width: 110px; height: 110px; border-radius: 18px; object-fit: cover; border: 1px solid var(--border-default); }
+    .title-block p { margin: 8px 0 0; color: #475569; font-size: 14px; }
+    .profile-photo { width: 110px; height: 110px; border-radius: 18px; object-fit: cover; border: 1px solid #e2e8f0; }
     .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
-    .card { border: 1px solid var(--border-default); border-radius: 18px; padding: 18px; background: var(--bg-surface); box-shadow: var(--shadow-card); }
-    .section-title { margin: 0 0 14px; font-size: 18px; color: var(--text-primary); border-bottom: 1px solid var(--border-default); padding-bottom: 10px; }
+    .card { border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; background: #ffffff; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); }
+    .section-title { margin: 0 0 14px; font-size: 18px; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
     .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; }
     .detail-row { display: flex; gap: 8px; align-items: baseline; }
-    .detail-label { width: 170px; font-size: 13px; color: var(--text-muted); font-weight: 700; }
-    .detail-value { font-size: 14px; color: var(--text-primary); }
+    .detail-label { width: 170px; font-size: 13px; color: #475569; font-weight: 700; }
+    .detail-value { font-size: 14px; color: #0f172a; }
     .full-width { grid-column: span 2; }
     .documents { margin: 0; padding-left: 18px; }
     .documents li { margin-bottom: 8px; }
-    .print-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border-default); color: var(--text-muted); font-size: 13px; }
+    .print-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; }
     @media print {
       body { margin: 0; }
       .page { box-shadow: none; margin: 0; }
-      .card { box-shadow: none; border: 1px solid var(--border-default); }
+      .card { box-shadow: none; border: 1px solid #d1d5db; }
     }
   </style>
 </head>
@@ -636,7 +634,7 @@ export default function EmployeePage() {
 
   const renderEmployeeIdentity = (employee) => (
     <div className="flex min-w-0 items-center gap-2.5">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-xs font-semibold text-accent">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
         {employee.photograph_url ? (
           <img src={getDocumentUrl(employee.photograph_url)} alt="" className="h-full w-full object-cover" />
         ) : (
@@ -649,8 +647,8 @@ export default function EmployeePage() {
         )}
       </div>
       <div className="min-w-0">
-        <div className="truncate font-medium text-primary">{employee.full_name}</div>
-        <div className="truncate text-xs text-muted">{employee.email_address || "—"}</div>
+        <div className="truncate font-medium text-slate-100">{employee.full_name}</div>
+        <div className="truncate text-xs text-slate-400">{employee.email_address || "—"}</div>
       </div>
     </div>
   );
@@ -690,7 +688,7 @@ export default function EmployeePage() {
       value: (employee) => employee.is_active,
       render: (employee) => (
         <span
-          className={`entity-status-pill inline-block rounded-full px-3 py-1 text-xs font-medium ${employee.is_active ? "bg-success text-success" : "bg-danger-soft text-danger"}`}
+          className={`entity-status-pill inline-block rounded-full px-3 py-1 text-xs font-medium ${employee.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
         >
           {employee.is_active ? "Active" : "Inactive"}
         </span>
@@ -761,7 +759,7 @@ export default function EmployeePage() {
           value: (employee) => employee.full_name,
           render: (employee) => (
             <div className="flex min-w-0 items-center gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-[10px] font-semibold text-accent">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500/15 text-[10px] font-semibold text-teal-200">
                 {employee.photograph_url ? (
                   <img
                     src={getDocumentUrl(employee.photograph_url)}
@@ -778,10 +776,10 @@ export default function EmployeePage() {
                 )}
               </div>
               <div className="min-w-0">
-                <div className="truncate font-medium text-primary">
+                <div className="truncate font-medium text-slate-100">
                   {employee.full_name}
                 </div>
-                <div className="truncate text-xs text-muted">
+                <div className="truncate text-xs text-slate-400">
                   {employee.email_address || "—"}
                 </div>
               </div>
@@ -829,6 +827,7 @@ export default function EmployeePage() {
     <div
       ref={splitLayoutRef}
       className={`entity-admin-page ${isEditingEmployee ? "is-editing relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
+      style={{ background: "#080c14" }}
     >
       <div
         className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
@@ -838,11 +837,11 @@ export default function EmployeePage() {
           <div>
             <h1
               className="text-[28px] font-bold"
-              style={{ color: "var(--text-primary)" }}
+              style={{ color: "var(--text-1)" }}
             >
               Manage Employees
             </h1>
-            <p className="mt-1" style={{ color: "var(--text-muted)" }}>
+            <p className="mt-1" style={{ color: "var(--text-2)" }}>
               Manage employee records and information
             </p>
           </div>
@@ -858,13 +857,13 @@ export default function EmployeePage() {
             <button
               type="button"
               onClick={() => employeeImportRef.current?.click()}
-              className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-default px-4 text-sm text-muted transition hover:bg-subtle"
+              className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 transition hover:bg-slate-800"
             >
               <Upload size={16} /> Import
             </button>
             <button
               onClick={handleCreateClick}
-              className="entity-admin-button flex items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-muted transition hover:bg-accent"
+              className="entity-admin-button flex items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 transition hover:bg-teal-200"
             >
               <Plus size={17} /> Add
             </button>
@@ -876,8 +875,8 @@ export default function EmployeePage() {
           <div
             className={`p-4 rounded-lg ${
               toast.type === "error"
-                ? "bg-danger-soft text-danger border border-danger"
-                : "bg-success text-success border border-success"
+                ? "bg-red-500/20 text-red-300 border border-red-500/50"
+                : "bg-green-500/20 text-green-300 border border-green-500/50"
             }`}
           >
             {toast.message}
@@ -888,8 +887,8 @@ export default function EmployeePage() {
         <div
           className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg"
           style={{
-            background: "var(--bg-surface)",
-            border: "1px solid var(--border-default)",
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-card)",
           }}
         >
           <RecordTableToolbar
@@ -910,7 +909,7 @@ export default function EmployeePage() {
             }
             filterContent={
               <>
-                <label className="grid gap-1 text-xs text-muted">
+                <label className="grid gap-1 text-xs text-slate-400">
                   Status
                   <select
                     value={employeeStatusFilter}
@@ -918,14 +917,14 @@ export default function EmployeePage() {
                       setEmployeeStatusFilter(event.target.value);
                       setEmployeeCurrentPage(1);
                     }}
-                    className="w-full rounded border border-default bg-subtle px-3 py-2 text-sm text-primary"
+                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
                     <option value="all">All statuses</option>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
                 </label>
-                <label className="grid gap-1 text-xs text-muted">
+                <label className="grid gap-1 text-xs text-slate-400">
                   Department
                   <select
                     value={departmentFilter}
@@ -933,7 +932,7 @@ export default function EmployeePage() {
                       setDepartmentFilter(event.target.value);
                       setEmployeeCurrentPage(1);
                     }}
-                    className="w-full rounded border border-default bg-subtle px-3 py-2 text-sm text-primary"
+                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
                     <option value="all">All departments</option>
                     {departments.map((department) => (
@@ -950,7 +949,7 @@ export default function EmployeePage() {
                     setDepartmentFilter("all");
                     setEmployeeCurrentPage(1);
                   }}
-                  className="justify-self-start text-xs text-accent hover:text-accent"
+                  className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
                 >
                   Clear filters
                 </button>
@@ -984,7 +983,7 @@ export default function EmployeePage() {
               <button
                 type="button"
                 onClick={exportEmployeesCsv}
-                className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-default px-3 text-sm text-muted hover:bg-subtle"
+                className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 text-sm text-slate-300 hover:bg-slate-800"
               >
                 <Download size={16} /> Export CSV
               </button>
@@ -1000,8 +999,8 @@ export default function EmployeePage() {
               <thead
                 className="sticky top-0 z-10 border-b"
                 style={{
-                  borderBottom: "1px solid var(--border-default)",
-                  background: "var(--bg-surface)",
+                  borderBottom: "1px solid var(--border-card)",
+                  background: "var(--bg-card)",
                 }}
               >
                 <tr>
@@ -1035,7 +1034,7 @@ export default function EmployeePage() {
                                 ),
                           )
                         }
-                        className="accent-[var(--accent)]"
+                        className="accent-indigo-500"
                       />
                     </th>
                   )}
@@ -1043,7 +1042,7 @@ export default function EmployeePage() {
                     <th
                       key={column.key}
                       className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? (column.key === "status" ? "w-24" : "") : "px-4"}`}
-                      style={{ color: "var(--text-muted)" }}
+                      style={{ color: "var(--text-2)" }}
                     >
                       <button
                         type="button"
@@ -1057,7 +1056,7 @@ export default function EmployeePage() {
                                 : "asc",
                           }))
                         }
-                        className="inline-flex items-center gap-1 hover:text-primary"
+                        className="inline-flex items-center gap-1 hover:text-white"
                       >
                         {column.label}
                         <ArrowUpDown size={13} />
@@ -1066,7 +1065,7 @@ export default function EmployeePage() {
                   ))}
                   <th
                     className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-28" : "px-6 text-sm"}`}
-                    style={{ color: "var(--text-muted)" }}
+                    style={{ color: "var(--text-2)" }}
                   >
                     Actions
                   </th>
@@ -1080,7 +1079,7 @@ export default function EmployeePage() {
                         displayedEmployeeColumns.length +
                         (isEditingEmployee ? 1 : 2)
                       }
-                      className="px-6 py-8 text-center text-muted"
+                      className="px-6 py-8 text-center text-slate-400"
                     >
                       {loading ? "Loading..." : "No employees found"}
                     </td>
@@ -1089,11 +1088,11 @@ export default function EmployeePage() {
                   pageEmployees.map((emp) => (
                     <tr
                       key={emp.id}
-                      className={`entity-admin-table-row transition hover:bg-subtle ${isEditingEmployee && formData.id === emp.id ? "entity-admin-selected-row border-l-2 border-l-accent bg-accent-soft" : ""}`}
+                      className={`entity-admin-table-row transition hover:bg-slate-800/30 ${isEditingEmployee && formData.id === emp.id ? "entity-admin-selected-row border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
                     >
                       {!isEditingEmployee && (
                         <td className="px-3 py-4 text-center">
-                          <div className="inline-flex items-center gap-2 text-muted">
+                          <div className="inline-flex items-center gap-2 text-slate-500">
                             <GripVertical size={14} aria-hidden="true" />
                             <input
                               type="checkbox"
@@ -1106,7 +1105,7 @@ export default function EmployeePage() {
                                     : current.filter((id) => id !== emp.id),
                                 )
                               }
-                              className="accent-[var(--accent)]"
+                              className="accent-indigo-500"
                             />
                           </div>
                         </td>
@@ -1114,7 +1113,7 @@ export default function EmployeePage() {
                       {displayedEmployeeColumns.map((column) => (
                         <td
                           key={column.key}
-                          className={`px-2 py-4 text-sm text-muted ${isEditingEmployee ? "truncate" : "px-4"}`}
+                          className={`px-2 py-4 text-sm text-slate-300 ${isEditingEmployee ? "truncate" : "px-4"}`}
                         >
                           {column.render
                             ? column.render(emp)
@@ -1132,7 +1131,7 @@ export default function EmployeePage() {
                             onClick={() => openViewModal(emp)}
                             title="View employee"
                             aria-label={`View ${emp.full_name}`}
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-muted transition hover:bg-selected ${
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
                               isEditingEmployee ? "p-1.5" : "p-2"
                             }`}
                           >
@@ -1143,7 +1142,7 @@ export default function EmployeePage() {
                             onClick={() => handleEditClick(emp)}
                             title="Edit employee"
                             aria-label={`Edit ${emp.full_name}`}
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-muted transition hover:bg-selected ${
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
                               isEditingEmployee ? "p-1.5" : "p-2"
                             }`}
                           >
@@ -1162,7 +1161,7 @@ export default function EmployeePage() {
                                 ? "Deactivate employee"
                                 : "Activate employee"
                             }
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded transition ${emp.is_active ? "text-danger hover:bg-danger-soft" : "text-success hover:bg-success"}`}
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
                           >
                             <Power size={15} />
                           </button>
@@ -1171,7 +1170,7 @@ export default function EmployeePage() {
                             onClick={() => setDeleteConfirm(emp.id)}
                             title="Delete employee"
                             aria-label={`Delete ${emp.full_name}`}
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-danger transition hover:bg-danger-soft ${
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-red-300 transition hover:bg-red-500/30 ${
                               isEditingEmployee ? "p-1.5" : "p-2"
                             }`}
                           >
@@ -1186,13 +1185,13 @@ export default function EmployeePage() {
             </table>
           </div>
           <div
-            className={`entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t px-3 py-3 text-xs text-muted ${isEditingEmployee ? "w-full border-default bg-surface md:w-1/2" : "w-full"}`}
+            className={`entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t px-3 py-3 text-xs text-slate-400 ${isEditingEmployee ? "w-full border-slate-700/60 bg-[var(--bg-card)] md:w-1/2" : "w-full"}`}
             style={
               isEditingEmployee
                 ? undefined
                 : {
-                    borderColor: "var(--border-default)",
-                    background: "var(--bg-surface)",
+                    borderColor: "var(--border-card)",
+                    background: "var(--bg-card)",
                   }
             }
           >
@@ -1204,7 +1203,7 @@ export default function EmployeePage() {
                   setEmployeePageSize(Number(event.target.value));
                   setEmployeeCurrentPage(1);
                 }}
-                className="rounded border border-default bg-subtle px-2 py-1.5 text-sm text-primary"
+                className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
               >
                 {[10, 25, 50].map((size) => (
                   <option key={size} value={size}>
@@ -1250,7 +1249,7 @@ export default function EmployeePage() {
                         : visibleEmployeePage === employeePageCount
                     }
                     onClick={() => setEmployeeCurrentPage(page)}
-                    className="rounded border border-default p-1.5 text-muted hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Icon size={15} />
                   </button>
@@ -1276,18 +1275,18 @@ export default function EmployeePage() {
                 }
               : undefined
           }
-          className={`${modalMode === "edit" ? "entity-edit-panel min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4"}`}
+          className={`${modalMode === "edit" ? "entity-edit-panel min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-default bg-surface shadow-lg" : "flex max-h-[95vh] w-full max-w-6xl flex-col rounded-2xl border border-default bg-surface shadow-2xl"} overflow-hidden`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "flex max-h-[95vh] w-full max-w-6xl flex-col rounded-2xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
           >
-            <div className={`${modalMode === "edit" ? "entity-edit-header flex h-11 shrink-0 items-center px-5" : "flex shrink-0 items-start px-6 py-5 sm:px-8"} justify-between gap-4 border-b border-default`}>
+            <div className={`${modalMode === "edit" ? "entity-edit-header flex h-11 shrink-0 items-center px-5" : "flex shrink-0 items-start px-6 py-5 sm:px-8"} justify-between gap-4 border-b border-slate-800/70`}>
               <div className="min-w-0 flex-1">
-                <h2 className={`${modalMode === "edit" ? "text-sm uppercase tracking-wide" : "text-2xl"} font-semibold text-primary`}>
+                <h2 className={`${modalMode === "edit" ? "text-sm uppercase tracking-wide" : "text-2xl"} font-semibold text-white`}>
                   {modalMode === "create" ? "Create New Employee" : `EDIT EMPLOYEE · ${formData.full_name}`}
                 </h2>
                 {modalMode === "create" && (
-                  <p className="mt-1 text-sm text-muted">
+                  <p className="mt-1 text-sm text-slate-400">
                     Fill in the employee's personal, contact, employment, and document details.
                   </p>
                 )}
@@ -1296,7 +1295,7 @@ export default function EmployeePage() {
                 type="button"
                 onClick={() => setShowModal(false)}
                 aria-label="Close employee editor"
-                className="rounded-lg p-2 text-muted transition hover:bg-subtle hover:text-primary"
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
               >
                 <X size={20} />
               </button>
@@ -1305,7 +1304,7 @@ export default function EmployeePage() {
             {modalMode === "edit" && (
               <nav
                 aria-label="Employee form sections"
-                className="entity-edit-tabs flex shrink-0 gap-5 overflow-x-auto border-b border-default px-5"
+                className="entity-edit-tabs flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
               >
                 {[
                   { label: "Personal", id: "personal", target: "employee-personal" },
@@ -1336,8 +1335,8 @@ export default function EmployeePage() {
                     }
                     className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
                       activeEmployeeSection === id
-                        ? "border-accent text-accent"
-                        : "border-transparent text-muted hover:text-primary"
+                        ? "border-teal-400 text-teal-300"
+                        : "border-transparent text-slate-400 hover:text-slate-200"
                     }`}
                   >
                     {label}
@@ -1353,11 +1352,11 @@ export default function EmployeePage() {
             >
               {/* Personal Information */}
               <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
-                <h3 id="employee-personal" className="scroll-mt-4 text-base font-semibold text-primary mb-3">
+                <h3 id="employee-personal" className="scroll-mt-4 text-base font-semibold text-white mb-3">
                   Personal Information
                 </h3>
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-default bg-accent-soft text-sm font-semibold text-accent">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-700 bg-teal-500/15 text-sm font-semibold text-teal-200">
                     {profilePhotoPreview || formData.photograph_url ? (
                       <img
                         src={
@@ -1377,7 +1376,7 @@ export default function EmployeePage() {
                     )}
                   </div>
                   <div className="flex flex-col items-start gap-2">
-                    <label className="cursor-pointer rounded-xl border border-default bg-subtle px-3 py-2 text-xs font-medium text-primary transition hover:bg-subtle">
+                    <label className="cursor-pointer rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-100 transition hover:bg-slate-700">
                       Upload Photo
                       <input
                         type="file"
@@ -1397,13 +1396,13 @@ export default function EmployeePage() {
                             photograph_url: "",
                           }));
                         }}
-                        className="text-xs text-danger hover:text-danger"
+                        className="text-xs text-red-300 hover:text-red-200"
                       >
                         Remove
                       </button>
                     )}
                     {profilePhoto && (
-                      <p className="max-w-xs truncate text-xs text-muted">
+                      <p className="max-w-xs truncate text-xs text-slate-400">
                         {profilePhoto.name}
                       </p>
                     )}
@@ -1411,7 +1410,7 @@ export default function EmployeePage() {
                 </div>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Employee ID *
                     </label>
                     <input
@@ -1421,11 +1420,11 @@ export default function EmployeePage() {
                       onChange={handleInputChange}
                       required
                       disabled={modalMode === "edit"}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary disabled:bg-subtle disabled:text-muted"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white disabled:bg-slate-700/20 disabled:text-slate-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Full Name (English) *
                     </label>
                     <input
@@ -1434,11 +1433,11 @@ export default function EmployeePage() {
                       value={formData.full_name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Full Name (Nepali)
                     </label>
                     <input
@@ -1446,18 +1445,18 @@ export default function EmployeePage() {
                       name="full_name_nepali"
                       value={formData.full_name_nepali}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Gender
                     </label>
                     <select
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -1466,7 +1465,7 @@ export default function EmployeePage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Date of Birth
                     </label>
                     <input
@@ -1474,18 +1473,18 @@ export default function EmployeePage() {
                       name="date_of_birth"
                       value={formData.date_of_birth}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Marital Status
                     </label>
                     <select
                       name="marital_status"
                       value={formData.marital_status}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     >
                       <option value="">Select</option>
                       <option value="Single">Single</option>
@@ -1495,7 +1494,7 @@ export default function EmployeePage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Nationality
                     </label>
                     <input
@@ -1503,18 +1502,18 @@ export default function EmployeePage() {
                       name="nationality"
                       value={formData.nationality}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Blood Group
                     </label>
                     <select
                       name="blood_group"
                       value={formData.blood_group}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     >
                       <option value="">Select</option>
                       <option value="O+">O+</option>
@@ -1528,7 +1527,7 @@ export default function EmployeePage() {
                     </select>
                   </div>
                   <div id="employee-contact">
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Mobile Number
                     </label>
                     <input
@@ -1536,11 +1535,11 @@ export default function EmployeePage() {
                       name="mobile_number"
                       value={formData.mobile_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Email Address
                     </label>
                     <input
@@ -1548,11 +1547,11 @@ export default function EmployeePage() {
                       name="email_address"
                       value={formData.email_address}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Emergency Contact Name
                     </label>
                     <input
@@ -1560,11 +1559,11 @@ export default function EmployeePage() {
                       name="emergency_contact_name"
                       value={formData.emergency_contact_name}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Emergency Contact Phone
                     </label>
                     <input
@@ -1572,11 +1571,11 @@ export default function EmployeePage() {
                       name="emergency_contact_phone"
                       value={formData.emergency_contact_phone}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Permanent Address
                     </label>
                     <textarea
@@ -1584,11 +1583,11 @@ export default function EmployeePage() {
                       value={formData.permanent_address}
                       onChange={handleInputChange}
                       rows="2"
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Temporary Address
                     </label>
                     <textarea
@@ -1596,7 +1595,7 @@ export default function EmployeePage() {
                       value={formData.temporary_address}
                       onChange={handleInputChange}
                       rows="2"
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                 </div>
@@ -1604,12 +1603,12 @@ export default function EmployeePage() {
 
               {/* Identification Information */}
               <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
-                <h3 className="text-base font-semibold text-primary mb-4">
+                <h3 className="text-base font-semibold text-white mb-4">
                   Identification Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Citizenship Number
                     </label>
                     <input
@@ -1617,11 +1616,11 @@ export default function EmployeePage() {
                       name="citizenship_number"
                       value={formData.citizenship_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Citizenship Issued District
                     </label>
                     <input
@@ -1629,11 +1628,11 @@ export default function EmployeePage() {
                       name="citizenship_issued_district"
                       value={formData.citizenship_issued_district}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Passport Number
                     </label>
                     <input
@@ -1641,11 +1640,11 @@ export default function EmployeePage() {
                       name="passport_number"
                       value={formData.passport_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Driving License Number
                     </label>
                     <input
@@ -1653,11 +1652,11 @@ export default function EmployeePage() {
                       name="driving_license_number"
                       value={formData.driving_license_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       PAN Number
                     </label>
                     <input
@@ -1665,7 +1664,7 @@ export default function EmployeePage() {
                       name="pan_number"
                       value={formData.pan_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                 </div>
@@ -1673,12 +1672,12 @@ export default function EmployeePage() {
 
               {/* Employment Information */}
               <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
-                <h3 id="employee-employment" className="scroll-mt-4 text-base font-semibold text-primary mb-4">
+                <h3 id="employee-employment" className="scroll-mt-4 text-base font-semibold text-white mb-4">
                   Employment Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Date of Joining
                     </label>
                     <input
@@ -1686,18 +1685,18 @@ export default function EmployeePage() {
                       name="date_of_joining"
                       value={formData.date_of_joining}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Employee Status
                     </label>
                     <select
                       name="employee_status"
                       value={formData.employee_status}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     >
                       <option value="Permanent">Permanent</option>
                       <option value="Contract">Contract</option>
@@ -1705,14 +1704,14 @@ export default function EmployeePage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Department
                     </label>
                     <select
                       name="department_id"
                       value={formData.department_id}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     >
                       <option value="">Select Department</option>
                       {departments.map((dept) => (
@@ -1723,7 +1722,7 @@ export default function EmployeePage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Designation
                     </label>
                     <input
@@ -1731,11 +1730,11 @@ export default function EmployeePage() {
                       name="designation"
                       value={formData.designation}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Branch/Office
                     </label>
                     <input
@@ -1743,11 +1742,11 @@ export default function EmployeePage() {
                       name="branch_office"
                       value={formData.branch_office}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Reporting Supervisor
                     </label>
                     <input
@@ -1755,11 +1754,11 @@ export default function EmployeePage() {
                       name="reporting_supervisor"
                       value={formData.reporting_supervisor}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Grade/Level
                     </label>
                     <input
@@ -1767,18 +1766,18 @@ export default function EmployeePage() {
                       name="grade_level"
                       value={formData.grade_level}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Employment Type
                     </label>
                     <select
                       name="employment_type"
                       value={formData.employment_type}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     >
                       <option value="Full-time">Full-time</option>
                       <option value="Part-time">Part-time</option>
@@ -1786,7 +1785,7 @@ export default function EmployeePage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Confirmation Date
                     </label>
                     <input
@@ -1794,7 +1793,7 @@ export default function EmployeePage() {
                       name="confirmation_date"
                       value={formData.confirmation_date}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                 </div>
@@ -1802,12 +1801,12 @@ export default function EmployeePage() {
 
               {/* Salary & Payroll Information */}
               <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
-                <h3 className="text-base font-semibold text-primary mb-4">
+                <h3 className="text-base font-semibold text-white mb-4">
                   Salary & Payroll Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Basic Salary
                     </label>
                     <input
@@ -1815,11 +1814,11 @@ export default function EmployeePage() {
                       name="basic_salary"
                       value={formData.basic_salary}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Dearness Allowance
                     </label>
                     <input
@@ -1827,11 +1826,11 @@ export default function EmployeePage() {
                       name="dearness_allowance"
                       value={formData.dearness_allowance}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Gross Salary
                     </label>
                     <input
@@ -1839,11 +1838,11 @@ export default function EmployeePage() {
                       name="gross_salary"
                       value={formData.gross_salary}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Bank Account Number
                     </label>
                     <input
@@ -1851,11 +1850,11 @@ export default function EmployeePage() {
                       name="bank_account_number"
                       value={formData.bank_account_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Bank Name
                     </label>
                     <input
@@ -1863,11 +1862,11 @@ export default function EmployeePage() {
                       name="bank_name"
                       value={formData.bank_name}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Bank Branch
                     </label>
                     <input
@@ -1875,11 +1874,11 @@ export default function EmployeePage() {
                       name="bank_branch"
                       value={formData.bank_branch}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       SSF Number
                     </label>
                     <input
@@ -1887,11 +1886,11 @@ export default function EmployeePage() {
                       name="ssf_number"
                       value={formData.ssf_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       CIT Number
                     </label>
                     <input
@@ -1899,11 +1898,11 @@ export default function EmployeePage() {
                       name="cit_number"
                       value={formData.cit_number}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Tax Deduction
                     </label>
                     <input
@@ -1911,11 +1910,11 @@ export default function EmployeePage() {
                       name="tax_deduction"
                       value={formData.tax_deduction}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       SSF Contribution
                     </label>
                     <input
@@ -1923,11 +1922,11 @@ export default function EmployeePage() {
                       name="ssf_contribution"
                       value={formData.ssf_contribution}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Net Salary
                     </label>
                     <input
@@ -1935,7 +1934,7 @@ export default function EmployeePage() {
                       name="net_salary"
                       value={formData.net_salary}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                 </div>
@@ -1943,12 +1942,12 @@ export default function EmployeePage() {
 
               {/* Education Information */}
               <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
-                <h3 className="text-base font-semibold text-primary mb-4">
+                <h3 className="text-base font-semibold text-white mb-4">
                   Education Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Academic Qualification
                     </label>
                     <input
@@ -1956,11 +1955,11 @@ export default function EmployeePage() {
                       name="academic_qualification"
                       value={formData.academic_qualification}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       University/Board
                     </label>
                     <input
@@ -1968,11 +1967,11 @@ export default function EmployeePage() {
                       name="university_board"
                       value={formData.university_board}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Passed Year
                     </label>
                     <input
@@ -1980,11 +1979,11 @@ export default function EmployeePage() {
                       name="passed_year"
                       value={formData.passed_year}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Major Subject
                     </label>
                     <input
@@ -1992,11 +1991,11 @@ export default function EmployeePage() {
                       name="major_subject"
                       value={formData.major_subject}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
                       Percentage/CGPA
                     </label>
                     <input
@@ -2004,7 +2003,7 @@ export default function EmployeePage() {
                       name="percentage_cgpa"
                       value={formData.percentage_cgpa}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
                   </div>
                 </div>
@@ -2012,33 +2011,33 @@ export default function EmployeePage() {
 
               {/* Documents */}
               <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
-                <h3 id="employee-documents" className="scroll-mt-4 text-base font-semibold text-primary mb-4">
+                <h3 id="employee-documents" className="scroll-mt-4 text-base font-semibold text-white mb-4">
                   Documents
                 </h3>
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
                     Upload Documents
                   </label>
                   <input
                     type="file"
                     multiple
                     onChange={handleDocumentsChange}
-                    className="w-full px-3 py-2 bg-subtle border border-default rounded text-primary"
+                    className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                   />
                   {documents.length > 0 && (
                     <div className="mt-3 space-y-2">
                       {documents.map((doc, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between bg-subtle p-2 rounded"
+                          className="flex items-center justify-between bg-slate-700/30 p-2 rounded"
                         >
-                          <span className="text-sm text-muted">
+                          <span className="text-sm text-slate-300">
                             {doc.name}
                           </span>
                           <button
                             type="button"
                             onClick={() => removeDocument(idx)}
-                            className="text-danger hover:text-danger"
+                            className="text-red-400 hover:text-red-300"
                           >
                             <X size={16} />
                           </button>
@@ -2053,8 +2052,8 @@ export default function EmployeePage() {
               <div
                 className={`z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end ${
                   modalMode === "edit"
-                    ? "sticky bottom-[-1.25rem] z-10 -mx-4 -mb-4 border-t border-default bg-surface px-4 py-3 backdrop-blur sm:-mx-5 sm:-mb-5 sm:px-5"
-                    : "sticky bottom-0 border-t border-default bg-surface pt-4"
+                    ? "sticky bottom-[-1.25rem] z-10 -mx-4 -mb-4 border-t border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur sm:-mx-5 sm:-mb-5 sm:px-5"
+                    : "sticky bottom-0 border-t border-slate-700 bg-slate-900 pt-4"
                 }`}
               >
                 <button
@@ -2063,17 +2062,17 @@ export default function EmployeePage() {
                     setShowModal(false);
                     setProfilePhotoPreview("");
                   }}
-                  className="rounded-xl border border-default px-4 py-2 text-sm text-primary transition hover:bg-subtle"
+                  className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 transition hover:bg-slate-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`rounded-xl px-4 py-2 text-sm font-semibold text-primary transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  className={`rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
                     modalMode === "edit"
-                      ? "bg-accent text-muted hover:bg-accent"
-                      : "bg-accent hover:bg-accent"
+                      ? "bg-teal-400 text-slate-950 hover:bg-teal-300"
+                      : "bg-indigo-600 hover:bg-indigo-500"
                   }`}
                 >
                   {loading
@@ -2090,32 +2089,32 @@ export default function EmployeePage() {
 
       {/* View Modal */}
       {showViewModal && viewEmployee && (
-        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-50">
-          <div className="bg-surface rounded-lg border border-default w-full max-w-3xl max-h-[90vh] flex flex-col">
-            <div className="sticky top-0 flex justify-between items-center p-6 border-b border-default bg-surface z-10">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 rounded-lg border border-slate-700 w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div className="sticky top-0 flex justify-between items-center p-6 border-b border-slate-700 bg-slate-900 z-10">
               <div>
-                <h2 className="text-2xl font-bold text-primary">
+                <h2 className="text-2xl font-bold text-white">
                   {viewEmployee.full_name || "Employee Details"}
                 </h2>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-slate-400">
                   Employee profile and documents
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${viewEmployee.is_active ? "bg-success text-success" : "bg-danger text-danger"}`}
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${viewEmployee.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
                 >
                   {viewEmployee.is_active ? "Active" : "Inactive"}
                 </span>
                 <button
                   onClick={printEmployeeInfo}
-                  className="inline-flex items-center gap-2 rounded-xl border border-default bg-subtle px-3 py-2 text-xs font-semibold text-primary hover:bg-subtle"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700"
                 >
                   Print
                 </button>
                 <button
                   onClick={() => setShowViewModal(false)}
-                  className="text-muted hover:text-primary"
+                  className="text-slate-400 hover:text-white"
                 >
                   <X size={24} />
                 </button>
@@ -2125,7 +2124,7 @@ export default function EmployeePage() {
             <div className="overflow-y-auto flex-1 p-6">
               <div className="grid gap-6 md:grid-cols-3">
                 <div className="col-span-1 flex flex-col items-center gap-4">
-                  <div className="h-40 w-40 overflow-hidden rounded-full bg-subtle">
+                  <div className="h-40 w-40 overflow-hidden rounded-full bg-slate-800">
                     {viewEmployee.photograph_url ? (
                       <img
                         src={getDocumentUrl(viewEmployee.photograph_url)}
@@ -2133,33 +2132,33 @@ export default function EmployeePage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-sm text-muted">
+                      <div className="flex h-full w-full items-center justify-center text-sm text-slate-500">
                         No photo
                       </div>
                     )}
                   </div>
                   <div className="text-center">
-                    <div className="text-primary font-semibold">
+                    <div className="text-white font-semibold">
                       {viewEmployee.full_name}
                     </div>
-                    <div className="text-sm text-muted">
+                    <div className="text-sm text-slate-400">
                       {viewEmployee.designation || "—"}
                     </div>
                   </div>
                 </div>
                 <div className="col-span-2 grid gap-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-default bg-surface p-3">
-                      <div className="text-xs text-muted">Email</div>
-                      <div className="text-sm text-primary">
+                    <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                      <div className="text-xs text-slate-400">Email</div>
+                      <div className="text-sm text-white">
                         {viewEmployee.email_address ||
                           viewEmployee.personal_email ||
                           "—"}
                       </div>
                     </div>
-                    <div className="rounded-xl border border-default bg-surface p-3">
-                      <div className="text-xs text-muted">Phone</div>
-                      <div className="text-sm text-primary">
+                    <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                      <div className="text-xs text-slate-400">Phone</div>
+                      <div className="text-sm text-white">
                         {viewEmployee.mobile_number ||
                           viewEmployee.personal_phone ||
                           "—"}
@@ -2167,9 +2166,9 @@ export default function EmployeePage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-default bg-surface p-3">
-                      <div className="text-xs text-muted">Department</div>
-                      <div className="text-sm text-primary">
+                    <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                      <div className="text-xs text-slate-400">Department</div>
+                      <div className="text-sm text-white">
                         {viewEmployee.department_name ||
                           departments.find(
                             (d) => d.id === viewEmployee.department_id,
@@ -2177,16 +2176,16 @@ export default function EmployeePage() {
                           "—"}
                       </div>
                     </div>
-                    <div className="rounded-xl border border-default bg-surface p-3">
-                      <div className="text-xs text-muted">Joined</div>
-                      <div className="text-sm text-primary">
+                    <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                      <div className="text-xs text-slate-400">Joined</div>
+                      <div className="text-sm text-white">
                         {viewEmployee.date_of_joining || "—"}
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Status</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Status</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.employee_status || "—"}
                     </div>
                   </div>
@@ -2195,23 +2194,23 @@ export default function EmployeePage() {
 
               {/* Documents Section */}
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-primary mb-3">
+                <h3 className="text-lg font-semibold text-white mb-3">
                   Documents
                 </h3>
                 <div className="mt-2 grid gap-2">
                   {(viewEmployee.documents || []).length === 0 ? (
-                    <div className="text-sm text-muted">No documents</div>
+                    <div className="text-sm text-slate-500">No documents</div>
                   ) : (
                     (viewEmployee.documents || []).map((d, i) => (
                       <div
                         key={d.id || i}
-                        className="flex items-center justify-between rounded-lg border border-default bg-surface px-3 py-2"
+                        className="flex items-center justify-between rounded-lg border border-slate-700/80 bg-slate-950 px-3 py-2"
                       >
                         <div>
-                          <div className="text-sm text-primary">
+                          <div className="text-sm text-white">
                             {d.title || d.filename || "Document"}
                           </div>
-                          <div className="text-xs text-muted">
+                          <div className="text-xs text-slate-400">
                             {d.uploadedAt
                               ? new Date(d.uploadedAt).toLocaleString()
                               : ""}
@@ -2224,7 +2223,7 @@ export default function EmployeePage() {
                                 href={getDocumentUrl(d.url)}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm text-accent hover:underline"
+                                className="text-sm text-indigo-400 hover:underline"
                               >
                                 View
                               </a>
@@ -2236,7 +2235,7 @@ export default function EmployeePage() {
                                     d.title || d.filename,
                                   )
                                 }
-                                className="text-sm text-primary"
+                                className="text-sm text-slate-200"
                               >
                                 Download
                               </button>
@@ -2251,90 +2250,90 @@ export default function EmployeePage() {
 
               <div className="p-6 grid gap-4">
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Designation</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Designation</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.designation || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">
                       Employment Type
                     </div>
-                    <div className="text-sm text-primary">
+                    <div className="text-sm text-white">
                       {viewEmployee.employment_type || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">
                       Reporting Supervisor
                     </div>
-                    <div className="text-sm text-primary">
+                    <div className="text-sm text-white">
                       {viewEmployee.reporting_supervisor || "—"}
                     </div>
                   </div>
-                  <div className="md:col-span-3 rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">
+                  <div className="md:col-span-3 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">
                       Branch / Office
                     </div>
-                    <div className="text-sm text-primary">
+                    <div className="text-sm text-white">
                       {viewEmployee.branch_office || "—"}
                     </div>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Citizenship No</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Citizenship No</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.citizenship_number || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Passport No</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Passport No</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.passport_number || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">PAN</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">PAN</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.pan_number || "—"}
                     </div>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Bank</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Bank</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.bank_name || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Branch</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Branch</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.bank_branch || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Account No</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Account No</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.bank_account_number || "—"}
                     </div>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Basic Salary</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Basic Salary</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.basic_salary || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">Allowances</div>
-                    <div className="text-sm text-primary">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">Allowances</div>
+                    <div className="text-sm text-white">
                       {viewEmployee.other_allowances
                         ? JSON.stringify(viewEmployee.other_allowances)
                         : "—"}
@@ -2343,19 +2342,19 @@ export default function EmployeePage() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">
                       Emergency Contact
                     </div>
-                    <div className="text-sm text-primary">
+                    <div className="text-sm text-white">
                       {viewEmployee.emergency_contact_name || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-default bg-surface p-3">
-                    <div className="text-xs text-muted">
+                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                    <div className="text-xs text-slate-400">
                       Emergency Phone / Relationship
                     </div>
-                    <div className="text-sm text-primary">
+                    <div className="text-sm text-white">
                       {(viewEmployee.emergency_contact_phone || "—") +
                         (viewEmployee.emergency_contact_relationship
                           ? " / " + viewEmployee.emergency_contact_relationship
@@ -2365,10 +2364,10 @@ export default function EmployeePage() {
                 </div>
               </div>
 
-              <div className="flex justify-between gap-2 p-4 border-t border-default">
+              <div className="flex justify-between gap-2 p-4 border-t border-slate-800/70">
                 <button
                   onClick={() => setShowAllDocumentsModal(true)}
-                  className="rounded-xl border border-default bg-subtle px-4 py-2 text-sm font-semibold text-accent hover:bg-subtle hover:text-accent"
+                  className="rounded-xl border border-slate-700/80 bg-slate-800 px-4 py-2 text-sm font-semibold text-indigo-400 hover:bg-slate-700 hover:text-indigo-300"
                 >
                   View All Documents
                 </button>
@@ -2378,7 +2377,7 @@ export default function EmployeePage() {
                       setShowViewModal(false);
                       setViewEmployee(null);
                     }}
-                    className="rounded-xl border border-default px-4 py-2 text-sm text-primary hover:bg-subtle"
+                    className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
                   >
                     Close
                   </button>
@@ -2387,7 +2386,7 @@ export default function EmployeePage() {
                       setShowViewModal(false);
                       handleEditClick(viewEmployee);
                     }}
-                    className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-primary hover:bg-accent"
+                    className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
                   >
                     Edit
                   </button>
@@ -2395,29 +2394,29 @@ export default function EmployeePage() {
               </div>
 
               {showAllDocumentsModal && viewEmployee && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4">
-                  <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default bg-surface shadow-2xl">
-                    <div className="flex items-center justify-between gap-4 border-b border-default px-6 py-4 sticky top-0 bg-surface">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                  <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-700/70 bg-slate-950 shadow-2xl">
+                    <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-4 sticky top-0 bg-slate-950">
                       <div>
-                        <h2 className="text-lg font-semibold text-primary">
+                        <h2 className="text-lg font-semibold text-white">
                           All Documents
                         </h2>
-                        <p className="text-sm text-muted">
+                        <p className="text-sm text-slate-400">
                           {viewEmployee.full_name} —{" "}
                           {(viewEmployee.documents || []).length} files
                         </p>
                       </div>
                       <button
                         onClick={() => setShowAllDocumentsModal(false)}
-                        className="text-muted hover:text-primary"
+                        className="text-slate-400 hover:text-white"
                       >
                         <X size={20} />
                       </button>
                     </div>
                     <div className="p-6">
                       {(viewEmployee.documents || []).length === 0 ? (
-                        <div className="rounded-xl border border-default bg-surface p-8 text-center">
-                          <div className="text-muted">
+                        <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-8 text-center">
+                          <div className="text-slate-400">
                             No documents attached
                           </div>
                         </div>
@@ -2426,21 +2425,21 @@ export default function EmployeePage() {
                           {(viewEmployee.documents || []).map((doc, idx) => (
                             <div
                               key={doc.id || idx}
-                              className="rounded-xl border border-default bg-surface p-4 hover:border-accent hover:bg-surface transition"
+                              className="rounded-xl border border-slate-700/80 bg-slate-900 p-4 hover:border-indigo-500/50 hover:bg-slate-900/80 transition"
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">
-                                  <h3 className="text-sm font-semibold text-primary truncate">
+                                  <h3 className="text-sm font-semibold text-white truncate">
                                     {doc.title || doc.filename || "Document"}
                                   </h3>
-                                  <p className="text-xs text-muted mt-1">
+                                  <p className="text-xs text-slate-400 mt-1">
                                     {doc.uploadedAt
                                       ? new Date(
                                           doc.uploadedAt,
                                         ).toLocaleString()
                                       : "No date"}
                                   </p>
-                                  <p className="text-xs text-muted mt-2 break-all">
+                                  <p className="text-xs text-slate-500 mt-2 break-all">
                                     {doc.url || "No URL"}
                                   </p>
                                 </div>
@@ -2451,7 +2450,7 @@ export default function EmployeePage() {
                                         href={getDocumentUrl(doc.url)}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-accent text-primary text-xs font-semibold hover:bg-accent whitespace-nowrap"
+                                        className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 whitespace-nowrap"
                                       >
                                         View
                                       </a>
@@ -2463,7 +2462,7 @@ export default function EmployeePage() {
                                             doc.title || "document",
                                           )
                                         }
-                                        className="inline-flex items-center justify-center px-3 py-2 rounded-lg border border-default text-primary text-xs font-semibold hover:bg-subtle whitespace-nowrap"
+                                        className="inline-flex items-center justify-center px-3 py-2 rounded-lg border border-slate-700 text-slate-200 text-xs font-semibold hover:bg-slate-800 whitespace-nowrap"
                                       >
                                         Download
                                       </button>
@@ -2476,10 +2475,10 @@ export default function EmployeePage() {
                         </div>
                       )}
                     </div>
-                    <div className="flex justify-end gap-2 p-4 border-t border-default sticky bottom-0 bg-surface">
+                    <div className="flex justify-end gap-2 p-4 border-t border-slate-800/70 sticky bottom-0 bg-slate-950">
                       <button
                         onClick={() => setShowAllDocumentsModal(false)}
-                        className="rounded-xl border border-default px-4 py-2 text-sm text-primary hover:bg-subtle"
+                        className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
                       >
                         Close
                       </button>
@@ -2494,27 +2493,27 @@ export default function EmployeePage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-50">
-          <div className="bg-surface rounded-lg border border-default w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 rounded-lg border border-slate-700 w-full max-w-sm">
             <div className="p-6">
-              <h3 className="text-lg font-bold text-primary mb-4">
+              <h3 className="text-lg font-bold text-white mb-4">
                 Delete Employee?
               </h3>
-              <p className="text-muted mb-6 text-sm">
+              <p className="text-slate-400 mb-6 text-sm">
                 Are you sure you want to delete this employee? This action
                 cannot be undone.
               </p>
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 bg-subtle hover:bg-selected text-primary rounded-lg transition"
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={loading}
-                  className="px-4 py-2 bg-danger hover:bg-danger text-primary rounded-lg disabled:bg-selected transition"
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:bg-slate-600 transition"
                 >
                   {loading ? "Deleting..." : "Delete"}
                 </button>

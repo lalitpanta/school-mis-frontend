@@ -20,7 +20,6 @@ import {
 import config from "../config/config";
 import RecordTableToolbar from "../components/common/RecordTableToolbar";
 import toast from "react-hot-toast";
-import { getPrintThemeStyles } from "../utils/themePrint";
 
 const emptyTeacher = {
   full_name: "",
@@ -299,33 +298,32 @@ const TeacherPage = () => {
 <head>
   <meta charset="utf-8" />
   <title>Teacher Profile</title>
-  ${getPrintThemeStyles()}
   <style>
-    body { font-family: Inter, Arial, Helvetica, sans-serif; color: var(--text-primary); background: var(--bg-page); margin: 20px; }
+    body { font-family: Inter, Arial, Helvetica, sans-serif; color: #141414; margin: 20px; }
     .page { max-width: 900px; margin: auto; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
     .badge { padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.35px; }
-    .badge-active { background: var(--success-bg); color: var(--success-text); }
-    .badge-inactive { background: var(--danger-bg); color: var(--danger); }
+    .badge-active { background: #d1fae5; color: #065f46; }
+    .badge-inactive { background: #fee2e2; color: #991b1b; }
     .title-block { flex: 1; }
     .title-block h1 { margin: 0; font-size: 32px; letter-spacing: -0.03em; }
-    .title-block p { margin: 8px 0 0; color: var(--text-muted); font-size: 14px; }
-    .profile-photo { width: 110px; height: 110px; border-radius: 18px; object-fit: cover; border: 1px solid var(--border-default); }
+    .title-block p { margin: 8px 0 0; color: #475569; font-size: 14px; }
+    .profile-photo { width: 110px; height: 110px; border-radius: 18px; object-fit: cover; border: 1px solid #e2e8f0; }
     .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
-    .card { border: 1px solid var(--border-default); border-radius: 18px; padding: 18px; background: var(--bg-surface); box-shadow: var(--shadow-card); }
-    .section-title { margin: 0 0 14px; font-size: 18px; color: var(--text-primary); border-bottom: 1px solid var(--border-default); padding-bottom: 10px; }
+    .card { border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; background: #ffffff; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); }
+    .section-title { margin: 0 0 14px; font-size: 18px; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
     .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; }
     .detail-row { display: flex; gap: 8px; align-items: baseline; }
-    .detail-label { width: 170px; font-size: 13px; color: var(--text-muted); font-weight: 700; }
-    .detail-value { font-size: 14px; color: var(--text-primary); }
+    .detail-label { width: 170px; font-size: 13px; color: #475569; font-weight: 700; }
+    .detail-value { font-size: 14px; color: #0f172a; }
     .full-width { grid-column: span 2; }
     .documents { margin: 0; padding-left: 18px; }
     .documents li { margin-bottom: 8px; }
-    .print-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border-default); color: var(--text-muted); font-size: 13px; }
+    .print-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; }
     @media print {
       body { margin: 0; }
       .page { box-shadow: none; margin: 0; }
-      .card { box-shadow: none; border: 1px solid var(--border-default); }
+      .card { box-shadow: none; border: 1px solid #d1d5db; }
     }
   </style>
 </head>

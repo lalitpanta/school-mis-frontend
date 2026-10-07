@@ -1,92 +1,172 @@
 import {
   createContext,
-  useCallback,
   useContext,
-  useEffect,
-  useLayoutEffect,
   useState,
+  useEffect,
+  useCallback,
 } from "react";
 
 const ThemeContext = createContext(null);
-const THEME_STORAGE_KEY = "theme";
-const LEGACY_THEME_STORAGE_KEY = "mis_theme";
-const THEMES = ["system", "light", "dark"];
 
-const getInitialTheme = () => {
-  try {
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-    if (THEMES.includes(savedTheme)) return savedTheme;
-
-    const legacyTheme = localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
-    if (legacyTheme === "light" || legacyTheme === "dark") {
-      localStorage.setItem(THEME_STORAGE_KEY, legacyTheme);
-      localStorage.removeItem(LEGACY_THEME_STORAGE_KEY);
-      return legacyTheme;
-    }
-  } catch (error) {
-    console.warn("Unable to read the saved theme preference.", error);
-  }
-  return "system";
+const PRIMARY_COLORS = {
+  indigo: "#6366f1",
+  violet: "#7c3aed",
+  sky: "#0ea5e9",
+  emerald: "#10b981",
+  rose: "#f43f5e",
+  amber: "#f59e0b",
 };
 
-const getSystemIsDark = () =>
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
+const hexToRgb = (hex) => {
+  let c = hex.substring(1); // strip #
+  if (c.length === 3) {
+    c = c
+      .split("")
+      .map((x) => x + x)
+      .join("");
+  }
+  return {
+    r: parseInt(c.slice(0, 2), 16),
+    g: parseInt(c.slice(2, 4), 16),
+    b: parseInt(c.slice(4, 6), 16),
+  };
+};
+
+const rgbToHex = (r, g, b) =>
+  "#" +
+  [r, g, b]
+    .map((x) => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    })
+    .join("");
+
+const mix = (r1, g1, b1, r2, g2, b2, weight) => {
+  return rgbToHex(
+    Math.round(r1 * weight + r2 * (1 - weight)),
+    Math.round(g1 * weight + g2 * (1 - weight)),
+    Math.round(b1 * weight + b2 * (1 - weight)),
+  );
+};
+
+const getContrastText = (r, g, b) => {
+  // YIQ equation from W3C
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? "#0f172a" : "#ffffff"; // dark slate for light backgrounds, white for dark
+};
+
+const applyToDOM = (isDark, primary) => {
+  const html = document.documentElement;
+  if (isDark) {
+    html.classList.add("dark");
+  } else {
+    html.classList.remove("dark");
+  }
+
+  // check if primary is a preset or a hex code
+  const color = PRIMARY_COLORS[primary] || primary;
+
+  html.style.setProperty("--accent", color);
+
+  try {
+    const { r, g, b } = hexToRgb(color);
+    html.style.setProperty("--accent-dim", `rgba(${r},${g},${b},0.18)`);
+    html.style.setProperty("--accent-text", getContrastText(r, g, b));
+
+    // Override Tailwind indigo palette globally
+    const white = [255, 255, 255];
+    const black = [0, 0, 0];
+
+    html.style.setProperty(
+      "--color-indigo-50",
+      mix(r, g, b, white[0], white[1], white[2], 0.05),
+    );
+    html.style.setProperty(
+      "--color-indigo-100",
+      mix(r, g, b, white[0], white[1], white[2], 0.1),
+    );
+    html.style.setProperty(
+      "--color-indigo-200",
+      mix(r, g, b, white[0], white[1], white[2], 0.2),
+    );
+    html.style.setProperty(
+      "--color-indigo-300",
+      mix(r, g, b, white[0], white[1], white[2], 0.4),
+    );
+    html.style.setProperty(
+      "--color-indigo-400",
+      mix(r, g, b, white[0], white[1], white[2], 0.6),
+    );
+    html.style.setProperty("--color-indigo-500", rgbToHex(r, g, b));
+    html.style.setProperty(
+      "--color-indigo-600",
+      mix(r, g, b, black[0], black[1], black[2], 0.8),
+    );
+    html.style.setProperty(
+      "--color-indigo-700",
+      mix(r, g, b, black[0], black[1], black[2], 0.6),
+    );
+    html.style.setProperty(
+      "--color-indigo-800",
+      mix(r, g, b, black[0], black[1], black[2], 0.4),
+    );
+    html.style.setProperty(
+      "--color-indigo-900",
+      mix(r, g, b, black[0], black[1], black[2], 0.2),
+    );
+    html.style.setProperty(
+      "--color-indigo-950",
+      mix(r, g, b, black[0], black[1], black[2], 0.1),
+    );
+  } catch (e) {
+    // fallback if invalid hex
+    html.style.setProperty("--accent-dim", "rgba(99,102,241,0.18)");
+    html.style.setProperty("--accent-text", "#ffffff");
+  }
+};
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setThemeState] = useState(getInitialTheme);
-  const [systemIsDark, setSystemIsDark] = useState(getSystemIsDark);
-  const isDark = theme === "dark" || (theme === "system" && systemIsDark);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("mis_theme");
+    return saved
+      ? saved === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+  const [primary, setPrimaryState] = useState(
+    () => localStorage.getItem("mis_primary") || "indigo",
+  );
 
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    root.dataset.theme = isDark ? "dark" : "light";
-    root.classList.toggle("dark", isDark);
-  }, [isDark]);
-
+  // Apply on mount + changes
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleSystemThemeChange = (event) => setSystemIsDark(event.matches);
-    mediaQuery.addEventListener("change", handleSystemThemeChange);
-    return () =>
-      mediaQuery.removeEventListener("change", handleSystemThemeChange);
+    applyToDOM(isDark, primary);
+  }, [isDark, primary]);
+
+  const toggleDark = useCallback(() => {
+    setIsDark((prev) => {
+      const next = !prev;
+      localStorage.setItem("mis_theme", next ? "dark" : "light");
+      return next;
+    });
   }, []);
 
-  useEffect(() => {
-    const handleStorageChange = (event) => {
-      if (event.key !== THEME_STORAGE_KEY) return;
-      setThemeState(THEMES.includes(event.newValue) ? event.newValue : "system");
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  const setTheme = useCallback((nextTheme) => {
-    if (!THEMES.includes(nextTheme)) {
-      throw new Error(`Unsupported theme: ${nextTheme}`);
-    }
-    try {
-      if (nextTheme === "system") {
-        localStorage.removeItem(THEME_STORAGE_KEY);
-      } else {
-        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-      }
-    } catch (error) {
-      console.warn("Unable to save the theme preference.", error);
-    }
-    setThemeState(nextTheme);
+  const setPrimary = useCallback((color) => {
+    setPrimaryState(color);
+    localStorage.setItem("mis_primary", color);
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
+    <ThemeContext.Provider
+      value={{ isDark, toggleDark, primary, setPrimary, PRIMARY_COLORS }}
+    >
       {children}
     </ThemeContext.Provider>
   );
 };
 
 export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme must be used inside ThemeProvider");
-  return context;
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used inside ThemeProvider");
+  return ctx;
 };
 
 export default ThemeContext;

@@ -10,7 +10,7 @@ const WEEKDAYS = [
   "Saturday",
 ];
 const WEEKDAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const COLORS = ["var(--success-text)", "var(--danger)", "var(--warning)", "var(--accent)", "var(--accent)"];
+const COLORS = ["var(--success-text)", "var(--danger)", "var(--danger)", "var(--accent)", "var(--accent)"];
 
 const getYearLabel = (year) => year?.label || year?.year_label || "";
 const getTypeName = (type) => type?.day_type || type?.name || "";

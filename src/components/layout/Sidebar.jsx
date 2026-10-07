@@ -434,20 +434,20 @@ const css = `
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 .mis-sidebar {
-  --sb-bg:         var(--bg-surface);
-  --sb-panel:      var(--bg-subtle);
-  --sb-panel-2:    var(--bg-input);
-  --sb-hover:      color-mix(in srgb, var(--bg-subtle) 65%, transparent);
-  --sb-active:     var(--accent-soft);
-  --sb-border:     var(--border-default);
-  --sb-border-s:   var(--border-default);
-  --sb-v500:       var(--accent);
-  --sb-v400:       var(--warning);
-  --sb-vglow:      var(--warning-bg);
+  --sb-bg:         var(--accent);
+  --sb-panel:      var(--accent);
+  --sb-panel-2:    var(--accent);
+  --sb-hover:      rgba(148, 163, 184, 0.07);
+  --sb-active:     rgba(249, 115, 22, 0.10);
+  --sb-border:     rgba(148, 163, 184, 0.10);
+  --sb-border-s:   rgba(148, 163, 184, 0.12);
+  --sb-v500:       var(--danger);
+  --sb-v400:       var(--danger);
+  --sb-vglow:      rgba(245, 158, 11, 0.14);
   --sb-hi:         var(--text-primary);
   --sb-mid:        var(--text-primary);
-  --sb-low:        var(--text-muted);
-  --sb-section:    var(--text-muted);
+  --sb-low:        var(--accent);
+  --sb-section:    var(--accent);
   --sb-danger:     var(--danger);
   --sb-w:          280px;
   --sb-wc:         78px;

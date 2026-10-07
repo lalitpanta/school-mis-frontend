@@ -1,25 +1,28 @@
 /* Results Module Design System */
 :root {
-  --bg: var(--bg-page);
-  --surface: var(--bg-surface);
-  --surface-2: var(--bg-subtle);
-  --surface-3: var(--bg-input);
-  --border: var(--border-default);
-  --border-soft: var(--border-default);
+  --bg: var(--accent);
+  --surface: var(--accent);
+  --surface-2: var(--accent);
+  --surface-3: var(--accent);
+  --border: var(--accent);
+  --border-soft: var(--accent);
   --text: var(--text-primary);
-  --text-dim: var(--text-muted);
-  --text-faint: var(--text-muted);
-  --accent-dim: var(--accent-soft);
+  --text-dim: var(--accent);
+  --text-faint: var(--accent);
+  --accent: var(--accent);
+  --accent-dim: var(--accent);
   --accent-strong: var(--accent);
   --success: var(--success-text);
-  --success-dim: var(--success-bg);
-  --warn: var(--warning);
-  --warn-dim: var(--warning-bg);
-  --danger-dim: var(--danger-bg);
+  --success-dim: var(--success-text);
+  --warn: var(--danger);
+  --warn-dim: var(--danger);
+  --danger: var(--danger);
+  --danger-dim: var(--danger);
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 18px;
-  --shadow: var(--shadow-card);
+  --shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* Base container */

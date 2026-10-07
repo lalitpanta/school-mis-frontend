@@ -42,7 +42,7 @@ const fmtShort = (n) => {
 
 const STATUS_COLOR = {
   paid: { bg: "rgba(16,185,129,.15)", color: "var(--success-text)" },
-  partial: { bg: "var(--warning-bg)", color: "var(--warning)" },
+  partial: { bg: "rgba(245,158,11,.15)", color: "var(--danger)" },
   overdue: { bg: "rgba(244,63,94,.15)", color: "var(--danger)" },
   pending: { bg: "rgba(148,163,184,.15)", color: "var(--accent)" },
 };

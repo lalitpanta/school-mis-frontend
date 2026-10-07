@@ -45,9 +45,9 @@ const AdminRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-page)",
+          background: "var(--bg-main)",
           minHeight: "100vh",
-          color: "var(--text-primary)",
+          color: "var(--text-1)",
         }}
         className="flex items-center justify-center"
       >
@@ -73,9 +73,9 @@ const SuperAdminRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-page)",
+          background: "var(--bg-main)",
           minHeight: "100vh",
-          color: "var(--text-primary)",
+          color: "var(--text-1)",
         }}
         className="flex items-center justify-center"
       >
@@ -101,9 +101,9 @@ const TenantRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-page)",
+          background: "var(--bg-main)",
           minHeight: "100vh",
-          color: "var(--text-primary)",
+          color: "var(--text-1)",
         }}
         className="flex items-center justify-center"
       >
@@ -129,9 +129,9 @@ const StudentRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-page)",
+          background: "var(--bg-main)",
           minHeight: "100vh",
-          color: "var(--text-primary)",
+          color: "var(--text-1)",
         }}
         className="flex items-center justify-center"
       >
@@ -174,9 +174,9 @@ const ProtectedRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-page)",
+          background: "var(--bg-main)",
           minHeight: "100vh",
-          color: "var(--text-primary)",
+          color: "var(--text-1)",
         }}
         className="flex items-center justify-center"
       >
@@ -197,7 +197,7 @@ const ModuleRoute = ({ element, moduleKey }) => {
   if (loading) {
     return (
       <div
-        style={{ background: "var(--bg-page)", minHeight: "100vh" }}
+        style={{ background: "#070b14", minHeight: "100vh" }}
         className="flex items-center justify-center text-primary"
       >
         <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
@@ -591,7 +591,7 @@ const AppRoutes = () => {
         element={
           loading ? (
             <div
-              style={{ background: "var(--bg-page)", minHeight: "100vh" }}
+              style={{ background: "#070b14", minHeight: "100vh" }}
               className="flex items-center justify-center text-primary"
             >
               <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />

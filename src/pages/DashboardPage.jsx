@@ -51,7 +51,7 @@ const BarChart = () => (
 const iconColors = {
   indigo: { icon: 'var(--accent)', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.2)' },
   green:  { icon: 'var(--success-text)', bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.2)' },
-  amber:  { icon: 'var(--warning)', bg: 'var(--warning-bg)', border: 'var(--warning)' },
+  amber:  { icon: 'var(--danger)', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.2)' },
   red:    { icon: 'var(--danger)', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.2)'  },
 };
 const StatCard = ({ title, value, icon: Icon, color, change, positive, sub }) => {
@@ -85,7 +85,7 @@ const StatCard = ({ title, value, icon: Icon, color, change, positive, sub }) =>
 const EVENTS = [
   { date:'02', month:'NOV', title:'Mid-term Examinations', sub:'All Classes · 9:00 AM',  type:'Exam',    tc:'rgba(99,102,241,0.2)',  tx:'var(--accent)' },
   { date:'05', month:'NOV', title:'Annual Sports Day',     sub:'Main Ground · 8:00 AM',  type:'Event',   tc:'rgba(16,185,129,0.2)', tx:'var(--success-text)' },
-  { date:'08', month:'NOV', title:'Parent-Teacher Meeting',sub:'Hall A · 10:00 AM',      type:'Meet',    tc:'var(--warning-bg)', tx:'var(--warning)' },
+  { date:'08', month:'NOV', title:'Parent-Teacher Meeting',sub:'Hall A · 10:00 AM',      type:'Meet',    tc:'rgba(245,158,11,0.2)', tx:'var(--danger)' },
   { date:'14', month:'NOV', title:"Children's Day Holiday",sub:'School Holiday',          type:'Holiday', tc:'rgba(239,68,68,0.2)',  tx:'var(--danger)' },
 ];
 
@@ -100,7 +100,7 @@ const STUDENTS = [
 const feeColor   = { Paid:'var(--success-text)', Pending:'var(--danger)', Overdue:'var(--danger)' };
 const statStyles = {
   Active: { bg:'rgba(16,185,129,0.1)', color:'var(--success-text)', border:'rgba(16,185,129,0.25)' },
-  Late:   { bg:'var(--warning-bg)', color:'var(--warning)', border:'var(--warning)' },
+  Late:   { bg:'rgba(245,158,11,0.1)', color:'var(--danger)', border:'rgba(245,158,11,0.25)' },
 };
 
 /* ══ DASHBOARD PAGE ══════════════════════════════════════════ */
