@@ -490,7 +490,7 @@ export default function EmployeePage() {
   const employeeColumns = [
     {
       key: "employee_id",
-      label: "Employee ID",
+      label: "ID",
       value: (employee) => employee.employee_id,
     },
     {
@@ -864,7 +864,7 @@ export default function EmployeePage() {
                   pageEmployees.map((emp) => (
                     <tr
                       key={emp.id}
-                      className="hover:bg-slate-800/30 transition"
+                      className={`transition hover:bg-slate-800/30 ${isEditingEmployee && formData.id === emp.id ? "border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
                     >
                       {!isEditingEmployee && (
                         <td className="px-3 py-4 text-center">
@@ -1040,21 +1040,31 @@ export default function EmployeePage() {
           <div
             className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none rounded-xl border border-slate-700/70 bg-[var(--bg-card)] shadow-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} flex flex-col overflow-hidden`}
           >
-            <div className="sticky top-0 flex justify-between items-center p-6 border-b border-slate-700 bg-slate-900 z-10">
-              <h2 className="text-2xl font-bold text-white">
-                {modalMode === "create" ? "Add New Employee" : "Edit Employee"}
-              </h2>
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-4">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-semibold text-white">
+                  {modalMode === "create" ? "Add Employee" : "Edit Employee"}
+                </h2>
+                {modalMode === "edit" && (
+                  <p className="mt-0.5 truncate text-sm text-slate-400">
+                    {formData.full_name}
+                    {formData.designation ? ` · ${formData.designation}` : ""}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-white"
+                aria-label="Close employee editor"
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
 
             <form
+              id="employee-edit-form"
               onSubmit={handleSubmit}
-              className={`min-h-0 flex-1 overflow-y-auto ${modalMode === "edit" ? "space-y-4 p-4" : "space-y-6 p-6"}`}
+              className={`min-h-0 flex-1 overflow-y-auto ${modalMode === "edit" ? "space-y-5 p-5" : "space-y-6 p-6"}`}
             >
               {/* Personal Information */}
               <div>
@@ -1736,27 +1746,33 @@ export default function EmployeePage() {
               </div>
 
               {/* Form Actions */}
-              <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-700 pt-4 bg-slate-900">
+              <div
+                className={`z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end ${
+                  modalMode === "edit"
+                    ? "sticky bottom-[-1.25rem] -mx-5 -mb-5 border-t border-slate-800 bg-slate-950/95 px-5 py-3 backdrop-blur"
+                    : "sticky bottom-0 border-t border-slate-700 bg-slate-900 pt-4"
+                }`}
+              >
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     setProfilePhotoPreview("");
                   }}
-                  className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
+                  className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 transition hover:bg-slate-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:bg-slate-600 transition"
+                  className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading
                     ? "Saving..."
                     : modalMode === "create"
-                      ? "Create"
-                      : "Update"}
+                      ? "Create Employee"
+                      : "Save Changes"}
                 </button>
               </div>
             </form>
