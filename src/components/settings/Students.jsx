@@ -1950,7 +1950,7 @@ const Students = () => {
                   )}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <InputField
                   label="Full Name *"
                   value={form.full_name}
@@ -2182,7 +2182,7 @@ const Students = () => {
               open={expandedSections.contact}
               onToggle={() => toggleSection("contact")}
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <InputField
                   label="Personal Email"
                   type="email"
@@ -2273,7 +2273,7 @@ const Students = () => {
               <div className="space-y-4">
                 <div className="border-l-4 border-blue-500 pl-4">
                   <h4 className="font-semibold text-slate-200 mb-2">Father</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Father's Name"
                       value={form.father_name}
@@ -2315,7 +2315,7 @@ const Students = () => {
                 </div>
                 <div className="border-l-4 border-green-500 pl-4">
                   <h4 className="font-semibold text-slate-200 mb-2">Mother</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Mother's Name"
                       value={form.mother_name}
@@ -2359,7 +2359,7 @@ const Students = () => {
                   <h4 className="font-semibold text-slate-200 mb-2">
                     Guardian
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Guardian's Name"
                       value={form.guardian_name}
@@ -2593,7 +2593,7 @@ const Students = () => {
                   open={expandedSections.transportation}
                   onToggle={() => toggleSection("transportation")}
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <CheckboxField
                       label="Requires Transportation"
                       checked={form.transportation_required}
@@ -2720,7 +2720,7 @@ const Students = () => {
                   <h4 className="font-semibold text-slate-200 mb-3">
                     Basic Medical Data
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Blood Group"
                       value={form.blood_group}

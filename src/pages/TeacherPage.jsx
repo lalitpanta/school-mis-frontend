@@ -1383,7 +1383,7 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.professional && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-3">
+                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Designation
@@ -1628,7 +1628,7 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.qualification && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-3">
+                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Highest Qualification
@@ -1762,7 +1762,7 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.banking && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-3">
+                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Bank Name
@@ -1888,7 +1888,7 @@ const TeacherPage = () => {
                       <label className="text-sm text-slate-300">
                         Allowances (Travel, House, Medical)
                       </label>
-                      <div className="grid gap-3 md:grid-cols-3">
+                      <div className="grid gap-3 md:grid-cols-2">
                         <input
                           type="number"
                           placeholder="Travel"
@@ -1951,7 +1951,7 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.experience && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-3">
+                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Previous Organization
@@ -2070,7 +2070,7 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.legal && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-3">
+                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Citizenship Number
@@ -2201,7 +2201,7 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.emergency && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-3">
+                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Contact Name
