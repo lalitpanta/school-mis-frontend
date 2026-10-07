@@ -1278,15 +1278,21 @@ export default function EmployeePage() {
           className={`${modalMode === "edit" ? "entity-edit-panel min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} overflow-hidden`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "flex max-h-[95vh] w-full max-w-6xl flex-col rounded-2xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
           >
-            <div className="entity-edit-header flex h-11 shrink-0 items-center justify-between gap-4 border-b border-slate-800/70 px-5">
+            <div className={`${modalMode === "edit" ? "entity-edit-header flex h-11 shrink-0 items-center px-5" : "flex shrink-0 items-start px-6 py-5 sm:px-8"} justify-between gap-4 border-b border-slate-800/70`}>
               <div className="min-w-0 flex-1">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-white">
-                  {modalMode === "create" ? "Add Employee" : `EDIT EMPLOYEE · ${formData.full_name}`}
+                <h2 className={`${modalMode === "edit" ? "text-sm uppercase tracking-wide" : "text-2xl"} font-semibold text-white`}>
+                  {modalMode === "create" ? "Create New Employee" : `EDIT EMPLOYEE · ${formData.full_name}`}
                 </h2>
+                {modalMode === "create" && (
+                  <p className="mt-1 text-sm text-slate-400">
+                    Fill in the employee's personal, contact, employment, and document details.
+                  </p>
+                )}
               </div>
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 aria-label="Close employee editor"
                 className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
@@ -1342,10 +1348,10 @@ export default function EmployeePage() {
             <form
               id="employee-edit-form"
               onSubmit={handleSubmit}
-              className={`min-h-0 flex-1 ${modalMode === "edit" ? "entity-edit-form employee-edit-form space-y-4 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-5" : "space-y-6 overflow-y-auto p-6"}`}
+              className={`min-h-0 flex-1 ${modalMode === "edit" ? "entity-edit-form employee-edit-form space-y-4 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-5" : "entity-create-form mx-auto w-full max-w-5xl space-y-5 overflow-y-auto px-4 py-5 sm:px-6"}`}
             >
               {/* Personal Information */}
-              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+              <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
                 <h3 id="employee-personal" className="scroll-mt-4 text-base font-semibold text-white mb-3">
                   Personal Information
                 </h3>
@@ -1596,7 +1602,7 @@ export default function EmployeePage() {
               </div>
 
               {/* Identification Information */}
-              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+              <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
                 <h3 className="text-base font-semibold text-white mb-4">
                   Identification Information
                 </h3>
@@ -1665,7 +1671,7 @@ export default function EmployeePage() {
               </div>
 
               {/* Employment Information */}
-              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+              <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
                 <h3 id="employee-employment" className="scroll-mt-4 text-base font-semibold text-white mb-4">
                   Employment Information
                 </h3>
@@ -1794,7 +1800,7 @@ export default function EmployeePage() {
               </div>
 
               {/* Salary & Payroll Information */}
-              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+              <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
                 <h3 className="text-base font-semibold text-white mb-4">
                   Salary & Payroll Information
                 </h3>
@@ -1935,7 +1941,7 @@ export default function EmployeePage() {
               </div>
 
               {/* Education Information */}
-              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+              <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
                 <h3 className="text-base font-semibold text-white mb-4">
                   Education Information
                 </h3>
@@ -2004,7 +2010,7 @@ export default function EmployeePage() {
               </div>
 
               {/* Documents */}
-              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+              <div className={modalMode === "edit" ? "employee-edit-card" : "employee-create-section"}>
                 <h3 id="employee-documents" className="scroll-mt-4 text-base font-semibold text-white mb-4">
                   Documents
                 </h3>
