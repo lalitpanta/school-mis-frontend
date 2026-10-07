@@ -158,21 +158,34 @@ const TextAreaField = ({ label, value, onChange, rows = 3 }) => (
 );
 
 const CheckboxField = ({ label, checked, onChange }) => (
-  <div className="flex items-center gap-2">
-    <input
-      id={`chk_${label}`}
-      type="checkbox"
-      checked={checked || false}
-      onChange={onChange}
-      className="w-4 h-4 rounded cursor-pointer"
-    />
-    <label
-      htmlFor={`chk_${label}`}
-      className="text-sm text-slate-300 cursor-pointer"
+  <label
+    htmlFor={`chk_${label}`}
+    className={`flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 py-3 transition ${
+      checked
+        ? "border-indigo-400/70 bg-indigo-500/10"
+        : "border-slate-700 bg-slate-900/70 hover:border-slate-600 hover:bg-slate-800/80"
+    }`}
+  >
+    <span className="flex items-center gap-3">
+      <input
+        id={`chk_${label}`}
+        type="checkbox"
+        checked={checked || false}
+        onChange={onChange}
+        className="h-5 w-5 shrink-0 cursor-pointer accent-indigo-500"
+      />
+      <span className="text-sm font-medium text-slate-200">{label}</span>
+    </span>
+    <span
+      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+        checked
+          ? "bg-indigo-500/20 text-indigo-200"
+          : "bg-slate-800 text-slate-400"
+      }`}
     >
-      {label}
-    </label>
-  </div>
+      {checked ? "Yes" : "No"}
+    </span>
+  </label>
 );
 
 const RadioField = ({ label, name, value, checked, onChange }) => (
@@ -2523,7 +2536,7 @@ const Students = () => {
                 <Section
                   title="4. Transportation Information"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     <CheckboxField
                       label="Requires Transportation"
                       checked={form.transportation_required}

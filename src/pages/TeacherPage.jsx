@@ -1308,7 +1308,7 @@ const TeacherPage = () => {
                   Professional Information
                 </h3>
                 {(
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Designation
@@ -1653,7 +1653,7 @@ const TeacherPage = () => {
                   Banking & Insurance
                 </h3>
                 {(
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Bank Name
@@ -1775,11 +1775,11 @@ const TeacherPage = () => {
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
                       />
                     </div>
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-2">
                       <label className="text-sm text-slate-300">
                         Allowances (Travel, House, Medical)
                       </label>
-                      <div className="grid gap-3 md:grid-cols-2">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <input
                           type="number"
                           placeholder="Travel"
@@ -2042,7 +2042,7 @@ const TeacherPage = () => {
                   Emergency Contact
                 </h3>
                 {(
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
                         Contact Name
@@ -2088,7 +2088,7 @@ const TeacherPage = () => {
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
                       />
                     </div>
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-2">
                       <label className="text-sm text-slate-300">Address</label>
                       <input
                         value={formData.emergency_contact_address}
