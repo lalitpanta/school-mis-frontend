@@ -20,6 +20,7 @@ import {
 import config from "../config/config";
 import RecordTableToolbar from "../components/common/RecordTableToolbar";
 import toast from "react-hot-toast";
+import { getPrintThemeStyles } from "../utils/themePrint";
 
 const emptyTeacher = {
   full_name: "",
@@ -298,32 +299,33 @@ const TeacherPage = () => {
 <head>
   <meta charset="utf-8" />
   <title>Teacher Profile</title>
+  ${getPrintThemeStyles()}
   <style>
-    body { font-family: Inter, Arial, Helvetica, sans-serif; color: #141414; margin: 20px; }
+    body { font-family: Inter, Arial, Helvetica, sans-serif; color: var(--text-primary); background: var(--bg-page); margin: 20px; }
     .page { max-width: 900px; margin: auto; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
     .badge { padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.35px; }
-    .badge-active { background: #d1fae5; color: #065f46; }
-    .badge-inactive { background: #fee2e2; color: #991b1b; }
+    .badge-active { background: var(--success-bg); color: var(--success-text); }
+    .badge-inactive { background: var(--danger-bg); color: var(--danger); }
     .title-block { flex: 1; }
     .title-block h1 { margin: 0; font-size: 32px; letter-spacing: -0.03em; }
-    .title-block p { margin: 8px 0 0; color: #475569; font-size: 14px; }
-    .profile-photo { width: 110px; height: 110px; border-radius: 18px; object-fit: cover; border: 1px solid #e2e8f0; }
+    .title-block p { margin: 8px 0 0; color: var(--text-muted); font-size: 14px; }
+    .profile-photo { width: 110px; height: 110px; border-radius: 18px; object-fit: cover; border: 1px solid var(--border-default); }
     .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
-    .card { border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; background: #ffffff; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); }
-    .section-title { margin: 0 0 14px; font-size: 18px; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+    .card { border: 1px solid var(--border-default); border-radius: 18px; padding: 18px; background: var(--bg-surface); box-shadow: var(--shadow-card); }
+    .section-title { margin: 0 0 14px; font-size: 18px; color: var(--text-primary); border-bottom: 1px solid var(--border-default); padding-bottom: 10px; }
     .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; }
     .detail-row { display: flex; gap: 8px; align-items: baseline; }
-    .detail-label { width: 170px; font-size: 13px; color: #475569; font-weight: 700; }
-    .detail-value { font-size: 14px; color: #0f172a; }
+    .detail-label { width: 170px; font-size: 13px; color: var(--text-muted); font-weight: 700; }
+    .detail-value { font-size: 14px; color: var(--text-primary); }
     .full-width { grid-column: span 2; }
     .documents { margin: 0; padding-left: 18px; }
     .documents li { margin-bottom: 8px; }
-    .print-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; }
+    .print-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border-default); color: var(--text-muted); font-size: 13px; }
     @media print {
       body { margin: 0; }
       .page { box-shadow: none; margin: 0; }
-      .card { box-shadow: none; border: 1px solid #d1d5db; }
+      .card { box-shadow: none; border: 1px solid var(--border-default); }
     }
   </style>
 </head>
@@ -632,7 +634,7 @@ const TeacherPage = () => {
       value: (teacher) => teacher.full_name,
       render: (teacher) => (
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-xs font-semibold text-accent">
             {teacher.profile_photo_url ? (
               <img src={teacher.profile_photo_url} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -645,8 +647,8 @@ const TeacherPage = () => {
             )}
           </div>
           <div className="min-w-0">
-            <div className="truncate font-medium text-white">{teacher.full_name}</div>
-            <div className="truncate text-xs text-slate-400">
+            <div className="truncate font-medium text-primary">{teacher.full_name}</div>
+            <div className="truncate text-xs text-muted">
               {teacher.work_email || teacher.personal_email || "—"}
             </div>
           </div>
@@ -687,7 +689,7 @@ const TeacherPage = () => {
       value: (teacher) => teacher.is_active,
       render: (teacher) => (
         <span
-          className={`entity-status-pill inline-flex rounded-full px-2 py-1 text-xs ${teacher.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+          className={`entity-status-pill inline-flex rounded-full px-2 py-1 text-xs ${teacher.is_active ? "bg-success text-success" : "bg-danger-soft text-danger"}`}
         >
           {teacher.is_active ? "Active" : "Inactive"}
         </span>
@@ -800,13 +802,13 @@ const TeacherPage = () => {
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-[28px] font-bold text-white">Manage Teachers</h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <h1 className="text-[28px] font-bold text-primary">Manage Teachers</h1>
+            <p className="mt-1 text-sm text-muted">
               Manage teacher profiles, status, and access.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="entity-admin-button cursor-pointer rounded-xl bg-slate-700 px-3 py-2 text-sm text-white">
+            <label className="entity-admin-button cursor-pointer rounded-xl bg-subtle px-3 py-2 text-sm text-primary">
               Import
               <input
                 type="file"
@@ -828,7 +830,7 @@ const TeacherPage = () => {
             </label>
             <button
               onClick={openCreateModal}
-              className="entity-admin-button bg-teal-300 hover:bg-teal-200 text-slate-950 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition"
+              className="entity-admin-button bg-accent hover:bg-accent text-muted px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition"
             >
               <Plus size={16} /> Add Teacher
             </button>
@@ -836,12 +838,12 @@ const TeacherPage = () => {
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-200">
+          <div className="p-4 rounded-xl bg-danger-soft border border-danger text-sm text-danger">
             {error}
           </div>
         )}
 
-        <div className="entity-admin-card flex w-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
+        <div className="entity-admin-card flex w-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-default bg-surface">
           <RecordTableToolbar
             searchTerm={searchTerm}
             onSearchChange={(value) => {
@@ -860,7 +862,7 @@ const TeacherPage = () => {
             }
             filterContent={
               <>
-                <label className="grid gap-1 text-xs text-slate-400">
+                <label className="grid gap-1 text-xs text-muted">
                   Designation
                   <input
                     value={filterDesignation}
@@ -868,10 +870,10 @@ const TeacherPage = () => {
                       setFilterDesignation(event.target.value);
                       setTeacherCurrentPage(1);
                     }}
-                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
+                    className="w-full rounded border border-default bg-subtle px-3 py-2 text-sm text-primary"
                   />
                 </label>
-                <label className="grid gap-1 text-xs text-slate-400">
+                <label className="grid gap-1 text-xs text-muted">
                   Status
                   <select
                     value={teacherStatusFilter}
@@ -879,7 +881,7 @@ const TeacherPage = () => {
                       setTeacherStatusFilter(event.target.value);
                       setTeacherCurrentPage(1);
                     }}
-                    className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
+                    className="w-full rounded border border-default bg-subtle px-3 py-2 text-sm text-primary"
                   >
                     <option value="all">All statuses</option>
                     <option value="active">Active</option>
@@ -892,7 +894,7 @@ const TeacherPage = () => {
                     setTeacherCurrentPage(1);
                     loadData();
                   }}
-                  className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                  className="justify-self-start text-xs text-accent hover:text-accent"
                 >
                   Apply filters
                 </button>
@@ -943,7 +945,7 @@ const TeacherPage = () => {
                     console.error(e);
                   }
                 }}
-                className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-slate-300 hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded border border-default px-3 py-2 text-muted hover:bg-subtle"
               >
                 <Download size={16} /> Export CSV
               </button>
@@ -954,9 +956,9 @@ const TeacherPage = () => {
             className={`entity-admin-list min-h-0 flex-1 ${isEditingTeacher ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "w-full overflow-auto"}`}
           >
             <table
-              className="w-full min-w-0 table-fixed text-left text-sm text-slate-300"
+              className="w-full min-w-0 table-fixed text-left text-sm text-muted"
             >
-              <thead className="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-800 text-slate-400">
+              <thead className="sticky top-0 z-10 border-b border-default bg-subtle text-muted">
                 <tr>
                   {!isEditingTeacher && (
                     <th className="w-12 px-3 py-3 text-center">
@@ -988,7 +990,7 @@ const TeacherPage = () => {
                                 ),
                           )
                         }
-                        className="accent-indigo-500"
+                        className="accent-[var(--accent)]"
                       />
                     </th>
                   )}
@@ -1009,7 +1011,7 @@ const TeacherPage = () => {
                                 : "asc",
                           }))
                         }
-                        className="inline-flex items-center gap-1 hover:text-slate-200"
+                        className="inline-flex items-center gap-1 hover:text-primary"
                       >
                         {column.label}
                         <ArrowUpDown size={13} />
@@ -1029,7 +1031,7 @@ const TeacherPage = () => {
                         displayedTeacherColumns.length +
                         (isEditingTeacher ? 1 : 2)
                       }
-                      className="px-4 py-8 text-center text-slate-500"
+                      className="px-4 py-8 text-center text-muted"
                     >
                       {loading
                         ? "Loading teachers..."
@@ -1040,11 +1042,11 @@ const TeacherPage = () => {
                   pageTeachers.map((teacher) => (
                     <tr
                       key={teacher.id}
-                      className={`entity-admin-table-row border-t border-slate-800/70 hover:bg-slate-900/80 ${isEditingTeacher && selectedTeacher?.id === teacher.id ? "entity-admin-selected-row border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
+                      className={`entity-admin-table-row border-t border-default hover:bg-surface ${isEditingTeacher && selectedTeacher?.id === teacher.id ? "entity-admin-selected-row border-l-2 border-l-accent bg-accent-soft" : ""}`}
                     >
                       {!isEditingTeacher && (
                         <td className="px-3 py-4 text-center">
-                          <div className="inline-flex items-center gap-2 text-slate-500">
+                          <div className="inline-flex items-center gap-2 text-muted">
                             <GripVertical size={14} aria-hidden="true" />
                             <input
                               type="checkbox"
@@ -1057,7 +1059,7 @@ const TeacherPage = () => {
                                     : current.filter((id) => id !== teacher.id),
                                 )
                               }
-                              className="accent-indigo-500"
+                              className="accent-[var(--accent)]"
                             />
                           </div>
                         </td>
@@ -1085,7 +1087,7 @@ const TeacherPage = () => {
                             }}
                             title="View teacher"
                             aria-label={`View ${teacher.full_name}`}
-                            className="entity-admin-icon-button rounded p-2 text-slate-300 hover:bg-slate-700/60"
+                            className="entity-admin-icon-button rounded p-2 text-muted hover:bg-subtle"
                           >
                             <Eye size={15} />
                           </button>
@@ -1093,7 +1095,7 @@ const TeacherPage = () => {
                             onClick={() => openEditModal(teacher)}
                             title="Edit teacher"
                             aria-label={`Edit ${teacher.full_name}`}
-                            className="entity-admin-icon-button rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
+                            className="entity-admin-icon-button rounded p-2 text-accent hover:bg-accent-soft"
                           >
                             <Edit size={15} />
                           </button>
@@ -1118,7 +1120,7 @@ const TeacherPage = () => {
                                 ? "Deactivate teacher"
                                 : "Activate teacher"
                             }
-                            className={`entity-admin-icon-button rounded p-2 ${teacher.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                            className={`entity-admin-icon-button rounded p-2 ${teacher.is_active ? "text-danger hover:bg-danger-soft" : "text-success hover:bg-success"}`}
                           >
                             <Power size={15} />
                           </button>
@@ -1126,7 +1128,7 @@ const TeacherPage = () => {
                             onClick={() => handleDelete(teacher.id)}
                             title="Delete teacher"
                             aria-label={`Delete ${teacher.full_name}`}
-                            className="entity-admin-icon-button rounded p-2 text-red-300 hover:bg-red-500/10"
+                            className="entity-admin-icon-button rounded p-2 text-danger hover:bg-danger-soft"
                           >
                             <Trash2 size={15} />
                           </button>
@@ -1139,7 +1141,7 @@ const TeacherPage = () => {
             </table>
           </div>
           <div
-            className={`entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 bg-slate-900/40 px-3 py-3 text-xs text-slate-400 ${isEditingTeacher ? "w-full md:w-1/2" : "w-full"}`}
+            className={`entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-default bg-surface px-3 py-3 text-xs text-muted ${isEditingTeacher ? "w-full md:w-1/2" : "w-full"}`}
           >
             <label className="flex items-center gap-2">
               Rows per page
@@ -1149,7 +1151,7 @@ const TeacherPage = () => {
                   setTeacherPageSize(Number(event.target.value));
                   setTeacherCurrentPage(1);
                 }}
-                className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
+                className="rounded border border-default bg-subtle px-2 py-1.5 text-sm text-primary"
               >
                 {[10, 25, 50].map((size) => (
                   <option key={size} value={size}>
@@ -1195,7 +1197,7 @@ const TeacherPage = () => {
                         : visibleTeacherPage === teacherPageCount
                     }
                     onClick={() => setTeacherCurrentPage(page)}
-                    className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded border border-default p-1.5 text-muted hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Icon size={15} />
                   </button>
@@ -1221,14 +1223,14 @@ const TeacherPage = () => {
                 }
               : undefined
           }
-          className={`${modalMode === "edit" ? `entity-edit-panel z-20 min-h-0 min-w-0 ${editPanelBounds ? "" : "w-full md:absolute md:right-0 md:w-[min(560px,calc(100%-300px))]"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? `entity-edit-panel z-20 min-h-0 min-w-0 ${editPanelBounds ? "" : "w-full md:absolute md:right-0 md:w-[min(560px,calc(100%-300px))]"}` : "fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-default bg-surface shadow-lg" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-default bg-surface shadow-2xl"} overflow-hidden`}
           >
-            <div className="entity-edit-header flex h-11 items-center justify-between gap-4 border-b border-slate-800/70 px-5">
+            <div className="entity-edit-header flex h-11 items-center justify-between gap-4 border-b border-default px-5">
               <div className="min-w-0 flex-1">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-white">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
                   {modalMode === "create"
                     ? "Add Teacher"
                     : `EDIT TEACHER · ${selectedTeacher?.full_name || ""}`}
@@ -1237,7 +1239,7 @@ const TeacherPage = () => {
               <button
                 onClick={closeModal}
                 aria-label="Close teacher editor"
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                className="rounded-lg p-2 text-muted transition hover:bg-subtle hover:text-primary"
               >
                 <X size={20} />
               </button>
@@ -1245,7 +1247,7 @@ const TeacherPage = () => {
             {modalMode === "edit" && (
               <nav
                 aria-label="Teacher form sections"
-                className="entity-edit-tabs flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
+                className="entity-edit-tabs flex shrink-0 gap-5 overflow-x-auto border-b border-default px-5"
               >
                 {[
                   { label: "Personal", id: "personal", target: "teacher-personal" },
@@ -1274,8 +1276,8 @@ const TeacherPage = () => {
                     aria-current={activeTeacherSection === id ? "location" : undefined}
                     className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
                       activeTeacherSection === id
-                        ? "border-teal-400 text-teal-300"
-                        : "border-transparent text-slate-400 hover:text-slate-200"
+                        ? "border-accent text-accent"
+                        : "border-transparent text-muted hover:text-primary"
                     }`}
                   >
                     {label}
@@ -1289,13 +1291,13 @@ const TeacherPage = () => {
               className={`px-5 py-5 ${modalMode === "edit" ? "entity-edit-form min-h-0 flex-1 space-y-5 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
             >
               <div className="space-y-5">
-                <h3 id="teacher-personal" className="scroll-mt-4 text-lg font-semibold text-white">
+                <h3 id="teacher-personal" className="scroll-mt-4 text-lg font-semibold text-primary">
                   Personal Details
                 </h3>
                 {(
-                  <div className="rounded-2xl border border-slate-700/80 bg-slate-900/70 p-3">
+                  <div className="rounded-2xl border border-default bg-surface p-3">
                     <div className="mb-3 flex items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-700 bg-teal-500/15 text-sm font-semibold text-teal-200">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-default bg-accent-soft text-sm font-semibold text-accent">
                         {profilePhotoPreview ? (
                           <img
                             src={profilePhotoPreview}
@@ -1311,7 +1313,7 @@ const TeacherPage = () => {
                             .join("")
                         )}
                       </div>
-                      <label className="cursor-pointer rounded-xl border border-slate-600/80 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-100 hover:bg-slate-700">
+                      <label className="cursor-pointer rounded-xl border border-default bg-subtle px-3 py-2 text-xs font-medium text-primary hover:bg-subtle">
                         Upload Photo
                         <input
                           type="file"
@@ -1331,7 +1333,7 @@ const TeacherPage = () => {
                               profile_photo_url: "",
                             }));
                           }}
-                          className="text-xs text-red-300 hover:text-red-200"
+                          className="text-xs text-danger hover:text-danger"
                         >
                           Remove
                         </button>
@@ -1339,7 +1341,7 @@ const TeacherPage = () => {
                     </div>
                     <div className="grid gap-3 md:grid-cols-2">
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Full Name
                         </label>
                         <input
@@ -1350,12 +1352,12 @@ const TeacherPage = () => {
                               full_name: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                           required
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Date of Birth
                         </label>
                         <input
@@ -1367,22 +1369,22 @@ const TeacherPage = () => {
                               date_of_birth: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">Gender</label>
+                        <label className="text-sm text-muted">Gender</label>
                         <input
                           value={formData.gender}
                           onChange={(e) =>
                             setFormData({ ...formData, gender: e.target.value })
                           }
                           placeholder="Male / Female / Other"
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Blood Group
                         </label>
                         <input
@@ -1394,11 +1396,11 @@ const TeacherPage = () => {
                             })
                           }
                           placeholder="A+ / B- / O+"
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Personal Email
                         </label>
                         <input
@@ -1415,11 +1417,11 @@ const TeacherPage = () => {
                               personal_email: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Personal Phone
                         </label>
                         <input
@@ -1430,11 +1432,11 @@ const TeacherPage = () => {
                               personal_phone: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Alternate Phone
                         </label>
                         <input
@@ -1445,11 +1447,11 @@ const TeacherPage = () => {
                               alternate_phone: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Current Address
                         </label>
                         <input
@@ -1460,11 +1462,11 @@ const TeacherPage = () => {
                               current_address: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Permanent Address
                         </label>
                         <input
@@ -1475,11 +1477,11 @@ const TeacherPage = () => {
                               permanent_address: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Marital Status
                         </label>
                         <input
@@ -1491,11 +1493,11 @@ const TeacherPage = () => {
                             })
                           }
                           placeholder="Single / Married"
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Nationality
                         </label>
                         <input
@@ -1507,11 +1509,11 @@ const TeacherPage = () => {
                             })
                           }
                           placeholder="Nepali"
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Religion
                         </label>
                         <input
@@ -1522,11 +1524,11 @@ const TeacherPage = () => {
                               religion: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-slate-300">
+                        <label className="text-sm text-muted">
                           Ethnicity
                         </label>
                         <input
@@ -1537,20 +1539,20 @@ const TeacherPage = () => {
                               ethnicity: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                     </div>
                   </div>
                 )}
 
-                <h3 id="teacher-employment" className="scroll-mt-4 text-lg font-semibold text-white">
+                <h3 id="teacher-employment" className="scroll-mt-4 text-lg font-semibold text-primary">
                   Professional Information
                 </h3>
                 {(
-                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-default bg-surface p-4 md:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Designation
                       </label>
                       <input
@@ -1562,11 +1564,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="Head Teacher, Subject Teacher"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Department
                       </label>
                       <select
@@ -1577,7 +1579,7 @@ const TeacherPage = () => {
                             department_id: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       >
                         <option value="">Select department</option>
                         {departments.map((department) => (
@@ -1588,7 +1590,7 @@ const TeacherPage = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Employment Type
                       </label>
                       <input
@@ -1600,11 +1602,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="Permanent / Contract"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Join Date
                       </label>
                       <input
@@ -1616,11 +1618,11 @@ const TeacherPage = () => {
                             join_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Work Email
                       </label>
                       <input
@@ -1637,11 +1639,11 @@ const TeacherPage = () => {
                             work_email: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Work Phone / Extension
                       </label>
                       <input
@@ -1652,11 +1654,11 @@ const TeacherPage = () => {
                             work_phone: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Reporting Manager
                       </label>
                       <input
@@ -1668,11 +1670,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="Supervisor name"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Subjects Taught
                       </label>
                       <select
@@ -1690,7 +1692,7 @@ const TeacherPage = () => {
                           }
                         }}
                         disabled={!availableCourses.length}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white disabled:opacity-60"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary disabled:opacity-60"
                       >
                         <option value="">
                           {availableCourses.length
@@ -1709,7 +1711,7 @@ const TeacherPage = () => {
                           </option>
                         ))}
                       </select>
-                      <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-200">
+                      <div className="mt-2 rounded-lg border border-default bg-surface px-3 py-2 text-sm text-primary">
                         {selectedCourses.length
                           ? selectedCourses
                               .map((course) => course.course_name)
@@ -1730,7 +1732,7 @@ const TeacherPage = () => {
                                 )
                               }
                               aria-label={`Remove ${course.course_name}`}
-                              className="rounded-full border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:border-red-500 hover:text-red-300"
+                              className="rounded-full border border-default px-2 py-1 text-xs text-muted hover:border-danger hover:text-danger"
                             >
                               Remove {course.course_name}
                             </button>
@@ -1739,7 +1741,7 @@ const TeacherPage = () => {
                       )}
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Classes Assigned
                       </label>
                       <input
@@ -1751,11 +1753,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="Comma separated"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Office Room / Location
                       </label>
                       <input
@@ -1766,19 +1768,19 @@ const TeacherPage = () => {
                             office_room: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-primary">
                   Qualification & Education
                 </h3>
                 {(
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid gap-4 rounded-3xl border border-default bg-surface p-4 md:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Highest Qualification
                       </label>
                       <input
@@ -1790,11 +1792,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="SLC / Bachelor / Master / PhD"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         University / Institution
                       </label>
                       <input
@@ -1805,11 +1807,11 @@ const TeacherPage = () => {
                             institution_name: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Passed Year
                       </label>
                       <input
@@ -1821,11 +1823,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="2024"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Major Subject
                       </label>
                       <input
@@ -1836,11 +1838,11 @@ const TeacherPage = () => {
                             major_subject: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Additional Certifications
                       </label>
                       <input
@@ -1852,11 +1854,11 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="Comma separated"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Teaching License Number
                       </label>
                       <input
@@ -1867,11 +1869,11 @@ const TeacherPage = () => {
                             teaching_license_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         License Expiry Date
                       </label>
                       <input
@@ -1883,19 +1885,19 @@ const TeacherPage = () => {
                             license_expiry_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-primary">
                   Banking & Insurance
                 </h3>
                 {(
-                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-default bg-surface p-4 md:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Bank Name
                       </label>
                       <input
@@ -1906,11 +1908,11 @@ const TeacherPage = () => {
                             bank_name: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Bank Branch
                       </label>
                       <input
@@ -1921,11 +1923,11 @@ const TeacherPage = () => {
                             bank_branch: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Account Number
                       </label>
                       <input
@@ -1936,11 +1938,11 @@ const TeacherPage = () => {
                             account_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Account Holder Name
                       </label>
                       <input
@@ -1951,11 +1953,11 @@ const TeacherPage = () => {
                             account_holder_name: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Salary Grade
                       </label>
                       <input
@@ -1966,11 +1968,11 @@ const TeacherPage = () => {
                             salary_grade: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Basic Salary
                       </label>
                       <input
@@ -1982,11 +1984,11 @@ const TeacherPage = () => {
                             basic_salary: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Provident Fund Number
                       </label>
                       <input
@@ -1997,11 +1999,11 @@ const TeacherPage = () => {
                             provident_fund_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Insurance Number
                       </label>
                       <input
@@ -2012,11 +2014,11 @@ const TeacherPage = () => {
                             insurance_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Allowances (Travel, House, Medical)
                       </label>
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -2030,7 +2032,7 @@ const TeacherPage = () => {
                               allowances_travel: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                         <input
                           type="number"
@@ -2042,7 +2044,7 @@ const TeacherPage = () => {
                               allowances_house: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                         <input
                           type="number"
@@ -2054,20 +2056,20 @@ const TeacherPage = () => {
                               allowances_medical: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                         />
                       </div>
                     </div>
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-primary">
                   Experience
                 </h3>
                 {(
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid gap-4 rounded-3xl border border-default bg-surface p-4 md:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Previous Organization
                       </label>
                       <input
@@ -2078,11 +2080,11 @@ const TeacherPage = () => {
                             previous_organization: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Position Held
                       </label>
                       <input
@@ -2093,11 +2095,11 @@ const TeacherPage = () => {
                             previous_position: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         From Date
                       </label>
                       <input
@@ -2109,11 +2111,11 @@ const TeacherPage = () => {
                             previous_from_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">To Date</label>
+                      <label className="text-sm text-muted">To Date</label>
                       <input
                         type="date"
                         value={formData.previous_to_date}
@@ -2123,11 +2125,11 @@ const TeacherPage = () => {
                             previous_to_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Reason for Leaving
                       </label>
                       <input
@@ -2138,11 +2140,11 @@ const TeacherPage = () => {
                             previous_leave_reason: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Total Years Experience
                       </label>
                       <input
@@ -2157,19 +2159,19 @@ const TeacherPage = () => {
                           })
                         }
                         placeholder="e.g. 3.5"
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-primary">
                   Identity & Legal
                 </h3>
                 {(
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid gap-4 rounded-3xl border border-default bg-surface p-4 md:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Citizenship Number
                       </label>
                       <input
@@ -2180,11 +2182,11 @@ const TeacherPage = () => {
                             citizenship_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Issued Date
                       </label>
                       <input
@@ -2196,11 +2198,11 @@ const TeacherPage = () => {
                             citizenship_issued_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Issued District
                       </label>
                       <input
@@ -2211,11 +2213,11 @@ const TeacherPage = () => {
                             citizenship_issued_district: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Passport Number
                       </label>
                       <input
@@ -2226,11 +2228,11 @@ const TeacherPage = () => {
                             passport_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Passport Expiry
                       </label>
                       <input
@@ -2242,11 +2244,11 @@ const TeacherPage = () => {
                             passport_expiry_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         PAN / Tax ID
                       </label>
                       <input
@@ -2257,11 +2259,11 @@ const TeacherPage = () => {
                             pan_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         National ID Number
                       </label>
                       <input
@@ -2272,19 +2274,19 @@ const TeacherPage = () => {
                             national_id_number: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                   </div>
                 )}
 
-                <h3 id="teacher-contact" className="scroll-mt-4 text-lg font-semibold text-white">
+                <h3 id="teacher-contact" className="scroll-mt-4 text-lg font-semibold text-primary">
                   Emergency Contact
                 </h3>
                 {(
-                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 rounded-2xl border border-default bg-surface p-4 md:grid-cols-2">
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Contact Name
                       </label>
                       <input
@@ -2295,11 +2297,11 @@ const TeacherPage = () => {
                             emergency_contact_name: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Relationship
                       </label>
                       <input
@@ -2310,11 +2312,11 @@ const TeacherPage = () => {
                             emergency_contact_relationship: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-300">
+                      <label className="text-sm text-muted">
                         Phone Number
                       </label>
                       <input
@@ -2325,11 +2327,11 @@ const TeacherPage = () => {
                             emergency_contact_phone: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-sm text-slate-300">Address</label>
+                      <label className="text-sm text-muted">Address</label>
                       <input
                         value={formData.emergency_contact_address}
                         onChange={(e) =>
@@ -2338,28 +2340,28 @@ const TeacherPage = () => {
                             emergency_contact_address: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                        className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                       />
                     </div>
                   </div>
                 )}
 
-                <h3 id="teacher-documents" className="scroll-mt-4 text-lg font-semibold text-white">
+                <h3 id="teacher-documents" className="scroll-mt-4 text-lg font-semibold text-primary">
                   Required Documents
                 </h3>
                 {(
-                  <div className="space-y-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4">
-                    <div className="rounded-3xl border border-slate-700/80 bg-slate-950 p-4">
-                      <label className="text-sm text-slate-300">
+                  <div className="space-y-4 rounded-3xl border border-default bg-surface p-4">
+                    <div className="rounded-3xl border border-default bg-surface p-4">
+                      <label className="text-sm text-muted">
                         Upload Documents
                       </label>
                       <input
                         type="file"
                         multiple
                         onChange={handleAttachmentsChange}
-                        className="mt-2 w-full text-sm text-slate-200 file:rounded-xl file:border file:border-slate-700 file:bg-slate-800 file:px-3 file:py-2 file:text-sm file:text-slate-100"
+                        className="mt-2 w-full text-sm text-primary file:rounded-xl file:border file:border-default file:bg-subtle file:px-3 file:py-2 file:text-sm file:text-primary"
                       />
-                      <p className="mt-2 text-xs text-slate-500">
+                      <p className="mt-2 text-xs text-muted">
                         Upload PDFs, images, or scanned documents for this
                         teacher.
                       </p>
@@ -2369,13 +2371,13 @@ const TeacherPage = () => {
                         {attachments.map((att, index) => (
                           <div
                             key={`${att.file.name}-${index}`}
-                            className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700/80 bg-slate-950 px-3 py-2 text-sm text-slate-200"
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-default bg-surface px-3 py-2 text-sm text-primary"
                           >
                             <div className="flex-1">
-                              <p className="font-medium text-white">
+                              <p className="font-medium text-primary">
                                 {att.file.name}
                               </p>
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-muted">
                                 {(att.file.size / 1024).toFixed(1)} KB
                               </p>
                               <input
@@ -2390,14 +2392,14 @@ const TeacherPage = () => {
                                   };
                                   setAttachments(newAttachments);
                                 }}
-                                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-white"
+                                className="mt-2 w-full rounded-xl border border-default bg-surface px-2 py-1 text-sm text-primary"
                               />
                             </div>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
                                 onClick={() => removeAttachment(index)}
-                                className="rounded-full border border-slate-600 px-2 py-1 text-xs text-slate-300 hover:bg-slate-800"
+                                className="rounded-full border border-default px-2 py-1 text-xs text-muted hover:bg-subtle"
                               >
                                 Remove
                               </button>
@@ -2410,7 +2412,7 @@ const TeacherPage = () => {
                 )}
               </div>
               {modalMode === "create" && (
-                <section className="rounded-lg border border-teal-500/30 bg-teal-500/5 px-4 py-3">
+                <section className="rounded-lg border border-accent bg-accent-soft px-4 py-3">
                   <label
                     htmlFor="teacher-portal-credentials"
                     className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 sm:grid-cols-[auto_minmax(220px,0.9fr)_minmax(0,1.4fr)] sm:gap-x-4"
@@ -2425,30 +2427,30 @@ const TeacherPage = () => {
                           provide_login_credentials: event.target.checked,
                         })
                       }
-                      className="row-span-2 h-4 w-4 shrink-0 accent-teal-500 sm:row-span-1"
+                      className="row-span-2 h-4 w-4 shrink-0 accent-[var(--accent)] sm:row-span-1"
                     />
-                    <span className="min-w-0 text-sm font-semibold leading-5 text-slate-100">
+                    <span className="min-w-0 text-sm font-semibold leading-5 text-primary">
                       Create teacher portal login and email credentials
                     </span>
-                    <span className="col-start-2 min-w-0 text-xs leading-5 text-slate-400 sm:col-start-auto sm:text-sm">
+                    <span className="col-start-2 min-w-0 text-xs leading-5 text-muted sm:col-start-auto sm:text-sm">
                       A temporary password and dedicated teacher portal links will be sent to the work or personal email above.
                     </span>
                   </label>
                 </section>
               )}
 
-              <div className="sticky bottom-[-1.25rem] z-10 -mx-5 -mb-5 flex flex-col gap-3 border-t border-slate-800 bg-slate-950/95 px-5 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
+              <div className="sticky bottom-[-1.25rem] z-10 -mx-5 -mb-5 flex flex-col gap-3 border-t border-default bg-surface px-5 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                  className="rounded-xl border border-default px-4 py-2 text-sm text-primary hover:bg-subtle"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-primary hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {modalMode === "create" ? "Create Teacher" : "Save Changes"}
                 </button>
@@ -2459,32 +2461,32 @@ const TeacherPage = () => {
       )}
 
       {showViewModal && viewTeacher && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-700/70 bg-slate-950 shadow-2xl">
-            <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4">
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default bg-surface shadow-2xl">
+            <div className="flex items-center justify-between gap-4 border-b border-default px-6 py-4">
               <div>
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-lg font-semibold text-primary">
                   {viewTeacher.full_name}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Teacher profile and documents
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${viewTeacher.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${viewTeacher.is_active ? "bg-success text-success" : "bg-danger text-danger"}`}
                 >
                   {viewTeacher.is_active ? "Active" : "Inactive"}
                 </span>
                 <button
                   onClick={printTeacherInfo}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700"
+                  className="inline-flex items-center gap-2 rounded-xl border border-default bg-subtle px-3 py-2 text-xs font-semibold text-primary hover:bg-subtle"
                 >
                   Print
                 </button>
                 <button
                   onClick={() => setShowViewModal(false)}
-                  className="text-slate-400 hover:text-white"
+                  className="text-muted hover:text-primary"
                 >
                   <X size={20} />
                 </button>
@@ -2492,7 +2494,7 @@ const TeacherPage = () => {
             </div>
             <div className="p-6 grid gap-6 md:grid-cols-3">
               <div className="col-span-1 flex flex-col items-center gap-4">
-                <div className="h-40 w-40 overflow-hidden rounded-full bg-slate-800">
+                <div className="h-40 w-40 overflow-hidden rounded-full bg-subtle">
                   {viewTeacher.profile_photo_url ? (
                     <img
                       src={viewTeacher.profile_photo_url}
@@ -2500,33 +2502,33 @@ const TeacherPage = () => {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-sm text-slate-500">
+                    <div className="flex h-full w-full items-center justify-center text-sm text-muted">
                       No photo
                     </div>
                   )}
                 </div>
                 <div className="text-center">
-                  <div className="text-white font-semibold">
+                  <div className="text-primary font-semibold">
                     {viewTeacher.full_name}
                   </div>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-muted">
                     {viewTeacher.designation || "—"}
                   </div>
                 </div>
               </div>
               <div className="col-span-2 grid gap-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                    <div className="text-xs text-slate-400">Work Email</div>
-                    <div className="text-sm text-white">
+                  <div className="rounded-xl border border-default bg-surface p-3">
+                    <div className="text-xs text-muted">Work Email</div>
+                    <div className="text-sm text-primary">
                       {viewTeacher.work_email ||
                         viewTeacher.personal_email ||
                         "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                    <div className="text-xs text-slate-400">Phone</div>
-                    <div className="text-sm text-white">
+                  <div className="rounded-xl border border-default bg-surface p-3">
+                    <div className="text-xs text-muted">Phone</div>
+                    <div className="text-sm text-primary">
                       {viewTeacher.personal_phone ||
                         viewTeacher.work_phone ||
                         "—"}
@@ -2534,50 +2536,50 @@ const TeacherPage = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                    <div className="text-xs text-slate-400">Department</div>
-                    <div className="text-sm text-white">
+                  <div className="rounded-xl border border-default bg-surface p-3">
+                    <div className="text-xs text-muted">Department</div>
+                    <div className="text-sm text-primary">
                       {departments.find(
                         (d) => d.id === viewTeacher.department_id,
                       )?.name || "—"}
                     </div>
                   </div>
-                  <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                    <div className="text-xs text-slate-400">Joined</div>
-                    <div className="text-sm text-white">
+                  <div className="rounded-xl border border-default bg-surface p-3">
+                    <div className="text-xs text-muted">Joined</div>
+                    <div className="text-sm text-primary">
                       {viewTeacher.join_date || "—"}
                     </div>
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Address</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Address</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.current_address ||
                       viewTeacher.permanent_address ||
                       "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
+                <div className="rounded-xl border border-default bg-surface p-3">
                   <div className="flex items-center justify-between">
-                    <div className="text-xs text-slate-400">Documents</div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-muted">Documents</div>
+                    <div className="text-xs text-muted">
                       {(viewTeacher.documents || []).length} files
                     </div>
                   </div>
                   <div className="mt-2 grid gap-2">
                     {(viewTeacher.documents || []).length === 0 ? (
-                      <div className="text-sm text-slate-500">No documents</div>
+                      <div className="text-sm text-muted">No documents</div>
                     ) : (
                       (viewTeacher.documents || []).map((d, i) => (
                         <div
                           key={d.id || i}
-                          className="flex items-center justify-between rounded-lg border border-slate-700/80 bg-slate-950 px-3 py-2"
+                          className="flex items-center justify-between rounded-lg border border-default bg-surface px-3 py-2"
                         >
                           <div>
-                            <div className="text-sm text-white">
+                            <div className="text-sm text-primary">
                               {d.title || d.name || "Document"}
                             </div>
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-muted">
                               {d.uploaded_at
                                 ? new Date(d.uploaded_at).toLocaleString()
                                 : ""}
@@ -2588,7 +2590,7 @@ const TeacherPage = () => {
                               href={d.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-sm text-indigo-400 hover:underline"
+                              className="text-sm text-accent hover:underline"
                             >
                               Download
                             </a>
@@ -2602,37 +2604,37 @@ const TeacherPage = () => {
             </div>
             <div className="p-6 grid gap-4">
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Designation</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Designation</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.designation || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Employment Type</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Employment Type</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.employment_type || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Reporting Manager
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.reporting_manager || "—"}
                   </div>
                 </div>
-                <div className="md:col-span-3 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Subjects Taught</div>
-                  <div className="text-sm text-white">
+                <div className="md:col-span-3 rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Subjects Taught</div>
+                  <div className="text-sm text-primary">
                     {Array.isArray(viewTeacher.subjects_taught)
                       ? viewTeacher.subjects_taught.join(", ")
                       : viewTeacher.subjects_taught || "—"}
                   </div>
                 </div>
-                <div className="md:col-span-3 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Classes Assigned</div>
-                  <div className="text-sm text-white">
+                <div className="md:col-span-3 rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Classes Assigned</div>
+                  <div className="text-sm text-primary">
                     {Array.isArray(viewTeacher.classes_assigned)
                       ? viewTeacher.classes_assigned.join(", ")
                       : viewTeacher.classes_assigned || "—"}
@@ -2641,31 +2643,31 @@ const TeacherPage = () => {
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Highest Qualification
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.highest_qualification || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Institution</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Institution</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.institution_name || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Major Subject</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Major Subject</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.major_subject || "—"}
                   </div>
                 </div>
-                <div className="md:col-span-3 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="md:col-span-3 rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Additional Certifications
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {Array.isArray(viewTeacher.additional_certifications)
                       ? viewTeacher.additional_certifications.join(", ")
                       : viewTeacher.additional_certifications || "—"}
@@ -2674,83 +2676,83 @@ const TeacherPage = () => {
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Previous Organization
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.previous_organization || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Previous Position
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.previous_position || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Previous From - To
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {(viewTeacher.previous_from_date || "—") +
                       (viewTeacher.previous_to_date
                         ? " - " + viewTeacher.previous_to_date
                         : "")}
                   </div>
                 </div>
-                <div className="md:col-span-3 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="md:col-span-3 rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Previous Leave Reason
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.previous_leave_reason || "—"}
                   </div>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Citizenship No</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Citizenship No</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.citizenship_number || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Citizenship Issued
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.citizenship_issued_date || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Citizenship District
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.citizenship_issued_district || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Passport No</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Passport No</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.passport_number || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Passport Expiry</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Passport Expiry</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.passport_expiry_date || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     PAN / National ID
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {(viewTeacher.pan_number || "") +
                       (viewTeacher.national_id_number
                         ? " / " + viewTeacher.national_id_number
@@ -2760,45 +2762,45 @@ const TeacherPage = () => {
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Bank</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Bank</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.bank_name || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Branch</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Branch</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.bank_branch || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Account No</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Account No</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.account_number || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Account Holder</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Account Holder</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.account_holder_name || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Salary Grade</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Salary Grade</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.salary_grade || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Basic Salary</div>
-                  <div className="text-sm text-white">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Basic Salary</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.basic_salary || "—"}
                   </div>
                 </div>
-                <div className="md:col-span-3 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">Allowances</div>
-                  <div className="text-sm text-white">
+                <div className="md:col-span-3 rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">Allowances</div>
+                  <div className="text-sm text-primary">
                     {viewTeacher.allowances
                       ? JSON.stringify(viewTeacher.allowances)
                       : viewTeacher.allowances_travel ||
@@ -2811,27 +2813,27 @@ const TeacherPage = () => {
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Emergency Contact Name
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.emergency_contact_name || "—"}
                   </div>
                 </div>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Emergency Relationship
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {viewTeacher.emergency_contact_relationship || "—"}
                   </div>
                 </div>
-                <div className="md:col-span-2 rounded-xl border border-slate-700/80 bg-slate-900 p-3">
-                  <div className="text-xs text-slate-400">
+                <div className="md:col-span-2 rounded-xl border border-default bg-surface p-3">
+                  <div className="text-xs text-muted">
                     Emergency Phone / Address
                   </div>
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-primary">
                     {(viewTeacher.emergency_contact_phone || "—") +
                       (viewTeacher.emergency_contact_address
                         ? " / " + viewTeacher.emergency_contact_address
@@ -2840,10 +2842,10 @@ const TeacherPage = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between gap-2 p-4 border-t border-slate-800/70">
+            <div className="flex justify-between gap-2 p-4 border-t border-default">
               <button
                 onClick={() => setShowAllDocumentsModal(true)}
-                className="rounded-xl border border-slate-700/80 bg-slate-800 px-4 py-2 text-sm font-semibold text-indigo-400 hover:bg-slate-700 hover:text-indigo-300"
+                className="rounded-xl border border-default bg-subtle px-4 py-2 text-sm font-semibold text-accent hover:bg-subtle hover:text-accent"
               >
                 View All Documents
               </button>
@@ -2853,7 +2855,7 @@ const TeacherPage = () => {
                     setShowViewModal(false);
                     setViewTeacher(null);
                   }}
-                  className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                  className="rounded-xl border border-default px-4 py-2 text-sm text-primary hover:bg-subtle"
                 >
                   Close
                 </button>
@@ -2862,7 +2864,7 @@ const TeacherPage = () => {
                     setShowViewModal(false);
                     openEditModal(viewTeacher);
                   }}
-                  className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+                  className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-primary hover:bg-accent"
                 >
                   Edit
                 </button>
@@ -2873,48 +2875,48 @@ const TeacherPage = () => {
       )}
 
       {showAllDocumentsModal && viewTeacher && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-700/70 bg-slate-950 shadow-2xl">
-            <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-4 sticky top-0 bg-slate-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4">
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default bg-surface shadow-2xl">
+            <div className="flex items-center justify-between gap-4 border-b border-default px-6 py-4 sticky top-0 bg-surface">
               <div>
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-lg font-semibold text-primary">
                   All Documents
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   {viewTeacher.full_name} —{" "}
                   {(viewTeacher.documents || []).length} files
                 </p>
               </div>
               <button
                 onClick={() => setShowAllDocumentsModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-muted hover:text-primary"
               >
                 <X size={20} />
               </button>
             </div>
             <div className="p-6">
               {(viewTeacher.documents || []).length === 0 ? (
-                <div className="rounded-xl border border-slate-700/80 bg-slate-900 p-8 text-center">
-                  <div className="text-slate-400">No documents attached</div>
+                <div className="rounded-xl border border-default bg-surface p-8 text-center">
+                  <div className="text-muted">No documents attached</div>
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
                   {(viewTeacher.documents || []).map((doc, idx) => (
                     <div
                       key={doc.id || idx}
-                      className="rounded-xl border border-slate-700/80 bg-slate-900 p-4 hover:border-indigo-500/50 hover:bg-slate-900/80 transition"
+                      className="rounded-xl border border-default bg-surface p-4 hover:border-accent hover:bg-surface transition"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-white truncate">
+                          <h3 className="text-sm font-semibold text-primary truncate">
                             {doc.title || doc.name || "Document"}
                           </h3>
-                          <p className="text-xs text-slate-400 mt-1">
+                          <p className="text-xs text-muted mt-1">
                             {doc.uploaded_at
                               ? new Date(doc.uploaded_at).toLocaleString()
                               : "No date"}
                           </p>
-                          <p className="text-xs text-slate-500 mt-2 break-all">
+                          <p className="text-xs text-muted mt-2 break-all">
                             {doc.url || "No URL"}
                           </p>
                         </div>
@@ -2925,7 +2927,7 @@ const TeacherPage = () => {
                                 href={getDocumentUrl(doc.url)}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 whitespace-nowrap"
+                                className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-accent text-primary text-xs font-semibold hover:bg-accent whitespace-nowrap"
                               >
                                 View
                               </a>
@@ -2937,7 +2939,7 @@ const TeacherPage = () => {
                                     doc.title || "document",
                                   )
                                 }
-                                className="inline-flex items-center justify-center px-3 py-2 rounded-lg border border-slate-700 text-slate-200 text-xs font-semibold hover:bg-slate-800 whitespace-nowrap"
+                                className="inline-flex items-center justify-center px-3 py-2 rounded-lg border border-default text-primary text-xs font-semibold hover:bg-subtle whitespace-nowrap"
                               >
                                 Download
                               </button>
@@ -2950,10 +2952,10 @@ const TeacherPage = () => {
                 </div>
               )}
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-slate-800/70 sticky bottom-0 bg-slate-950">
+            <div className="flex justify-end gap-2 p-4 border-t border-default sticky bottom-0 bg-surface">
               <button
                 onClick={() => setShowAllDocumentsModal(false)}
-                className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                className="rounded-xl border border-default px-4 py-2 text-sm text-primary hover:bg-subtle"
               >
                 Close
               </button>

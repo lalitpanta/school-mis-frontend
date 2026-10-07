@@ -177,25 +177,25 @@ const SuperAdminSettings = () => {
 
   if (!settingsLoaded || !form) {
     return (
-      <div className="p-8 text-slate-300">Loading platform settings...</div>
+      <div className="p-8 text-muted">Loading platform settings...</div>
     );
   }
 
   return (
     <div
       style={{
-        background: "var(--bg-main)",
+        background: "var(--bg-page)",
         minHeight: "100vh",
-        color: "var(--text-1)",
+        color: "var(--text-primary)",
       }}
       className="p-8"
     >
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Settings size={32} className="text-indigo-400" />
+          <Settings size={32} className="text-accent" />
           <div>
             <h1 className="text-4xl font-bold">Superadmin Settings</h1>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted">
               Configure platform defaults and shared tenant branding.
             </p>
           </div>
@@ -204,7 +204,7 @@ const SuperAdminSettings = () => {
 
       <form onSubmit={handleSaveSettings} className="space-y-6">
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <h2 className="text-2xl font-semibold mb-4">Platform settings</h2>
@@ -219,7 +219,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("platformName", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
               <div>
@@ -231,7 +231,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("currency", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 >
                   <option>INR</option>
                   <option>USD</option>
@@ -249,7 +249,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("defaultPlan", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 >
                   <option>Trial - 14 days</option>
                   <option>Starter</option>
@@ -266,7 +266,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("sessionDomain", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
             </div>
@@ -282,7 +282,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("systemEmail", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
               <div>
@@ -295,7 +295,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("supportEmail", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
               <div>
@@ -307,7 +307,7 @@ const SuperAdminSettings = () => {
                   onChange={(e) =>
                     handleSettingChange("platformTagline", e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
               <div className="grid gap-4 xl:grid-cols-2">
@@ -320,7 +320,7 @@ const SuperAdminSettings = () => {
                     onChange={(e) =>
                       handleSettingChange("timezone", e.target.value)
                     }
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                    className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                   >
                     <option>Asia/Kathmandu (GMT+5:45)</option>
                     <option>Asia/Kolkata (GMT+5:30)</option>
@@ -339,7 +339,7 @@ const SuperAdminSettings = () => {
                     onChange={(e) =>
                       handleSettingChange("language", e.target.value)
                     }
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                    className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                   >
                     <option>English</option>
                     <option>Nepali</option>
@@ -352,18 +352,18 @@ const SuperAdminSettings = () => {
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
               <h2 className="text-2xl font-semibold">Tenant branding</h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted">
                 Upload a shared system logo. This logo will appear for tenants
                 in their navbar and tenant dashboards.
               </p>
             </div>
-            <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3 w-24 h-24 flex items-center justify-center">
+            <div className="rounded-2xl border border-default bg-surface p-3 w-24 h-24 flex items-center justify-center">
               {logoPreview ? (
                 <img
                   src={logoPreview}
@@ -371,7 +371,7 @@ const SuperAdminSettings = () => {
                   className="h-full w-full object-contain rounded-xl"
                 />
               ) : (
-                <div className="text-slate-500">
+                <div className="text-muted">
                   <ImagePlus size={32} />
                 </div>
               )}
@@ -387,9 +387,9 @@ const SuperAdminSettings = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleLogoUpload}
-                className="w-full text-slate-200"
+                className="w-full text-primary"
               />
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="text-xs text-muted mt-2">
                 Use a transparent PNG or SVG for best results.
               </p>
             </div>
@@ -397,13 +397,13 @@ const SuperAdminSettings = () => {
               <label className="block text-sm font-medium mb-2">
                 Logo preview
               </label>
-              <div className="rounded-2xl border border-slate-700 bg-slate-950 p-4 text-center text-slate-400">
+              <div className="rounded-2xl border border-default bg-surface p-4 text-center text-muted">
                 {logoPreview ? (
-                  <div className="text-slate-200">
+                  <div className="text-primary">
                     Logo will be visible to tenants
                   </div>
                 ) : (
-                  <div className="text-slate-500">No logo selected yet</div>
+                  <div className="text-muted">No logo selected yet</div>
                 )}
               </div>
             </div>
@@ -411,44 +411,44 @@ const SuperAdminSettings = () => {
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <h2 className="text-2xl font-semibold mb-4">Platform controls</h2>
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.maintenanceMode}
                 onChange={(e) =>
                   handleSettingChange("maintenanceMode", e.target.checked)
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Maintenance mode</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Disable tenant access while you update the platform.
                 </p>
               </div>
             </label>
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.allowNewTenants}
                 onChange={(e) =>
                   handleSettingChange("allowNewTenants", e.target.checked)
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Allow new tenant registration</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Enable or disable tenant self-signup across the platform.
                 </p>
               </div>
             </label>
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.autoSuspendOverdueInvoice}
@@ -458,11 +458,11 @@ const SuperAdminSettings = () => {
                     e.target.checked,
                   )
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Auto-suspend overdue invoices</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Automatically suspend tenant access when payment is overdue.
                 </p>
               </div>
@@ -471,28 +471,28 @@ const SuperAdminSettings = () => {
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <h2 className="text-2xl font-semibold mb-4">Security settings</h2>
           <div className="grid gap-4 xl:grid-cols-2">
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.enforce2FAAdmins}
                 onChange={(e) =>
                   handleSettingChange("enforce2FAAdmins", e.target.checked)
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Enforce 2FA for admins</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Require two-factor authentication for superadmin users.
                 </p>
               </div>
             </label>
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.enforce2FATenantAdmins}
@@ -502,28 +502,28 @@ const SuperAdminSettings = () => {
                     e.target.checked,
                   )
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Enforce 2FA for tenant admins</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Require two-factor authentication for tenant administrator
                   logins.
                 </p>
               </div>
             </label>
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.restrictLoginByIP}
                 onChange={(e) =>
                   handleSettingChange("restrictLoginByIP", e.target.checked)
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Restrict login by IP allowlist</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Only allow sign-in from approved network addresses.
                 </p>
               </div>
@@ -543,7 +543,7 @@ const SuperAdminSettings = () => {
                       Number(e.target.value),
                     )
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
               <div>
@@ -560,7 +560,7 @@ const SuperAdminSettings = () => {
                       Number(e.target.value),
                     )
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
             </div>
@@ -579,7 +579,7 @@ const SuperAdminSettings = () => {
                       Number(e.target.value),
                     )
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
               <div>
@@ -596,7 +596,7 @@ const SuperAdminSettings = () => {
                       Number(e.target.value),
                     )
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 />
               </div>
             </div>
@@ -610,7 +610,7 @@ const SuperAdminSettings = () => {
                   handleSettingChange("ipAllowlist", e.target.value)
                 }
                 rows={4}
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
                 placeholder="103.221.4.12\n45.90.12.201/28"
               />
             </div>
@@ -618,7 +618,7 @@ const SuperAdminSettings = () => {
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <h2 className="text-2xl font-semibold mb-4">
@@ -634,7 +634,7 @@ const SuperAdminSettings = () => {
                 onChange={(e) =>
                   handleSettingChange("defaultStorageQuota", e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               />
             </div>
             <div>
@@ -646,7 +646,7 @@ const SuperAdminSettings = () => {
                 onChange={(e) =>
                   handleSettingChange("maxUploadFileSize", e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               />
             </div>
             <div>
@@ -658,7 +658,7 @@ const SuperAdminSettings = () => {
                 onChange={(e) =>
                   handleSettingChange("allowedFileTypes", e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               />
             </div>
             <div>
@@ -670,7 +670,7 @@ const SuperAdminSettings = () => {
                 onChange={(e) =>
                   handleSettingChange("storageProvider", e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               >
                 <option>Amazon S3 — ap-south-1</option>
                 <option>Amazon S3 — us-east-1</option>
@@ -678,34 +678,34 @@ const SuperAdminSettings = () => {
                 <option>Google Cloud Storage</option>
               </select>
             </div>
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.warnTenantsAt60}
                 onChange={(e) =>
                   handleSettingChange("warnTenantsAt60", e.target.checked)
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Warn tenants at 60% usage</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Send an in-app notice when tenants reach 60% quota.
                 </p>
               </div>
             </label>
-            <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.blockUploadsAt100}
                 onChange={(e) =>
                   handleSettingChange("blockUploadsAt100", e.target.checked)
                 }
-                className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+                className="mt-1 h-5 w-5 rounded border-default bg-subtle"
               />
               <div>
                 <p className="font-medium">Block uploads at 100% usage</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Prevent new uploads once a tenant reaches full quota.
                 </p>
               </div>
@@ -724,31 +724,31 @@ const SuperAdminSettings = () => {
                     Number(e.target.value),
                   )
                 }
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               />
             </div>
           </div>
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <h2 className="text-2xl font-semibold mb-4">Account details</h2>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl bg-slate-950/60 border border-slate-700 p-4">
-              <div className="text-slate-400 text-sm">Current admin</div>
-              <div className="mt-2 font-medium text-white">
+            <div className="rounded-2xl bg-surface border border-default p-4">
+              <div className="text-muted text-sm">Current admin</div>
+              <div className="mt-2 font-medium text-primary">
                 {user?.name || user?.email}
               </div>
-              <div className="text-slate-500 text-sm mt-1">
+              <div className="text-muted text-sm mt-1">
                 Superadmin access
               </div>
             </div>
-            <div className="rounded-2xl bg-slate-950/60 border border-slate-700 p-4">
-              <div className="text-slate-400 text-sm">Status</div>
-              <div className="mt-2 font-medium text-white">Active</div>
-              <div className="text-slate-500 text-sm mt-1">
+            <div className="rounded-2xl bg-surface border border-default p-4">
+              <div className="text-muted text-sm">Status</div>
+              <div className="mt-2 font-medium text-primary">Active</div>
+              <div className="text-muted text-sm mt-1">
                 Live platform configuration
               </div>
             </div>
@@ -759,7 +759,7 @@ const SuperAdminSettings = () => {
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-primary transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save size={18} />
             {isSaving ? "Saving settings..." : "Save settings"}

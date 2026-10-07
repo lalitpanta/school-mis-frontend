@@ -31,35 +31,35 @@ const npr = (value) =>
   `NPR ${Number(value || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 
 const styles = `
-.fee-structure { color: var(--text-1); }
+.fee-structure { color: var(--text-primary); }
 .fee-toolbar { display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; }
-.fee-search { display:flex; align-items:center; gap:8px; background:var(--bg-input); border:1px solid var(--border-card); border-radius:8px; padding:0 12px; min-width:260px; }
-.fee-search input { background:transparent; border:0; outline:0; color:var(--text-1); padding:10px 0; width:100%; }
-.fee-btn { border:1px solid var(--border-card); background:var(--bg-card); color:var(--text-1); border-radius:8px; padding:9px 13px; display:inline-flex; align-items:center; gap:7px; cursor:pointer; font-weight:600; }
-.fee-btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+.fee-search { display:flex; align-items:center; gap:8px; background:var(--bg-input); border:1px solid var(--border-default); border-radius:8px; padding:0 12px; min-width:260px; }
+.fee-search input { background:transparent; border:0; outline:0; color:var(--text-primary); padding:10px 0; width:100%; }
+.fee-btn { border:1px solid var(--border-default); background:var(--bg-surface); color:var(--text-primary); border-radius:8px; padding:9px 13px; display:inline-flex; align-items:center; gap:7px; cursor:pointer; font-weight:600; }
+.fee-btn.primary { background:var(--accent); color:var(--text-primary); border-color:var(--accent); }
 .fee-btn.danger { color:var(--danger); }
 .fee-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px; }
-.fee-summary-card, .fee-panel { background:var(--bg-card); border:1px solid var(--border-card); border-radius:10px; padding:16px; }
-.fee-summary-label { color:var(--text-3); font-size:12px; text-transform:uppercase; letter-spacing:.6px; }
+.fee-summary-card, .fee-panel { background:var(--bg-surface); border:1px solid var(--border-default); border-radius:10px; padding:16px; }
+.fee-summary-label { color:var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:.6px; }
 .fee-summary-value { font:700 22px 'Sora', sans-serif; margin-top:7px; }
-.fee-table-wrap { overflow-x:auto; background:var(--bg-card); border:1px solid var(--border-card); border-radius:10px; }
+.fee-table-wrap { overflow-x:auto; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:10px; }
 .fee-table { width:100%; border-collapse:collapse; min-width:720px; }
-.fee-table th { text-align:left; color:var(--text-3); font-size:11px; text-transform:uppercase; letter-spacing:.5px; padding:13px 16px; border-bottom:1px solid var(--border-card); }
-.fee-table td { padding:14px 16px; border-bottom:1px solid var(--border-card); font-size:13px; }
+.fee-table th { text-align:left; color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; padding:13px 16px; border-bottom:1px solid var(--border-default); }
+.fee-table td { padding:14px 16px; border-bottom:1px solid var(--border-default); font-size:13px; }
 .fee-table tr:last-child td { border-bottom:0; }
-.fee-name { font-weight:700; } .fee-muted { color:var(--text-3); font-size:12px; margin-top:3px; }
+.fee-name { font-weight:700; } .fee-muted { color:var(--text-muted); font-size:12px; margin-top:3px; }
 .fee-badge { display:inline-flex; border-radius:999px; padding:4px 8px; font-size:11px; font-weight:700; text-transform:capitalize; background:var(--bg-input); }
-.fee-badge.active { color:var(--success); } .fee-badge.draft { color:var(--warning); } .fee-badge.archived { color:var(--danger); }
+.fee-badge.active { color:var(--success-text); } .fee-badge.draft { color:var(--warning); } .fee-badge.archived { color:var(--danger); }
 .fee-actions { display:flex; gap:6px; }
-.fee-icon-btn { border:0; background:transparent; color:var(--text-2); cursor:pointer; padding:6px; border-radius:6px; } .fee-icon-btn:hover { background:var(--bg-hover); color:var(--text-1); }
-.fee-empty { text-align:center; padding:45px 20px; color:var(--text-3); }
+.fee-icon-btn { border:0; background:transparent; color:var(--text-muted); cursor:pointer; padding:6px; border-radius:6px; } .fee-icon-btn:hover { background:var(--bg-subtle); color:var(--text-primary); }
+.fee-empty { text-align:center; padding:45px 20px; color:var(--text-muted); }
 .fee-modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.48); display:grid; place-items:center; z-index:50; padding:20px; }
-.fee-modal { width:min(720px,100%); max-height:90vh; overflow:auto; background:var(--bg-card); border:1px solid var(--border-card); border-radius:12px; padding:22px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
+.fee-modal { width:min(720px,100%); max-height:90vh; overflow:auto; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:12px; padding:22px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
 .fee-modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; } .fee-modal h3 { margin:0; font-size:18px; }
 .fee-form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; } .fee-field { display:flex; flex-direction:column; gap:6px; } .fee-field.full { grid-column:1/-1; }
-.fee-field label { font-size:12px; color:var(--text-2); font-weight:600; } .fee-field input,.fee-field select { border:1px solid var(--border-card); background:var(--bg-input); color:var(--text-1); border-radius:7px; padding:10px; outline:none; }
-.fee-rules { margin-top:18px; border-top:1px solid var(--border-card); padding-top:15px; } .fee-rule { display:grid; grid-template-columns:1.4fr 1fr 1fr auto; gap:8px; margin-bottom:8px; }
-.fee-rule input,.fee-rule select { min-width:0; border:1px solid var(--border-card); background:var(--bg-input); color:var(--text-1); border-radius:7px; padding:9px; }
+.fee-field label { font-size:12px; color:var(--text-muted); font-weight:600; } .fee-field input,.fee-field select { border:1px solid var(--border-default); background:var(--bg-input); color:var(--text-primary); border-radius:7px; padding:10px; outline:none; }
+.fee-rules { margin-top:18px; border-top:1px solid var(--border-default); padding-top:15px; } .fee-rule { display:grid; grid-template-columns:1.4fr 1fr 1fr auto; gap:8px; margin-bottom:8px; }
+.fee-rule input,.fee-rule select { min-width:0; border:1px solid var(--border-default); background:var(--bg-input); color:var(--text-primary); border-radius:7px; padding:9px; }
 .fee-modal-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:20px; }
 @media (max-width:700px) { .fee-summary { grid-template-columns:1fr; } .fee-form-grid { grid-template-columns:1fr; } .fee-field.full { grid-column:auto; } .fee-rule { grid-template-columns:1fr 1fr; } }
 `;

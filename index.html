@@ -4,10 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <meta
       name="description"
       content="SchoolMIS – School Management Information System"
     />
+    <script>
+      (function () {
+        var theme = null;
+        try {
+          theme = localStorage.getItem("theme");
+          if (theme !== "light" && theme !== "dark") {
+            theme = localStorage.getItem("mis_theme");
+          }
+        } catch (error) {
+          // Fall back to the operating-system preference when storage is unavailable.
+        }
+        var isDark =
+          theme === "dark" ||
+          ((theme !== "light" && theme !== "dark") &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = isDark ? "dark" : "light";
+        document.documentElement.classList.toggle("dark", isDark);
+      })();
+    </script>
     <title>Pathsalatracker – Pathsalatracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,17 +37,6 @@
     />
   </head>
   <body>
-    <script>
-      (function () {
-        var theme = localStorage.getItem("mis_theme");
-        if (
-          theme === "dark" ||
-          (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-        ) {
-          document.documentElement.classList.add("dark");
-        }
-      })();
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

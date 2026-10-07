@@ -4,7 +4,7 @@ import Navbar from './Navbar';
 const MainLayout = ({ children }) => (
   <div
     className="flex h-screen overflow-hidden"
-    style={{ background: 'var(--bg-main)' }}
+    style={{ background: 'var(--bg-page)' }}
   >
     <Sidebar />
     <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
@@ -12,8 +12,8 @@ const MainLayout = ({ children }) => (
       <main
         className="flex-1 overflow-y-auto"
         style={{
-          background: 'var(--bg-main)',
-          color: 'var(--text-1)',
+          background: 'var(--bg-page)',
+          color: 'var(--text-primary)',
           padding: '1.25rem 1.5rem',
         }}
       >

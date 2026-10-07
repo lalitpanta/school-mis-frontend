@@ -82,28 +82,28 @@ const RolesPermissions = () => {
 
   return (
     <div
-      className={`min-w-0 rounded-2xl border border-slate-700/60 bg-slate-800/60 p-4 ${isEditingRole ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      className={`min-w-0 rounded-2xl border border-default bg-subtle p-4 ${isEditingRole ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
     >
       <div
         className={`min-w-0 ${isEditingRole ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
       {/* Header */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-2">
+        <h2 className="text-lg font-semibold text-primary mb-2">
           Roles & Permissions
         </h2>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted">
           Manage roles and assign permissions to users
         </p>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex justify-between items-center">
-          <span className="text-sm text-red-300">{error}</span>
+        <div className="p-3 bg-danger-soft border border-danger rounded-lg flex justify-between items-center">
+          <span className="text-sm text-danger">{error}</span>
           <button
             onClick={clearError}
-            className="text-red-400 hover:text-red-300"
+            className="text-danger hover:text-danger"
           >
             <X size={16} />
           </button>
@@ -117,11 +117,11 @@ const RolesPermissions = () => {
           placeholder="Search roles..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-3 py-2 bg-slate-700/40 border border-slate-600/50 text-white text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="flex-1 px-3 py-2 bg-subtle border border-default text-primary text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
         />
         <button
           onClick={openCreateModal}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
+          className="bg-accent hover:bg-accent text-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
         >
           <Plus size={16} />
           Create Role
@@ -129,50 +129,50 @@ const RolesPermissions = () => {
       </div>
 
       {/* Roles Table */}
-      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
         {filteredRoles.length === 0 ? (
-          <div className="p-6 text-center text-slate-400 bg-slate-800/30">
+          <div className="p-6 text-center text-muted bg-subtle">
             {loading ? "Loading roles..." : "No roles found."}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-slate-800/60 border-b border-slate-700/60">
+            <thead className="bg-subtle border-b border-default">
               <tr>
-                <th className="px-4 py-3 text-left text-slate-300 font-medium">
+                <th className="px-4 py-3 text-left text-muted font-medium">
                   Role Name
                 </th>
-                <th className="px-4 py-3 text-left text-slate-300 font-medium">
+                <th className="px-4 py-3 text-left text-muted font-medium">
                   Description
                 </th>
-                <th className="px-4 py-3 text-center text-slate-300 font-medium">
+                <th className="px-4 py-3 text-center text-muted font-medium">
                   Permissions
                 </th>
-                <th className="px-4 py-3 text-right text-slate-300 font-medium">
+                <th className="px-4 py-3 text-right text-muted font-medium">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/60">
               {filteredRoles.map((role) => (
-                <tr key={role.id} className="hover:bg-slate-800/40 transition">
+                <tr key={role.id} className="hover:bg-subtle transition">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Shield size={14} className="text-indigo-400" />
-                      <span className="font-medium text-white">
+                      <Shield size={14} className="text-accent" />
+                      <span className="font-medium text-primary">
                         {role.role_name}
                       </span>
                       {role.is_system && (
-                        <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">
+                        <span className="text-xs bg-accent-soft text-accent px-2 py-0.5 rounded">
                           System
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-400">
+                  <td className="px-4 py-3 text-muted">
                     {role.description || "—"}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className="inline-block bg-slate-700/40 text-slate-300 px-2.5 py-1 rounded-full text-xs font-medium">
+                    <span className="inline-block bg-subtle text-muted px-2.5 py-1 rounded-full text-xs font-medium">
                       {role.permission_count || 0}
                     </span>
                   </td>
@@ -180,7 +180,7 @@ const RolesPermissions = () => {
                     <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEditModal(role)}
-                      className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                      className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                       title={`Edit ${role.role_name}`}
                       aria-label={`Edit ${role.role_name}`}
                     >
@@ -189,7 +189,7 @@ const RolesPermissions = () => {
                     {!role.is_system && (
                       <button
                         onClick={() => setDeleteConfirm(role.id)}
-                        className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                        className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                         title={`Delete ${role.role_name}`}
                         aria-label={`Delete ${role.role_name}`}
                       >
@@ -233,21 +233,21 @@ const RolesPermissions = () => {
         width="max-w-sm"
       >
         <div className="p-6">
-          <p className="text-slate-400 mb-6 text-sm">
+          <p className="text-muted mb-6 text-sm">
             Are you sure you want to delete this role? This action cannot be
             undone.
           </p>
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setDeleteConfirm(null)}
-              className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
+              className="px-4 py-2 text-sm bg-subtle hover:bg-selected text-primary rounded-lg transition"
             >
               Cancel
             </button>
             <button
               onClick={() => handleDeleteRole(deleteConfirm)}
               disabled={loading}
-              className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:bg-slate-600 transition"
+              className="px-4 py-2 text-sm bg-danger hover:bg-danger text-primary rounded-lg disabled:bg-selected transition"
             >
               {loading ? "Deleting..." : "Delete"}
             </button>

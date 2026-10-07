@@ -16,12 +16,12 @@ const ROOM_TYPES = [
 ];
 
 const FLOOR_PLAN_DARK = {
-  cardBackground: "#1E293B",
-  cardBorder: "#334155",
-  blockAccents: ["#6366F1", "#22D3EE", "#F59E0B", "#10B981"],
-  textPrimary: "#FFFFFF",
-  textSecondary: "#94A3B8",
-  textMuted: "#475569",
+  cardBackground: "var(--accent-soft)",
+  cardBorder: "var(--accent)",
+  blockAccents: ["var(--accent)", "var(--accent)", "var(--danger)", "var(--success-text)"],
+  textPrimary: "var(--text-primary)",
+  textSecondary: "var(--accent)",
+  textMuted: "var(--accent)",
 };
 
 const getBlockAccent = (index) =>
@@ -221,8 +221,8 @@ const Rooms = () => {
     <div
       className={`min-w-0 rounded-2xl p-4 ${isEditingRoom ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-card)",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-default)",
       }}
     >
       <div
@@ -232,40 +232,40 @@ const Rooms = () => {
         <div>
           <h2
             className="text-base font-semibold"
-            style={{ color: "var(--text-1)" }}
+            style={{ color: "var(--text-primary)" }}
           >
             Rooms
           </h2>
-          <p className="text-xs text-slate-400">{viewLabel[viewMode]}</p>
+          <p className="text-xs text-muted">{viewLabel[viewMode]}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center bg-slate-800/60 border border-slate-700/60 rounded-lg overflow-hidden">
+          <div className="flex items-center bg-subtle border border-default rounded-lg overflow-hidden">
             <button
               type="button"
               onClick={() => setViewMode("list")}
-              className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${viewMode === "list" ? "bg-indigo-600/40 text-white" : "text-slate-300"}`}
+              className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${viewMode === "list" ? "bg-accent text-primary" : "text-muted"}`}
             >
               <List size={14} /> List
             </button>
             <button
               type="button"
               onClick={() => setViewMode("grid")}
-              className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${viewMode === "grid" ? "bg-indigo-600/40 text-white" : "text-slate-300"}`}
+              className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${viewMode === "grid" ? "bg-accent text-primary" : "text-muted"}`}
             >
               <LayoutGrid size={14} /> Grid
             </button>
             <button
               type="button"
               onClick={() => setViewMode("floor")}
-              className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${viewMode === "floor" ? "bg-indigo-600/40 text-white" : "text-slate-300"}`}
+              className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${viewMode === "floor" ? "bg-accent text-primary" : "text-muted"}`}
             >
               <Map size={14} /> Floor View
             </button>
           </div>
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+            className="inline-flex items-center gap-2 px-3 py-2 bg-accent hover:bg-accent text-primary rounded"
           >
             <Plus size={14} /> Create
           </button>
@@ -273,16 +273,16 @@ const Rooms = () => {
       </div>
 
       {viewMode === "list" && (
-        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
+        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
           {rooms.length === 0 ? (
-            <div className="p-6 text-center text-slate-400">
+            <div className="p-6 text-center text-muted">
               {loading
                 ? "Loading rooms..."
                 : "No rooms yet. Create a room to get started."}
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-slate-800/60 border-b">
+              <thead className="bg-subtle border-b">
                 <tr>
                   <th className="px-4 py-3 text-left">Room Number</th>
                   <th className="px-4 py-3 text-left">Block</th>
@@ -295,7 +295,7 @@ const Rooms = () => {
               <tbody className="divide-y divide-slate-700/60">
                 {rooms.map((room) => (
                   <tr key={room.id}>
-                    <td className="px-4 py-3 font-medium text-white">
+                    <td className="px-4 py-3 font-medium text-primary">
                       {room.room_number || "—"}
                     </td>
                     <td className="px-4 py-3">
@@ -314,7 +314,7 @@ const Rooms = () => {
                     <td className="px-4 py-3 text-right space-x-2">
                       <button
                         onClick={() => openEdit(room)}
-                        className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                        className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                         title={`Edit room ${room.room_number || ""}`}
                         aria-label={`Edit room ${room.room_number || ""}`}
                       >
@@ -322,7 +322,7 @@ const Rooms = () => {
                       </button>
                       <button
                         onClick={() => deleteRoom(room)}
-                        className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                        className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                         title={`Delete room ${room.room_number || ""}`}
                         aria-label={`Delete room ${room.room_number || ""}`}
                       >
@@ -340,7 +340,7 @@ const Rooms = () => {
       {viewMode === "grid" && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {rooms.length === 0 ? (
-            <div className="p-6 text-center col-span-full text-slate-400">
+            <div className="p-6 text-center col-span-full text-muted">
               {loading
                 ? "Loading rooms..."
                 : "No rooms yet. Create a room to get started."}
@@ -349,14 +349,14 @@ const Rooms = () => {
             rooms.map((room) => (
               <div
                 key={room.id}
-                className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-4"
+                className="rounded-2xl border border-default bg-surface p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-base font-semibold text-white">
+                    <div className="text-base font-semibold text-primary">
                       {room.room_number || "Room"}
                     </div>
-                    <div className="text-xs text-slate-400 mt-1">
+                    <div className="text-xs text-muted mt-1">
                       {blocks.find((block) => block.id === room.block_id)
                         ?.block_name || "Unassigned"}{" "}
                       ·{" "}
@@ -365,17 +365,17 @@ const Rooms = () => {
                         : "Unassigned"}
                     </div>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-200">
+                  <span className="text-xs px-2 py-1 rounded-full bg-accent-soft text-accent">
                     {room.room_type || "Classroom"}
                   </span>
                 </div>
-                <div className="mt-3 text-sm text-slate-300">
+                <div className="mt-3 text-sm text-muted">
                   Capacity: {room.total_capacity ?? 0}
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     onClick={() => openEdit(room)}
-                    className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                    className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                     title={`Edit room ${room.room_number || ""}`}
                     aria-label={`Edit room ${room.room_number || ""}`}
                   >
@@ -383,7 +383,7 @@ const Rooms = () => {
                   </button>
                   <button
                     onClick={() => deleteRoom(room)}
-                    className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                    className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                     title={`Delete room ${room.room_number || ""}`}
                     aria-label={`Delete room ${room.room_number || ""}`}
                   >
@@ -397,15 +397,15 @@ const Rooms = () => {
       )}
 
       {viewMode === "floor" && (
-        <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-4">
-          <div className="text-sm text-slate-300 mb-4">
+        <div className="rounded-2xl border border-default bg-surface p-4">
+          <div className="text-sm text-muted mb-4">
             Use the inline floor plan to assign rooms by block and floor. Drag a
             room into a floor card to update its location, or drop it into
             Unassigned to clear it.
           </div>
 
           {blocks.length === 0 ? (
-            <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-6 text-slate-300">
+            <div className="rounded-2xl border border-default bg-surface p-6 text-muted">
               No blocks configured yet. Create room assignments in List or Grid
               view until School Profile blocks are available.
             </div>
@@ -422,10 +422,10 @@ const Rooms = () => {
                 >
                   <div className="flex items-center justify-between gap-3 mb-4">
                     <div>
-                      <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                      <div className="text-xs uppercase tracking-[0.2em] text-muted">
                         Block
                       </div>
-                      <div className="text-lg font-semibold text-white">
+                      <div className="text-lg font-semibold text-primary">
                         {block.block_name}
                       </div>
                     </div>
@@ -469,13 +469,13 @@ const Rooms = () => {
                             setLoading(false);
                           }
                         }}
-                        className="rounded-2xl border border-slate-700/60 bg-slate-800/70 p-4 min-h-40"
+                        className="rounded-2xl border border-default bg-subtle p-4 min-h-40"
                       >
                         <div className="mb-3 flex items-center justify-between gap-2">
-                          <div className="text-sm font-semibold text-white">
+                          <div className="text-sm font-semibold text-primary">
                             Floor {floor}
                           </div>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-muted">
                             Drop rooms here
                           </span>
                         </div>
@@ -493,15 +493,15 @@ const Rooms = () => {
                                   String(room.id),
                                 )
                               }
-                              className="rounded-2xl border border-slate-700/50 bg-slate-950 p-3 text-sm text-white cursor-grab"
+                              className="rounded-2xl border border-default bg-surface p-3 text-sm text-primary cursor-grab"
                             >
                               <div className="font-semibold">
                                 {room.room_number || "Room"}
                               </div>
-                              <div className="text-[11px] text-slate-400 mt-1">
+                              <div className="text-[11px] text-muted mt-1">
                                 {room.room_type || "Classroom"}
                               </div>
-                              <div className="text-[11px] text-slate-400">
+                              <div className="text-[11px] text-muted">
                                 Capacity: {room.total_capacity ?? 0}
                               </div>
                             </div>
@@ -533,13 +533,13 @@ const Rooms = () => {
                           setLoading(false);
                         }
                       }}
-                      className="rounded-2xl border border-slate-700/60 bg-slate-800/70 p-4"
+                      className="rounded-2xl border border-default bg-subtle p-4"
                     >
                       <div className="mb-3 flex items-center justify-between gap-2">
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-primary">
                           Unassigned Floor
                         </div>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-muted">
                           Drop here
                         </span>
                       </div>
@@ -554,22 +554,22 @@ const Rooms = () => {
                                 String(room.id),
                               )
                             }
-                            className="rounded-2xl border border-slate-700/50 bg-slate-950 p-3 text-sm text-white cursor-grab"
+                            className="rounded-2xl border border-default bg-surface p-3 text-sm text-primary cursor-grab"
                           >
                             <div className="font-semibold">
                               {room.room_number || "Room"}
                             </div>
-                            <div className="text-[11px] text-slate-400 mt-1">
+                            <div className="text-[11px] text-muted mt-1">
                               {room.room_type || "Classroom"}
                             </div>
-                            <div className="text-[11px] text-slate-400">
+                            <div className="text-[11px] text-muted">
                               Capacity: {room.total_capacity ?? 0}
                             </div>
                           </div>
                         ))}
                         {roomsByBlockFloor[block.id].unassigned.length ===
                           0 && (
-                          <div className="rounded-2xl border border-slate-700/50 bg-slate-900/70 p-4 text-sm text-slate-400">
+                          <div className="rounded-2xl border border-default bg-surface p-4 text-sm text-muted">
                             No unassigned rooms in this block.
                           </div>
                         )}
@@ -599,7 +599,7 @@ const Rooms = () => {
         <form onSubmit={saveRoom} className="space-y-4 p-2">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Room Number
               </label>
               <input
@@ -611,7 +611,7 @@ const Rooms = () => {
                     room_number: event.target.value,
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
                 placeholder={
                   floorOptions.length ? `${floorOptions[0]}01` : "101"
                 }
@@ -619,8 +619,8 @@ const Rooms = () => {
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
-                Block <span className="text-red-400">*</span>
+              <label className="block text-sm text-muted mb-1">
+                Block <span className="text-danger">*</span>
               </label>
               <select
                 required
@@ -635,7 +635,7 @@ const Rooms = () => {
                     floor_number: null,
                   }));
                 }}
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               >
                 <option value="">-- Select a Block --</option>
                 {blockOptions.map((block) => (
@@ -645,7 +645,7 @@ const Rooms = () => {
                 ))}
               </select>
               {blockOptions.length === 0 && (
-                <p className="text-xs text-yellow-400 mt-1">
+                <p className="text-xs text-warning mt-1">
                   Create blocks in School Profile first
                 </p>
               )}
@@ -654,8 +654,8 @@ const Rooms = () => {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
-                Floor <span className="text-red-400">*</span>
+              <label className="block text-sm text-muted mb-1">
+                Floor <span className="text-danger">*</span>
               </label>
               {form.block_id ? (
                 <select
@@ -668,7 +668,7 @@ const Rooms = () => {
                       floor_number: value ? Number(value) : null,
                     }));
                   }}
-                  className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                  className="w-full px-3 py-2 bg-subtle text-primary rounded"
                 >
                   <option value="">-- Select a Floor --</option>
                   {floorOptions.map((floor) => (
@@ -678,14 +678,14 @@ const Rooms = () => {
                   ))}
                 </select>
               ) : (
-                <div className="w-full px-3 py-2 bg-slate-700/50 text-slate-400 rounded">
+                <div className="w-full px-3 py-2 bg-subtle text-muted rounded">
                   Select a block first
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Room Type
               </label>
               <select
@@ -696,7 +696,7 @@ const Rooms = () => {
                     room_type: event.target.value,
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               >
                 {ROOM_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -708,7 +708,7 @@ const Rooms = () => {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Maximum Capacity
               </label>
               <input
@@ -723,7 +723,7 @@ const Rooms = () => {
                     total_capacity: Number(value || 0),
                   }));
                 }}
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               />
             </div>
           </div>

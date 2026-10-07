@@ -1,11 +1,11 @@
 import clsx from "clsx";
 
 const colorMap = {
-  indigo: "bg-indigo-600/15 text-indigo-400 border-indigo-600/25",
-  green: "bg-emerald-600/15 text-emerald-400 border-emerald-600/25",
-  amber: "bg-amber-500/15  text-amber-400  border-amber-500/25",
-  red: "bg-red-600/15    text-red-400    border-red-600/25",
-  sky: "bg-sky-600/15    text-sky-400    border-sky-600/25",
+  indigo: "bg-accent-soft text-accent border-accent",
+  green: "bg-success text-success border-success",
+  amber: "bg-warning-soft  text-warning  border-warning",
+  red: "bg-danger-soft    text-danger    border-danger",
+  sky: "bg-accent-soft    text-accent    border-accent",
 };
 
 /**
@@ -33,17 +33,17 @@ const StatCard = ({
         <Icon size={20} />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-[var(--text-2)] uppercase tracking-wider truncate">
+        <p className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider truncate">
           {title}
         </p>
-        <p className="mt-1 text-2xl font-bold text-[var(--text-1)]">
+        <p className="mt-1 text-2xl font-bold text-[var(--text-primary)]">
           {value ?? "—"}
         </p>
         {change && (
           <p
             className={clsx(
               "mt-1 text-sm font-medium",
-              positive ? "text-emerald-500" : "text-[var(--text-3)]",
+              positive ? "text-success" : "text-[var(--text-muted)]",
             )}
           >
             {change}

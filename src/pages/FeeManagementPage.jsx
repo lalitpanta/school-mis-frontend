@@ -263,7 +263,7 @@ const FeeManagementPage = () => {
   return (
     <div
       className="p-6 max-w-7xl mx-auto space-y-6 min-h-screen"
-      style={{ color: "var(--text-1)" }}
+      style={{ color: "var(--text-primary)" }}
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -277,7 +277,7 @@ const FeeManagementPage = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 border-b border-white/10">
+      <div className="flex gap-2 overflow-x-auto pb-2 border-b border-input/10">
         {["dashboard", "structures", "ledger", "collect", "receipts"].map(
           (tab) => (
             <button
@@ -285,8 +285,8 @@ const FeeManagementPage = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
                 activeTab === tab
-                  ? "bg-indigo-600 text-white shadow-lg"
-                  : "bg-white/5 hover:bg-white/10 opacity-70 hover:opacity-100"
+                  ? "bg-accent text-primary shadow-lg"
+                  : "bg-surface/5 hover:bg-surface/10 opacity-70 hover:opacity-100"
               }`}
             >
               {tab}
@@ -298,9 +298,9 @@ const FeeManagementPage = () => {
       {activeTab === "dashboard" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl shadow-xl hover:border-indigo-500/50 transition-all">
+            <div className="bg-surface/5 backdrop-blur-lg border border-input/10 p-6 rounded-2xl shadow-xl hover:border-accent transition-all">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-accent-soft text-accent flex items-center justify-center">
                   <IndianRupee size={24} />
                 </div>
               </div>
@@ -309,9 +309,9 @@ const FeeManagementPage = () => {
               </h3>
               <p className="text-sm opacity-60">Today's Collection</p>
             </div>
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl shadow-xl hover:border-emerald-500/50 transition-all">
+            <div className="bg-surface/5 backdrop-blur-lg border border-input/10 p-6 rounded-2xl shadow-xl hover:border-success transition-all">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-success text-success flex items-center justify-center">
                   <TrendingUp size={24} />
                 </div>
               </div>
@@ -320,9 +320,9 @@ const FeeManagementPage = () => {
               </h3>
               <p className="text-sm opacity-60">Total Collected</p>
             </div>
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl shadow-xl hover:border-rose-500/50 transition-all">
+            <div className="bg-surface/5 backdrop-blur-lg border border-input/10 p-6 rounded-2xl shadow-xl hover:border-danger transition-all">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-danger-soft text-danger flex items-center justify-center">
                   <Activity size={24} />
                 </div>
               </div>
@@ -331,9 +331,9 @@ const FeeManagementPage = () => {
               </h3>
               <p className="text-sm opacity-60">Outstanding Due</p>
             </div>
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl shadow-xl hover:border-blue-500/50 transition-all">
+            <div className="bg-surface/5 backdrop-blur-lg border border-input/10 p-6 rounded-2xl shadow-xl hover:border-accent transition-all">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-accent-soft text-accent flex items-center justify-center">
                   <FileText size={24} />
                 </div>
               </div>
@@ -348,12 +348,12 @@ const FeeManagementPage = () => {
 
       {activeTab === "structures" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
+          <div className="lg:col-span-2 bg-surface/5 border border-input/10 rounded-2xl p-6 shadow-xl">
             <h2 className="text-lg font-bold mb-4">Fee Structures</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-xs uppercase opacity-50 border-b border-white/10">
+                  <tr className="text-xs uppercase opacity-50 border-b border-input/10">
                     <th className="pb-3">Category</th>
                     <th className="pb-3">Class</th>
                     <th className="pb-3">Amount</th>
@@ -363,14 +363,14 @@ const FeeManagementPage = () => {
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {structures.map((s) => (
-                    <tr key={s.id} className="hover:bg-white/5">
+                    <tr key={s.id} className="hover:bg-surface/5">
                       <td className="py-3 text-sm font-medium">
                         {s.category_name}
                       </td>
                       <td className="py-3 text-sm opacity-70">
                         {s.class_name || "All"}
                       </td>
-                      <td className="py-3 text-sm font-bold text-indigo-400">
+                      <td className="py-3 text-sm font-bold text-accent">
                         ₹{s.amount}
                       </td>
                       <td className="py-3 text-sm capitalize opacity-70">
@@ -389,7 +389,7 @@ const FeeManagementPage = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
+            <div className="bg-surface/5 border border-input/10 rounded-2xl p-6 shadow-xl">
               <h2 className="text-lg font-bold mb-4">Add Structure</h2>
               <form onSubmit={handleAddStructure} className="space-y-3">
                 <select
@@ -400,7 +400,7 @@ const FeeManagementPage = () => {
                       category_id: e.target.value,
                     })
                   }
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-accent"
                 >
                   <option value="">Select Category...</option>
                   {categories.map((c) => (
@@ -417,7 +417,7 @@ const FeeManagementPage = () => {
                       class_id: e.target.value,
                     })
                   }
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-accent"
                 >
                   <option value="">All Classes (Global)</option>
                   {classes.map((c) => (
@@ -433,7 +433,7 @@ const FeeManagementPage = () => {
                     setNewStructure({ ...newStructure, amount: e.target.value })
                   }
                   placeholder="Amount (₹)"
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-accent"
                 />
                 <select
                   value={newStructure.frequency}
@@ -443,7 +443,7 @@ const FeeManagementPage = () => {
                       frequency: e.target.value,
                     })
                   }
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-accent"
                 >
                   <option value="one-time">One-time</option>
                   <option value="monthly">Monthly</option>
@@ -452,14 +452,14 @@ const FeeManagementPage = () => {
                 </select>
                 <button
                   type="submit"
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-3 py-2 transition-colors"
+                  className="w-full bg-accent hover:bg-accent text-primary font-bold rounded-xl px-3 py-2 transition-colors"
                 >
                   Save Structure
                 </button>
               </form>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
+            <div className="bg-surface/5 border border-input/10 rounded-2xl p-6 shadow-xl">
               <h2 className="text-lg font-bold mb-4">Categories</h2>
               <form onSubmit={handleAddCategory} className="flex gap-2 mb-4">
                 <input
@@ -467,11 +467,11 @@ const FeeManagementPage = () => {
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   placeholder="New Category..."
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-accent"
                 />
                 <button
                   type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-3 py-2 transition-colors"
+                  className="bg-accent hover:bg-accent text-primary rounded-xl px-3 py-2 transition-colors"
                 >
                   <Plus size={16} />
                 </button>
@@ -480,7 +480,7 @@ const FeeManagementPage = () => {
                 {categories.map((c) => (
                   <li
                     key={c.id}
-                    className="text-sm opacity-70 px-3 py-2 bg-black/20 rounded-lg"
+                    className="text-sm opacity-70 px-3 py-2 bg-overlay rounded-lg"
                   >
                     {c.name}
                   </li>
@@ -492,14 +492,14 @@ const FeeManagementPage = () => {
       )}
 
       {activeTab === "ledger" && (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
+        <div className="bg-surface/5 border border-input/10 rounded-2xl p-6 shadow-xl">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold">Student Fee Ledger</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="text-xs uppercase opacity-50 border-b border-white/10">
+                <tr className="text-xs uppercase opacity-50 border-b border-input/10">
                   <th className="pb-3">Student</th>
                   <th className="pb-3">Class</th>
                   <th className="pb-3">Fee Head</th>
@@ -511,7 +511,7 @@ const FeeManagementPage = () => {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {studentFees.map((sf) => (
-                  <tr key={sf.id} className="hover:bg-white/5">
+                  <tr key={sf.id} className="hover:bg-surface/5">
                     <td className="py-3 text-sm">
                       <div className="font-semibold">{sf.student_name}</div>
                       <div className="text-xs opacity-50">
@@ -525,20 +525,20 @@ const FeeManagementPage = () => {
                     <td className="py-3 text-sm text-right font-medium">
                       ₹{sf.amount}
                     </td>
-                    <td className="py-3 text-sm text-right text-emerald-400 font-medium">
+                    <td className="py-3 text-sm text-right text-success font-medium">
                       ₹{sf.paid_amount}
                     </td>
-                    <td className="py-3 text-sm text-right text-rose-400 font-bold">
+                    <td className="py-3 text-sm text-right text-danger font-bold">
                       ₹{sf.balance}
                     </td>
                     <td className="py-3 text-sm text-center">
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${
                           sf.status === "paid"
-                            ? "bg-emerald-500/20 text-emerald-400"
+                            ? "bg-success text-success"
                             : sf.status === "partial"
-                              ? "bg-orange-500/20 text-orange-400"
-                              : "bg-rose-500/20 text-rose-400"
+                              ? "bg-warning-soft text-warning"
+                              : "bg-danger-soft text-danger"
                         }`}
                       >
                         {sf.status}
@@ -553,9 +553,9 @@ const FeeManagementPage = () => {
       )}
 
       {activeTab === "collect" && (
-        <div className="max-w-xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
+        <div className="max-w-xl mx-auto bg-surface/5 border border-input/10 rounded-2xl p-6 shadow-xl">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <CreditCard className="text-indigo-400" /> Collect Payment
+            <CreditCard className="text-accent" /> Collect Payment
           </h2>
           <form onSubmit={handleCollectPayment} className="space-y-4">
             <div>
@@ -566,16 +566,16 @@ const FeeManagementPage = () => {
                 value={studentSearch}
                 onChange={(e) => searchStudents(e.target.value)}
                 placeholder="Search by student ID, admission number, or name"
-                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-overlay border border-input/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
               />
               {studentMatches.length > 0 && (
-                <div className="mt-2 rounded-xl border border-white/10 overflow-hidden">
+                <div className="mt-2 rounded-xl border border-input/10 overflow-hidden">
                   {studentMatches.map((student) => (
                     <button
                       type="button"
                       key={student.id}
                       onClick={() => selectStudent(student)}
-                      className="w-full text-left px-4 py-3 bg-black/20 hover:bg-white/10 text-sm"
+                      className="w-full text-left px-4 py-3 bg-overlay hover:bg-surface/10 text-sm"
                     >
                       <strong>{student.full_name}</strong>
                       <span className="block text-xs opacity-60">
@@ -594,7 +594,7 @@ const FeeManagementPage = () => {
             {paymentData.student_id && (
               <div>
                 {studentDue && (
-                  <div className="mb-3 rounded-xl bg-white/5 border border-white/10 p-3 text-sm">
+                  <div className="mb-3 rounded-xl bg-surface/5 border border-input/10 p-3 text-sm">
                     <div className="font-semibold">{studentDue.full_name}</div>
                     <div className="text-xs opacity-60">
                       {studentDue.class_name || "Class not set"}
@@ -624,7 +624,7 @@ const FeeManagementPage = () => {
                       amount_paid: fee ? fee.balance : 0,
                     });
                   }}
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
                 >
                   <option value="">Select due fee...</option>
                   {(
@@ -657,7 +657,7 @@ const FeeManagementPage = () => {
                     amount_paid: e.target.value,
                   })
                 }
-                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-overlay border border-input/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
               />
             </div>
 
@@ -673,7 +673,7 @@ const FeeManagementPage = () => {
                     payment_mode: e.target.value,
                   })
                 }
-                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-overlay border border-input/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
               >
                 <option value="cash">Cash</option>
                 <option value="bank">Bank</option>
@@ -697,7 +697,7 @@ const FeeManagementPage = () => {
                       payment_reference: e.target.value,
                     })
                   }
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-overlay border border-input/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
                 />
               </div>
             )}
@@ -710,13 +710,13 @@ const FeeManagementPage = () => {
                 onChange={(e) =>
                   setPaymentData({ ...paymentData, remarks: e.target.value })
                 }
-                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-overlay border border-input/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-4 py-3 mt-4 transition-colors"
+              className="w-full bg-accent hover:bg-accent text-primary font-bold rounded-xl px-4 py-3 mt-4 transition-colors"
             >
               Process Payment
             </button>
@@ -725,14 +725,14 @@ const FeeManagementPage = () => {
       )}
 
       {activeTab === "receipts" && (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
+        <div className="bg-surface/5 border border-input/10 rounded-2xl p-6 shadow-xl">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold">Payment Receipts</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="text-xs uppercase opacity-50 border-b border-white/10">
+                <tr className="text-xs uppercase opacity-50 border-b border-input/10">
                   <th className="pb-3">Receipt No.</th>
                   <th className="pb-3">Date</th>
                   <th className="pb-3">Student</th>
@@ -743,8 +743,8 @@ const FeeManagementPage = () => {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {receipts.map((r) => (
-                  <tr key={r.id} className="hover:bg-white/5">
-                    <td className="py-3 text-sm font-medium text-indigo-400">
+                  <tr key={r.id} className="hover:bg-surface/5">
+                    <td className="py-3 text-sm font-medium text-accent">
                       {r.receipt_number}
                     </td>
                     <td className="py-3 text-sm opacity-70">
@@ -756,11 +756,11 @@ const FeeManagementPage = () => {
                     <td className="py-3 text-sm capitalize opacity-70">
                       {r.payment_mode.replace("_", " ")}
                     </td>
-                    <td className="py-3 text-sm text-right font-bold text-emerald-400">
+                    <td className="py-3 text-sm text-right font-bold text-success">
                       ₹{r.total_amount}
                     </td>
                     <td className="py-3 text-center">
-                      <button className="p-2 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white rounded-lg transition-colors">
+                      <button className="p-2 bg-accent-soft text-accent hover:bg-accent hover:text-primary rounded-lg transition-colors">
                         <Receipt size={16} />
                       </button>
                     </td>

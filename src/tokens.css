@@ -1,0 +1,139 @@
+:root {
+  color-scheme: light;
+  --bg-page: #f5f7fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f4f8;
+  --bg-selected: #e6f7f4;
+  --bg-input: #ffffff;
+  --border-default: #e3e8ef;
+  --border-input: #cbd5e1;
+  --text-primary: #101828;
+  --text-muted: #5b677a;
+  --accent: #0f766e;
+  --on-accent: #ffffff;
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --success-border: #86efac;
+  --danger: #b42318;
+  --danger-bg: color-mix(in srgb, var(--danger) 12%, var(--bg-surface));
+  --warning: #92400e;
+  --warning-bg: color-mix(in srgb, var(--warning) 12%, var(--bg-surface));
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--bg-surface));
+  --focus-ring: var(--accent);
+
+  --accent-dim: color-mix(in srgb, var(--accent) 14%, transparent);
+  --radio-accent: var(--accent);
+  --radio-dot: var(--text-primary);
+  --toggle-knob: var(--text-primary);
+  --info: var(--accent);
+  --shadow-card: 0 1px 3px rgb(16 24 40 / 8%);
+  --shadow-overlay: 0 24px 70px rgb(16 24 40 / 20%);
+  --overlay: rgb(16 24 40 / 32%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-page: #080c14;
+  --bg-surface: #0f1626;
+  --bg-subtle: #0c1220;
+  --bg-selected: #142034;
+  --bg-input: #0d1320;
+  --border-default: #182236;
+  --border-input: #243046;
+  --text-primary: #e8ecf4;
+  --text-muted: #8995ab;
+  --accent: #5eead4;
+  --on-accent: #04201c;
+  --success-bg: #0f2e27;
+  --success-text: #6ee7b7;
+  --success-border: #166534;
+  --danger: #f08a8a;
+  --danger-bg: color-mix(in srgb, var(--danger) 14%, var(--bg-surface));
+  --warning: #f2b866;
+  --warning-bg: color-mix(in srgb, var(--warning) 14%, var(--bg-surface));
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--bg-surface));
+
+  --radio-dot: var(--text-primary);
+  --toggle-knob: var(--text-primary);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 8%);
+  --shadow-overlay: 0 24px 70px rgb(0 0 0 / 52%);
+  --overlay: rgb(2 6 23 / 74%);
+}
+
+@layer utilities {
+  .bg-page { background-color: var(--bg-page); }
+  .bg-surface { background-color: var(--bg-surface); }
+  .bg-subtle { background-color: var(--bg-subtle); }
+  .bg-selected { background-color: var(--bg-selected); }
+  .bg-input { background-color: var(--bg-input); }
+  .bg-success { background-color: var(--success-bg); }
+  .bg-danger-soft { background-color: var(--danger-bg); }
+  .bg-warning-soft { background-color: var(--warning-bg); }
+  .bg-accent-soft { background-color: var(--accent-soft); }
+  .text-primary { color: var(--text-primary); }
+  .text-muted { color: var(--text-muted); }
+  .text-accent { color: var(--accent); }
+  .text-on-accent { color: var(--on-accent); }
+  .text-success { color: var(--success-text); }
+  .text-danger { color: var(--danger); }
+  .text-warning { color: var(--warning); }
+  .border-success { border-color: var(--success-border); }
+  .border-danger { border-color: var(--danger); }
+  .border-warning { border-color: var(--warning); }
+  .border-default { border-color: var(--border-default); }
+  .border-input { border-color: var(--border-input); }
+  .border-accent { border-color: var(--accent); }
+  .ring-focus { --tw-ring-color: var(--focus-ring); }
+  .bg-accent { background-color: var(--accent); }
+  .bg-danger { background-color: var(--danger); }
+  .bg-warning { background-color: var(--warning); }
+  .bg-overlay { background-color: var(--overlay); }
+  .border-l-accent { border-left-color: var(--accent); }
+  .border-l-danger { border-left-color: var(--danger); }
+  .border-l-success { border-left-color: var(--success-border); }
+  .border-l-warning { border-left-color: var(--warning); }
+  .hover\:bg-subtle:hover { background-color: var(--bg-subtle); }
+  .hover\:bg-selected:hover { background-color: var(--bg-selected); }
+  .hover\:bg-danger-soft:hover { background-color: var(--danger-bg); }
+  .hover\:bg-accent-soft:hover { background-color: var(--accent-soft); }
+  .hover\:bg-success:hover { background-color: var(--success-bg); }
+  .hover\:bg-danger:hover { background-color: var(--danger); }
+  .hover\:bg-warning:hover { background-color: var(--warning); }
+  .hover\:bg-accent:hover { background-color: var(--accent); }
+  .hover\:border-accent:hover { border-color: var(--accent); }
+  .hover\:text-primary:hover { color: var(--text-primary); }
+  .hover\:text-accent:hover { color: var(--accent); }
+}
+
+.bg-accent,
+.bg-danger,
+.bg-warning {
+  color: var(--on-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body,
+  .entity-admin-page,
+  .entity-admin-card,
+  .entity-edit-panel,
+  .entity-admin-page button,
+  .entity-admin-page input,
+  .entity-admin-page select,
+  .entity-admin-page textarea {
+    transition-property: background-color, border-color, color;
+    transition-duration: 150ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .entity-admin-page,
+  .entity-admin-card,
+  .entity-edit-panel,
+  .entity-admin-page button,
+  .entity-admin-page input,
+  .entity-admin-page select,
+  .entity-admin-page textarea {
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -61,9 +61,9 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
 
   const getStatusColor = (status) => {
     const colors = {
-      'present': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      'late': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      'absent': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      'present': 'bg-success text-success dark:bg-success dark:text-success',
+      'late': 'bg-warning text-warning dark:bg-warning-soft dark:text-warning',
+      'absent': 'bg-danger text-danger dark:bg-danger-soft dark:text-danger'
     };
     return colors[status] || colors.absent;
   };
@@ -74,7 +74,7 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
 
   if (!selectedDevice) {
     return (
-      <div className="text-center py-12 text-slate-600 dark:text-slate-400">
+      <div className="text-center py-12 text-muted dark:text-muted">
         <p className="text-lg">📭 Please select a device first</p>
       </div>
     );
@@ -83,14 +83,14 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'}`}>
+        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-success dark:bg-success text-success dark:text-success' : 'bg-danger dark:bg-danger-soft text-danger dark:text-danger'}`}>
           {message.text}
         </div>
       )}
 
       {/* Device Selector */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <div className="p-4 bg-selected dark:bg-subtle rounded-lg">
+        <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
           Selected Device:
         </label>
         <select
@@ -100,7 +100,7 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
             onDeviceSelected(device);
             setPage(1);
           }}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+          className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
         >
           {devices.map(device => (
             <option key={device.id} value={device.id}>
@@ -111,8 +111,8 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
       </div>
 
       {/* Date Picker */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <div className="p-4 bg-selected dark:bg-subtle rounded-lg">
+        <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
           View Date:
         </label>
         <input
@@ -122,24 +122,24 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
             setSelectedDate(e.target.value);
             loadAttendanceSummary();
           }}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+          className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
         />
       </div>
 
       {/* Summary Stats */}
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-            <p className="text-sm font-medium text-green-600 dark:text-green-300">Present</p>
-            <p className="text-3xl font-bold text-green-900 dark:text-green-100">{getSummaryCount('present')}</p>
+          <div className="p-4 bg-success dark:bg-success rounded-lg border border-success dark:border-success">
+            <p className="text-sm font-medium text-success dark:text-success">Present</p>
+            <p className="text-3xl font-bold text-success dark:text-success">{getSummaryCount('present')}</p>
           </div>
-          <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-            <p className="text-sm font-medium text-yellow-600 dark:text-yellow-300">Late</p>
-            <p className="text-3xl font-bold text-yellow-900 dark:text-yellow-100">{getSummaryCount('late')}</p>
+          <div className="p-4 bg-warning dark:bg-warning-soft rounded-lg border border-warning dark:border-warning">
+            <p className="text-sm font-medium text-warning dark:text-warning">Late</p>
+            <p className="text-3xl font-bold text-warning dark:text-warning">{getSummaryCount('late')}</p>
           </div>
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-            <p className="text-sm font-medium text-red-600 dark:text-red-300">Absent</p>
-            <p className="text-3xl font-bold text-red-900 dark:text-red-100">{getSummaryCount('absent')}</p>
+          <div className="p-4 bg-danger dark:bg-danger-soft rounded-lg border border-danger dark:border-danger">
+            <p className="text-sm font-medium text-danger dark:text-danger">Absent</p>
+            <p className="text-3xl font-bold text-danger dark:text-danger">{getSummaryCount('absent')}</p>
           </div>
         </div>
       )}
@@ -150,8 +150,8 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
           onClick={() => setStatusFilter(null)}
           className={`px-4 py-2 rounded ${
             statusFilter === null
-              ? 'bg-blue-500 text-white'
-              : 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100'
+              ? 'bg-accent text-primary'
+              : 'bg-selected dark:bg-subtle text-muted dark:text-primary'
           }`}
         >
           All Records
@@ -162,8 +162,8 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
             onClick={() => setStatusFilter(status)}
             className={`px-4 py-2 rounded capitalize ${
               statusFilter === status
-                ? 'bg-blue-500 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100'
+                ? 'bg-accent text-primary'
+                : 'bg-selected dark:bg-subtle text-muted dark:text-primary'
             }`}
           >
             {status}
@@ -173,41 +173,41 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
 
       {/* Attendance Records Table */}
       <div>
-        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">📊 Attendance Records</h3>
+        <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">📊 Attendance Records</h3>
         {loading ? (
-          <div className="text-center py-8 text-slate-600 dark:text-slate-400">
+          <div className="text-center py-8 text-muted dark:text-muted">
             <p>⏳ Loading records...</p>
           </div>
         ) : records.length === 0 ? (
-          <div className="text-center py-8 text-slate-600 dark:text-slate-400">
+          <div className="text-center py-8 text-muted dark:text-muted">
             <p>📭 No records found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">Punch Time</th>
-                  <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">Teacher</th>
-                  <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">Device ID</th>
-                  <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">Status</th>
-                  <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">Type</th>
-                  <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">Action</th>
+                <tr className="border-b border-default dark:border-default">
+                  <th className="px-4 py-3 text-left font-bold text-muted dark:text-primary">Punch Time</th>
+                  <th className="px-4 py-3 text-left font-bold text-muted dark:text-primary">Teacher</th>
+                  <th className="px-4 py-3 text-left font-bold text-muted dark:text-primary">Device ID</th>
+                  <th className="px-4 py-3 text-left font-bold text-muted dark:text-primary">Status</th>
+                  <th className="px-4 py-3 text-left font-bold text-muted dark:text-primary">Type</th>
+                  <th className="px-4 py-3 text-left font-bold text-muted dark:text-primary">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {records.map(record => (
                   <tr
                     key={record.id}
-                    className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    className="border-b border-default dark:border-default hover:bg-selected dark:hover:bg-subtle"
                   >
-                    <td className="px-4 py-3 text-slate-900 dark:text-slate-100">
+                    <td className="px-4 py-3 text-muted dark:text-primary">
                       {new Date(record.punch_time).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-slate-900 dark:text-slate-100">
+                    <td className="px-4 py-3 text-muted dark:text-primary">
                       {record.user_id ? `${record.user?.first_name} ${record.user?.last_name}` : '—'}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-mono">
+                    <td className="px-4 py-3 text-muted dark:text-muted font-mono">
                       {record.device_user_id}
                     </td>
                     <td className="px-4 py-3">
@@ -215,7 +215,7 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
                         {record.attendance_status.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                    <td className="px-4 py-3 text-muted dark:text-muted">
                       {record.marked_as === 'manual' ? '👤 Manual' : '🔄 Auto'}
                     </td>
                     <td className="px-4 py-3">
@@ -226,7 +226,7 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
                           }
                         }}
                         disabled={overridingId === record.id}
-                        className="text-xs px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                        className="text-xs px-2 py-1 border border-default dark:border-default rounded bg-surface dark:bg-subtle text-muted dark:text-primary"
                       >
                         <option value="">Mark as...</option>
                         <option value="present">✓ Present</option>
@@ -248,14 +248,14 @@ const AttendanceRecords = ({ devices, selectedDevice, onDeviceSelected }) => {
           <button
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
-            className="px-4 py-2 bg-slate-300 dark:bg-slate-600 rounded hover:bg-slate-400 disabled:opacity-50"
+            className="px-4 py-2 bg-selected dark:bg-selected rounded hover:bg-selected disabled:opacity-50"
           >
             ← Previous
           </button>
-          <span className="px-4 py-2 text-slate-700 dark:text-slate-300">Page {page}</span>
+          <span className="px-4 py-2 text-muted dark:text-muted">Page {page}</span>
           <button
             onClick={() => setPage(page + 1)}
-            className="px-4 py-2 bg-slate-300 dark:bg-slate-600 rounded hover:bg-slate-400"
+            className="px-4 py-2 bg-selected dark:bg-selected rounded hover:bg-selected"
           >
             Next →
           </button>

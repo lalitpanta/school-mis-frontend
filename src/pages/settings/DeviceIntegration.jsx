@@ -56,16 +56,16 @@ const DeviceIntegration = () => {
   ];
 
   return (
-    <div className="p-6 min-h-screen" style={{ background: "var(--bg-main)" }}>
+    <div className="p-6 min-h-screen" style={{ background: "var(--bg-page)" }}>
       {/* Header */}
       <div className="mb-8">
         <h1
           className="text-4xl font-bold mb-2"
-          style={{ color: "var(--text-1)" }}
+          style={{ color: "var(--text-primary)" }}
         >
           🔐 Device Integration Module
         </h1>
-        <p style={{ color: "var(--text-2)" }}>
+        <p style={{ color: "var(--text-muted)" }}>
           Manage biometric and access control devices for automatic teacher
           attendance tracking
         </p>
@@ -73,21 +73,21 @@ const DeviceIntegration = () => {
 
       {/* Error Alert */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-red-700 dark:text-red-300">⚠️ {error}</p>
+        <div className="mb-6 p-4 bg-danger dark:bg-danger-soft border border-danger dark:border-danger rounded-lg">
+          <p className="text-danger dark:text-danger">⚠️ {error}</p>
         </div>
       )}
 
       {/* Tab Navigation */}
-      <div className="mb-6 flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700">
+      <div className="mb-6 flex flex-wrap gap-2 border-b border-default dark:border-default">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-3 font-medium transition-all border-b-2 ${
               activeTab === tab.id
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                ? "border-accent text-accent dark:text-accent"
+                : "border-transparent text-muted dark:text-muted hover:text-muted dark:hover:text-primary"
             }`}
           >
             {tab.icon} {tab.label}
@@ -99,15 +99,15 @@ const DeviceIntegration = () => {
       <div
         className="rounded-lg shadow-lg p-6"
         style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-card)",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-default)",
         }}
       >
         {loading && !devices.length ? (
           <div className="flex justify-center items-center h-96">
             <div className="text-center">
               <div className="animate-spin text-4xl mb-4">⏳</div>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-muted dark:text-muted">
                 Loading devices...
               </p>
             </div>
@@ -171,11 +171,11 @@ const DeviceIntegration = () => {
       <div
         className="mt-8 p-4 rounded-lg"
         style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-card)",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-default)",
         }}
       >
-        <p className="text-sm" style={{ color: "var(--text-2)" }}>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
           ℹ️ <strong>Note:</strong> Devices are automatically synced every 5
           minutes. Manual sync can be triggered from the Sync tab. Late
           attendance is marked for punches after 10:10 AM Nepal time. Duplicate

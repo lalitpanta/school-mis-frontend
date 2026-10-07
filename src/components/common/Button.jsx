@@ -3,18 +3,18 @@ import clsx from "clsx";
 const variants = {
   primary: {
     background: "var(--accent)",
-    color: "var(--accent-text)",
+    color: "var(--on-accent)",
     border: "none",
   },
   danger: {
     background: "var(--danger)",
-    color: "var(--accent-text)",
+    color: "var(--on-accent)",
     border: "none",
   },
   ghost: {
     background: "transparent",
-    color: "var(--text-2)",
-    border: "1px solid var(--border-dim)",
+    color: "var(--text-muted)",
+    border: "1px solid var(--border-default)",
   },
   outline: {
     background: "transparent",
@@ -23,8 +23,8 @@ const variants = {
   },
   secondary: {
     background: "var(--bg-surface)",
-    color: "var(--text-1)",
-    border: "1px solid var(--border-dim)",
+    color: "var(--text-primary)",
+    border: "1px solid var(--border-default)",
   },
 };
 
@@ -56,7 +56,7 @@ const Button = ({
     {...props}
   >
     {loading ? (
-      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      <span className="w-4 h-4 border-2 border-input/30 border-t-white rounded-full animate-spin" />
     ) : Icon ? (
       <Icon size={16} />
     ) : null}

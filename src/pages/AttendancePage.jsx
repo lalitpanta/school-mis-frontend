@@ -55,24 +55,24 @@ const AttendancePage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color:'var(--text-1)' }}>Attendance</h1>
-          <p className="text-sm mt-1" style={{ color:'var(--text-2)' }}>Track and manage teacher and employee attendance (device-backed).</p>
+          <h1 className="text-2xl font-bold" style={{ color:'var(--text-primary)' }}>Attendance</h1>
+          <p className="text-sm mt-1" style={{ color:'var(--text-muted)' }}>Track and manage teacher and employee attendance (device-backed).</p>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="flex items-center bg-card rounded-lg overflow-hidden" style={{ gap:6 }}>
-            <button onClick={() => setPrimaryTab('today')} className={primaryTab==='today'? 'px-3 py-2 font-semibold':'px-3 py-2'} style={{ background: primaryTab==='today' ? 'var(--bg-card)' : 'transparent', color:'var(--text-1)' }}>Today</button>
-            <button onClick={() => setPrimaryTab('history')} className={primaryTab==='history'? 'px-3 py-2 font-semibold':'px-3 py-2'} style={{ background: primaryTab==='history' ? 'var(--bg-card)' : 'transparent', color:'var(--text-1)' }}>History</button>
+            <button onClick={() => setPrimaryTab('today')} className={primaryTab==='today'? 'px-3 py-2 font-semibold':'px-3 py-2'} style={{ background: primaryTab==='today' ? 'var(--bg-surface)' : 'transparent', color:'var(--text-primary)' }}>Today</button>
+            <button onClick={() => setPrimaryTab('history')} className={primaryTab==='history'? 'px-3 py-2 font-semibold':'px-3 py-2'} style={{ background: primaryTab==='history' ? 'var(--bg-surface)' : 'transparent', color:'var(--text-primary)' }}>History</button>
           </div>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setEntityTab('teacher')} className={entityTab==='teacher'? 'px-3 py-2 font-semibold rounded-lg':'px-3 py-2 rounded-lg'} style={{ background: entityTab==='teacher' ? 'var(--accent-dim)' : 'transparent', color: entityTab==='teacher'? 'var(--accent)': 'var(--text-2)'}}>Teachers</button>
-            <button onClick={() => setEntityTab('employee')} className={entityTab==='employee'? 'px-3 py-2 font-semibold rounded-lg':'px-3 py-2 rounded-lg'} style={{ background: entityTab==='employee' ? 'var(--accent-dim)' : 'transparent', color: entityTab==='employee'? 'var(--accent)': 'var(--text-2)'}}>Employees</button>
+            <button onClick={() => setEntityTab('teacher')} className={entityTab==='teacher'? 'px-3 py-2 font-semibold rounded-lg':'px-3 py-2 rounded-lg'} style={{ background: entityTab==='teacher' ? 'var(--accent-dim)' : 'transparent', color: entityTab==='teacher'? 'var(--accent)': 'var(--text-muted)'}}>Teachers</button>
+            <button onClick={() => setEntityTab('employee')} className={entityTab==='employee'? 'px-3 py-2 font-semibold rounded-lg':'px-3 py-2 rounded-lg'} style={{ background: entityTab==='employee' ? 'var(--accent-dim)' : 'transparent', color: entityTab==='employee'? 'var(--accent)': 'var(--text-muted)'}}>Employees</button>
           </div>
 
           {primaryTab === 'today' && (
             <>
-              <Filter size={16} className="text-slate-400" />
+              <Filter size={16} className="text-muted" />
               <UniversalDatePicker value={date} onChange={setDate} />
             </>
           )}

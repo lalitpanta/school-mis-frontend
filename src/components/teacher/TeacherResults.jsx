@@ -177,11 +177,11 @@ const TeacherResults = () => {
     }
   };
 
-  const muted = "text-slate-400";
+  const muted = "text-muted";
   const submitted = detail?.exam.status === "submitted";
 
   if (loading && !detail) {
-    return <section className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-sm text-slate-300">Loading shared exam formats...</section>;
+    return <section className="rounded-xl border border-default bg-surface p-5 text-sm text-muted">Loading shared exam formats...</section>;
   }
 
   return (
@@ -189,14 +189,14 @@ const TeacherResults = () => {
       {(error || notice) && (
         <p
           role={error ? "alert" : "status"}
-          className={`rounded-lg p-3 text-sm ${error ? "bg-rose-400/10 text-rose-200" : "bg-teal-400/10 text-teal-100"}`}
+          className={`rounded-lg p-3 text-sm ${error ? "bg-danger-soft text-danger" : "bg-accent-soft text-accent"}`}
         >
           {error || notice}
         </p>
       )}
 
       {!detail ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-xl border border-default bg-surface p-5">
           <div>
             <h2 className="text-xl font-semibold">Shared exam formats</h2>
             <p className={`mt-1 text-sm ${muted}`}>
@@ -228,14 +228,14 @@ const TeacherResults = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${exam.status === "submitted" ? "bg-emerald-400/10 text-emerald-300" : "bg-amber-400/10 text-amber-200"}`}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${exam.status === "submitted" ? "bg-success text-success" : "bg-warning-soft text-warning"}`}
                     >
                       {exam.status === "submitted" ? "Submitted" : "In progress"}
                     </span>
                     <button
                       type="button"
                       onClick={() => openExam(exam)}
-                      className="inline-flex items-center gap-2 rounded-lg bg-teal-400 px-3 py-2 text-sm font-semibold text-slate-950"
+                      className="inline-flex items-center gap-2 rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-muted"
                     >
                       <Eye size={16} /> View format
                     </button>
@@ -251,7 +251,7 @@ const TeacherResults = () => {
         </div>
       ) : (
         <div className="space-y-5">
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+          <div className="rounded-xl border border-default bg-surface p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <button
@@ -261,7 +261,7 @@ const TeacherResults = () => {
                     setNotice("");
                     setError("");
                   }}
-                  className="mb-3 inline-flex items-center gap-2 text-sm text-teal-300 hover:text-teal-200"
+                  className="mb-3 inline-flex items-center gap-2 text-sm text-accent hover:text-accent"
                 >
                   <ArrowLeft size={16} /> All shared exams
                 </button>
@@ -278,7 +278,7 @@ const TeacherResults = () => {
                 </p>
               </div>
               <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${submitted ? "bg-emerald-400/10 text-emerald-300" : "bg-amber-400/10 text-amber-200"}`}
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${submitted ? "bg-success text-success" : "bg-warning-soft text-warning"}`}
               >
                 {submitted ? "Submitted" : "In progress"}
               </span>
@@ -286,7 +286,7 @@ const TeacherResults = () => {
 
             <div className="mt-5">
               <h3 className="flex items-center gap-2 text-sm font-semibold">
-                <BookOpenCheck size={17} className="text-teal-300" />
+                <BookOpenCheck size={17} className="text-accent" />
                 Courses and assigned marks
               </h3>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -295,7 +295,7 @@ const TeacherResults = () => {
                     key={subject.id}
                     type="button"
                     onClick={() => setSelectedSubjectId(String(subject.id))}
-                    className={`rounded-lg border p-3 text-left ${String(subject.id) === String(selectedSubjectId) ? "border-teal-400/60 bg-teal-400/10" : "border-slate-800 bg-slate-950/60"}`}
+                    className={`rounded-lg border p-3 text-left ${String(subject.id) === String(selectedSubjectId) ? "border-accent bg-accent-soft" : "border-default bg-surface"}`}
                   >
                     <span className="block font-medium">{subject.course_name || subject.subject_name}</span>
                     <span className={`mt-1 block text-xs ${muted}`}>
@@ -310,8 +310,8 @@ const TeacherResults = () => {
           </div>
 
           {selectedSubject && (
-            <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 p-4">
+            <div className="overflow-hidden rounded-xl border border-default bg-surface">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-default p-4">
                 <div>
                   <h3 className="font-semibold">
                     Enter marks · {selectedSubject.course_name || selectedSubject.subject_name}
@@ -325,7 +325,7 @@ const TeacherResults = () => {
                     type="button"
                     onClick={saveMarks}
                     disabled={saving || submitting || !subjectStudents.length}
-                    className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold hover:border-teal-400/60 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-lg border border-default px-3 py-2 text-sm font-semibold hover:border-accent disabled:opacity-50"
                   >
                     <Save size={16} /> {saving ? "Saving..." : "Save marks"}
                   </button>
@@ -333,7 +333,7 @@ const TeacherResults = () => {
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] text-left text-sm">
-                  <thead className="bg-slate-950 text-slate-400">
+                  <thead className="bg-surface text-muted">
                     <tr>
                       <th className="px-3 py-3">Roll</th>
                       <th className="px-3 py-3">Student</th>
@@ -344,7 +344,7 @@ const TeacherResults = () => {
                   </thead>
                   <tbody>
                     {subjectStudents.map((student) => (
-                      <tr key={student.id} className="border-t border-slate-800">
+                      <tr key={student.id} className="border-t border-default">
                         <td className="px-3 py-3">{student.roll_no ?? "-"}</td>
                         <td className="px-3 py-3">{student.full_name}</td>
                         <td className="px-3 py-3">
@@ -357,7 +357,7 @@ const TeacherResults = () => {
                             value={marksByStudent[student.id]?.theory_marks ?? ""}
                             onChange={(event) => updateMark(student.id, "theory_marks", event.target.value)}
                             aria-label={`Theory marks for ${student.full_name}`}
-                            className="w-24 rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 disabled:opacity-50"
+                            className="w-24 rounded-md border border-default bg-surface px-2 py-1.5 disabled:opacity-50"
                           />
                         </td>
                         <td className="px-3 py-3">
@@ -370,7 +370,7 @@ const TeacherResults = () => {
                             value={marksByStudent[student.id]?.practical_marks ?? ""}
                             onChange={(event) => updateMark(student.id, "practical_marks", event.target.value)}
                             aria-label={`Practical marks for ${student.full_name}`}
-                            className="w-24 rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 disabled:opacity-50"
+                            className="w-24 rounded-md border border-default bg-surface px-2 py-1.5 disabled:opacity-50"
                           />
                         </td>
                         <td className="px-3 py-3">
@@ -381,7 +381,7 @@ const TeacherResults = () => {
                             value={marksByStudent[student.id]?.remarks ?? ""}
                             onChange={(event) => updateMark(student.id, "remarks", event.target.value)}
                             aria-label={`Remarks for ${student.full_name}`}
-                            className="w-40 rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 disabled:opacity-50"
+                            className="w-40 rounded-md border border-default bg-surface px-2 py-1.5 disabled:opacity-50"
                           />
                         </td>
                       </tr>
@@ -397,12 +397,12 @@ const TeacherResults = () => {
                 </table>
               </div>
               {!submitted && (
-                <div className="flex justify-end border-t border-slate-800 p-4">
+                <div className="flex justify-end border-t border-default p-4">
                   <button
                     type="button"
                     onClick={submitMarks}
                     disabled={saving || submitting || !subjectStudents.length}
-                    className="inline-flex items-center gap-2 rounded-lg bg-teal-400 px-4 py-2.5 text-sm font-semibold text-slate-950 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-muted disabled:opacity-50"
                   >
                     <Send size={16} /> {submitting ? "Submitting..." : "Submit marks"}
                   </button>

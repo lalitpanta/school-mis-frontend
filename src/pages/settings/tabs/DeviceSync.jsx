@@ -51,16 +51,16 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
 
   const getStatusColor = (status) => {
     const colors = {
-      'success': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      'partial': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      'failed': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      'success': 'bg-success text-success dark:bg-success dark:text-success',
+      'partial': 'bg-warning text-warning dark:bg-warning-soft dark:text-warning',
+      'failed': 'bg-danger text-danger dark:bg-danger-soft dark:text-danger'
     };
     return colors[status] || colors.partial;
   };
 
   if (!selectedDevice) {
     return (
-      <div className="text-center py-12 text-slate-600 dark:text-slate-400">
+      <div className="text-center py-12 text-muted dark:text-muted">
         <p className="text-lg">📭 Please select a device first</p>
       </div>
     );
@@ -69,14 +69,14 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'}`}>
+        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-success dark:bg-success text-success dark:text-success' : 'bg-danger dark:bg-danger-soft text-danger dark:text-danger'}`}>
           {message.text}
         </div>
       )}
 
       {/* Device Selector */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <div className="p-4 bg-selected dark:bg-subtle rounded-lg">
+        <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
           Selected Device:
         </label>
         <select
@@ -86,7 +86,7 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
             onDeviceSelected(device);
             setPage(1);
           }}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+          className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
         >
           {devices.map(device => (
             <option key={device.id} value={device.id}>
@@ -94,7 +94,7 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
             </option>
           ))}
         </select>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-xs text-muted dark:text-muted mt-2">
           Last synced: {selectedDevice?.last_synced_at ? new Date(selectedDevice.last_synced_at).toLocaleString() : 'Never'}
         </p>
       </div>
@@ -103,38 +103,38 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
       <button
         onClick={handleManualSync}
         disabled={syncing || !selectedDevice}
-        className="w-full px-6 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-slate-400 font-bold text-lg transition-all"
+        className="w-full px-6 py-4 bg-accent text-primary rounded-lg hover:bg-accent disabled:bg-selected font-bold text-lg transition-all"
       >
         {syncing ? '⏳ Syncing...' : '🔄 Sync Now (Manual)'}
       </button>
 
       {/* Sync Status Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <p className="text-sm font-medium text-blue-600 dark:text-blue-300">Auto Sync Interval</p>
-          <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{selectedDevice?.pull_interval_minutes || '-'} min</p>
+        <div className="p-4 bg-accent dark:bg-accent-soft rounded-lg border border-accent dark:border-accent">
+          <p className="text-sm font-medium text-accent dark:text-accent">Auto Sync Interval</p>
+          <p className="text-2xl font-bold text-accent dark:text-accent">{selectedDevice?.pull_interval_minutes || '-'} min</p>
         </div>
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-          <p className="text-sm font-medium text-green-600 dark:text-green-300">Connection</p>
-          <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+        <div className="p-4 bg-success dark:bg-success rounded-lg border border-success dark:border-success">
+          <p className="text-sm font-medium text-success dark:text-success">Connection</p>
+          <p className="text-2xl font-bold text-success dark:text-success">
             {selectedDevice?.connection_status === 'online' ? '🟢 Online' : '🔴 Offline'}
           </p>
         </div>
-        <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-          <p className="text-sm font-medium text-purple-600 dark:text-purple-300">Sync Method</p>
-          <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{selectedDevice?.connection_method || '-'}</p>
+        <div className="p-4 bg-accent dark:bg-accent-soft rounded-lg border border-accent dark:border-accent">
+          <p className="text-sm font-medium text-accent dark:text-accent">Sync Method</p>
+          <p className="text-2xl font-bold text-accent dark:text-accent">{selectedDevice?.connection_method || '-'}</p>
         </div>
       </div>
 
       {/* Sync Logs */}
       <div>
-        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">📜 Sync History</h3>
+        <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">📜 Sync History</h3>
         {loading ? (
-          <div className="text-center py-8 text-slate-600 dark:text-slate-400">
+          <div className="text-center py-8 text-muted dark:text-muted">
             <p>⏳ Loading sync logs...</p>
           </div>
         ) : syncLogs.length === 0 ? (
-          <div className="text-center py-8 text-slate-600 dark:text-slate-400">
+          <div className="text-center py-8 text-muted dark:text-muted">
             <p>📭 No sync logs yet</p>
           </div>
         ) : (
@@ -142,37 +142,37 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
             {syncLogs.map(log => (
               <div
                 key={log.id}
-                className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600"
+                className="p-4 bg-selected dark:bg-subtle rounded-lg border border-default dark:border-default"
               >
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(log.status)}`}>
                       {log.status.toUpperCase()}
                     </span>
-                    <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
+                    <span className="ml-2 text-sm text-muted dark:text-muted">
                       {log.sync_type === 'auto' ? '🔄 Auto' : '👤 Manual'}
                     </span>
                   </div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs text-muted dark:text-muted">
                     {new Date(log.created_at).toLocaleString()}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <p className="text-slate-600 dark:text-slate-400">Pulled</p>
-                    <p className="font-bold text-slate-900 dark:text-slate-100">{log.records_pulled}</p>
+                    <p className="text-muted dark:text-muted">Pulled</p>
+                    <p className="font-bold text-muted dark:text-primary">{log.records_pulled}</p>
                   </div>
                   <div>
-                    <p className="text-slate-600 dark:text-slate-400">Saved</p>
-                    <p className="font-bold text-slate-900 dark:text-slate-100">{log.records_saved}</p>
+                    <p className="text-muted dark:text-muted">Saved</p>
+                    <p className="font-bold text-muted dark:text-primary">{log.records_saved}</p>
                   </div>
                   <div>
-                    <p className="text-slate-600 dark:text-slate-400">Skipped</p>
-                    <p className="font-bold text-slate-900 dark:text-slate-100">{log.records_skipped}</p>
+                    <p className="text-muted dark:text-muted">Skipped</p>
+                    <p className="font-bold text-muted dark:text-primary">{log.records_skipped}</p>
                   </div>
                 </div>
                 {log.error_message && (
-                  <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded text-red-700 dark:text-red-300 text-xs">
+                  <div className="mt-2 p-2 bg-danger dark:bg-danger-soft rounded text-danger dark:text-danger text-xs">
                     ⚠️ {log.error_message}
                   </div>
                 )}
@@ -188,14 +188,14 @@ const DeviceSync = ({ devices, selectedDevice, onDeviceSelected, onRefresh }) =>
           <button
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
-            className="px-4 py-2 bg-slate-300 dark:bg-slate-600 rounded hover:bg-slate-400 disabled:opacity-50"
+            className="px-4 py-2 bg-selected dark:bg-selected rounded hover:bg-selected disabled:opacity-50"
           >
             ← Previous
           </button>
-          <span className="px-4 py-2 text-slate-700 dark:text-slate-300">Page {page}</span>
+          <span className="px-4 py-2 text-muted dark:text-muted">Page {page}</span>
           <button
             onClick={() => setPage(page + 1)}
-            className="px-4 py-2 bg-slate-300 dark:bg-slate-600 rounded hover:bg-slate-400"
+            className="px-4 py-2 bg-selected dark:bg-selected rounded hover:bg-selected"
           >
             Next →
           </button>

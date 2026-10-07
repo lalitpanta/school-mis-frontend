@@ -70,14 +70,14 @@ const SettingsModal = ({
       }}
     >
       <div
-        className={`app-modal-surface relative ${inlinePanel ? `flex h-full min-h-0 w-full min-w-0 flex-col ${inlinePanelSurfaceClassName || "rounded-xl border border-slate-700/70 shadow-xl"}` : sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none overflow-hidden border border-slate-700/70 shadow-xl" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl overflow-hidden border border-slate-700/70 shadow-xl`}`}
+        className={`app-modal-surface relative ${inlinePanel ? `flex h-full min-h-0 w-full min-w-0 flex-col ${inlinePanelSurfaceClassName || "rounded-xl border border-default bg-surface shadow-xl"}` : sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none overflow-hidden border border-default bg-surface shadow-xl" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl overflow-hidden border border-default bg-surface shadow-xl`}`}
         style={inlinePanel ? inlinePanelSurfaceStyle : undefined}
       >
-        <div className={`flex items-start justify-between gap-4 border-b border-slate-700/70 px-6 py-4 ${inlinePanel ? inlinePanelHeaderClassName : ""}`}>
+        <div className={`flex items-start justify-between gap-4 border-b border-default bg-subtle px-6 py-4 ${inlinePanel ? inlinePanelHeaderClassName : ""}`}>
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
+            <h2 className="text-lg font-semibold text-primary">{title}</h2>
             {subtitle && (
-              <p className="mt-1 break-words text-sm leading-relaxed text-slate-400">
+              <p className="mt-1 break-words text-sm leading-relaxed text-muted">
                 {subtitle}
               </p>
             )}
@@ -85,7 +85,7 @@ const SettingsModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 text-slate-300 transition hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-200"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-input bg-surface text-muted transition hover:border-accent hover:bg-subtle hover:text-primary"
             aria-label="Close modal"
           >
             <X size={18} />
@@ -100,7 +100,7 @@ const SettingsModal = ({
         </div>
 
         {footer ? (
-          <div className="border-t border-slate-700/70 bg-slate-950/40 px-6 py-4">
+          <div className="border-t border-default bg-subtle px-6 py-4">
             {footer}
           </div>
         ) : null}

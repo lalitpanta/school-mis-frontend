@@ -2009,7 +2009,7 @@ const StudentPortalExperience = () => {
 
   return (
     <main
-      className={`student-portal min-h-screen ${isDark ? "bg-[#071522] text-slate-100" : "bg-[#eef4f4] text-slate-900"}`}
+      className={`student-portal min-h-screen ${isDark ? "bg-page text-slate-100" : "bg-page text-slate-900"}`}
     >
       <style>{`@media print { .print\\:hidden, .portal-menu, .portal-header-actions { display: none !important; } .student-portal { background: white !important; color: #111827 !important; } .print-area { break-inside: avoid; } }`}</style>
       <div className="mx-auto max-w-360 px-3 py-4 sm:px-6">

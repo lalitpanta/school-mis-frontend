@@ -15,6 +15,7 @@ import {
 } from "../../api/studentsApi";
 import config from "../../config/config";
 import Button from "../common/Button";
+import { getPrintThemeStyles } from "../../utils/themePrint";
 import {
   Plus,
   Trash2,
@@ -103,7 +104,7 @@ const emptyStudent = {
 
 const Section = ({ title, id, children }) => (
   <section id={id} className="mb-5 scroll-mt-14">
-    <h3 className="mb-3 border-b border-slate-700/60 pb-2 text-lg font-semibold text-white">
+    <h3 className="mb-3 border-b border-default pb-2 text-lg font-semibold text-primary">
       {title}
     </h3>
     <div>{children}</div>
@@ -118,29 +119,29 @@ const InputField = ({
   required = false,
 }) => (
   <div>
-    <label className="block text-sm text-slate-300 mb-1">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="block text-sm text-muted mb-1">
+      {label} {required && <span className="text-danger">*</span>}
     </label>
     <input
       type={type}
       required={required}
       value={value || ""}
       onChange={onChange}
-      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+      className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
     />
   </div>
 );
 
 const SelectField = ({ label, value, onChange, options, required = false }) => (
   <div>
-    <label className="block text-sm text-slate-300 mb-1">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="block text-sm text-muted mb-1">
+      {label} {required && <span className="text-danger">*</span>}
     </label>
     <select
       required={required}
       value={value || ""}
       onChange={onChange}
-      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+      className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
     >
       <option value="">-- Select --</option>
       {options.map((opt) => (
@@ -154,12 +155,12 @@ const SelectField = ({ label, value, onChange, options, required = false }) => (
 
 const TextAreaField = ({ label, value, onChange, rows = 3 }) => (
   <div>
-    <label className="block text-sm text-slate-300 mb-1">{label}</label>
+    <label className="block text-sm text-muted mb-1">{label}</label>
     <textarea
       value={value || ""}
       onChange={onChange}
       rows={rows}
-      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+      className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
     />
   </div>
 );
@@ -169,8 +170,8 @@ const CheckboxField = ({ label, checked, onChange }) => (
     htmlFor={`chk_${label}`}
     className={`flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 py-3 transition ${
       checked
-        ? "border-indigo-400/70 bg-indigo-500/10"
-        : "border-slate-700 bg-slate-900/70 hover:border-slate-600 hover:bg-slate-800/80"
+        ? "border-accent bg-accent-soft"
+        : "border-default bg-surface hover:border-default hover:bg-subtle"
     }`}
   >
     <span className="flex items-center gap-3">
@@ -179,15 +180,15 @@ const CheckboxField = ({ label, checked, onChange }) => (
         type="checkbox"
         checked={checked || false}
         onChange={onChange}
-        className="h-5 w-5 shrink-0 cursor-pointer accent-indigo-500"
+        className="h-5 w-5 shrink-0 cursor-pointer accent-[var(--accent)]"
       />
-      <span className="text-sm font-medium text-slate-200">{label}</span>
+      <span className="text-sm font-medium text-primary">{label}</span>
     </span>
     <span
       className={`rounded-full px-2.5 py-1 text-xs font-medium ${
         checked
-          ? "bg-indigo-500/20 text-indigo-200"
-          : "bg-slate-800 text-slate-400"
+          ? "bg-accent-soft text-accent"
+          : "bg-subtle text-muted"
       }`}
     >
       {checked ? "Yes" : "No"}
@@ -208,7 +209,7 @@ const RadioField = ({ label, name, value, checked, onChange }) => (
     />
     <label
       htmlFor={`radio_${value}`}
-      className="text-sm text-slate-300 cursor-pointer"
+      className="text-sm text-muted cursor-pointer"
     >
       {label}
     </label>
@@ -270,10 +271,10 @@ const Students = () => {
 
   const renderDetail = (label, value) => (
     <div>
-      <div className="text-xs uppercase tracking-wide text-slate-400">
+      <div className="text-xs uppercase tracking-wide text-muted">
         {label}
       </div>
-      <div className="text-sm text-slate-200">{value || "—"}</div>
+      <div className="text-sm text-primary">{value || "—"}</div>
     </div>
   );
 
@@ -311,51 +312,52 @@ const Students = () => {
       <html>
         <head>
           <title>Student Profile - ${viewStudent.full_name}</title>
+          ${getPrintThemeStyles()}
           <style>
-            body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f3f4f6; padding: 40px; margin: 0; color: #1f2937; }
+            body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: var(--bg-page); padding: 40px; margin: 0; color: var(--text-primary); }
             * { box-sizing: border-box; }
-            .container { max-width: 850px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden; }
-            .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); position: relative; padding: 32px; color: white; }
-            .header-bg-shape { position: absolute; top: 0; right: 0; bottom: 0; width: 50%; background: radial-gradient(circle at top right, rgba(255,255,255,0.1), transparent 70%); border-top-right-radius: 16px; pointer-events: none; }
+            .container { max-width: 850px; margin: 0 auto; background: var(--bg-surface); border-radius: 16px; box-shadow: var(--shadow-overlay); overflow: hidden; }
+            .header { background: var(--accent); position: relative; padding: 32px; color: var(--on-accent); }
+            .header-bg-shape { position: absolute; top: 0; right: 0; bottom: 0; width: 50%; background: radial-gradient(circle at top right, color-mix(in srgb, var(--on-accent) 10%, transparent), transparent 70%); border-top-right-radius: 16px; pointer-events: none; }
             .header-top { display: flex; gap: 24px; align-items: center; position: relative; z-index: 1; }
-            .avatar { width: 80px; height: 80px; border-radius: 50%; background: #3b82f6; border: 3px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; object-fit: cover; flex-shrink: 0; }
+            .avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-soft); border: 3px solid var(--border-default); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--text-primary); object-fit: cover; flex-shrink: 0; }
             .header-info h1 { margin: 0 0 8px 0; font-size: 28px; font-family: 'Merriweather', 'Georgia', serif; font-weight: 700; }
-            .header-subtitle { font-size: 13px; color: #bfdbfe; margin-bottom: 12px; }
+            .header-subtitle { font-size: 13px; color: var(--on-accent); margin-bottom: 12px; }
             .badges { display: flex; gap: 8px; flex-wrap: wrap; }
             .badge { padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-            .badge-active { background: #064e3b; color: #34d399; }
-            .badge-inactive { background: #7f1d1d; color: #fca5a5; }
-            .badge-school { background: rgba(0, 0, 0, 0.2); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.1); }
-            .badge-date { background: rgba(0, 0, 0, 0.2); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.1); }
+            .badge-active { background: var(--success-bg); color: var(--success-text); }
+            .badge-inactive { background: var(--danger-bg); color: var(--danger); }
+            .badge-school { background: var(--bg-subtle); color: var(--text-primary); border: 1px solid var(--border-default); }
+            .badge-date { background: var(--bg-subtle); color: var(--text-primary); border: 1px solid var(--border-default); }
             .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-            .header-stats { display: grid; grid-template-columns: repeat(5, 1fr); background: #172554; padding: 16px 32px; position: relative; z-index: 1; }
-            .stat-item { text-align: center; border-right: 1px solid rgba(255, 255, 255, 0.1); padding: 0 8px; }
+            .header-stats { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--bg-subtle); padding: 16px 32px; position: relative; z-index: 1; }
+            .stat-item { text-align: center; border-right: 1px solid var(--border-default); padding: 0 8px; }
             .stat-item:last-child { border-right: none; }
-            .stat-label { font-size: 9px; text-transform: uppercase; color: #93c5fd; margin-bottom: 6px; font-weight: 700; letter-spacing: 0.05em; }
-            .stat-value { font-size: 13px; font-weight: 600; color: white; word-break: break-word; }
+            .stat-label { font-size: 9px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; font-weight: 700; letter-spacing: 0.05em; }
+            .stat-value { font-size: 13px; font-weight: 600; color: var(--text-primary); word-break: break-word; }
             
             .content { padding: 32px; }
             .section { margin-bottom: 32px; }
-            .section-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 700; font-family: 'Merriweather', 'Georgia', serif; color: #1f2937; margin-bottom: 16px; }
-            .section-icon { width: 28px; height: 28px; background: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+            .section-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 700; font-family: 'Merriweather', 'Georgia', serif; color: var(--text-primary); margin-bottom: 16px; }
+            .section-icon { width: 28px; height: 28px; background: var(--bg-subtle); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
             
             .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
             .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
             .grid-1 { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
             .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
             
-            .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px 16px; background: #ffffff; }
-            .card-label { font-size: 10px; text-transform: uppercase; color: #9ca3af; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.05em; }
-            .card-value { font-size: 13px; color: #374151; font-weight: 500; word-break: break-word; }
-            .card-value.blue { color: #2563eb; }
+            .card { border: 1px solid var(--border-default); border-radius: 8px; padding: 14px 16px; background: var(--bg-surface); }
+            .card-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.05em; }
+            .card-value { font-size: 13px; color: var(--text-primary); font-weight: 500; word-break: break-word; }
+            .card-value.blue { color: var(--accent); }
             
             .health-card { text-align: center; padding: 16px; }
             .health-icon { font-size: 20px; margin-bottom: 8px; }
             
-            .footer { padding: 24px 32px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; color: #6b7280; font-size: 12px; background: #f9fafb; }
+            .footer { padding: 24px 32px; border-top: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 12px; background: var(--bg-subtle); }
             
             @media print {
-              body { background: white; padding: 0; }
+              body { background: var(--bg-page); padding: 0; }
               .container { box-shadow: none; border-radius: 0; max-width: 100%; border: none; }
               .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; border-radius: 0; }
               .header-stats { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1156,7 +1158,7 @@ const Students = () => {
       render: (student) =>
         isEditingStudent ? (
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-semibold text-accent">
               {(student.full_name || "S")
                 .split(/\s+/)
                 .filter(Boolean)
@@ -1165,10 +1167,10 @@ const Students = () => {
                 .join("")}
             </div>
             <div className="min-w-0">
-              <div className="truncate font-medium text-slate-100">
+              <div className="truncate font-medium text-primary">
                 {student.full_name}
               </div>
-              <div className="truncate text-xs text-slate-400">
+              <div className="truncate text-xs text-muted">
                 {student.student_mail || student.school_email || "—"}
               </div>
             </div>
@@ -1183,7 +1185,7 @@ const Students = () => {
       sortValue: (student) => student.student_type,
       render: (student) => (
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${student.student_type === "university" ? "bg-blue-500/20 text-blue-300" : "bg-purple-500/20 text-purple-300"}`}
+          className={`px-2 py-1 rounded text-xs font-medium ${student.student_type === "university" ? "bg-accent-soft text-accent" : "bg-accent-soft text-accent"}`}
         >
           {student.student_type === "university" ? "University" : "School"}
         </span>
@@ -1194,7 +1196,7 @@ const Students = () => {
       label: "Email",
       sortValue: (student) => student.student_mail,
       render: (student) => (
-        <span className="text-slate-400 text-xs">
+        <span className="text-muted text-xs">
           {student.student_mail || "—"}
         </span>
       ),
@@ -1204,7 +1206,7 @@ const Students = () => {
       label: "Phone",
       sortValue: (student) => student.phone_no,
       render: (student) => (
-        <span className="text-slate-400 text-xs">
+        <span className="text-muted text-xs">
           {student.phone_no || "—"}
         </span>
       ),
@@ -1214,7 +1216,7 @@ const Students = () => {
       label: "Guardian",
       sortValue: (student) => student.guardian_name,
       render: (student) => (
-        <span className="text-slate-400 text-xs">
+        <span className="text-muted text-xs">
           {student.guardian_name || "—"}
         </span>
       ),
@@ -1224,7 +1226,7 @@ const Students = () => {
       label: "Class",
       sortValue: (student) => student.class_name || student.classroom_name,
       render: (student) => (
-        <span className="text-slate-400 text-xs">
+        <span className="text-muted text-xs">
           {student.class_name || student.classroom_name || "—"}
         </span>
       ),
@@ -1234,7 +1236,7 @@ const Students = () => {
       label: "Section",
       sortValue: (student) => student.section_name,
       render: (student) => (
-        <span className="text-slate-400 text-xs">
+        <span className="text-muted text-xs">
           {student.section_name || "—"}
         </span>
       ),
@@ -1244,7 +1246,7 @@ const Students = () => {
       label: "Roll No.",
       sortValue: (student) => student.roll_no,
       render: (student) => (
-        <span className="text-slate-400 text-xs">{student.roll_no || "—"}</span>
+        <span className="text-muted text-xs">{student.roll_no || "—"}</span>
       ),
     },
     {
@@ -1253,7 +1255,7 @@ const Students = () => {
       sortValue: (student) => student.is_active,
       render: (student) => (
         <span
-          className={`entity-status-pill px-2 py-1 rounded text-xs font-medium ${student.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+          className={`entity-status-pill px-2 py-1 rounded text-xs font-medium ${student.is_active ? "bg-success text-success" : "bg-danger-soft text-danger"}`}
         >
           {student.is_active ? "Active" : "Inactive"}
         </span>
@@ -1358,11 +1360,11 @@ const Students = () => {
           <div>
             <h2
               className="text-[28px] font-bold"
-              style={{ color: "var(--text-1)" }}
+              style={{ color: "var(--text-primary)" }}
             >
               Manage Students
             </h2>
-            <p className="mt-1 text-sm text-slate-400">Manage student profiles, enrollment, and status.</p>
+            <p className="mt-1 text-sm text-muted">Manage student profiles, enrollment, and status.</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <input
@@ -1375,7 +1377,7 @@ const Students = () => {
             <label
               htmlFor="studentsFile"
               title="Choose CSV to import"
-              className="entity-admin-button inline-flex h-10 items-center justify-center rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
+              className="entity-admin-button inline-flex h-10 items-center justify-center rounded-lg border border-default px-4 text-sm text-muted hover:bg-subtle"
             >
               <Upload size={16} />
             </label>
@@ -1383,13 +1385,13 @@ const Students = () => {
               onClick={handleImport}
               title="Import students"
               aria-label="Import students"
-              className="entity-admin-button inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
+              className="entity-admin-button inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-default px-4 text-sm text-muted hover:bg-subtle"
             >
               <Download size={16} className="rotate-180" />
             </button>
             <button
               onClick={openCreate}
-              className="entity-admin-button inline-flex h-10 items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 hover:bg-teal-200"
+              className="entity-admin-button inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-muted hover:bg-accent"
             >
               <Plus size={16} /> Add Student
             </button>
@@ -1397,11 +1399,11 @@ const Students = () => {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
+          <div className="mb-4 p-3 bg-danger-soft border border-danger rounded text-danger text-sm flex justify-between items-center">
             <span>⚠️ {error}</span>
             <button
               onClick={() => setError("")}
-              className="text-red-400 hover:text-red-300"
+              className="text-danger hover:text-danger"
             >
               ✕
             </button>
@@ -1410,19 +1412,19 @@ const Students = () => {
 
         {notice && (
           <div
-            className={`mb-4 p-3 rounded text-sm ${notice.success ? "bg-emerald-900/20 border border-emerald-500/50 text-emerald-200" : "bg-amber-900/20 border border-amber-500/50 text-amber-200"}`}
+            className={`mb-4 p-3 rounded text-sm ${notice.success ? "bg-success border border-success text-success" : "bg-warning-soft border border-warning text-warning"}`}
           >
             {notice.message}
           </div>
         )}
 
-        <div className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60 bg-[var(--bg-card)]">
-          <div className="entity-admin-toolbar flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
+        <div className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-default bg-surface">
+          <div className="entity-admin-toolbar flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-default p-3">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <label className="relative min-w-55 max-w-[320px] flex-1">
                 <Search
                   size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
                 />
                 <input
                   type="search"
@@ -1430,7 +1432,7 @@ const Students = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search students..."
                   aria-label="Search students"
-                  className="entity-admin-input w-full pl-9 pr-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                  className="entity-admin-input w-full pl-9 pr-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
                 />
               </label>
               <div className="relative">
@@ -1442,16 +1444,16 @@ const Students = () => {
                     setShowFilterMenu(false);
                   }}
                   aria-expanded={showColumnMenu}
-                  className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+                  className="inline-flex items-center gap-2 px-3 py-2 border border-default rounded text-sm text-muted hover:bg-subtle"
                 >
                   <Columns3 size={16} /> Columns
                 </button>
                 {showColumnMenu && (
-                  <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
+                  <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded border border-default bg-surface p-2 shadow-xl">
                     {studentColumns.map((column) => (
                       <label
                         key={column.key}
-                        className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                        className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-primary hover:bg-subtle"
                       >
                         <input
                           type="checkbox"
@@ -1467,7 +1469,7 @@ const Students = () => {
                                 : [...current, column.key],
                             )
                           }
-                          className="accent-indigo-500"
+                          className="accent-[var(--accent)]"
                         />
                         {column.label}
                       </label>
@@ -1484,12 +1486,12 @@ const Students = () => {
                     setShowFilterMenu(false);
                   }}
                   aria-expanded={showViewMenu}
-                  className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+                  className="inline-flex items-center gap-2 px-3 py-2 border border-default rounded text-sm text-muted hover:bg-subtle"
                 >
                   <Bookmark size={16} /> Views
                 </button>
                 {showViewMenu && (
-                  <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
+                  <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-default bg-surface p-1 shadow-xl">
                     {[
                       { label: "All students", type: "all" },
                       { label: "Active students", status: "active" },
@@ -1501,7 +1503,7 @@ const Students = () => {
                         key={view.label}
                         type="button"
                         onClick={() => applyStudentView(view)}
-                        className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                        className="block w-full rounded px-3 py-2 text-left text-sm text-primary hover:bg-subtle"
                       >
                         {view.label}
                       </button>
@@ -1519,47 +1521,47 @@ const Students = () => {
                   }}
                   aria-label="Filter students"
                   aria-expanded={showFilterMenu}
-                  className={`relative inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
+                  className={`relative inline-flex items-center justify-center p-2 border border-default rounded text-muted hover:bg-subtle ${activeFilterCount ? "text-accent" : ""}`}
                 >
                   <SlidersHorizontal size={17} />
                   {activeFilterCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] text-white">
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] text-primary">
                       {activeFilterCount}
                     </span>
                   )}
                 </button>
                 {showFilterMenu && (
-                  <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
-                    <label className="grid gap-1 text-xs text-slate-400">
+                  <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-default bg-surface p-3 shadow-xl">
+                    <label className="grid gap-1 text-xs text-muted">
                       Student type
                       <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
                       >
                         <option value="all">All types</option>
                         <option value="school">School</option>
                         <option value="university">University</option>
                       </select>
                     </label>
-                    <label className="grid gap-1 text-xs text-slate-400">
+                    <label className="grid gap-1 text-xs text-muted">
                       Status
                       <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
                       >
                         <option value="all">All statuses</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                       </select>
                     </label>
-                    <label className="grid gap-1 text-xs text-slate-400">
+                    <label className="grid gap-1 text-xs text-muted">
                       Classroom
                       <select
                         value={classroomFilter}
                         onChange={(e) => setClassroomFilter(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
                       >
                         <option value="all">All classes</option>
                         {classesList.map((classroom) => (
@@ -1579,7 +1581,7 @@ const Students = () => {
                         setStatusFilter("all");
                         setClassroomFilter("all");
                       }}
-                      className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                      className="justify-self-start text-xs text-accent hover:text-accent"
                     >
                       Clear filters
                     </button>
@@ -1587,25 +1589,25 @@ const Students = () => {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-3 text-sm text-slate-400">
+            <div className="flex items-center gap-3 text-sm text-muted">
               <span>{filteredStudents.length} records</span>
               <button
                 onClick={handleExport}
-                className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
+                className="inline-flex items-center gap-2 px-3 py-2 border border-default rounded text-muted hover:bg-subtle"
               >
                 <Download size={16} /> Export CSV
               </button>
             </div>
           </div>
           {selectedStudentIds.length > 0 && (
-            <div className="flex shrink-0 items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
-              <span className="text-slate-300">
+            <div className="flex shrink-0 items-center justify-between border-b border-default bg-subtle px-4 py-2 text-sm">
+              <span className="text-muted">
                 {selectedStudentIds.length} selected
               </span>
               <button
                 type="button"
                 onClick={() => setSelectedStudentIds([])}
-                className="text-xs text-indigo-300 hover:text-indigo-200"
+                className="text-xs text-accent hover:text-accent"
               >
                 Clear selection
               </button>
@@ -1617,14 +1619,14 @@ const Students = () => {
               className={`entity-admin-list h-full min-w-0 ${isEditingStudent ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
             >
               {filteredStudents.length === 0 ? (
-                <div className="p-6 text-center text-slate-400">
+                <div className="p-6 text-center text-muted">
                   {loading ? "Loading..." : "No students found."}
                 </div>
               ) : (
                 <table
                   className="w-full min-w-0 table-fixed text-sm"
                 >
-                  <thead className="entity-admin-table-head sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
+                  <thead className="entity-admin-table-head sticky top-0 z-10 border-b border-default bg-selected text-muted">
                     <tr>
                       {!isEditingStudent && (
                         <th className="w-24 px-3 py-3 text-center">
@@ -1651,14 +1653,14 @@ const Students = () => {
                                     ),
                               )
                             }
-                            className="accent-indigo-500"
+                            className="accent-[var(--accent)]"
                           />
                         </th>
                       )}
                       {displayedColumns.map((column) => (
                         <th
                           key={column.key}
-                          className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? (column.key === "classroom" ? "w-24" : column.key === "status" ? "w-24" : "") : ""}`}
+                          className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted ${isEditingStudent ? (column.key === "classroom" ? "w-24" : column.key === "status" ? "w-24" : "") : ""}`}
                         >
                           <button
                             type="button"
@@ -1672,21 +1674,21 @@ const Students = () => {
                                     : "asc",
                               }))
                             }
-                            className="inline-flex items-center gap-1 hover:text-slate-950"
+                            className="inline-flex items-center gap-1 hover:text-muted"
                           >
                             {column.label}
                             <ArrowUpDown
                               size={13}
                               className={
                                 sortConfig.key === column.key
-                                  ? "text-indigo-700"
-                                  : "text-slate-500"
+                                  ? "text-accent"
+                                  : "text-muted"
                               }
                             />
                           </button>
                         </th>
                       ))}
-                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-muted">
                         Actions
                       </th>
                     </tr>
@@ -1695,15 +1697,15 @@ const Students = () => {
                     {pageStudents.map((student) => (
                       <Fragment key={student.id}>
                         <tr
-                          className={`entity-admin-table-row h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40 ${
+                          className={`entity-admin-table-row h-14 border-b border-default transition hover:bg-subtle ${
                             isEditingStudent && selected?.id === student.id
-                              ? "border-l-2 border-l-teal-400 bg-teal-500/10"
+                              ? "border-l-2 border-l-accent bg-accent-soft"
                               : ""
                           }`}
                         >
                           {!isEditingStudent && (
                             <td className="px-3 py-3 text-center">
-                              <div className="inline-flex items-center gap-1 text-slate-500">
+                              <div className="inline-flex items-center gap-1 text-muted">
                                 <GripVertical size={14} aria-hidden="true" />
                                 <button
                                   type="button"
@@ -1720,7 +1722,7 @@ const Students = () => {
                                   aria-expanded={expandedStudentIds.includes(
                                     student.id,
                                   )}
-                                  className="rounded p-1 hover:bg-slate-700/60 hover:text-slate-200"
+                                  className="rounded p-1 hover:bg-subtle hover:text-primary"
                                 >
                                   <ChevronRight
                                     size={15}
@@ -1742,7 +1744,7 @@ const Students = () => {
                                           ),
                                     )
                                   }
-                                  className="accent-indigo-500"
+                                  className="accent-[var(--accent)]"
                                 />
                               </div>
                             </td>
@@ -1750,7 +1752,7 @@ const Students = () => {
                           {displayedColumns.map((column) => (
                             <td
                               key={column.key}
-                              className={`px-3 py-3 text-slate-300 ${isEditingStudent ? "truncate" : ""}`}
+                              className={`px-3 py-3 text-muted ${isEditingStudent ? "truncate" : ""}`}
                             >
                               {column.render
                                 ? column.render(student)
@@ -1763,7 +1765,7 @@ const Students = () => {
                                 onClick={() => setViewStudent(student)}
                                 title="View student"
                                 aria-label={`View ${student.full_name}`}
-                                className="entity-admin-icon-button rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
+                                className="entity-admin-icon-button rounded p-2 text-accent hover:bg-accent-soft"
                               >
                                 <Eye size={15} />
                               </button>
@@ -1771,7 +1773,7 @@ const Students = () => {
                                 onClick={() => openEdit(student)}
                                 title="Edit student"
                                 aria-label={`Edit ${student.full_name}`}
-                                className="entity-admin-icon-button rounded p-2 text-slate-300 hover:bg-slate-700/60"
+                                className="entity-admin-icon-button rounded p-2 text-muted hover:bg-subtle"
                               >
                                 <Edit size={15} />
                               </button>
@@ -1779,7 +1781,7 @@ const Students = () => {
                                 onClick={() => toggleStudentStatus(student)}
                                 title={student.is_active ? "Deactivate student" : "Activate student"}
                                 aria-label={`${student.is_active ? "Deactivate" : "Activate"} ${student.full_name}`}
-                                className={`entity-admin-icon-button rounded p-2 ${student.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                                className={`entity-admin-icon-button rounded p-2 ${student.is_active ? "text-danger hover:bg-danger-soft" : "text-success hover:bg-success"}`}
                               >
                                 <Power size={15} />
                               </button>
@@ -1787,7 +1789,7 @@ const Students = () => {
                                 onClick={() => remove(student.id)}
                                 title="Delete student"
                                 aria-label={`Delete ${student.full_name}`}
-                                className="entity-admin-icon-button rounded p-2 text-red-300 hover:bg-red-500/10"
+                                className="entity-admin-icon-button rounded p-2 text-danger hover:bg-danger-soft"
                               >
                                 <Trash2 size={15} />
                               </button>
@@ -1801,9 +1803,9 @@ const Students = () => {
                                 displayedColumns.length +
                                 (isEditingStudent ? 1 : 2)
                               }
-                              className="border-b border-slate-700/50 bg-slate-800/20 px-6 py-3"
+                              className="border-b border-default bg-subtle px-6 py-3"
                             >
-                              <div className="grid gap-3 text-xs text-slate-400 sm:grid-cols-2 lg:grid-cols-4">
+                              <div className="grid gap-3 text-xs text-muted sm:grid-cols-2 lg:grid-cols-4">
                                 <span>
                                   Email: {student.student_mail || "—"}
                                 </span>
@@ -1828,7 +1830,7 @@ const Students = () => {
               )}
             </div>
           </div>
-          <div className="entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 px-4 py-3 text-xs text-slate-400">
+          <div className="entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-default px-4 py-3 text-xs text-muted">
             <label className="flex items-center gap-2">
               Rows per page
               <select
@@ -1837,7 +1839,7 @@ const Students = () => {
                   setPageSize(Number(event.target.value));
                   setCurrentPage(1);
                 }}
-                className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
+                className="rounded border border-default bg-subtle px-2 py-1.5 text-sm text-primary"
               >
                 {[10, 25, 50].map((size) => (
                   <option key={size} value={size}>
@@ -1879,7 +1881,7 @@ const Students = () => {
                         : visiblePage === pageCount
                     }
                     onClick={() => setCurrentPage(page)}
-                    className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded border border-default p-1.5 text-muted hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Icon size={15} />
                   </button>
@@ -1918,8 +1920,8 @@ const Students = () => {
               }
             : undefined
         }
-        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
-        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-surface)" }}
         inlinePanelHeaderClassName="entity-edit-header h-11 min-h-11 items-center px-5 py-0"
         inlinePanelBodyClassName="entity-edit-body px-0 py-0"
         closeOnOverlayClick={false}
@@ -1928,7 +1930,7 @@ const Students = () => {
           {isEditingStudent && (
             <nav
               aria-label="Student form sections"
-              className="entity-edit-tabs sticky top-0 z-10 flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-6"
+              className="entity-edit-tabs sticky top-0 z-10 flex shrink-0 gap-5 overflow-x-auto border-b border-default px-6"
             >
               {[
                 { label: "Personal", id: "personal", target: "student-personal" },
@@ -1949,8 +1951,8 @@ const Students = () => {
                   aria-current={activeStudentSection === id ? "location" : undefined}
                   className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
                     activeStudentSection === id
-                      ? "border-teal-400 text-teal-300"
-                      : "border-transparent text-slate-400 hover:text-slate-200"
+                      ? "border-accent text-accent"
+                      : "border-transparent text-muted hover:text-primary"
                   }`}
                 >
                   {label}
@@ -1959,11 +1961,11 @@ const Students = () => {
             </nav>
           )}
           {error && (
-            <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
+            <div className="mb-4 p-3 bg-danger-soft border border-danger rounded text-danger text-sm flex justify-between items-center">
               <span>⚠️ {error}</span>
               <button
                 onClick={() => setError("")}
-                className="text-red-400 hover:text-red-300"
+                className="text-danger hover:text-danger"
               >
                 ✕
               </button>
@@ -1990,9 +1992,9 @@ const Students = () => {
             }
           >
             {/* STUDENT TYPE SELECTOR */}
-            <div className="mb-6 rounded-2xl border border-slate-700/80 bg-slate-900/70 p-4">
-              <h3 className="font-semibold text-slate-200 mb-3">
-                Student Type <span className="text-red-400">*</span>
+            <div className="mb-6 rounded-2xl border border-default bg-surface p-4">
+              <h3 className="font-semibold text-primary mb-3">
+                Student Type <span className="text-danger">*</span>
               </h3>
               <div className="flex gap-6">
                 <RadioField
@@ -2022,7 +2024,7 @@ const Students = () => {
               title="1. Personal / Basic Information"
             >
               <div className="mb-3 flex items-center gap-3">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-700 bg-teal-500/15 text-sm font-semibold text-teal-200">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-default bg-accent-soft text-sm font-semibold text-accent">
                   {profilePreview || form.profile_picture ? (
                     <img
                       src={profilePreview || getImageUrl(form.profile_picture)}
@@ -2039,7 +2041,7 @@ const Students = () => {
                   )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
-                  <label                   className="cursor-pointer rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700">
+                  <label                   className="cursor-pointer rounded-xl border border-default bg-subtle px-3 py-2 text-sm font-medium text-primary transition hover:bg-subtle">
                     Upload Photo
                     <input
                       type="file"
@@ -2059,13 +2061,13 @@ const Students = () => {
                           profile_picture: "",
                         }));
                       }}
-                      className="text-xs text-red-300 hover:text-red-200"
+                      className="text-xs text-danger hover:text-danger"
                     >
                       Remove
                     </button>
                   )}
                   {profileFile && (
-                    <p className="max-w-xs truncate text-xs text-slate-400">
+                    <p className="max-w-xs truncate text-xs text-muted">
                       {profileFile.name}
                     </p>
                   )}
@@ -2171,7 +2173,7 @@ const Students = () => {
                       required
                     />
                     <div id="student-class-section" className="scroll-mt-14">
-                      <label className="block text-sm text-slate-300 mb-1">
+                      <label className="block text-sm text-muted mb-1">
                         Class / Grade *
                       </label>
                       <select
@@ -2211,7 +2213,7 @@ const Students = () => {
                             setSectionsList([]);
                           }
                         }}
-                        className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                        className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none"
                       >
                         <option value="">-- Select Class --</option>
                         {classesList.map((c) => (
@@ -2222,7 +2224,7 @@ const Students = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm text-slate-300 mb-1">
+                      <label className="block text-sm text-muted mb-1">
                         Section *
                       </label>
                       <select
@@ -2237,7 +2239,7 @@ const Students = () => {
                           })
                         }
                         disabled={!form.classroom_id}
-                        className={`w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none ${!form.classroom_id ? "opacity-50 cursor-not-allowed" : ""}`}
+                        className={`w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none ${!form.classroom_id ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
                         <option value="">
                           {!form.classroom_id
@@ -2253,7 +2255,7 @@ const Students = () => {
                         ))}
                       </select>
                       {form.classroom_id && sectionsList.length === 0 && (
-                        <p className="text-xs text-amber-400 mt-1">
+                        <p className="text-xs text-warning mt-1">
                           No sections found. Create sections for this class in
                           the Classrooms module.
                         </p>
@@ -2386,8 +2388,8 @@ const Students = () => {
               title="3. Family Information"
             >
               <div className="space-y-4">
-                <div className="border-l-4 border-blue-500 pl-4">
-                  <h4 className="font-semibold text-slate-200 mb-2">Father</h4>
+                <div className="border-l-4 border-accent pl-4">
+                  <h4 className="font-semibold text-primary mb-2">Father</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Father's Name"
@@ -2428,8 +2430,8 @@ const Students = () => {
                     />
                   </div>
                 </div>
-                <div className="border-l-4 border-green-500 pl-4">
-                  <h4 className="font-semibold text-slate-200 mb-2">Mother</h4>
+                <div className="border-l-4 border-success pl-4">
+                  <h4 className="font-semibold text-primary mb-2">Mother</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Mother's Name"
@@ -2470,8 +2472,8 @@ const Students = () => {
                     />
                   </div>
                 </div>
-                <div className="border-l-4 border-purple-500 pl-4">
-                  <h4 className="font-semibold text-slate-200 mb-2">
+                <div className="border-l-4 border-accent pl-4">
+                  <h4 className="font-semibold text-primary mb-2">
                     Guardian
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -2536,7 +2538,7 @@ const Students = () => {
               title="8. Documents"
             >
               <div className="space-y-3">
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Upload any supporting documents for the student. Choose a file
                   first, then provide a title and Save. You can add more files
                   unlimitedly. Eight upload rows are shown initially.
@@ -2544,20 +2546,20 @@ const Students = () => {
 
                 {existingDocuments && existingDocuments.length > 0 && (
                   <div className="mb-3">
-                    <div className="text-sm text-slate-300 mb-2">
+                    <div className="text-sm text-muted mb-2">
                       Existing Documents
                     </div>
                     <ul className="space-y-2">
                       {existingDocuments.map((d, i) => (
                         <li
                           key={i}
-                          className="flex items-center justify-between bg-slate-800/30 p-2 rounded border border-slate-700"
+                          className="flex items-center justify-between bg-subtle p-2 rounded border border-default"
                         >
                           <div>
-                            <div className="text-sm text-slate-200">
+                            <div className="text-sm text-primary">
                               {d.title || d.filename || d.url}
                             </div>
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-muted">
                               {d.url || d.filename}
                             </div>
                           </div>
@@ -2572,14 +2574,14 @@ const Students = () => {
                               }
                               target="_blank"
                               rel="noreferrer"
-                              className="px-2 py-1 bg-slate-700 text-white rounded text-xs"
+                              className="px-2 py-1 bg-subtle text-primary rounded text-xs"
                             >
                               Open
                             </a>
                             <button
                               type="button"
                               onClick={() => removeExistingDocument(d.id)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              className="px-2 py-1 bg-danger text-primary rounded text-xs"
                             >
                               Remove
                             </button>
@@ -2591,7 +2593,7 @@ const Students = () => {
                 )}
 
                 <div>
-                  <div className="text-sm text-slate-300 mb-2">
+                  <div className="text-sm text-muted mb-2">
                     Add Documents
                   </div>
                   <div className="space-y-2">
@@ -2613,12 +2615,12 @@ const Students = () => {
                                     handleRowTitleChange(idx, e.target.value)
                                   }
                                   placeholder="Document title (optional)"
-                                  className="px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 flex-1"
+                                  className="px-3 py-2 bg-subtle text-primary rounded border border-default flex-1"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => saveRow(idx)}
-                                  className="px-3 py-1 bg-indigo-600 text-white rounded"
+                                  className="px-3 py-1 bg-accent text-primary rounded"
                                 >
                                   Save
                                 </button>
@@ -2626,16 +2628,16 @@ const Students = () => {
                             )}
                           </>
                         ) : (
-                          <div className="flex items-center justify-between w-full bg-slate-800/30 p-2 rounded border border-slate-700">
+                          <div className="flex items-center justify-between w-full bg-subtle p-2 rounded border border-default">
                             <div>
-                              <div className="text-sm text-slate-200">
+                              <div className="text-sm text-primary">
                                 {row.title || row.file?.name}
                               </div>
-                              <div className="text-xs text-slate-400">
+                              <div className="text-xs text-muted">
                                 {row.file?.name}
                               </div>
                             </div>
-                            <div className="text-sm text-slate-400">Saved</div>
+                            <div className="text-sm text-muted">Saved</div>
                           </div>
                         )}
                       </div>
@@ -2655,7 +2657,7 @@ const Students = () => {
                           },
                         ])
                       }
-                      className="px-3 py-1 bg-slate-700/60 text-white rounded text-sm"
+                      className="px-3 py-1 bg-subtle text-primary rounded text-sm"
                     >
                       Add Document
                     </button>
@@ -2664,20 +2666,20 @@ const Students = () => {
 
                 {newDocumentsPreview.length > 0 && (
                   <div className="mt-3">
-                    <div className="text-sm text-slate-300 mb-2">
+                    <div className="text-sm text-muted mb-2">
                       New Documents
                     </div>
                     <ul className="space-y-2">
                       {newDocumentsPreview.map((d, i) => (
                         <li
                           key={i}
-                          className="flex items-center justify-between bg-slate-800/30 p-2 rounded border border-slate-700"
+                          className="flex items-center justify-between bg-subtle p-2 rounded border border-default"
                         >
                           <div>
-                            <div className="text-sm text-slate-200">
+                            <div className="text-sm text-primary">
                               {d.title}
                             </div>
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-muted">
                               {d.filename}
                             </div>
                           </div>
@@ -2685,7 +2687,7 @@ const Students = () => {
                             <button
                               type="button"
                               onClick={() => removeNewDocument(i)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              className="px-2 py-1 bg-danger text-primary rounded text-xs"
                             >
                               Remove
                             </button>
@@ -2820,7 +2822,7 @@ const Students = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-slate-200 mb-3">
+                  <h4 className="font-semibold text-primary mb-3">
                     Basic Medical Data
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -2861,7 +2863,7 @@ const Students = () => {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-200 mb-3">
+                  <h4 className="font-semibold text-primary mb-3">
                     Allergies & Special Needs
                   </h4>
                   <div className="grid grid-cols-1 gap-3">
@@ -2916,7 +2918,7 @@ const Students = () => {
             </Section>
 
             {mode === "create" && (
-              <section className="mb-4 rounded-lg border border-indigo-500/30 bg-indigo-500/5 px-4 py-3">
+              <section className="mb-4 rounded-lg border border-accent bg-accent-soft px-4 py-3">
                 <label
                   htmlFor="student-portal-credentials"
                   className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 sm:grid-cols-[auto_minmax(220px,0.9fr)_minmax(0,1.4fr)] sm:gap-x-4"
@@ -2931,12 +2933,12 @@ const Students = () => {
                         provide_login_credentials: e.target.checked,
                       })
                     }
-                    className="row-span-2 h-4 w-4 shrink-0 accent-indigo-500 sm:row-span-1"
+                    className="row-span-2 h-4 w-4 shrink-0 accent-[var(--accent)] sm:row-span-1"
                   />
-                  <span className="min-w-0 text-sm font-semibold leading-5 text-slate-100">
+                  <span className="min-w-0 text-sm font-semibold leading-5 text-primary">
                     Create student portal login and email credentials
                   </span>
-                  <span className="col-start-2 min-w-0 text-xs leading-5 text-slate-400 sm:col-start-auto sm:text-sm">
+                  <span className="col-start-2 min-w-0 text-xs leading-5 text-muted sm:col-start-auto sm:text-sm">
                     A temporary password will be sent to the student email above.
                     Email delivery requires SMTP to be configured in Settings
                     &gt; Integrations.
@@ -2946,7 +2948,7 @@ const Students = () => {
             )}
 
             <div
-              className={`sticky z-20 flex flex-col gap-3 border-t border-slate-800 bg-slate-950/95 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end ${
+              className={`sticky z-20 flex flex-col gap-3 border-t border-default bg-surface py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end ${
                 isEditingStudent
                   ? "entity-edit-sticky-footer bottom-0 -mx-6 -mb-6 mt-6 px-6"
                   : "bottom-0 -mx-4 mt-6 px-4 sm:-mx-6 sm:px-6"
@@ -2955,7 +2957,7 @@ const Students = () => {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 transition hover:bg-slate-800"
+                className="rounded-xl border border-default px-4 py-2 text-sm text-primary transition hover:bg-subtle"
               >
                 Cancel
               </button>
@@ -2980,21 +2982,21 @@ const Students = () => {
       >
         {viewStudent && (
           <>
-            <div className="flex justify-between items-center p-4 border-b border-slate-700 bg-linear-to-r from-slate-900 via-slate-900 to-slate-800">
+            <div className="flex justify-between items-center p-4 border-b border-default bg-linear-to-r from-slate-900 via-slate-900 to-slate-800">
               <div>
                 <h3 className="text-lg font-bold">Student Details</h3>
-                <div className="text-xs text-slate-400">Profile overview</div>
+                <div className="text-xs text-muted">Profile overview</div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handlePrintStudent}
-                  className="px-3 py-1 bg-slate-700/60 hover:bg-slate-600/60 text-slate-200 rounded text-xs"
+                  className="px-3 py-1 bg-subtle hover:bg-selected text-primary rounded text-xs"
                 >
                   Print
                 </button>
                 <button
                   onClick={() => setViewStudent(null)}
-                  className="text-slate-400 hover:text-slate-200"
+                  className="text-muted hover:text-primary"
                 >
                   ✕
                 </button>
@@ -3002,8 +3004,8 @@ const Students = () => {
             </div>
 
             <div className="flex-1 overflow-auto p-4 space-y-5">
-              <div className="flex flex-col md:flex-row md:items-center gap-4 rounded-lg border border-slate-700 bg-slate-900/70 p-4">
-                <div className="h-24 w-24 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 rounded-lg border border-default bg-surface p-4">
+                <div className="h-24 w-24 rounded-lg bg-subtle border border-default overflow-hidden flex items-center justify-center">
                   {viewStudent.profile_picture ? (
                     <img
                       src={getImageUrl(viewStudent.profile_picture)}
@@ -3011,7 +3013,7 @@ const Students = () => {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <span className="text-xs text-slate-400">No Photo</span>
+                    <span className="text-xs text-muted">No Photo</span>
                   )}
                 </div>
                 <div className="flex-1">
@@ -3019,17 +3021,17 @@ const Students = () => {
                     {viewStudent.full_name}
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <span className="px-2 py-1 rounded text-xs bg-indigo-500/20 text-indigo-200">
+                    <span className="px-2 py-1 rounded text-xs bg-accent-soft text-accent">
                       {viewStudent.student_type === "university"
                         ? "University"
                         : "School"}
                     </span>
                     <span
-                      className={`px-2 py-1 rounded text-xs ${viewStudent.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+                      className={`px-2 py-1 rounded text-xs ${viewStudent.is_active ? "bg-success text-success" : "bg-danger-soft text-danger"}`}
                     >
                       {viewStudent.is_active ? "Active" : "Inactive"}
                     </span>
-                    <span className="px-2 py-1 rounded text-xs bg-slate-700/60 text-slate-200">
+                    <span className="px-2 py-1 rounded text-xs bg-subtle text-primary">
                       Roll: {viewStudent.roll_no || "—"}
                     </span>
                   </div>
@@ -3037,8 +3039,8 @@ const Students = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
-                  <h4 className="font-semibold text-slate-200 mb-3">
+                <div className="border border-default rounded p-4 bg-subtle">
+                  <h4 className="font-semibold text-primary mb-3">
                     Basic Information
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -3053,8 +3055,8 @@ const Students = () => {
                     )}
                   </div>
                 </div>
-                <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
-                  <h4 className="font-semibold text-slate-200 mb-3">Contact</h4>
+                <div className="border border-default rounded p-4 bg-subtle">
+                  <h4 className="font-semibold text-primary mb-3">Contact</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {renderDetail("Email", viewStudent.student_mail)}
                     {renderDetail("Phone", viewStudent.phone_no)}
@@ -3070,8 +3072,8 @@ const Students = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
-                  <h4 className="font-semibold text-slate-200 mb-3">
+                <div className="border border-default rounded p-4 bg-subtle">
+                  <h4 className="font-semibold text-primary mb-3">
                     Academic
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -3086,8 +3088,8 @@ const Students = () => {
                     {renderDetail("Roll No", viewStudent.roll_no)}
                   </div>
                 </div>
-                <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
-                  <h4 className="font-semibold text-slate-200 mb-3">
+                <div className="border border-default rounded p-4 bg-subtle">
+                  <h4 className="font-semibold text-primary mb-3">
                     Classroom
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -3104,8 +3106,8 @@ const Students = () => {
                 </div>
               </div>
 
-              <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
-                <h4 className="font-semibold text-slate-200 mb-3">Family</h4>
+              <div className="border border-default rounded p-4 bg-subtle">
+                <h4 className="font-semibold text-primary mb-3">Family</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {renderDetail("Father Name", viewStudent.father_name)}
                   {renderDetail("Mother Name", viewStudent.mother_name)}
@@ -3115,8 +3117,8 @@ const Students = () => {
                 </div>
               </div>
 
-              <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
-                <h4 className="font-semibold text-slate-200 mb-3">
+              <div className="border border-default rounded p-4 bg-subtle">
+                <h4 className="font-semibold text-primary mb-3">
                   Medical & Notes
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -3128,15 +3130,15 @@ const Students = () => {
               </div>
 
               {showDocumentViewer && (
-                <div className="border border-slate-700 rounded p-4 bg-slate-800/40">
+                <div className="border border-default rounded p-4 bg-subtle">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-slate-200">
+                    <h4 className="font-semibold text-primary">
                       Attached Documents
                     </h4>
                     <button
                       type="button"
                       onClick={() => setShowDocumentViewer(false)}
-                      className="px-3 py-1 bg-slate-700 text-white rounded text-xs"
+                      className="px-3 py-1 bg-subtle text-primary rounded text-xs"
                     >
                       Close
                     </button>
@@ -3147,15 +3149,15 @@ const Students = () => {
                       {viewStudent.documents.map((doc, idx) => (
                         <li
                           key={doc.id || idx}
-                          className="bg-slate-900/70 p-3 rounded border border-slate-700 flex items-center justify-between gap-3"
+                          className="bg-surface p-3 rounded border border-default flex items-center justify-between gap-3"
                         >
                           <div>
-                            <div className="text-sm text-slate-200">
+                            <div className="text-sm text-primary">
                               {doc.title ||
                                 doc.filename ||
                                 `Document ${idx + 1}`}
                             </div>
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-muted">
                               {doc.url || "No URL available"}
                             </div>
                           </div>
@@ -3168,12 +3170,12 @@ const Students = () => {
                               }
                               target="_blank"
                               rel="noreferrer"
-                              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs"
+                              className="px-3 py-1 bg-accent hover:bg-accent text-primary rounded text-xs"
                             >
                               Open
                             </a>
                           ) : (
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-muted">
                               No file
                             </span>
                           )}
@@ -3181,7 +3183,7 @@ const Students = () => {
                       ))}
                     </ul>
                   ) : (
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-muted">
                       No attached documents available.
                     </div>
                   )}
@@ -3191,13 +3193,13 @@ const Students = () => {
               <div className="flex justify-between gap-3">
                 <button
                   onClick={() => setShowDocumentViewer((prev) => !prev)}
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm"
+                  className="px-4 py-2 bg-subtle hover:bg-selected text-primary rounded text-sm"
                 >
                   {showDocumentViewer ? "Hide Documents" : "View All Documents"}
                 </button>
                 <button
                   onClick={handleViewResults}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm"
+                  className="px-4 py-2 bg-accent hover:bg-accent text-primary rounded text-sm"
                 >
                   View Result Status
                 </button>

@@ -1,28 +1,25 @@
 /* Results Module Design System */
 :root {
-  --bg: #0a0e16;
-  --surface: #121826;
-  --surface-2: #19212f;
-  --surface-3: #212a3b;
-  --border: #262f42;
-  --border-soft: #1c2434;
-  --text: #e9edf5;
-  --text-dim: #9aa5ba;
-  --text-faint: #6b7688;
-  --accent: #5b8def;
-  --accent-dim: #5b8def22;
-  --accent-strong: #7ba3f5;
-  --success: #34d399;
-  --success-dim: #34d39920;
-  --warn: #f5b942;
-  --warn-dim: #f5b94220;
-  --danger: #f2685c;
-  --danger-dim: #f2685c1e;
+  --bg: var(--bg-page);
+  --surface: var(--bg-surface);
+  --surface-2: var(--bg-subtle);
+  --surface-3: var(--bg-input);
+  --border: var(--border-default);
+  --border-soft: var(--border-default);
+  --text: var(--text-primary);
+  --text-dim: var(--text-muted);
+  --text-faint: var(--text-muted);
+  --accent-dim: var(--accent-soft);
+  --accent-strong: var(--accent);
+  --success: var(--success-text);
+  --success-dim: var(--success-bg);
+  --warn: var(--warning);
+  --warn-dim: var(--warning-bg);
+  --danger-dim: var(--danger-bg);
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 18px;
-  --shadow:
-    0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow: var(--shadow-card);
 }
 
 /* Base container */
@@ -115,7 +112,7 @@
 }
 
 .btn-ghost:hover {
-  border-color: #3a4661;
+  border-color: var(--accent);
   color: var(--text);
 }
 
@@ -178,8 +175,8 @@
 }
 
 .step.filled {
-  border-color: #33507a;
-  background: linear-gradient(180deg, #151f31, #131a28);
+  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--accent), var(--accent));
 }
 
 .step-label {
@@ -208,8 +205,8 @@
 }
 
 .step.filled .step-num {
-  background: var(--success);
-  color: #06231a;
+  background: var(--success-text);
+  color: var(--success-text);
 }
 
 .step select {
@@ -252,7 +249,7 @@
 
 .rail-line-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--success));
+  background: linear-gradient(90deg, var(--accent), var(--success-text));
   width: 0%;
   transition: width 0.35s ease;
 }
@@ -382,7 +379,7 @@ select.filter-select-secondary:focus {
 }
 
 .stat-card.success .value {
-  color: var(--success);
+  color: var(--success-text);
 }
 
 /* Table wrapper */
@@ -519,13 +516,13 @@ td {
 }
 
 .marks-input.fail {
-  border-color: #5c3230;
+  border-color: var(--danger);
   background: var(--danger-dim);
-  color: #ffb3ac;
+  color: var(--danger);
 }
 
 .marks-input.pass-ok {
-  border-color: #2b4f42;
+  border-color: var(--success-border);
 }
 
 .marks-input:disabled {
@@ -557,7 +554,7 @@ td {
 
 .grade-A {
   background: var(--success-dim);
-  color: var(--success);
+  color: var(--success-text);
 }
 
 .grade-B {
@@ -572,7 +569,7 @@ td {
 
 .grade-F {
   background: var(--danger-dim);
-  color: #ff8b81;
+  color: var(--danger);
 }
 
 .grade-none {
@@ -592,7 +589,7 @@ td {
 
 .status-entered {
   background: var(--success-dim);
-  color: var(--success);
+  color: var(--success-text);
 }
 
 .status-pending {
@@ -633,7 +630,7 @@ td {
 
 .icon-btn.on {
   background: var(--danger-dim);
-  color: #ff8b81;
+  color: var(--danger);
 }
 
 /* Footer bar */
@@ -677,7 +674,7 @@ td {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--success));
+  background: linear-gradient(90deg, var(--accent), var(--success-text));
   border-radius: 99px;
   transition: width 0.3s ease;
 }
@@ -698,7 +695,7 @@ td {
 }
 
 .save-status svg {
-  color: var(--success);
+  color: var(--success-text);
 }
 
 .footer-actions {
@@ -709,7 +706,7 @@ td {
 .btn-primary {
   background: var(--accent);
   border: 1px solid var(--accent);
-  color: #0a0e16;
+  color: var(--accent);
   font-weight: 600;
   font-size: 13.5px;
   padding: 9px 18px;
@@ -742,7 +739,7 @@ td {
 }
 
 .btn-secondary:hover {
-  border-color: #3a4661;
+  border-color: var(--accent);
 }
 
 .btn-secondary:disabled {

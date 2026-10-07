@@ -115,19 +115,19 @@ const emptyCourse = {
 };
 
 const Section = ({ title, open, onToggle, children }) => (
-  <div className="mb-4 border border-slate-700/40 rounded">
+  <div className="mb-4 border border-default rounded">
     <div
-      className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-800/30"
+      className="flex items-center justify-between p-3 cursor-pointer hover:bg-subtle"
       onClick={onToggle}
     >
-      <div className="font-medium text-slate-200">{title}</div>
+      <div className="font-medium text-primary">{title}</div>
       <ChevronDown
         size={18}
-        className={`transform transition ${open ? "rotate-180" : ""} text-slate-400`}
+        className={`transform transition ${open ? "rotate-180" : ""} text-muted`}
       />
     </div>
     {open && (
-      <div className="p-4 border-t border-slate-700/20 bg-slate-900/50">
+      <div className="p-4 border-t border-default bg-surface">
         {children}
       </div>
     )}
@@ -143,8 +143,8 @@ const InputField = ({
   disabled = false,
 }) => (
   <div>
-    <label className="block text-sm text-slate-300 mb-1">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="block text-sm text-muted mb-1">
+      {label} {required && <span className="text-danger">*</span>}
     </label>
     <input
       type={type}
@@ -152,7 +152,7 @@ const InputField = ({
       disabled={disabled}
       value={value || ""}
       onChange={onChange}
-      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+      className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
     />
   </div>
 );
@@ -166,15 +166,15 @@ const SelectField = ({
   disabled = false,
 }) => (
   <div>
-    <label className="block text-sm text-slate-300 mb-1">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="block text-sm text-muted mb-1">
+      {label} {required && <span className="text-danger">*</span>}
     </label>
     <select
       required={required}
       disabled={disabled}
       value={value || ""}
       onChange={onChange}
-      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+      className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
     >
       <option value="">-- Select --</option>
       {options.map((opt) => (
@@ -194,22 +194,22 @@ const MultiSelectField = ({ label, value = [], options, onChange, disabled }) =>
 
   return (
     <div>
-      <label className="block text-sm text-slate-300 mb-1">{label}</label>
+      <label className="block text-sm text-muted mb-1">{label}</label>
       <details className="group relative">
         <summary
-          className={`list-none w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 cursor-pointer focus:border-indigo-500 focus:outline-none ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+          className={`list-none w-full px-3 py-2 bg-subtle text-primary rounded border border-default cursor-pointer focus:border-accent focus:outline-none ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
         >
           <span className="block truncate">
             {selectedLabels.length ? selectedLabels.join(", ") : "-- Select sections --"}
           </span>
         </summary>
         {!disabled && (
-          <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
+          <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded border border-default bg-surface p-2 shadow-xl">
             {options.length ? (
               options.map((option) => (
                 <label
                   key={option.value}
-                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-slate-200 hover:bg-slate-800"
+                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-primary hover:bg-subtle"
                 >
                   <input
                     type="checkbox"
@@ -228,7 +228,7 @@ const MultiSelectField = ({ label, value = [], options, onChange, disabled }) =>
                 </label>
               ))
             ) : (
-              <p className="px-2 py-1.5 text-sm text-slate-400">
+              <p className="px-2 py-1.5 text-sm text-muted">
                 No sections available for this class.
               </p>
             )}
@@ -247,13 +247,13 @@ const TextAreaField = ({
   disabled = false,
 }) => (
   <div>
-    <label className="block text-sm text-slate-300 mb-1">{label}</label>
+    <label className="block text-sm text-muted mb-1">{label}</label>
     <textarea
       value={value || ""}
       disabled={disabled}
       onChange={onChange}
       rows={rows}
-      className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+      className="w-full px-3 py-2 bg-subtle text-primary rounded border border-default focus:border-accent focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
     />
   </div>
 );
@@ -270,7 +270,7 @@ const CheckboxField = ({ label, checked, onChange, disabled = false }) => (
     />
     <label
       htmlFor={`chk_${label}`}
-      className="text-sm text-slate-300 cursor-pointer"
+      className="text-sm text-muted cursor-pointer"
     >
       {label}
     </label>
@@ -529,8 +529,8 @@ const Courses = () => {
     <div
       className={`min-w-0 rounded-2xl p-4 ${isEditingCourse ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-card)",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-default)",
       }}
     >
       <div
@@ -539,7 +539,7 @@ const Courses = () => {
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2
             className="text-lg font-semibold"
-            style={{ color: "var(--text-1)" }}
+            style={{ color: "var(--text-primary)" }}
           >
             Courses Management
           </h2>
@@ -549,23 +549,23 @@ const Courses = () => {
         </div>
 
         {error && (
-          <div className="mb-4 flex justify-between rounded border border-red-700 bg-red-900/30 p-3 text-sm text-red-400">
+          <div className="mb-4 flex justify-between rounded border border-danger bg-danger-soft p-3 text-sm text-danger">
             {error}
             <button
               onClick={() => setError("")}
-              className="text-red-400 hover:text-red-300"
+              className="text-danger hover:text-danger"
             >
               ✕
             </button>
           </div>
         )}
 
-        <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
+        <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-default pb-3">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
             <label className="relative min-w-48 max-w-[320px] flex-1">
               <Search
                 size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
               />
               <input
                 type="search"
@@ -573,7 +573,7 @@ const Courses = () => {
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Search courses..."
                 aria-label="Search courses"
-                className="w-full rounded border border-slate-700 bg-slate-800 py-2 pl-9 pr-3 text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded border border-default bg-subtle py-2 pl-9 pr-3 text-primary focus:border-accent focus:outline-none"
               />
             </label>
             <div className="relative">
@@ -584,12 +584,12 @@ const Courses = () => {
                   setShowFilterMenu(false);
                 }}
                 aria-expanded={showViewMenu}
-                className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded border border-default px-3 py-2 text-sm text-muted hover:bg-subtle"
               >
                 <Bookmark size={16} /> Views
               </button>
               {showViewMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
+                <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-default bg-surface p-1 shadow-xl">
                   {[
                     { label: "All courses" },
                     { label: "Active courses", status: "active" },
@@ -601,7 +601,7 @@ const Courses = () => {
                       key={view.label}
                       type="button"
                       onClick={() => applyCourseView(view)}
-                      className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                      className="block w-full rounded px-3 py-2 text-left text-sm text-primary hover:bg-subtle"
                     >
                       {view.label}
                     </button>
@@ -618,23 +618,23 @@ const Courses = () => {
                 }}
                 aria-label="Filter courses"
                 aria-expanded={showFilterMenu}
-                className={`relative inline-flex items-center justify-center rounded border border-slate-700 p-2 text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
+                className={`relative inline-flex items-center justify-center rounded border border-default p-2 text-muted hover:bg-subtle ${activeFilterCount ? "text-accent" : ""}`}
               >
                 <SlidersHorizontal size={17} />
                 {activeFilterCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] text-white">
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] text-primary">
                     {activeFilterCount}
                   </span>
                 )}
               </button>
               {showFilterMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
-                  <label className="grid gap-1 text-xs text-slate-400">
+                <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-default bg-surface p-3 shadow-xl">
+                  <label className="grid gap-1 text-xs text-muted">
                     Subject type
                     <select
                       value={typeFilter}
                       onChange={(event) => setTypeFilter(event.target.value)}
-                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
                     >
                       <option value="all">All types</option>
                       {SUBJECT_TYPES.map((type) => (
@@ -644,26 +644,26 @@ const Courses = () => {
                       ))}
                     </select>
                   </label>
-                  <label className="grid gap-1 text-xs text-slate-400">
+                  <label className="grid gap-1 text-xs text-muted">
                     Status
                     <select
                       value={statusFilter}
                       onChange={(event) => setStatusFilter(event.target.value)}
-                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
                     >
                       <option value="all">All statuses</option>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
                   </label>
-                  <label className="grid gap-1 text-xs text-slate-400">
+                  <label className="grid gap-1 text-xs text-muted">
                     Class
                     <select
                       value={classroomFilter}
                       onChange={(event) =>
                         setClassroomFilter(event.target.value)
                       }
-                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
                     >
                       <option value="all">All classes</option>
                       {classroomOptions.map((classroom) => (
@@ -673,12 +673,12 @@ const Courses = () => {
                       ))}
                     </select>
                   </label>
-                  <label className="grid gap-1 text-xs text-slate-400">
+                  <label className="grid gap-1 text-xs text-muted">
                     Section
                     <select
                       value={sectionFilter}
                       onChange={(event) => setSectionFilter(event.target.value)}
-                      className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
                     >
                       <option value="all">All sections</option>
                       {sectionOptions.map((section) => (
@@ -696,7 +696,7 @@ const Courses = () => {
                       setClassroomFilter("all");
                       setSectionFilter("all");
                     }}
-                    className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
+                    className="justify-self-start text-xs text-accent hover:text-accent"
                   >
                     Clear filters
                   </button>
@@ -704,19 +704,19 @@ const Courses = () => {
               )}
             </div>
           </div>
-          <span className="text-sm text-slate-400">
+          <span className="text-sm text-muted">
             {filteredCourses.length} records
           </span>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
+        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
         {filteredCourses.length === 0 ? (
-          <div className="p-6 text-center text-slate-400">
+          <div className="p-6 text-center text-muted">
             {loading ? "Loading..." : "No courses found."}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-slate-800/60 border-b sticky top-0">
+            <thead className="bg-subtle border-b sticky top-0">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium">
                   Code
@@ -739,37 +739,37 @@ const Courses = () => {
               {filteredCourses.map((course) => (
                 <tr
                   key={course.id}
-                  className="border-b border-slate-700/40 hover:bg-slate-800/20"
+                  className="border-b border-default hover:bg-subtle"
                 >
-                  <td className="px-4 py-3 text-slate-200">
+                  <td className="px-4 py-3 text-primary">
                     {course.course_code}
                   </td>
-                  <td className="px-4 py-3 text-slate-200">
+                  <td className="px-4 py-3 text-primary">
                     <button
                       type="button"
                       onClick={() => openView(course)}
-                      className="text-left text-slate-200 hover:text-indigo-300"
+                      className="text-left text-primary hover:text-accent"
                       title="View course details"
                     >
                       {course.course_name}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-slate-300">
+                  <td className="px-4 py-3 text-muted">
                     <span>
                       {course.class_name || course.classroom_name || "—"}
                     </span>
-                    <span className="text-slate-500"> / </span>
+                    <span className="text-muted"> / </span>
                     <span>
                       {getSectionNames(course).join(", ") || "All sections"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     {course.is_active ? (
-                      <span className="px-2 py-1 bg-green-900/50 text-green-200 rounded text-xs">
+                      <span className="px-2 py-1 bg-success text-success rounded text-xs">
                         Active
                       </span>
                     ) : (
-                      <span className="px-2 py-1 bg-red-900/50 text-red-200 rounded text-xs">
+                      <span className="px-2 py-1 bg-danger text-danger rounded text-xs">
                         Inactive
                       </span>
                     )}
@@ -778,7 +778,7 @@ const Courses = () => {
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => toggleCourseActive(course)}
-                        className={`rounded p-1 ${course.is_active ? "text-amber-400 hover:bg-amber-900/30" : "text-emerald-400 hover:bg-emerald-900/30"}`}
+                        className={`rounded p-1 ${course.is_active ? "text-warning hover:bg-warning-soft" : "text-success hover:bg-success"}`}
                         title={
                           course.is_active
                             ? "Deactivate course"
@@ -794,7 +794,7 @@ const Courses = () => {
                       </button>
                       <button
                         onClick={() => openEdit(course)}
-                        className="rounded p-1 text-indigo-400 hover:bg-indigo-900/30"
+                        className="rounded p-1 text-accent hover:bg-accent-soft"
                         title="Edit course"
                         aria-label={`Edit ${course.course_name}`}
                       >
@@ -802,7 +802,7 @@ const Courses = () => {
                       </button>
                       <button
                         onClick={() => remove(course.id)}
-                        className="rounded p-1 text-red-400 hover:bg-red-900/30"
+                        className="rounded p-1 text-danger hover:bg-danger-soft"
                         title="Delete course"
                         aria-label={`Delete ${course.course_name}`}
                       >
@@ -837,125 +837,125 @@ const Courses = () => {
         {mode === "view" && (
           <div className="space-y-6 max-h-[70vh] overflow-y-auto">
             <div className="grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-5">
-              <div className="rounded-2xl border border-slate-700/70 bg-slate-950/80 p-5 shadow-lg shadow-slate-950/20">
+              <div className="rounded-2xl border border-default bg-surface p-5 shadow-lg shadow-slate-950/20">
                 <div className="flex items-start justify-between gap-4 mb-5">
                   <div>
-                    <p className="text-slate-400 uppercase tracking-[0.2em] text-xs mb-2">
+                    <p className="text-muted uppercase tracking-[0.2em] text-xs mb-2">
                       Course details
                     </p>
-                    <h2 className="text-2xl font-semibold text-white">
+                    <h2 className="text-2xl font-semibold text-primary">
                       {form.course_name || "Untitled Course"}
                     </h2>
-                    <p className="text-slate-500 text-sm mt-2">
+                    <p className="text-muted text-sm mt-2">
                       {form.description || "No description provided."}
                     </p>
                   </div>
                   <div className="text-right">
                     <div
-                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${form.is_active ? "bg-emerald-500/10 text-emerald-200" : "bg-red-500/10 text-red-200"}`}
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${form.is_active ? "bg-success text-success" : "bg-danger-soft text-danger"}`}
                     >
                       {form.is_active ? "Active" : "Inactive"}
                     </div>
-                    <p className="text-slate-500 text-xs mt-2">
+                    <p className="text-muted text-xs mt-2">
                       {form.course_code || "—"}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Department
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.department || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Subject Type
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.subject_type || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Class
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.class_name || form.classroom_name || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Section
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.section_name || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Teacher
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.teacher_name || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Delivery Mode
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.delivery_mode || "—"}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-700/70 bg-slate-950/80 p-5 shadow-lg shadow-slate-950/20">
-                <p className="text-slate-400 uppercase tracking-[0.2em] text-xs mb-4">
+              <div className="rounded-2xl border border-default bg-surface p-5 shadow-lg shadow-slate-950/20">
+                <p className="text-muted uppercase tracking-[0.2em] text-xs mb-4">
                   Assessment & details
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Credit Hours (Theory)
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.credit_hours_theory || 0}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Credit Hours (Lab)
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.credit_hours_lab || 0}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Full Marks
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.full_marks_theory || 0}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Pass Marks
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.pass_marks_theory || 0}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-900/80 p-4 border border-slate-700">
-                    <p className="text-slate-400 text-xs uppercase tracking-[0.18em] mb-2">
+                  <div className="rounded-2xl bg-surface p-4 border border-default">
+                    <p className="text-muted text-xs uppercase tracking-[0.18em] mb-2">
                       Enrolled Students
                     </p>
-                    <p className="text-white font-medium">
+                    <p className="text-primary font-medium">
                       {form.enrolled_count ?? 0}
                     </p>
                   </div>
@@ -967,14 +967,14 @@ const Courses = () => {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="w-full xl:w-auto px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600"
+                className="w-full xl:w-auto px-4 py-2 bg-subtle text-primary rounded hover:bg-selected"
               >
                 Close
               </button>
               <button
                 type="button"
                 onClick={toggleCourseActive}
-                className={`w-full xl:w-auto px-4 py-2 rounded text-white ${form.is_active ? "bg-red-600 hover:bg-red-700" : "bg-emerald-600 hover:bg-emerald-700"}`}
+                className={`w-full xl:w-auto px-4 py-2 rounded text-primary ${form.is_active ? "bg-danger hover:bg-danger" : "bg-success hover:bg-success"}`}
               >
                 {form.is_active ? "Deactivate" : "Activate"}
               </button>
@@ -1374,7 +1374,7 @@ const Courses = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-accent text-primary rounded hover:bg-accent disabled:opacity-50"
             >
               {loading ? "Saving..." : mode === "create" ? "Create" : "Update"}
             </button>
@@ -1384,7 +1384,7 @@ const Courses = () => {
                 setShowModal(false);
                 setForm(emptyCourse);
               }}
-              className="flex-1 px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600"
+              className="flex-1 px-4 py-2 bg-subtle text-primary rounded hover:bg-selected"
             >
               Cancel
             </button>

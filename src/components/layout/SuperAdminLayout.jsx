@@ -3,7 +3,7 @@ import SuperAdminSidebar from "./SuperAdminSidebar";
 const SuperAdminLayout = ({ children }) => (
   <div
     className="flex h-screen overflow-hidden"
-    style={{ background: "var(--bg-main)" }}
+    style={{ background: "var(--bg-page)" }}
   >
     <SuperAdminSidebar />
     <main className="flex-1 overflow-y-auto">{children}</main>

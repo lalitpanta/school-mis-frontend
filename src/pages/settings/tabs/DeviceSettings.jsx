@@ -31,7 +31,7 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
 
   if (!selectedDevice) {
     return (
-      <div className="text-center py-12 text-slate-600 dark:text-slate-400">
+      <div className="text-center py-12 text-muted dark:text-muted">
         <p className="text-lg">📭 Please select a device first</p>
       </div>
     );
@@ -40,14 +40,14 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'}`}>
+        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-success dark:bg-success text-success dark:text-success' : 'bg-danger dark:bg-danger-soft text-danger dark:text-danger'}`}>
           {message.text}
         </div>
       )}
 
       {/* Device Selector */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <div className="p-4 bg-selected dark:bg-subtle rounded-lg">
+        <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
           Selected Device:
         </label>
         <select
@@ -57,7 +57,7 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
             onDeviceSelected(device);
             setFormData(device);
           }}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+          className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
         >
           {devices.map(device => (
             <option key={device.id} value={device.id}>
@@ -70,11 +70,11 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
       {/* Settings Form */}
       <form onSubmit={handleSaveSettings} className="space-y-6">
         {/* Basic Information */}
-        <div className="p-6 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">📋 Basic Information</h3>
+        <div className="p-6 bg-selected dark:bg-subtle rounded-lg border border-default dark:border-default">
+          <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">📋 Basic Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 Device Name
               </label>
               <input
@@ -82,18 +82,18 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
                 name="device_name"
                 value={formData.device_name || ''}
                 onChange={handleFormChange}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 Device Type
               </label>
               <select
                 name="device_type"
                 value={formData.device_type || 'ZKTeco'}
                 onChange={handleFormChange}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               >
                 <option value="ZKTeco">ZKTeco</option>
                 <option value="eSSL">eSSL</option>
@@ -101,7 +101,7 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 Location
               </label>
               <input
@@ -110,18 +110,18 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
                 value={formData.location || ''}
                 onChange={handleFormChange}
                 placeholder="e.g., Main Entrance"
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               />
             </div>
           </div>
         </div>
 
         {/* Network Configuration */}
-        <div className="p-6 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">🌐 Network Configuration</h3>
+        <div className="p-6 bg-selected dark:bg-subtle rounded-lg border border-default dark:border-default">
+          <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">🌐 Network Configuration</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 IP Address
               </label>
               <input
@@ -130,11 +130,11 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
                 value={formData.ip_address || ''}
                 onChange={handleFormChange}
                 placeholder="192.168.1.100"
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 Port
               </label>
               <input
@@ -142,25 +142,25 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
                 name="port"
                 value={formData.port || 5000}
                 onChange={handleFormChange}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               />
             </div>
           </div>
         </div>
 
         {/* Sync Configuration */}
-        <div className="p-6 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">⚙️ Sync Configuration</h3>
+        <div className="p-6 bg-selected dark:bg-subtle rounded-lg border border-default dark:border-default">
+          <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">⚙️ Sync Configuration</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 Connection Method
               </label>
               <select
                 name="connection_method"
                 value={formData.connection_method || 'pull'}
                 onChange={handleFormChange}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               >
                 <option value="pull">Pull (Server pulls data)</option>
                 <option value="push">Push (Device pushes data)</option>
@@ -168,7 +168,7 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted dark:text-muted mb-2">
                 Auto Sync Interval (minutes)
               </label>
               <input
@@ -178,25 +178,25 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
                 onChange={handleFormChange}
                 min="1"
                 max="60"
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
               />
             </div>
           </div>
-          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-            <p className="text-xs text-blue-700 dark:text-blue-300">
+          <div className="mt-4 p-3 bg-accent dark:bg-accent-soft rounded border border-accent dark:border-accent">
+            <p className="text-xs text-accent dark:text-accent">
               ℹ️ The device will automatically sync every {formData.pull_interval_minutes || 5} minutes.
             </p>
           </div>
         </div>
 
         {/* Status and Controls */}
-        <div className="p-6 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">🔧 Status & Controls</h3>
+        <div className="p-6 bg-selected dark:bg-subtle rounded-lg border border-default dark:border-default">
+          <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">🔧 Status & Controls</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-600 rounded border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between p-3 bg-surface dark:bg-selected rounded border border-default dark:border-default">
               <div>
-                <p className="font-medium text-slate-900 dark:text-slate-100">Enable Device</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Allow this device to sync data</p>
+                <p className="font-medium text-muted dark:text-primary">Enable Device</p>
+                <p className="text-xs text-muted dark:text-muted">Allow this device to sync data</p>
               </div>
               <input
                 type="checkbox"
@@ -206,14 +206,14 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
                 className="w-4 h-4 rounded"
               />
             </div>
-            <div className="p-3 bg-white dark:bg-slate-600 rounded border border-slate-200 dark:border-slate-700">
-              <p className="font-medium text-slate-900 dark:text-slate-100">Current Status</p>
+            <div className="p-3 bg-surface dark:bg-selected rounded border border-default dark:border-default">
+              <p className="font-medium text-muted dark:text-primary">Current Status</p>
               <p className={`text-sm mt-1 ${
                 formData.connection_status === 'online'
-                  ? 'text-green-600 dark:text-green-400'
+                  ? 'text-success dark:text-success'
                   : formData.connection_status === 'offline'
-                  ? 'text-yellow-600 dark:text-yellow-400'
-                  : 'text-red-600 dark:text-red-400'
+                  ? 'text-warning dark:text-warning'
+                  : 'text-danger dark:text-danger'
               }`}>
                 {formData.connection_status ? formData.connection_status.toUpperCase() : 'UNKNOWN'}
               </p>
@@ -222,8 +222,8 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
         </div>
 
         {/* Info and Instructions */}
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-sm text-blue-700 dark:text-blue-300">
+        <div className="p-4 bg-accent dark:bg-accent-soft border border-accent dark:border-accent rounded-lg">
+          <p className="text-sm text-accent dark:text-accent">
             <strong>📌 Important:</strong>
             <ul className="list-disc list-inside mt-2 space-y-1 ml-2">
               <li>IP address and port must be correct for the device to sync</li>
@@ -238,7 +238,7 @@ const DeviceSettings = ({ devices, selectedDevice, onDeviceSelected, onRefresh }
         <button
           type="submit"
           disabled={saving}
-          className="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-slate-400 font-bold transition-all"
+          className="w-full px-6 py-3 bg-accent text-primary rounded-lg hover:bg-accent disabled:bg-selected font-bold transition-all"
         >
           {saving ? '⏳ Saving...' : '💾 Save Settings'}
         </button>

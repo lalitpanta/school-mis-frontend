@@ -11,10 +11,10 @@ import toast from "react-hot-toast";
 import { getAuditLogs, getAuditStats } from "../../api/settingsApi";
 
 const severityClasses = {
-  success: "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20",
-  warning: "bg-amber-500/10 text-amber-300 border border-amber-500/20",
-  info: "bg-sky-500/10 text-sky-300 border border-sky-500/20",
-  error: "bg-rose-500/10 text-rose-300 border border-rose-500/20",
+  success: "bg-success text-success border border-success",
+  warning: "bg-warning-soft text-warning border border-warning",
+  info: "bg-accent-soft text-accent border border-accent",
+  error: "bg-danger-soft text-danger border border-danger",
 };
 
 const categoryLabels = {
@@ -96,85 +96,85 @@ const ActivityLog = () => {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-3)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
             Activity
           </p>
-          <h2 className="mt-1 text-xl font-semibold text-[var(--text-1)]">
+          <h2 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             Activity Log
           </h2>
         </div>
 
-        <div className="w-full max-w-xs rounded-xl border border-[var(--border-card)] bg-[var(--bg-surface)] px-3 py-2">
+        <div className="w-full max-w-xs rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2">
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search activity..."
-            className="w-full bg-transparent text-sm text-[var(--text-1)] placeholder:text-[var(--text-3)] outline-none"
+            className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none"
           />
         </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-4">
-        <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-3)]">
+        <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
             <Activity size={14} />
             Total
           </div>
-          <div className="mt-3 text-2xl font-bold text-[var(--text-1)]">
+          <div className="mt-3 text-2xl font-bold text-[var(--text-primary)]">
             {stats?.summary?.total ?? 0}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-3)]">
+        <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
             <CheckCircle2 size={14} />
             Success
           </div>
-          <div className="mt-3 text-2xl font-bold text-emerald-300">
+          <div className="mt-3 text-2xl font-bold text-success">
             {stats?.summary?.successes ?? 0}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-3)]">
+        <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
             <AlertTriangle size={14} />
             Warning
           </div>
-          <div className="mt-3 text-2xl font-bold text-amber-300">
+          <div className="mt-3 text-2xl font-bold text-warning">
             {stats?.summary?.warnings ?? 0}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-3)]">
+        <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
             <Shield size={14} />
             Security
           </div>
-          <div className="mt-3 text-2xl font-bold text-rose-300">
+          <div className="mt-3 text-2xl font-bold text-danger">
             {stats?.severities?.find((item) => item.severity === "error")
               ?.count ?? 0}
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] overflow-hidden">
-        <div className="flex items-center justify-between border-b border-[var(--border-card)] bg-[var(--bg-surface)] px-4 py-3">
-          <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-1)]">
+      <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] overflow-hidden">
+        <div className="flex items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-surface)] px-4 py-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
             <Clock3 size={16} />
             Recent system activity
           </div>
         </div>
 
         {loading ? (
-          <div className="p-6 text-sm text-[var(--text-2)]">
+          <div className="p-6 text-sm text-[var(--text-muted)]">
             Loading activity logs...
           </div>
         ) : filteredLogs.length === 0 ? (
-          <div className="p-6 text-sm text-[var(--text-2)]">
+          <div className="p-6 text-sm text-[var(--text-muted)]">
             No activity recorded yet.
           </div>
         ) : (
-          <div className="divide-y divide-[var(--border-card)]">
+          <div className="divide-y divide-[var(--border-default)]">
             {filteredLogs.map((log) => (
               <div
                 key={log.id}
@@ -187,12 +187,12 @@ const ActivityLog = () => {
                     >
                       {log.title || log.action || "Activity"}
                     </span>
-                    <span className="truncate text-sm text-[var(--text-1)]">
+                    <span className="truncate text-sm text-[var(--text-primary)]">
                       {log.user_email || "System"}
                     </span>
                   </div>
 
-                  <div className="mt-1 flex items-center gap-2 text-xs text-[var(--text-3)]">
+                  <div className="mt-1 flex items-center gap-2 text-xs text-[var(--text-muted)]">
                     <span>
                       {categoryLabels[log.category] || log.category || "System"}
                     </span>
@@ -203,7 +203,7 @@ const ActivityLog = () => {
                   </div>
                 </div>
 
-                <div className="shrink-0 text-right text-[11px] text-[var(--text-3)]">
+                <div className="shrink-0 text-right text-[11px] text-[var(--text-muted)]">
                   {formatDateTime(log.created_at)}
                 </div>
               </div>

@@ -58,17 +58,17 @@ export const RolesManagementPage = () => {
   );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-selected min-h-screen">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Roles Management</h1>
+          <h1 className="text-3xl font-bold text-muted">Roles Management</h1>
           <button
             onClick={() => {
               setSelectedRole(null);
               setShowModal(true);
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+            className="bg-accent text-primary px-4 py-2 rounded-lg font-medium hover:bg-accent transition"
           >
             + Create Role
           </button>
@@ -76,11 +76,11 @@ export const RolesManagementPage = () => {
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg flex justify-between items-center">
+          <div className="mb-6 p-4 bg-danger text-danger rounded-lg flex justify-between items-center">
             <span>{error}</span>
             <button
               onClick={clearError}
-              className="text-red-700 hover:text-red-900"
+              className="text-danger hover:text-danger"
             >
               ×
             </button>
@@ -94,64 +94,64 @@ export const RolesManagementPage = () => {
             placeholder="Search roles by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
           />
         </div>
 
         {/* Roles Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-surface rounded-lg shadow overflow-hidden">
           {filteredRoles.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-muted">
               {loading ? "Loading roles..." : "No roles found. Create one to get started!"}
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gray-100 border-b">
+              <thead className="bg-selected border-b">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-muted">
                     Role Name
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-muted">
                     Description
                   </th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-center text-sm font-semibold text-muted">
                     Permissions
                   </th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-center text-sm font-semibold text-muted">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredRoles.map((role) => (
-                  <tr key={role.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                  <tr key={role.id} className="hover:bg-selected transition">
+                    <td className="px-6 py-4 text-sm font-medium text-muted">
                       {role.role_name}
                       {role.is_system && (
-                        <span className="ml-2 inline-block text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                        <span className="ml-2 inline-block text-xs bg-accent text-accent px-2 py-1 rounded">
                           System
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {role.description || "—"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-center text-gray-900">
-                      <span className="inline-block bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold">
+                    <td className="px-6 py-4 text-sm text-center text-muted">
+                      <span className="inline-block bg-selected text-muted px-3 py-1 rounded-full text-xs font-semibold">
                         {role.permission_count || 0}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-center space-x-2">
                       <button
                         onClick={() => openEditModal(role)}
-                        className="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition"
+                        className="bg-accent text-accent px-3 py-1 rounded hover:bg-accent transition"
                       >
                         Edit
                       </button>
                       {!role.is_system && (
                         <button
                           onClick={() => setDeleteConfirm(role.id)}
-                          className="bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition"
+                          className="bg-danger text-danger px-3 py-1 rounded hover:bg-danger transition"
                         >
                           Delete
                         </button>
@@ -167,15 +167,15 @@ export const RolesManagementPage = () => {
 
       {/* Role Form Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-screen overflow-y-auto">
+        <div className="fixed inset-0 bg-overlay bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-surface rounded-lg shadow-xl w-full max-w-2xl max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-muted">
                 {selectedRole ? "Edit Role" : "Create New Role"}
               </h2>
               <button
                 onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-muted hover:text-muted text-2xl"
               >
                 ×
               </button>
@@ -193,24 +193,24 @@ export const RolesManagementPage = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm">
+        <div className="fixed inset-0 bg-overlay bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-surface rounded-lg shadow-xl w-full max-w-sm">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Role?</h3>
-              <p className="text-gray-600 mb-6">
+              <h3 className="text-xl font-bold text-muted mb-4">Delete Role?</h3>
+              <p className="text-muted mb-6">
                 Are you sure you want to delete this role? This action cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                  className="px-4 py-2 text-muted bg-selected rounded-lg hover:bg-selected transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDeleteRole(deleteConfirm)}
                   disabled={loading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition"
+                  className="px-4 py-2 bg-danger text-primary rounded-lg hover:bg-danger disabled:bg-selected transition"
                 >
                   {loading ? "Deleting..." : "Delete"}
                 </button>

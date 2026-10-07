@@ -314,14 +314,14 @@ export const UsersManagementPage = () => {
   });
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-selected min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Users Management</h1>
+          <h1 className="text-3xl font-bold text-muted">Users Management</h1>
           <button
             onClick={openCreateModal}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+            className="bg-accent text-primary px-4 py-2 rounded-lg font-medium hover:bg-accent transition"
           >
             + Create User
           </button>
@@ -329,11 +329,11 @@ export const UsersManagementPage = () => {
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg flex justify-between items-center">
+          <div className="mb-6 p-4 bg-danger text-danger rounded-lg flex justify-between items-center">
             <span>{error}</span>
             <button
               onClick={() => setError(null)}
-              className="text-red-700 hover:text-red-900"
+              className="text-danger hover:text-danger"
             >
               ×
             </button>
@@ -347,64 +347,64 @@ export const UsersManagementPage = () => {
             placeholder="Search users by name, email, or phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
           />
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-surface rounded-lg shadow overflow-hidden">
           {filteredUsers.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-muted">
               {loading
                 ? "Loading users..."
                 : "No users found. Create one to get started!"}
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gray-100 border-b">
+              <thead className="bg-selected border-b">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-muted">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-muted">
                     Phone
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-muted">
                     Roles
                   </th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-center text-sm font-semibold text-muted">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-center text-sm font-semibold text-muted">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition">
+                  <tr key={user.id} className="hover:bg-selected transition">
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-muted">
                         {user.name || "—"}
                       </div>
-                      <div className="text-xs text-gray-500">{user.email}</div>
+                      <div className="text-xs text-muted">{user.email}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {user.phone || <span className="text-gray-400">—</span>}
+                    <td className="px-6 py-4 text-sm text-muted">
+                      {user.phone || <span className="text-muted">—</span>}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       <div className="flex flex-wrap gap-2">
                         {user.roles && user.roles.length > 0 ? (
                           user.roles.map((role) => (
                             <span
                               key={role.id}
-                              className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold"
+                              className="inline-block bg-accent text-accent px-3 py-1 rounded-full text-xs font-semibold"
                             >
                               {role.role_name}
                             </span>
                           ))
                         ) : (
-                          <span className="text-gray-400 italic text-xs">
+                          <span className="text-muted italic text-xs">
                             No roles assigned
                           </span>
                         )}
@@ -414,8 +414,8 @@ export const UsersManagementPage = () => {
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                           user.is_active
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-success text-success"
+                            : "bg-danger text-danger"
                         }`}
                       >
                         {user.is_active ? "Active" : "Inactive"}
@@ -424,13 +424,13 @@ export const UsersManagementPage = () => {
                     <td className="px-6 py-4 text-sm text-center space-x-2">
                       <button
                         onClick={() => openEditModal(user)}
-                        className="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition"
+                        className="bg-accent text-accent px-3 py-1 rounded hover:bg-accent transition"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(user.id)}
-                        className="bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition"
+                        className="bg-danger text-danger px-3 py-1 rounded hover:bg-danger transition"
                       >
                         Delete
                       </button>
@@ -445,15 +445,15 @@ export const UsersManagementPage = () => {
 
       {/* User Form Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-screen overflow-y-auto">
+        <div className="fixed inset-0 bg-overlay bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-surface rounded-lg shadow-xl w-full max-w-md max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-muted">
                 {modalMode === "create" ? "Create New User" : "Edit User"}
               </h2>
               <button
                 onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-muted hover:text-muted text-2xl"
               >
                 ×
               </button>
@@ -467,7 +467,7 @@ export const UsersManagementPage = () => {
               >
                 {/* User Type - Radio Buttons at Top */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-muted mb-3">
                     User Type
                   </label>
                   <div className="flex flex-wrap gap-3">
@@ -498,7 +498,7 @@ export const UsersManagementPage = () => {
                           }
                           className="w-4 h-4 cursor-pointer"
                         />
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-muted">
                           {type.label}
                         </span>
                       </label>
@@ -508,7 +508,7 @@ export const UsersManagementPage = () => {
 
                 {formData.user_type === "teacher" && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       Select Teacher
                     </label>
                     <select
@@ -541,7 +541,7 @@ export const UsersManagementPage = () => {
                         }
                         setFormData(nextState);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                     >
                       <option value="">Select teacher</option>
                       {teachers.map((teacher) => (
@@ -552,7 +552,7 @@ export const UsersManagementPage = () => {
                       ))}
                     </select>
                     {formErrors.teacher_id && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-danger text-sm mt-1">
                         {formErrors.teacher_id}
                       </p>
                     )}
@@ -562,7 +562,7 @@ export const UsersManagementPage = () => {
                 {formData.user_type === "student" && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-muted mb-1">
                         Select Section
                       </label>
                       <select
@@ -574,7 +574,7 @@ export const UsersManagementPage = () => {
                             student_id: "",
                           });
                         }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                       >
                         <option value="">-- Select Section First --</option>
                         {sections.map((section) => (
@@ -587,7 +587,7 @@ export const UsersManagementPage = () => {
 
                     {formData.section_id && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-muted mb-1">
                           Select Student
                         </label>
                         <select
@@ -611,7 +611,7 @@ export const UsersManagementPage = () => {
                             }
                             setFormData(nextState);
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                         >
                           <option value="">Select student</option>
                           {students
@@ -623,7 +623,7 @@ export const UsersManagementPage = () => {
                             ))}
                         </select>
                         {formErrors.student_id && (
-                          <p className="text-red-500 text-sm mt-1">
+                          <p className="text-danger text-sm mt-1">
                             {formErrors.student_id}
                           </p>
                         )}
@@ -634,7 +634,7 @@ export const UsersManagementPage = () => {
 
                 {formData.user_type === "employee" && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       Select Employee
                     </label>
                     <select
@@ -663,7 +663,7 @@ export const UsersManagementPage = () => {
                         }
                         setFormData(nextState);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                     >
                       <option value="">Select employee</option>
                       {employees.map((employee) => (
@@ -673,7 +673,7 @@ export const UsersManagementPage = () => {
                       ))}
                     </select>
                     {formErrors.employee_id && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-danger text-sm mt-1">
                         {formErrors.employee_id}
                       </p>
                     )}
@@ -682,7 +682,7 @@ export const UsersManagementPage = () => {
 
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Full Name
                   </label>
                   <input
@@ -693,7 +693,7 @@ export const UsersManagementPage = () => {
                       setFormErrors({ ...formErrors, name: "" });
                     }}
                     placeholder="John Doe"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                     disabled={["teacher", "student", "employee"].includes(
                       formData.user_type,
                     )}
@@ -702,7 +702,7 @@ export const UsersManagementPage = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Email *
                   </label>
                   <input
@@ -718,12 +718,12 @@ export const UsersManagementPage = () => {
                     )}
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                       formErrors.email
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300 focus:ring-blue-500"
-                    } ${["teacher", "student", "employee"].includes(formData.user_type) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}`}
+                        ? "border-danger focus:ring-focus"
+                        : "border-default focus:ring-focus"
+                    } ${["teacher", "student", "employee"].includes(formData.user_type) ? "bg-selected text-muted cursor-not-allowed" : ""}`}
                   />
                   {formErrors.email && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-danger text-sm mt-1">
                       {formErrors.email}
                     </p>
                   )}
@@ -731,7 +731,7 @@ export const UsersManagementPage = () => {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Phone
                   </label>
                   <input
@@ -745,7 +745,7 @@ export const UsersManagementPage = () => {
                     disabled={["teacher", "student", "employee"].includes(
                       formData.user_type,
                     )}
-                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${["teacher", "student", "employee"].includes(formData.user_type) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}`}
+                    className={`w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus ${["teacher", "student", "employee"].includes(formData.user_type) ? "bg-selected text-muted cursor-not-allowed" : ""}`}
                   />
                 </div>
 
@@ -754,7 +754,7 @@ export const UsersManagementPage = () => {
                   formData.user_type,
                 ) && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       Department / Store
                     </label>
                     {formData.user_type === "custom" ? (
@@ -767,7 +767,7 @@ export const UsersManagementPage = () => {
                               department_store: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                         >
                           <option value="">-- None --</option>
                           {departmentsList.map((d) => (
@@ -776,12 +776,12 @@ export const UsersManagementPage = () => {
                             </option>
                           ))}
                         </select>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-muted mt-1">
                           Optional — assign to a department or store.
                         </p>
                       </>
                     ) : (
-                      <p className="text-xs text-slate-500 bg-blue-50 p-2 rounded">
+                      <p className="text-xs text-muted bg-accent p-2 rounded">
                         Department is auto-selected from the chosen{" "}
                         {formData.user_type}.
                       </p>
@@ -792,7 +792,7 @@ export const UsersManagementPage = () => {
                 {/* Password - Only for create */}
                 {modalMode === "create" && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       Password *
                     </label>
                     <input
@@ -805,12 +805,12 @@ export const UsersManagementPage = () => {
                       placeholder="Minimum 6 characters"
                       className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                         formErrors.password
-                          ? "border-red-500 focus:ring-red-500"
-                          : "border-gray-300 focus:ring-blue-500"
+                          ? "border-danger focus:ring-focus"
+                          : "border-default focus:ring-focus"
                       }`}
                     />
                     {formErrors.password && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-danger text-sm mt-1">
                         {formErrors.password}
                       </p>
                     )}
@@ -819,7 +819,7 @@ export const UsersManagementPage = () => {
 
                 {/* Authority Mode */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Authority Mode
                   </label>
                   <select
@@ -830,7 +830,7 @@ export const UsersManagementPage = () => {
                         authority_mode: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-focus"
                   >
                     <option value="role_access">Use Role Access</option>
                     <option value="direct_access">Direct Access</option>
@@ -839,7 +839,7 @@ export const UsersManagementPage = () => {
 
                 {/* Module Access */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Module Access
                   </label>
                   <div className="space-y-2">
@@ -876,9 +876,9 @@ export const UsersManagementPage = () => {
                               });
                             }
                           }}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 rounded border-default text-accent focus:ring-focus"
                         />
-                        <span className="text-sm text-gray-700 capitalize">
+                        <span className="text-sm text-muted capitalize">
                           {module}
                         </span>
                       </label>
@@ -898,7 +898,7 @@ export const UsersManagementPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+                  className="w-full bg-accent text-primary py-2 px-4 rounded-lg font-medium hover:bg-accent disabled:bg-selected disabled:cursor-not-allowed transition"
                 >
                   {loading
                     ? "Saving..."
@@ -914,27 +914,27 @@ export const UsersManagementPage = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm">
+        <div className="fixed inset-0 bg-overlay bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-surface rounded-lg shadow-xl w-full max-w-sm">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-xl font-bold text-muted mb-4">
                 Delete User?
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted mb-6">
                 Are you sure you want to delete this user? This action cannot be
                 undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                  className="px-4 py-2 text-muted bg-selected rounded-lg hover:bg-selected transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDeleteUser(deleteConfirm)}
                   disabled={loading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition"
+                  className="px-4 py-2 bg-danger text-primary rounded-lg hover:bg-danger disabled:bg-selected transition"
                 >
                   {loading ? "Deleting..." : "Delete"}
                 </button>

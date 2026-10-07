@@ -35,18 +35,18 @@ const DEFAULT_SECURITY_CONFIG = {
 };
 
 const ToggleSwitch = ({ enabled, onChange, label, description = "" }) => (
-  <div className="flex items-start justify-between p-4 bg-slate-800/50 border border-slate-700/60 rounded-lg hover:bg-slate-800 transition">
+  <div className="flex items-start justify-between p-4 bg-subtle border border-default rounded-lg hover:bg-subtle transition">
     <div className="flex-1">
-      <h4 className="text-slate-200 font-medium">{label}</h4>
+      <h4 className="text-primary font-medium">{label}</h4>
       {description && (
-        <p className="text-slate-400 text-sm mt-1">{description}</p>
+        <p className="text-muted text-sm mt-1">{description}</p>
       )}
     </div>
     <button
       type="button"
       onClick={() => onChange(!enabled)}
       className={`toggle-switch relative ml-4 w-12 h-6 rounded-full p-1 transition-colors shrink-0 ${
-        enabled ? "bg-green-600 toggle-on" : "bg-slate-700 toggle-off"
+        enabled ? "bg-success toggle-on" : "bg-subtle toggle-off"
       }`}
     >
       <div
@@ -140,29 +140,29 @@ const Security = () => {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-slate-400">
+      <div className="p-8 text-center text-muted">
         Loading Security Settings...
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl p-6 bg-slate-900 border border-slate-700/60 shadow-xl">
+    <div className="rounded-2xl p-6 bg-surface border border-default shadow-xl">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+      <div className="flex justify-between items-center mb-6 border-b border-default pb-4">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Shield className="text-green-400" size={24} /> Security
+          <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+            <Shield className="text-success" size={24} /> Security
             Configuration
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-muted mt-1">
             Configure security policies and authentication mechanisms.
           </p>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-success hover:bg-success text-primary rounded-lg transition disabled:opacity-50"
         >
           <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
         </button>
@@ -172,13 +172,13 @@ const Security = () => {
       <div className="flex gap-2 mb-6">
         <button
           onClick={collapseAll}
-          className="px-4 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 text-sm font-medium transition-colors"
+          className="px-4 py-2 rounded-lg bg-subtle hover:bg-subtle border border-default text-muted text-sm font-medium transition-colors"
         >
           Collapse All
         </button>
         <button
           onClick={expandAll}
-          className="px-4 py-2 rounded-lg bg-green-600/50 hover:bg-green-600 border border-green-500 text-green-300 text-sm font-medium transition-colors"
+          className="px-4 py-2 rounded-lg bg-success hover:bg-success border border-success text-success text-sm font-medium transition-colors"
         >
           Expand All
         </button>
@@ -186,22 +186,22 @@ const Security = () => {
 
       <div className="space-y-8">
         {/* Authentication Section */}
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-subtle border border-default rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => toggleSection("authentication")}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
           >
             <div className="flex items-center gap-2">
-              <Lock size={18} className="text-blue-400" />
-              <h3 className="text-lg font-semibold text-white">
+              <Lock size={18} className="text-accent" />
+              <h3 className="text-lg font-semibold text-primary">
                 Authentication & Access
               </h3>
             </div>
             {expandedSections.authentication ? (
-              <ChevronUp size={18} className="text-slate-400" />
+              <ChevronUp size={18} className="text-muted" />
             ) : (
-              <ChevronDown size={18} className="text-slate-400" />
+              <ChevronDown size={18} className="text-muted" />
             )}
           </button>
           {expandedSections.authentication && (
@@ -229,22 +229,22 @@ const Security = () => {
         </div>
 
         {/* Session Management Section */}
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-subtle border border-default rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => toggleSection("session")}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
           >
             <div className="flex items-center gap-2">
-              <Clock size={18} className="text-amber-400" />
-              <h3 className="text-lg font-semibold text-white">
+              <Clock size={18} className="text-warning" />
+              <h3 className="text-lg font-semibold text-primary">
                 Session Management
               </h3>
             </div>
             {expandedSections.session ? (
-              <ChevronUp size={18} className="text-slate-400" />
+              <ChevronUp size={18} className="text-muted" />
             ) : (
-              <ChevronDown size={18} className="text-slate-400" />
+              <ChevronDown size={18} className="text-muted" />
             )}
           </button>
           {expandedSections.session && (
@@ -256,8 +256,8 @@ const Security = () => {
                 description="Automatically logout users after they remain inactive."
               />
               {config.autoLogoutEnabled && (
-                <div className="ml-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                <div className="ml-4 p-4 bg-subtle border border-default rounded-lg">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Session Timeout (minutes)
                   </label>
                   <input
@@ -271,9 +271,9 @@ const Security = () => {
                     }
                     min={5}
                     max={480}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Minimum 5 minutes, maximum 480 minutes (8 hours).
                   </p>
                 </div>
@@ -289,22 +289,22 @@ const Security = () => {
         </div>
 
         {/* Password Policy Section */}
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-subtle border border-default rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => toggleSection("password")}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
           >
             <div className="flex items-center gap-2">
-              <Lock size={18} className="text-purple-400" />
-              <h3 className="text-lg font-semibold text-white">
+              <Lock size={18} className="text-accent" />
+              <h3 className="text-lg font-semibold text-primary">
                 Password Policy
               </h3>
             </div>
             {expandedSections.password ? (
-              <ChevronUp size={18} className="text-slate-400" />
+              <ChevronUp size={18} className="text-muted" />
             ) : (
-              <ChevronDown size={18} className="text-slate-400" />
+              <ChevronDown size={18} className="text-muted" />
             )}
           </button>
           {expandedSections.password && (
@@ -322,8 +322,8 @@ const Security = () => {
                 description="Require users to change their password periodically."
               />
               {config.passwordExpiryEnabled && (
-                <div className="ml-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                <div className="ml-4 p-4 bg-subtle border border-default rounded-lg">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Password Expiry Period (days)
                   </label>
                   <input
@@ -337,9 +337,9 @@ const Security = () => {
                     }
                     min={30}
                     max={365}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Users will be prompted to change password after this period.
                   </p>
                 </div>
@@ -353,8 +353,8 @@ const Security = () => {
                 description="Lock account after multiple failed login attempts."
               />
               {config.maxFailedLoginAttempts > 0 && (
-                <div className="ml-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                <div className="ml-4 p-4 bg-subtle border border-default rounded-lg">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Max Attempts Before Lockout
                   </label>
                   <input
@@ -368,9 +368,9 @@ const Security = () => {
                     }
                     min={3}
                     max={10}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Account will be temporarily locked after this many failed
                     attempts.
                   </p>
@@ -381,22 +381,22 @@ const Security = () => {
         </div>
 
         {/* Network & Access Control Section */}
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-subtle border border-default rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => toggleSection("network")}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
           >
             <div className="flex items-center gap-2">
-              <AlertCircle size={18} className="text-red-400" />
-              <h3 className="text-lg font-semibold text-white">
+              <AlertCircle size={18} className="text-danger" />
+              <h3 className="text-lg font-semibold text-primary">
                 Network & Access Control
               </h3>
             </div>
             {expandedSections.network ? (
-              <ChevronUp size={18} className="text-slate-400" />
+              <ChevronUp size={18} className="text-muted" />
             ) : (
-              <ChevronDown size={18} className="text-slate-400" />
+              <ChevronDown size={18} className="text-muted" />
             )}
           </button>
           {expandedSections.network && (
@@ -408,8 +408,8 @@ const Security = () => {
                 description="Restrict access to specific IP addresses."
               />
               {config.ipWhitelistEnabled && (
-                <div className="ml-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                <div className="ml-4 p-4 bg-subtle border border-default rounded-lg">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Whitelisted IP Addresses
                   </label>
                   <textarea
@@ -422,9 +422,9 @@ const Security = () => {
                     }
                     placeholder="Enter IP addresses (one per line)&#10;Example:&#10;192.168.1.1&#10;10.0.0.0/8"
                     rows={4}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
+                    className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent font-mono text-sm"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Supports IPv4 addresses and CIDR notation.
                   </p>
                 </div>
@@ -446,22 +446,22 @@ const Security = () => {
         </div>
 
         {/* Data Protection Section */}
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-subtle border border-default rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => toggleSection("dataProtection")}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
           >
             <div className="flex items-center gap-2">
-              <CheckCircle size={18} className="text-teal-400" />
-              <h3 className="text-lg font-semibold text-white">
+              <CheckCircle size={18} className="text-accent" />
+              <h3 className="text-lg font-semibold text-primary">
                 Data Protection
               </h3>
             </div>
             {expandedSections.dataProtection ? (
-              <ChevronUp size={18} className="text-slate-400" />
+              <ChevronUp size={18} className="text-muted" />
             ) : (
-              <ChevronDown size={18} className="text-slate-400" />
+              <ChevronDown size={18} className="text-muted" />
             )}
           </button>
           {expandedSections.dataProtection && (
@@ -479,8 +479,8 @@ const Security = () => {
                 description="Limit API requests to prevent abuse and brute force attacks."
               />
               {config.apiRateLimitingEnabled && (
-                <div className="ml-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                <div className="ml-4 p-4 bg-subtle border border-default rounded-lg">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     API Requests Per Minute
                   </label>
                   <input
@@ -494,9 +494,9 @@ const Security = () => {
                     }
                     min={10}
                     max={1000}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Maximum number of API requests allowed per minute.
                   </p>
                 </div>
@@ -510,8 +510,8 @@ const Security = () => {
                 description="Store audit logs for compliance and security investigations."
               />
               {config.auditLogRetentionDays > 0 && (
-                <div className="ml-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                <div className="ml-4 p-4 bg-subtle border border-default rounded-lg">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Retention Period (days)
                   </label>
                   <input
@@ -525,9 +525,9 @@ const Security = () => {
                     }
                     min={30}
                     max={1825}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Audit logs will be automatically purged after this period
                     (30 days to 5 years).
                   </p>
@@ -540,24 +540,24 @@ const Security = () => {
         {/* SSO Configuration */}
         {config.ssoEnabled && (
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">
+            <h3 className="text-lg font-semibold text-primary mb-4">
               SSO Provider Configuration
             </h3>
-            <div className="p-4 bg-slate-800 border border-slate-700 rounded-lg">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+            <div className="p-4 bg-subtle border border-default rounded-lg">
+              <label className="block text-sm font-medium text-muted mb-2">
                 SSO Provider
               </label>
               <select
                 value={config.ssoProvider}
                 onChange={(e) => updateConfig("ssoProvider", e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
               >
                 <option value="google">Google</option>
                 <option value="microsoft">Microsoft</option>
                 <option value="okta">Okta</option>
                 <option value="custom">Custom OpenID Connect</option>
               </select>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-muted mt-1">
                 Select the SSO provider for your organization.
               </p>
             </div>
@@ -565,8 +565,8 @@ const Security = () => {
         )}
 
         {/* Info Box */}
-        <div className="p-4 bg-blue-900/20 border border-blue-500/20 rounded-lg">
-          <p className="text-sm text-slate-300">
+        <div className="p-4 bg-accent-soft border border-accent rounded-lg">
+          <p className="text-sm text-muted">
             <strong>Note:</strong> These security settings control how your
             system handles authentication, authorization, and data protection.
             Changes take effect immediately. Always test settings in a
@@ -575,11 +575,11 @@ const Security = () => {
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end pt-4 border-t border-slate-700">
+        <div className="flex justify-end pt-4 border-t border-default">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition disabled:opacity-50 font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-success hover:bg-success text-primary rounded-lg transition disabled:opacity-50 font-medium"
           >
             <Save size={18} /> {saving ? "Saving..." : "Save All Settings"}
           </button>

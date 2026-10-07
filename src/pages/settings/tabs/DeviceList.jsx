@@ -75,9 +75,9 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
 
   const getStatusColor = (status) => {
     const colors = {
-      'online': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      'offline': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      'unreachable': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      'online': 'bg-success text-success dark:bg-success dark:text-success',
+      'offline': 'bg-warning text-warning dark:bg-warning-soft dark:text-warning',
+      'unreachable': 'bg-danger text-danger dark:bg-danger-soft dark:text-danger'
     };
     return colors[status] || colors.unreachable;
   };
@@ -85,15 +85,15 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'}`}>
+        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-success dark:bg-success text-success dark:text-success' : 'bg-danger dark:bg-danger-soft text-danger dark:text-danger'}`}>
           {message.text}
         </div>
       )}
 
       {/* Create Device Form */}
       {showCreateForm && (
-        <div className="bg-slate-50 dark:bg-slate-700 p-6 rounded-lg border border-slate-200 dark:border-slate-600">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">➕ Add New Device</h3>
+        <div className="bg-selected dark:bg-subtle p-6 rounded-lg border border-default dark:border-default">
+          <h3 className="text-lg font-bold text-muted dark:text-primary mb-4">➕ Add New Device</h3>
           <form onSubmit={handleCreateDevice} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
@@ -102,13 +102,13 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
               value={formData.device_name}
               onChange={handleFormChange}
               required
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             />
             <select
               name="device_type"
               value={formData.device_type}
               onChange={handleFormChange}
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             >
               <option value="ZKTeco">ZKTeco</option>
               <option value="eSSL">eSSL</option>
@@ -121,7 +121,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
               value={formData.ip_address}
               onChange={handleFormChange}
               required
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             />
             <input
               type="number"
@@ -129,7 +129,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
               placeholder="Port (default: 5000)"
               value={formData.port}
               onChange={handleFormChange}
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             />
             <input
               type="text"
@@ -137,13 +137,13 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
               placeholder="Location (optional)"
               value={formData.location}
               onChange={handleFormChange}
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             />
             <select
               name="connection_method"
               value={formData.connection_method}
               onChange={handleFormChange}
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             >
               <option value="pull">Pull (Server pulls data)</option>
               <option value="push">Push (Device pushes data)</option>
@@ -155,20 +155,20 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
               placeholder="Sync interval (minutes)"
               value={formData.pull_interval_minutes}
               onChange={handleFormChange}
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100"
+              className="px-4 py-2 border border-default dark:border-default rounded-lg bg-surface dark:bg-selected text-muted dark:text-primary"
             />
             <div className="md:col-span-2 flex gap-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-slate-400"
+                className="flex-1 px-4 py-2 bg-accent text-primary rounded-lg hover:bg-accent disabled:bg-selected"
               >
                 {loading ? '⏳ Creating...' : '✅ Create Device'}
               </button>
               <button
                 type="button"
                 onClick={() => setShowCreateForm(false)}
-                className="flex-1 px-4 py-2 bg-slate-400 text-white rounded-lg hover:bg-slate-500"
+                className="flex-1 px-4 py-2 bg-selected text-primary rounded-lg hover:bg-selected"
               >
                 ❌ Cancel
               </button>
@@ -181,7 +181,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
       {!showCreateForm && (
         <button
           onClick={() => setShowCreateForm(true)}
-          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium"
+          className="px-6 py-3 bg-accent text-primary rounded-lg hover:bg-accent font-medium"
         >
           ➕ Add New Device
         </button>
@@ -195,14 +195,14 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
             onClick={() => onDeviceSelected(device)}
             className={`p-6 rounded-lg border-2 cursor-pointer transition-all ${
               selectedDevice?.id === device.id
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700'
+                ? 'border-accent bg-accent dark:bg-accent-soft'
+                : 'border-default dark:border-default bg-surface dark:bg-subtle'
             }`}
           >
             <div className="flex justify-between items-start">
               <div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100">{device.device_name}</h4>
-                <div className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                <h4 className="text-xl font-bold text-muted dark:text-primary">{device.device_name}</h4>
+                <div className="mt-2 space-y-1 text-sm text-muted dark:text-muted">
                   <p>🖥️ Type: <span className="font-medium">{device.device_type}</span></p>
                   <p>🌐 IP: <span className="font-medium">{device.ip_address}:{device.port}</span></p>
                   <p>📍 Location: <span className="font-medium">{device.location || 'N/A'}</span></p>
@@ -214,7 +214,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
                   {device.connection_status.toUpperCase()}
                 </div>
                 {device.last_synced_at && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-muted dark:text-muted">
                     Last sync: {new Date(device.last_synced_at).toLocaleString()}
                   </p>
                 )}
@@ -227,7 +227,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
                   handleTestConnection(device);
                 }}
                 disabled={testingDevice === device.id}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-slate-400"
+                className="px-4 py-2 bg-success text-primary rounded hover:bg-success disabled:bg-selected"
               >
                 {testingDevice === device.id ? '⏳ Testing...' : '🔗 Test Connection'}
               </button>
@@ -236,7 +236,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
                   e.stopPropagation();
                   handleDeleteDevice(device.id);
                 }}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                className="px-4 py-2 bg-danger text-primary rounded hover:bg-danger"
               >
                 🗑️ Delete
               </button>
@@ -246,7 +246,7 @@ const DeviceList = ({ devices, selectedDevice, onDeviceSelected, onDeviceCreated
       </div>
 
       {!devices.length && !showCreateForm && (
-        <div className="text-center py-12 text-slate-600 dark:text-slate-400">
+        <div className="text-center py-12 text-muted dark:text-muted">
           <p className="text-lg">📭 No devices configured yet</p>
           <p className="text-sm">Click "Add New Device" to get started</p>
         </div>

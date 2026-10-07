@@ -1,8 +1,8 @@
 /**
  * Accounts Module
  * Matches the design from accounts-section.html:
- *   - Dark sidebar color palette (#0d0f1e / #11141f) carried into the page
- *   - Violet accent (#7c6cf6 / #9b8dfa)
+ *   - Dark sidebar color palette (var(--accent) / var(--accent)) carried into the page
+ *   - Violet accent (var(--accent) / var(--accent))
  *   - Tabs: Overview · Fee collection · Expenses · Payroll · Invoices & receipts
  *   - Overview: balance card, 4 stat mini-cards, collection %, info row,
  *               recent-transactions table, collection-by-class bars, expense pie
@@ -41,10 +41,10 @@ const fmtShort = (n) => {
 };
 
 const STATUS_COLOR = {
-  paid: { bg: "rgba(16,185,129,.15)", color: "#10b981" },
-  partial: { bg: "rgba(245,158,11,.15)", color: "#f59e0b" },
-  overdue: { bg: "rgba(244,63,94,.15)", color: "#f43f5e" },
-  pending: { bg: "rgba(148,163,184,.15)", color: "#94a3b8" },
+  paid: { bg: "rgba(16,185,129,.15)", color: "var(--success-text)" },
+  partial: { bg: "var(--warning-bg)", color: "var(--warning)" },
+  overdue: { bg: "rgba(244,63,94,.15)", color: "var(--danger)" },
+  pending: { bg: "rgba(148,163,184,.15)", color: "var(--accent)" },
 };
 
 const TYPE_LABEL = { income: "Income", expense: "Expense" };
@@ -62,18 +62,18 @@ const TABS = [
 // ── CSS injected once ────────────────────────────────────────────────────────
 const CSS = `
 .acc-page {
-  --ac-bg:      var(--bg-main);
-  --ac-panel:   var(--bg-card);
+  --ac-bg:      var(--bg-page);
+  --ac-panel:   var(--bg-surface);
   --ac-panel2:  var(--bg-input);
-  --ac-hover:   var(--bg-hover);
-  --ac-border:  var(--border-card);
+  --ac-hover:   var(--bg-subtle);
+  --ac-border:  var(--border-default);
   --ac-v500:    var(--accent);
   --ac-v400:    var(--accent);
   --ac-vglow:   var(--accent-dim);
-  --ac-hi:      var(--text-1);
-  --ac-mid:     var(--text-2);
-  --ac-low:     var(--text-3);
-  --ac-green:   var(--success);
+  --ac-hi:      var(--text-primary);
+  --ac-mid:     var(--text-muted);
+  --ac-low:     var(--text-muted);
+  --ac-green:   var(--success-text);
   --ac-amber:   var(--warning);
   --ac-red:     var(--danger);
   font-family: 'Inter', sans-serif;
@@ -337,8 +337,8 @@ const CSS = `
 .acc-btn:hover   { opacity: .88; transform: translateY(-1px); }
 .acc-btn:active  { transform: translateY(0); }
 .acc-btn-primary {
-  background: linear-gradient(135deg, var(--ac-v500), #4d3ff0);
-  color: var(--accent-text);
+  background: linear-gradient(135deg, var(--ac-v500), var(--accent));
+  color: var(--on-accent);
   box-shadow: 0 4px 12px var(--ac-vglow);
 }
 .acc-btn-ghost {
@@ -359,7 +359,7 @@ const CSS = `
   z-index: 9999; padding: 24px;
 }
 .acc-modal {
-  background: var(--bg-card);
+  background: var(--bg-surface);
   border: 1px solid var(--ac-border);
   border-radius: 16px;
   padding: 28px;
@@ -390,7 +390,7 @@ const CSS = `
 .acc-input:focus, .acc-select:focus, .acc-textarea:focus {
   border-color: var(--ac-v500);
 }
-.acc-select option { background: var(--bg-input); color: var(--text-1); }
+.acc-select option { background: var(--bg-input); color: var(--text-primary); }
 .acc-textarea { resize: vertical; min-height: 72px; }
 .acc-modal-footer {
   display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
@@ -420,8 +420,8 @@ const CSS = `
 }
 .acc-step-num {
   width: 32px; height: 32px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--ac-v500), #4d3ff0);
-  color: var(--accent-text); font-size: 13px; font-weight: 800;
+  background: linear-gradient(135deg, var(--ac-v500), var(--accent));
+  color: var(--on-accent); font-size: 13px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 10px;
   font-family: 'Sora', sans-serif;
@@ -615,7 +615,7 @@ function TransactionModal({ open, onClose, onSaved, initial }) {
             />
           </div>
           {err && (
-            <p style={{ color: "#f43f5e", fontSize: 13, marginBottom: 8 }}>
+            <p style={{ color: "var(--danger)", fontSize: 13, marginBottom: 8 }}>
               {err}
             </p>
           )}
@@ -804,7 +804,7 @@ function PayrollModal({ open, onClose, onSaved }) {
             />
           </div>
           {err && (
-            <p style={{ color: "#f43f5e", fontSize: 13, marginBottom: 8 }}>
+            <p style={{ color: "var(--danger)", fontSize: 13, marginBottom: 8 }}>
               {err}
             </p>
           )}
@@ -924,7 +924,7 @@ function OverviewTab({
                   style={{
                     fontSize: 15,
                     fontWeight: 700,
-                    color: "#fff",
+                    color: "var(--text-primary)",
                     fontFamily: "'Sora', sans-serif",
                   }}
                 >

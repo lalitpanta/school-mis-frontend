@@ -201,16 +201,16 @@ const Backup = () => {
   };
 
   return (
-    <div className="p-6" style={{ color: "var(--text-1)" }}>
+    <div className="p-6" style={{ color: "var(--text-primary)" }}>
       <div className="flex flex-col gap-2 mb-6">
         <p
           className="text-[10px] font-semibold uppercase tracking-[0.2em]"
-          style={{ color: "var(--text-3)" }}
+          style={{ color: "var(--text-muted)" }}
         >
           Data Protection
         </p>
         <h2 className="text-xl font-bold">Backup</h2>
-        <p style={{ color: "var(--text-2)" }}>
+        <p style={{ color: "var(--text-muted)" }}>
           Download tenant data as a structured JSON backup. Use the tenant selector to export either one tenant or every tenant in the system.
         </p>
       </div>
@@ -221,7 +221,7 @@ const Backup = () => {
           style={{
             background: "rgba(239,68,68,0.08)",
             borderColor: "rgba(239,68,68,0.35)",
-            color: "#fca5a5",
+            color: "var(--danger)",
           }}
         >
           <span>⚠</span>
@@ -232,8 +232,8 @@ const Backup = () => {
       <div
         className="rounded-2xl border p-5"
         style={{
-          background: "var(--bg-card)",
-          borderColor: "var(--border-card)",
+          background: "var(--bg-surface)",
+          borderColor: "var(--border-default)",
           boxShadow: "var(--shadow-card)",
         }}
       >
@@ -241,7 +241,7 @@ const Backup = () => {
           <div className="min-w-0 flex-1">
             <label
               className="mb-2 block text-sm font-medium"
-              style={{ color: "var(--text-2)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               Tenant
             </label>
@@ -252,8 +252,8 @@ const Backup = () => {
               className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition"
               style={{
                 background: "var(--bg-surface)",
-                borderColor: "var(--border-card)",
-                color: "var(--text-1)",
+                borderColor: "var(--border-default)",
+                color: "var(--text-primary)",
               }}
             >
               {tenantOptions.length === 0 ? (
@@ -274,8 +274,8 @@ const Backup = () => {
             disabled={loadingTenants || downloading || tenantOptions.length === 0}
             className="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
             style={{
-              background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-              color: "#fff",
+              background: "linear-gradient(135deg, var(--accent), var(--accent))",
+              color: "var(--text-primary)",
               boxShadow: "0 10px 24px rgba(79,70,229,0.25)",
             }}
           >
@@ -283,7 +283,7 @@ const Backup = () => {
           </button>
         </div>
 
-        <div className="mt-5 rounded-xl border p-3 text-sm" style={{ borderColor: "var(--border-card)", color: "var(--text-2)" }}>
+        <div className="mt-5 rounded-xl border p-3 text-sm" style={{ borderColor: "var(--border-default)", color: "var(--text-muted)" }}>
           {selectedTenantId === "all"
             ? "All Tenants: downloads a complete JSON backup containing each tenant’s data in a single file."
             : "Single Tenant: downloads only the selected tenant’s dataset as JSON."}
@@ -291,8 +291,8 @@ const Backup = () => {
       </div>
 
       {loadingTenants && (
-        <div className="mt-5 flex items-center gap-3 text-sm" style={{ color: "var(--text-2)" }}>
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-indigo-500/30 border-t-indigo-500" />
+        <div className="mt-5 flex items-center gap-3 text-sm" style={{ color: "var(--text-muted)" }}>
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-accent" />
           Loading tenant list...
         </div>
       )}

@@ -1,8 +1,8 @@
 const cards = [
-  { key:'present', label:'Present', c:'#34d399', bg:'rgba(16,185,129,0.1)',  border:'rgba(16,185,129,0.2)' },
-  { key:'absent',  label:'Absent',  c:'#f87171', bg:'rgba(239,68,68,0.1)',   border:'rgba(239,68,68,0.2)'  },
-  { key:'late',    label:'Late',    c:'#fbbf24', bg:'rgba(245,158,11,0.1)',  border:'rgba(245,158,11,0.2)' },
-  { key:'excused', label:'Excused', c:'#38bdf8', bg:'rgba(14,165,233,0.1)', border:'rgba(14,165,233,0.2)' },
+  { key:'present', label:'Present', c:'var(--success-text)', bg:'rgba(16,185,129,0.1)',  border:'rgba(16,185,129,0.2)' },
+  { key:'absent',  label:'Absent',  c:'var(--danger)', bg:'rgba(239,68,68,0.1)',   border:'rgba(239,68,68,0.2)'  },
+  { key:'late',    label:'Late',    c:'var(--warning)', bg:'var(--warning-bg)', border:'var(--warning)' },
+  { key:'excused', label:'Excused', c:'var(--accent)', bg:'rgba(14,165,233,0.1)', border:'rgba(14,165,233,0.2)' },
 ];
 
 const AttendanceSummary = ({ summary = {} }) => {

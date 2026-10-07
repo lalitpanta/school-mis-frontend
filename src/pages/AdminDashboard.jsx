@@ -306,9 +306,9 @@ const AdminDashboard = () => {
   return (
     <div
       style={{
-        background: "var(--bg-main)",
+        background: "var(--bg-page)",
         minHeight: "100vh",
-        color: "var(--text-1)",
+        color: "var(--text-primary)",
       }}
       className="p-8"
     >
@@ -316,11 +316,11 @@ const AdminDashboard = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">System Admin Dashboard</h1>
-          <p style={{ color: "#94a3b8" }}>Welcome, {user?.email}</p>
+          <p style={{ color: "var(--accent)" }}>Welcome, {user?.email}</p>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-red-500/20 transition"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-danger-soft transition"
           style={{ border: "1px solid rgba(255,255,255,0.1)" }}
         >
           <LogOut size={18} />
@@ -334,98 +334,98 @@ const AdminDashboard = () => {
           <div
             className="rounded-xl p-5"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
-            <div className="text-sm text-slate-400">Total tenants</div>
+            <div className="text-sm text-muted">Total tenants</div>
             <div className="flex items-center justify-between mt-2">
               <div>
                 <div className="text-2xl font-bold">{tenants.length}</div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                   {tenants.filter((t) => t.is_active).length} active ·{" "}
                   {tenants.filter((t) => !t.is_active).length} inactive
                 </div>
               </div>
-              <div className="text-green-400 text-sm">+6.4%</div>
+              <div className="text-success text-sm">+6.4%</div>
             </div>
           </div>
 
           <div
             className="rounded-xl p-5"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
-            <div className="text-sm text-slate-400">Avg. platform uptime</div>
+            <div className="text-sm text-muted">Avg. platform uptime</div>
             <div className="flex items-center justify-between mt-2">
               <div>
                 <div className="text-2xl font-bold">99.94%</div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                   Last 30 days · 3 minor incidents
                 </div>
               </div>
-              <div className="text-green-400 text-sm">+2.1%</div>
+              <div className="text-success text-sm">+2.1%</div>
             </div>
           </div>
 
           <div
             className="rounded-xl p-5"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
-            <div className="text-sm text-slate-400">
+            <div className="text-sm text-muted">
               Monthly recurring revenue
             </div>
             <div className="flex items-center justify-between mt-2">
               <div>
                 <div className="text-2xl font-bold">₹8.6L</div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                   ₹82K pending across 14 invoices
                 </div>
               </div>
-              <div className="text-green-400 text-sm">+9.8%</div>
+              <div className="text-success text-sm">+9.8%</div>
             </div>
           </div>
 
           <div
             className="rounded-xl p-5"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
-            <div className="text-sm text-slate-400">Total storage used</div>
+            <div className="text-sm text-muted">Total storage used</div>
             <div className="flex items-center justify-between mt-2">
               <div>
                 <div className="text-2xl font-bold">2.4/5 TB</div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                   6 tenants above 80% quota
                 </div>
               </div>
-              <div className="text-red-400 text-sm">-4.2%</div>
+              <div className="text-danger text-sm">-4.2%</div>
             </div>
           </div>
 
           <div
             className="rounded-xl p-5"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
-            <div className="text-sm text-slate-400">Open support tickets</div>
+            <div className="text-sm text-muted">Open support tickets</div>
             <div className="flex items-center justify-between mt-2">
               <div>
                 <div className="text-2xl font-bold">7</div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                   2 flagged high priority
                 </div>
               </div>
-              <div className="text-red-300 text-sm">-3 today</div>
+              <div className="text-danger text-sm">-3 today</div>
             </div>
           </div>
         </div>
@@ -436,24 +436,24 @@ const AdminDashboard = () => {
             <div
               className="rounded-xl p-6"
               style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-card)",
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-default)",
               }}
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold">Recent tenants</h2>
-                <div className="text-sm text-slate-400">View all</div>
+                <div className="text-sm text-muted">View all</div>
               </div>
 
               <div className="space-y-3">
                 {loading ? (
                   <div className="flex justify-center py-12">
-                    <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
                   </div>
                 ) : tenants.length === 0 ? (
                   <div className="text-center py-12">
                     <Building2 size={48} className="mx-auto mb-4 opacity-50" />
-                    <p style={{ color: "var(--text-2)" }}>
+                    <p style={{ color: "var(--text-muted)" }}>
                       No tenants created yet
                     </p>
                   </div>
@@ -461,7 +461,7 @@ const AdminDashboard = () => {
                   <div className="overflow-hidden rounded-lg">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="text-sm text-slate-400">
+                        <tr className="text-sm text-muted">
                           <th className="py-3 px-4">Tenant</th>
                           <th className="py-3 px-4">Plan</th>
                           <th className="py-3 px-4">Storage</th>
@@ -477,7 +477,7 @@ const AdminDashboard = () => {
                           >
                             <td className="py-4 px-4 align-top">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-md bg-slate-700 flex items-center justify-center text-sm font-bold text-white">
+                                <div className="w-10 h-10 rounded-md bg-subtle flex items-center justify-center text-sm font-bold text-primary">
                                   {t.name
                                     ?.split(" ")
                                     .map((s) => s[0])
@@ -487,32 +487,32 @@ const AdminDashboard = () => {
                                 </div>
                                 <div>
                                   <div className="font-semibold">{t.name}</div>
-                                  <div className="text-xs text-slate-400">
+                                  <div className="text-xs text-muted">
                                     {t.email}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="py-4 px-4 align-top">
-                              <div className="text-sm bg-slate-800 px-3 py-1 rounded-full inline-block">
+                              <div className="text-sm bg-subtle px-3 py-1 rounded-full inline-block">
                                 {t.plan || (t.is_trial ? "Trial" : "Pro")}
                               </div>
                             </td>
                             <td className="py-4 px-4 align-top">
                               <div className="w-48">
-                                <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                                <div className="h-2 rounded-full bg-subtle overflow-hidden">
                                   <div
                                     style={{
                                       width: `${t.storage_used_percent || Math.floor(Math.random() * 80)}%`,
                                       background:
                                         t.storage_used_percent > 80
-                                          ? "#ef4444"
-                                          : "#10b981",
+                                          ? "var(--danger)"
+                                          : "var(--success-text)",
                                       height: "100%",
                                     }}
                                   />
                                 </div>
-                                <div className="text-xs text-slate-400 mt-1">
+                                <div className="text-xs text-muted mt-1">
                                   {t.storage_used_percent ||
                                     Math.floor(Math.random() * 80)}
                                   %
@@ -526,13 +526,13 @@ const AdminDashboard = () => {
                                   background: t.is_active
                                     ? "rgba(16,185,129,0.12)"
                                     : "rgba(239,68,68,0.12)",
-                                  color: t.is_active ? "#10b981" : "#ef4444",
+                                  color: t.is_active ? "var(--success-text)" : "var(--danger)",
                                 }}
                               >
                                 {t.is_active ? "Active" : "Inactive"}
                               </span>
                             </td>
-                            <td className="py-4 px-4 align-top text-sm text-slate-400">
+                            <td className="py-4 px-4 align-top text-sm text-muted">
                               {new Date(t.created_at).toLocaleDateString()}
                             </td>
                           </tr>
@@ -549,8 +549,8 @@ const AdminDashboard = () => {
             <div
               className="rounded-xl p-6 mb-6"
               style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-card)",
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-default)",
               }}
             >
               <h3 className="text-lg font-bold mb-3">Platform pulse</h3>
@@ -561,13 +561,13 @@ const AdminDashboard = () => {
                     <path
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       fill="none"
-                      stroke="#0f172a"
+                      stroke="var(--accent)"
                       strokeWidth="6"
                     />
                     <path
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831"
                       fill="none"
-                      stroke="#6366f1"
+                      stroke="var(--accent)"
                       strokeWidth="6"
                       strokeDasharray="89,100"
                       strokeLinecap="round"
@@ -575,26 +575,26 @@ const AdminDashboard = () => {
                   </svg>
                   <div className="absolute text-center">
                     <div className="text-2xl font-bold">89</div>
-                    <div className="text-xs text-slate-400">Health score</div>
+                    <div className="text-xs text-muted">Health score</div>
                   </div>
                 </div>
                 <div className="flex-1">
-                  <ul className="space-y-2 text-sm text-slate-300">
+                  <ul className="space-y-2 text-sm text-muted">
                     <li>
                       Uptime & performance{" "}
-                      <span className="float-right text-slate-200">96</span>
+                      <span className="float-right text-primary">96</span>
                     </li>
                     <li>
                       Billing health{" "}
-                      <span className="float-right text-slate-200">91</span>
+                      <span className="float-right text-primary">91</span>
                     </li>
                     <li>
                       Storage headroom{" "}
-                      <span className="float-right text-slate-200">78</span>
+                      <span className="float-right text-primary">78</span>
                     </li>
                     <li>
                       Support responsiveness{" "}
-                      <span className="float-right text-slate-200">88</span>
+                      <span className="float-right text-primary">88</span>
                     </li>
                   </ul>
                 </div>
@@ -606,20 +606,20 @@ const AdminDashboard = () => {
               <div
                 className="rounded-xl p-6"
                 style={{
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border-card)",
+                  background: "var(--bg-surface)",
+                  border: "1px solid var(--border-default)",
                 }}
               >
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2
                       className="text-xl font-bold"
-                      style={{ color: "var(--text-1)" }}
+                      style={{ color: "var(--text-primary)" }}
                     >
                       {editingTenant ? "Edit Tenant" : "Create New Tenant"}
                     </h2>
                     {editingTenant && (
-                      <p className="text-sm text-slate-400">
+                      <p className="text-sm text-muted">
                         Database: {editingTenant.database_name}
                       </p>
                     )}
@@ -627,14 +627,14 @@ const AdminDashboard = () => {
                   {editingTenant && (
                     <button
                       onClick={handleCancelEdit}
-                      className="px-3 py-1 rounded-lg bg-slate-700 text-sm text-slate-200 hover:bg-slate-600 transition"
+                      className="px-3 py-1 rounded-lg bg-subtle text-sm text-primary hover:bg-selected transition"
                     >
                       Cancel
                     </button>
                   )}
                 </div>
                 {error && (
-                  <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+                  <div className="mb-4 p-3 rounded-lg bg-danger-soft border border-danger text-sm text-danger">
                     {error}
                   </div>
                 )}
@@ -652,9 +652,9 @@ const AdminDashboard = () => {
                       })
                     }
                     placeholder="School name"
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                     style={{
-                      background: "#1e293b",
+                      background: "var(--accent-soft)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   />
@@ -665,9 +665,9 @@ const AdminDashboard = () => {
                       setFormData({ ...formData, email: e.target.value })
                     }
                     placeholder="admin@school.local"
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                     style={{
-                      background: "#1e293b",
+                      background: "var(--accent-soft)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   />
@@ -682,9 +682,9 @@ const AdminDashboard = () => {
                         })
                       }
                       placeholder="slug"
-                      className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                      className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                       style={{
-                        background: "#1e293b",
+                        background: "var(--accent-soft)",
                         border: "1px solid rgba(255,255,255,0.08)",
                       }}
                     />
@@ -700,15 +700,15 @@ const AdminDashboard = () => {
                         })
                       }
                       placeholder="database_name"
-                      className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                      className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                       style={{
-                        background: "#1e293b",
+                        background: "var(--accent-soft)",
                         border: "1px solid rgba(255,255,255,0.08)",
                       }}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">
+                    <label className="block text-xs text-muted mb-1">
                       Password
                     </label>
                     <div className="relative">
@@ -719,9 +719,9 @@ const AdminDashboard = () => {
                           setFormData({ ...formData, password: e.target.value })
                         }
                         placeholder="Min 6 characters"
-                        className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none pr-10"
+                        className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none pr-10"
                         style={{
-                          background: "#1e293b",
+                          background: "var(--accent-soft)",
                           border: "1px solid rgba(255,255,255,0.08)",
                         }}
                       />
@@ -740,7 +740,7 @@ const AdminDashboard = () => {
                       </button>
                     </div>
                     {editingTenant && (
-                      <p className="text-xs mt-2" style={{ color: "#94a3b8" }}>
+                      <p className="text-xs mt-2" style={{ color: "var(--accent)" }}>
                         Leave password blank to keep current tenant password.
                       </p>
                     )}
@@ -763,7 +763,7 @@ const AdminDashboard = () => {
                       <button
                         type="button"
                         onClick={handleCancelEdit}
-                        className="px-4 py-2 rounded-lg bg-slate-700"
+                        className="px-4 py-2 rounded-lg bg-subtle"
                       >
                         Cancel
                       </button>
@@ -777,18 +777,18 @@ const AdminDashboard = () => {
               <div
                 className="rounded-xl p-4 mt-4"
                 style={{
-                  background: "#0f172a",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
-                <div className="text-sm text-slate-300">Tenant Created</div>
-                <div className="text-xs text-slate-400 mt-2">
+                <div className="text-sm text-muted">Tenant Created</div>
+                <div className="text-xs text-muted mt-2">
                   Slug: {createdInfo.slug}
                 </div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                   Email: {createdInfo.email}
                 </div>
-                <div className="text-xs text-slate-400 mt-1">
+                <div className="text-xs text-muted mt-1">
                   Password:{" "}
                   <span className="ml-2">
                     {showCreatedPasswordDashboard
@@ -821,7 +821,7 @@ const AdminDashboard = () => {
                   }}
                   className="mt-3 px-3 py-2 rounded-lg text-sm"
                   style={{
-                    background: "#1e293b",
+                    background: "var(--accent-soft)",
                     border: "1px solid rgba(255,255,255,0.08)",
                   }}
                 >
@@ -835,26 +835,26 @@ const AdminDashboard = () => {
 
       {/* First Confirmation Modal - Type "delete" */}
       {showDeleteConfirmModal && permanentDeleteTenant && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center z-50">
           <div
             className="rounded-xl p-6 max-w-md w-full mx-4"
             style={{
-              background: "#0f172a",
+              background: "var(--accent-soft)",
               border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
             <div className="flex items-start gap-3 mb-4">
               <AlertTriangle
                 size={24}
-                className="text-orange-500 shrink-0 mt-1"
+                className="text-warning shrink-0 mt-1"
               />
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-primary">
                   Confirm Permanent Deletion
                 </h3>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-sm text-muted mt-1">
                   This will permanently delete the tenant{" "}
-                  <span className="font-semibold text-red-300">
+                  <span className="font-semibold text-danger">
                     {permanentDeleteTenant.name}
                   </span>{" "}
                   and its database.
@@ -865,12 +865,12 @@ const AdminDashboard = () => {
             <div
               className="mb-4 p-3 rounded-lg"
               style={{
-                background: "#1e293b",
+                background: "var(--accent-soft)",
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              <label className="block text-sm text-slate-400 mb-2">
-                Type <span className="font-bold text-white">"delete"</span> to
+              <label className="block text-sm text-muted mb-2">
+                Type <span className="font-bold text-primary">"delete"</span> to
                 confirm:
               </label>
               <input
@@ -879,9 +879,9 @@ const AdminDashboard = () => {
                 onChange={(e) => setDeleteConfirmationText(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleConfirmDelete()}
                 placeholder='Type "delete"'
-                className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                 style={{
-                  background: "#0f172a",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
                 autoFocus
@@ -893,9 +893,9 @@ const AdminDashboard = () => {
                 onClick={handleCancelPermanentDelete}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium"
                 style={{
-                  background: "#1e293b",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  color: "#cbd5e1",
+                  color: "var(--text-primary)",
                 }}
               >
                 Cancel
@@ -903,7 +903,7 @@ const AdminDashboard = () => {
               <button
                 onClick={handleConfirmDelete}
                 disabled={deleteConfirmationText !== "delete"}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-primary"
                 style={{
                   background:
                     deleteConfirmationText === "delete"
@@ -926,51 +926,51 @@ const AdminDashboard = () => {
 
       {/* Second Confirmation Modal - Final Warning */}
       {showFinalConfirmModal && permanentDeleteTenant && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center z-50">
           <div
             className="rounded-xl p-6 max-w-md w-full mx-4"
             style={{
-              background: "#0f172a",
+              background: "var(--accent-soft)",
               border: "2px solid rgba(220,38,38,0.5)",
             }}
           >
             <div className="flex items-start gap-3 mb-4">
-              <AlertTriangle size={28} className="text-red-500 shrink-0 mt-1" />
+              <AlertTriangle size={28} className="text-danger shrink-0 mt-1" />
               <div>
-                <h3 className="text-lg font-bold text-red-400">
+                <h3 className="text-lg font-bold text-danger">
                   Final Warning
                 </h3>
-                <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                <p className="text-sm text-muted mt-2 leading-relaxed">
                   You are about to{" "}
                   <span className="font-bold">permanently delete</span> the
                   tenant{" "}
-                  <span className="font-semibold text-red-300">
+                  <span className="font-semibold text-danger">
                     {permanentDeleteTenant.name}
                   </span>
                   .
                 </p>
-                <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                <p className="text-sm text-muted mt-2 leading-relaxed">
                   This action will:
                 </p>
-                <ul className="text-sm text-slate-300 mt-2 ml-4 space-y-1">
+                <ul className="text-sm text-muted mt-2 ml-4 space-y-1">
                   <li>
-                    • <span className="text-red-300">Drop the database</span>{" "}
+                    • <span className="text-danger">Drop the database</span>{" "}
                     {permanentDeleteTenant.database_name}
                   </li>
                   <li>
                     •{" "}
-                    <span className="text-red-300">Delete all tenant data</span>{" "}
+                    <span className="text-danger">Delete all tenant data</span>{" "}
                     permanently
                   </li>
                   <li>
                     •{" "}
-                    <span className="text-red-300">
+                    <span className="text-danger">
                       Remove the tenant record
                     </span>{" "}
                     from the system
                   </li>
                   <li>
-                    • <span className="text-red-300">Cannot be undone</span>
+                    • <span className="text-danger">Cannot be undone</span>
                   </li>
                 </ul>
               </div>
@@ -981,9 +981,9 @@ const AdminDashboard = () => {
                 onClick={handleCancelPermanentDelete}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium"
                 style={{
-                  background: "#1e293b",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  color: "#cbd5e1",
+                  color: "var(--text-primary)",
                 }}
               >
                 Cancel
@@ -991,7 +991,7 @@ const AdminDashboard = () => {
               <button
                 onClick={handleExecutePermanentDelete}
                 disabled={deletingPermanently}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-primary flex items-center justify-center gap-2"
                 style={{
                   background: "rgba(220,38,38,0.9)",
                   border: "1px solid rgba(220,38,38,0.7)",
@@ -1001,7 +1001,7 @@ const AdminDashboard = () => {
               >
                 {deletingPermanently ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-input/30 border-t-white rounded-full animate-spin" />
                     Deleting...
                   </>
                 ) : (

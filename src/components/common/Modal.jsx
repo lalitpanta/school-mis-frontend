@@ -46,18 +46,18 @@ const Modal = ({ isOpen, onClose, title, children, size = "md", footer }) => {
       }}
     >
       <div
-        className={`app-modal-surface relative w-full ${sizeMap[size]} flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl border border-slate-700/70 shadow-xl`}
+        className={`app-modal-surface relative w-full ${sizeMap[size]} flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl border border-default shadow-xl`}
       >
         {title && (
-          <div className="flex items-start justify-between gap-4 border-b border-slate-700/70 px-6 py-4">
+          <div className="flex items-start justify-between gap-4 border-b border-default px-6 py-4">
             <div className="min-w-0">
-              <h2 className="text-base font-semibold text-slate-100">
+              <h2 className="text-base font-semibold text-primary">
                 {title}
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 text-slate-300 transition hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-200"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-default bg-surface text-muted transition hover:border-warning hover:bg-warning-soft hover:text-warning"
               aria-label="Close modal"
             >
               <X size={17} />
@@ -73,7 +73,7 @@ const Modal = ({ isOpen, onClose, title, children, size = "md", footer }) => {
         </div>
 
         {footer && (
-          <div className="flex items-center justify-end gap-3 border-t border-slate-700/70 bg-slate-950/40 px-6 py-4 shrink-0">
+          <div className="flex items-center justify-end gap-3 border-t border-default bg-surface px-6 py-4 shrink-0">
             {footer}
           </div>
         )}

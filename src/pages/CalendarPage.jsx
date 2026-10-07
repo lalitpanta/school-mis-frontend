@@ -55,10 +55,10 @@ import { dayColor } from "../utils/calendarStyles";
 
 /* ─── Legend dot ─────────────────────────────────────── */
 const LEGEND = [
-  { label: "School Day", cls: "bg-emerald-600" },
-  { label: "Holiday", cls: "bg-rose-600" },
-  { label: "Exam", cls: "bg-amber-500" },
-  { label: "Other", cls: "bg-indigo-600" },
+  { label: "School Day", cls: "bg-success" },
+  { label: "Holiday", cls: "bg-danger" },
+  { label: "Exam", cls: "bg-warning" },
+  { label: "Other", cls: "bg-accent" },
 ];
 
 /* ═════════════════════════════════════════════════════════ */
@@ -340,7 +340,7 @@ const CalendarPage = () => {
         <button
           onClick={() => fetchCalendarDays(matchedMonth?.id ?? null)}
           disabled={loadingDays}
-          className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium disabled:opacity-40"
+          className="flex items-center gap-1.5 text-xs text-accent hover:text-accent transition-colors font-medium disabled:opacity-40"
         >
           {loadingDays ? (
             <Loader2 size={13} className="animate-spin" />
@@ -356,13 +356,13 @@ const CalendarPage = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setView(prevBsMonth(view.year, view.month))}
-            className="p-1.5 rounded-lg text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)] transition-colors"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
 
           <div className="text-center min-w-[180px]">
-            <p className="text-base font-bold text-[var(--text-1)]">
+            <p className="text-base font-bold text-[var(--text-primary)]">
               {BS_MONTHS[view.month - 1]} {view.year}
             </p>
             <p className="mis-helper">{adLabel}</p>
@@ -370,28 +370,28 @@ const CalendarPage = () => {
 
           <button
             onClick={() => setView(nextBsMonth(view.year, view.month))}
-            className="p-1.5 rounded-lg text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)] transition-colors"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
           >
             <ChevronRight size={16} />
           </button>
 
           <button
             onClick={goToday}
-            className="px-3 py-1 text-sm font-semibold border border-[var(--border-card)] text-[var(--text-2)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors ml-1"
+            className="px-3 py-1 text-sm font-semibold border border-[var(--border-default)] text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] rounded-lg transition-colors ml-1"
           >
             Today
           </button>
         </div>
 
         {/* B.S / A.D toggles */}
-        <div className="flex items-center gap-4 bg-[var(--bg-surface)] p-1 rounded-lg border border-[var(--border-dim)]">
+        <div className="flex items-center gap-4 bg-[var(--bg-surface)] p-1 rounded-lg border border-[var(--border-default)]">
           <button
             onClick={() => updateSetting("calendar_type", "BS")}
             className={clsx(
               "px-3 py-1 rounded-md text-[10px] font-bold transition-all",
               calendarType === "BS"
-                ? "bg-indigo-600 text-white"
-                : "text-[var(--text-2)] hover:text-[var(--text-1)]",
+                ? "bg-accent text-primary"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
           >
             B.S Mode
@@ -401,13 +401,13 @@ const CalendarPage = () => {
             className={clsx(
               "px-3 py-1 rounded-md text-[10px] font-bold transition-all",
               calendarType === "AD"
-                ? "bg-indigo-600 text-white"
-                : "text-[var(--text-2)] hover:text-[var(--text-1)]",
+                ? "bg-accent text-primary"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
           >
             A.D Mode
           </button>
-          <div className="w-px h-4 bg-[var(--border-card)] mx-1" />
+          <div className="w-px h-4 bg-[var(--border-default)] mx-1" />
           <div className="flex items-center gap-3 pr-2">
             {[
               ["showBs", "BS", showBs, setShowBs],
@@ -415,13 +415,13 @@ const CalendarPage = () => {
             ].map(([id, label, val, setter]) => (
               <label
                 key={id}
-                className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
+                className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <input
                   type="checkbox"
                   checked={val}
                   onChange={(e) => setter(e.target.checked)}
-                  className="accent-indigo-500 w-3 h-3"
+                  className="accent-[var(--accent)] w-3 h-3"
                 />
                 {label}
               </label>
@@ -431,15 +431,15 @@ const CalendarPage = () => {
       </div>
 
       {/* ── Info / Status bar ── */}
-      <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+      <div className="flex items-center gap-3 text-xs text-muted flex-wrap">
         {matchedMonth ? (
           <>
-            <span className="flex items-center gap-1 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+            <span className="flex items-center gap-1 text-success">
+              <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
               Live data — {matchedMonth.month_name}
             </span>
             {loadingDays && (
-              <Loader2 size={11} className="animate-spin text-slate-500" />
+              <Loader2 size={11} className="animate-spin text-muted" />
             )}
             {Object.entries(stats).map(([type, count]) => {
               const s = dayColor(type);
@@ -453,7 +453,7 @@ const CalendarPage = () => {
               );
             })}
             {Object.keys(dayTypeMap).length === 0 && !loadingDays && (
-              <span className="px-2.5 py-1 rounded-full border border-slate-700 text-slate-500 bg-slate-800/60">
+              <span className="px-2.5 py-1 rounded-full border border-default text-muted bg-subtle">
                 No day types configured — set them in Settings → Calendar
               </span>
             )}
@@ -469,7 +469,7 @@ const CalendarPage = () => {
           </span>
         )}
         {apiError && (
-          <span className="text-red-400 flex items-center gap-1">
+          <span className="text-danger flex items-center gap-1">
             <AlertCircle size={11} /> {apiError}
           </span>
         )}
@@ -480,7 +480,7 @@ const CalendarPage = () => {
         {LEGEND.map(({ label, cls }) => (
           <div
             key={label}
-            className="flex items-center gap-1.5 text-[11px] text-slate-400"
+            className="flex items-center gap-1.5 text-[11px] text-muted"
           >
             <span className={`w-2.5 h-2.5 rounded-sm ${cls}`} />
             {label}
@@ -498,7 +498,7 @@ const CalendarPage = () => {
           {DAYS.map((d) => (
             <div
               key={d}
-              className="py-2.5 text-center text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase"
+              className="py-2.5 text-center text-[10px] font-black text-muted tracking-[0.2em] uppercase"
             >
               {d}
             </div>
@@ -528,9 +528,9 @@ const CalendarPage = () => {
                   current &&
                     (dayType
                       ? s.cell
-                      : "bg-slate-800/40 border border-slate-700/50 hover:bg-slate-700/60"),
+                      : "bg-subtle border border-default hover:bg-subtle"),
                   today &&
-                    "ring-4 ring-indigo-500 ring-offset-4 ring-offset-[var(--bg-main)] z-10",
+                    "ring-4 ring-focus ring-offset-4 ring-offset-[var(--bg-page)] z-10",
                 )}
               >
                 {/* Dates row */}
@@ -540,17 +540,17 @@ const CalendarPage = () => {
                       className={clsx(
                         "text-2xl font-black leading-none",
                         today
-                          ? "text-indigo-400"
+                          ? "text-accent"
                           : current
                             ? s.num
-                            : "text-slate-700",
+                            : "text-muted",
                       )}
                     >
                       {bsDay}
                     </span>
                   )}
                   {showAd && adDate && (
-                    <span className="text-[9px] font-medium text-slate-500 leading-none text-right">
+                    <span className="text-[9px] font-medium text-muted leading-none text-right">
                       {AD_MONTHS[adDate.getMonth()]}
                       <br />
                       {adDate.getDate()}
@@ -572,7 +572,7 @@ const CalendarPage = () => {
 
                 {/* Default label for untyped days */}
                 {current && !dayType && !loadingDays && matchedMonth && (
-                  <span className="text-[10px] text-[var(--text-2)] mt-auto opacity-0 hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] text-[var(--text-muted)] mt-auto opacity-0 hover:opacity-100 transition-opacity">
                     Click to assign
                   </span>
                 )}
@@ -590,7 +590,7 @@ const CalendarPage = () => {
         >
           <div className="mis-card w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
             <h3 className="mis-section-title mb-1">Assign Day Type</h3>
-            <p className="text-sm text-slate-400 mb-5">
+            <p className="text-sm text-muted mb-5">
               Select an event or label for Day {selectedDay.dayNumber} of{" "}
               {BS_MONTHS[view.month - 1]}
             </p>
@@ -616,7 +616,7 @@ const CalendarPage = () => {
                     ))}
                 </select>
                 {(!availableDayTypes || availableDayTypes.length === 0) && (
-                  <p className="text-xs text-amber-500 mt-2">
+                  <p className="text-xs text-warning mt-2">
                     No day types available. Please add them in Settings.
                   </p>
                 )}
@@ -626,14 +626,14 @@ const CalendarPage = () => {
                 <button
                   onClick={() => setSelectedDay(null)}
                   disabled={savingDay}
-                  className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl border border-[var(--border-card)] text-[var(--text-1)] hover:bg-[var(--bg-hover)] transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl border border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveDayType}
                   disabled={!selectedDay.selectedTypeId || savingDay}
-                  className="flex-1 flex justify-center items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                  className="flex-1 flex justify-center items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl bg-accent hover:bg-accent text-primary transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
                 >
                   {savingDay ? (
                     <Loader2 size={16} className="animate-spin" />

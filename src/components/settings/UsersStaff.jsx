@@ -391,26 +391,26 @@ const UsersStaff = () => {
 
   return (
     <div
-      className={`min-w-0 rounded-2xl border border-slate-700/60 bg-slate-800/60 p-4 ${isEditingUser ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      className={`min-w-0 rounded-2xl border border-default bg-subtle p-4 ${isEditingUser ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
     >
       <div
         className={`min-w-0 ${isEditingUser ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
       {/* Header */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-2">Users & Staff</h2>
-        <p className="text-sm text-slate-400">
+        <h2 className="text-lg font-semibold text-primary mb-2">Users & Staff</h2>
+        <p className="text-sm text-muted">
           Create users, assign roles, and send secure portal setup links
         </p>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex justify-between items-center">
-          <span className="text-sm text-red-300">{error}</span>
+        <div className="p-3 bg-danger-soft border border-danger rounded-lg flex justify-between items-center">
+          <span className="text-sm text-danger">{error}</span>
           <button
             onClick={() => setError(null)}
-            className="text-red-400 hover:text-red-300"
+            className="text-danger hover:text-danger"
           >
             <X size={16} />
           </button>
@@ -420,25 +420,25 @@ const UsersStaff = () => {
       {notice && (
         <div
           role="status"
-          className={`rounded-lg border px-3 py-2 text-sm ${notice.success ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : "border-amber-500/30 bg-amber-500/10 text-amber-200"}`}
+          className={`rounded-lg border px-3 py-2 text-sm ${notice.success ? "border-success bg-success text-success" : "border-warning bg-warning-soft text-warning"}`}
         >
           {notice.message}
         </div>
       )}
 
       {/* Search and Create */}
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-default pb-3">
         <input
           type="text"
           placeholder="Search by name, email, or phone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           aria-label="Search users and staff"
-          className="min-w-48 flex-1 rounded-lg border border-slate-600/50 bg-slate-700/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="min-w-48 flex-1 rounded-lg border border-default bg-subtle px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-focus"
         />
         <button
           onClick={openCreateModal}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
+          className="bg-accent hover:bg-accent text-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
         >
           <Plus size={16} />
           Create User
@@ -446,47 +446,47 @@ const UsersStaff = () => {
       </div>
 
       {/* Users Table */}
-      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
         {filteredUsers.length === 0 ? (
-          <div className="p-6 text-center text-slate-400 bg-slate-800/30">
+          <div className="p-6 text-center text-muted bg-subtle">
             {loading
               ? "Loading users..."
               : "No users found. Create one to get started!"}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-slate-800/60 border-b border-slate-700/60">
+            <thead className="bg-subtle border-b border-default">
               <tr>
-                <th className="px-4 py-3 text-left text-slate-300 font-medium">
+                <th className="px-4 py-3 text-left text-muted font-medium">
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-slate-300 font-medium">
+                <th className="px-4 py-3 text-left text-muted font-medium">
                   Phone
                 </th>
-                <th className="px-4 py-3 text-left text-slate-300 font-medium">
+                <th className="px-4 py-3 text-left text-muted font-medium">
                   Roles
                 </th>
-                <th className="px-4 py-3 text-center text-slate-300 font-medium">
+                <th className="px-4 py-3 text-center text-muted font-medium">
                   Status
                 </th>
-                <th className="px-4 py-3 text-right text-slate-300 font-medium">
+                <th className="px-4 py-3 text-right text-muted font-medium">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/60">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-800/40 transition">
+                <tr key={user.id} className="hover:bg-subtle transition">
                   <td className="px-4 py-3">
                     <div>
-                      <span className="font-medium text-white">
+                      <span className="font-medium text-primary">
                         {user.name || "—"}
                       </span>
-                      <div className="text-xs text-slate-400">{user.email}</div>
+                      <div className="text-xs text-muted">{user.email}</div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-300 text-xs">
-                    {user.phone || <span className="text-slate-500">—</span>}
+                  <td className="px-4 py-3 text-muted text-xs">
+                    {user.phone || <span className="text-muted">—</span>}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
@@ -494,13 +494,13 @@ const UsersStaff = () => {
                         user.roles.map((role) => (
                           <span
                             key={role.id}
-                            className="inline-block bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full text-xs font-medium"
+                            className="inline-block bg-accent-soft text-accent px-2.5 py-1 rounded-full text-xs font-medium"
                           >
                             {role.role_name}
                           </span>
                         ))
                       ) : (
-                        <span className="text-slate-500 italic text-xs">
+                        <span className="text-muted italic text-xs">
                           No roles assigned
                         </span>
                       )}
@@ -510,8 +510,8 @@ const UsersStaff = () => {
                     <span
                       className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${
                         user.is_active
-                          ? "bg-green-500/20 text-green-300"
-                          : "bg-red-500/20 text-red-300"
+                          ? "bg-success text-success"
+                          : "bg-danger-soft text-danger"
                       }`}
                     >
                       {user.is_active ? "Active" : "Inactive"}
@@ -521,7 +521,7 @@ const UsersStaff = () => {
                     <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEditModal(user)}
-                      className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                      className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                       title={`Edit ${user.name || user.email}`}
                       aria-label={`Edit ${user.name || user.email}`}
                     >
@@ -529,7 +529,7 @@ const UsersStaff = () => {
                     </button>
                     <button
                       onClick={() => setDeleteConfirm(user.id)}
-                      className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                      className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                       title={`Delete ${user.name || user.email}`}
                       aria-label={`Delete ${user.name || user.email}`}
                     >
@@ -562,7 +562,7 @@ const UsersStaff = () => {
           >
             {/* User Type - AT THE TOP */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-3">
+              <label className="block text-sm font-medium text-primary mb-3">
                 User Type
               </label>
               <div className="flex flex-wrap gap-3">
@@ -606,7 +606,7 @@ const UsersStaff = () => {
                       }}
                       className="w-4 h-4 cursor-pointer"
                     />
-                    <span className="text-sm text-slate-200">{type.label}</span>
+                    <span className="text-sm text-primary">{type.label}</span>
                   </label>
                 ))}
               </div>
@@ -614,7 +614,7 @@ const UsersStaff = () => {
 
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-sm font-medium text-primary mb-2">
                 Full Name
               </label>
               <input
@@ -629,13 +629,13 @@ const UsersStaff = () => {
                   formData.user_type === "teacher" ||
                   formData.user_type === "student"
                 }
-                className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
+                className={`w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-subtle text-muted cursor-not-allowed" : ""}`}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-sm font-medium text-primary mb-2">
                 Email *
               </label>
               <input
@@ -650,17 +650,17 @@ const UsersStaff = () => {
                   formData.user_type === "teacher" ||
                   formData.user_type === "student"
                 }
-                className={`w-full px-3 py-2 bg-slate-700/40 border rounded-lg text-white text-sm focus:outline-none focus:ring-2 ${
+                className={`w-full px-3 py-2 bg-subtle border rounded-lg text-primary text-sm focus:outline-none focus:ring-2 ${
                   formErrors.email
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-slate-600/50 focus:ring-indigo-500"
-                } ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
+                    ? "border-danger focus:ring-focus"
+                    : "border-default focus:ring-focus"
+                } ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-subtle text-muted cursor-not-allowed" : ""}`}
               />
               {formErrors.email && (
-                <p className="text-red-400 text-sm mt-1">{formErrors.email}</p>
+                <p className="text-danger text-sm mt-1">{formErrors.email}</p>
               )}
               {selectedStudent && (
-                <p className="text-xs text-emerald-300 mt-1">
+                <p className="text-xs text-success mt-1">
                   Student portal login will use the linked email:{" "}
                   {selectedStudent.student_mail ||
                     selectedStudent.school_email ||
@@ -671,7 +671,7 @@ const UsersStaff = () => {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-sm font-medium text-primary mb-2">
                 Phone
               </label>
               <input
@@ -686,13 +686,13 @@ const UsersStaff = () => {
                   formData.user_type === "teacher" ||
                   formData.user_type === "student"
                 }
-                className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-slate-800 text-slate-500 cursor-not-allowed" : ""}`}
+                className={`w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus ${formData.user_type === "teacher" || formData.user_type === "student" ? "bg-subtle text-muted cursor-not-allowed" : ""}`}
               />
             </div>
 
             {formData.user_type === "teacher" && (
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
+                <label className="block text-sm font-medium text-primary mb-2">
                   Select Teacher
                 </label>
                 <select
@@ -723,7 +723,7 @@ const UsersStaff = () => {
                     }
                     setFormData(nextState);
                   }}
-                  className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus"
                 >
                   <option value="">Select teacher</option>
                   {teachers.map((teacher) => (
@@ -734,7 +734,7 @@ const UsersStaff = () => {
                   ))}
                 </select>
                 {formErrors.teacher_id && (
-                  <p className="text-red-400 text-sm mt-1">
+                  <p className="text-danger text-sm mt-1">
                     {formErrors.teacher_id}
                   </p>
                 )}
@@ -745,7 +745,7 @@ const UsersStaff = () => {
             {formData.user_type === "student" && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-primary mb-2">
                     Select Section
                   </label>
                   <select
@@ -757,7 +757,7 @@ const UsersStaff = () => {
                         student_id: "",
                       })
                     }
-                    className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus"
                   >
                     <option value="">Select section</option>
                     {sections.map((section) => (
@@ -769,7 +769,7 @@ const UsersStaff = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-200 mb-2">
+                  <label className="block text-sm font-medium text-primary mb-2">
                     Select Student
                   </label>
                   <select
@@ -794,7 +794,7 @@ const UsersStaff = () => {
                       }
                       setFormData(nextState);
                     }}
-                    className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus"
                   >
                     <option value="">Select student</option>
                     {students
@@ -810,12 +810,12 @@ const UsersStaff = () => {
                       ))}
                   </select>
                   {formErrors.student_id && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-danger text-sm mt-1">
                       {formErrors.student_id}
                     </p>
                   )}
                   {selectedStudent && (
-                    <p className="text-xs text-emerald-300 mt-2">
+                    <p className="text-xs text-success mt-2">
                       Student access will be created using the student portal
                       login email and the default student permissions.
                     </p>
@@ -827,7 +827,7 @@ const UsersStaff = () => {
             {/* Employee Selection - Only for employee type */}
             {formData.user_type === "employee" && (
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
+                <label className="block text-sm font-medium text-primary mb-2">
                   Select Employee
                 </label>
                 <select
@@ -856,7 +856,7 @@ const UsersStaff = () => {
                     }
                     setFormData(nextState);
                   }}
-                  className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus"
                 >
                   <option value="">Select employee</option>
                   {employees.map((employee) => (
@@ -867,7 +867,7 @@ const UsersStaff = () => {
                   ))}
                 </select>
                 {formErrors.employee_id && (
-                  <p className="text-red-400 text-sm mt-1">
+                  <p className="text-danger text-sm mt-1">
                     {formErrors.employee_id}
                   </p>
                 )}
@@ -876,7 +876,7 @@ const UsersStaff = () => {
 
             {/* New users set their password through the secure email link. */}
             {modalMode === "create" && (
-              <p className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 px-3 py-2 text-xs leading-5 text-slate-400">
+              <p className="rounded-lg border border-accent bg-accent-soft px-3 py-2 text-xs leading-5 text-muted">
                 The user will receive a secure link to set their password and
                 sign in to this school portal.
               </p>
@@ -885,7 +885,7 @@ const UsersStaff = () => {
             {/* Department/Store - Hidden for students */}
             {formData.user_type !== "student" && (
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
+                <label className="block text-sm font-medium text-primary mb-2">
                   Department / Store
                 </label>
                 <select
@@ -900,10 +900,10 @@ const UsersStaff = () => {
                     formData.user_type === "teacher" ||
                     formData.user_type === "employee"
                   }
-                  className={`w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  className={`w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus ${
                     formData.user_type === "teacher" ||
                     formData.user_type === "employee"
-                      ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+                      ? "bg-subtle text-muted cursor-not-allowed"
                       : ""
                   }`}
                 >
@@ -914,7 +914,7 @@ const UsersStaff = () => {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted mt-1">
                   {formData.user_type === "teacher" ||
                   formData.user_type === "employee"
                     ? "Auto-selected from the chosen teacher/employee."
@@ -925,7 +925,7 @@ const UsersStaff = () => {
 
             {/* Authority Mode */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-sm font-medium text-primary mb-2">
                 Authority Mode
               </label>
               <select
@@ -936,7 +936,7 @@ const UsersStaff = () => {
                     authority_mode: e.target.value,
                   })
                 }
-                className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus"
               >
                 <option value="role_access">Use Role Access</option>
                 <option value="direct_access">Direct Access</option>
@@ -945,7 +945,7 @@ const UsersStaff = () => {
 
             {/* Module Access */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-sm font-medium text-primary mb-2">
                 Module Access
               </label>
               {availableModules.length > 0 ? (
@@ -953,7 +953,7 @@ const UsersStaff = () => {
                   {availableModules.map((module) => (
                     <label
                       key={module}
-                      className="flex items-center gap-2 px-3 py-2 bg-slate-700/30 border border-slate-600/40 rounded-lg cursor-pointer hover:bg-slate-700/50 transition"
+                      className="flex items-center gap-2 px-3 py-2 bg-subtle border border-default rounded-lg cursor-pointer hover:bg-subtle transition"
                     >
                       <input
                         type="checkbox"
@@ -976,16 +976,16 @@ const UsersStaff = () => {
                             });
                           }
                         }}
-                        className="w-4 h-4 rounded border-slate-500 text-indigo-600 focus:ring-indigo-500 bg-slate-600"
+                        className="w-4 h-4 rounded border-default text-accent focus:ring-focus bg-selected"
                       />
-                      <span className="text-sm text-slate-300 capitalize">
+                      <span className="text-sm text-muted capitalize">
                         {module}
                       </span>
                     </label>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   No modules available. Please contact your administrator.
                 </p>
               )}
@@ -1001,7 +1001,7 @@ const UsersStaff = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium disabled:bg-slate-600 disabled:cursor-not-allowed transition"
+              className="w-full bg-accent hover:bg-accent text-primary py-2 px-4 rounded-lg font-medium disabled:bg-selected disabled:cursor-not-allowed transition"
             >
               {loading
                 ? "Saving..."
@@ -1021,22 +1021,22 @@ const UsersStaff = () => {
         width="max-w-sm"
       >
         <div className="p-6">
-          <h3 className="text-lg font-bold text-white mb-4">Delete User?</h3>
-          <p className="text-slate-400 mb-6 text-sm">
+          <h3 className="text-lg font-bold text-primary mb-4">Delete User?</h3>
+          <p className="text-muted mb-6 text-sm">
             Are you sure you want to delete this user? This action cannot be
             undone.
           </p>
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setDeleteConfirm(null)}
-              className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
+              className="px-4 py-2 text-sm bg-subtle hover:bg-selected text-primary rounded-lg transition"
             >
               Cancel
             </button>
             <button
               onClick={() => handleDeleteUser(deleteConfirm)}
               disabled={loading}
-              className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:bg-slate-600 transition"
+              className="px-4 py-2 text-sm bg-danger hover:bg-danger text-primary rounded-lg disabled:bg-selected transition"
             >
               {loading ? "Deleting..." : "Delete"}
             </button>

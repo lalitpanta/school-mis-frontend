@@ -144,7 +144,7 @@ const ActiveSessions = () => {
                         {session.ip_address || "IP address unavailable"}
                       </strong>
                       {isCurrent && (
-                        <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
+                        <span className="rounded-full border border-success bg-success px-2 py-0.5 text-[11px] font-semibold text-success">
                           This device
                         </span>
                       )}
@@ -169,7 +169,7 @@ const ActiveSessions = () => {
                       type="button"
                       onClick={() => handleRevoke(session)}
                       disabled={busySessionId === session.session_id}
-                      className="inline-flex shrink-0 items-center justify-center rounded-lg border border-(--border-card) px-4 py-2 text-sm font-semibold text-(--text-1) transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-50"
+                      className="inline-flex shrink-0 items-center justify-center rounded-lg border border-(--border-card) px-4 py-2 text-sm font-semibold text-(--text-1) transition hover:border-danger hover:bg-danger-soft hover:text-danger disabled:opacity-50"
                     >
                       {busySessionId === session.session_id
                         ? "Signing out..."

@@ -87,7 +87,7 @@ const SuperAdminStorage = () => {
               type="text"
               value={form.s3AccessKeyId}
               onChange={(e) => handleSettingChange("s3AccessKeyId", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="AKIAIOSFODNN7EXAMPLE"
             />
           </div>
@@ -97,7 +97,7 @@ const SuperAdminStorage = () => {
               type="password"
               value={form.s3SecretAccessKey}
               onChange={(e) => handleSettingChange("s3SecretAccessKey", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
             />
           </div>
@@ -107,7 +107,7 @@ const SuperAdminStorage = () => {
               type="text"
               value={form.s3BucketName}
               onChange={(e) => handleSettingChange("s3BucketName", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="my-app-storage-bucket"
             />
           </div>
@@ -122,7 +122,7 @@ const SuperAdminStorage = () => {
               type="text"
               value={form.azureStorageAccountName}
               onChange={(e) => handleSettingChange("azureStorageAccountName", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="mystorageaccount"
             />
           </div>
@@ -132,7 +132,7 @@ const SuperAdminStorage = () => {
               type="password"
               value={form.azureStorageAccountKey}
               onChange={(e) => handleSettingChange("azureStorageAccountKey", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="Your Account Key"
             />
           </div>
@@ -142,7 +142,7 @@ const SuperAdminStorage = () => {
               type="text"
               value={form.azureContainerName}
               onChange={(e) => handleSettingChange("azureContainerName", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="my-container"
             />
           </div>
@@ -157,7 +157,7 @@ const SuperAdminStorage = () => {
               type="text"
               value={form.gcpProjectId}
               onChange={(e) => handleSettingChange("gcpProjectId", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="my-gcp-project-id"
             />
           </div>
@@ -167,7 +167,7 @@ const SuperAdminStorage = () => {
               type="email"
               value={form.gcpClientEmail}
               onChange={(e) => handleSettingChange("gcpClientEmail", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="service-account@project.iam.gserviceaccount.com"
             />
           </div>
@@ -177,7 +177,7 @@ const SuperAdminStorage = () => {
               value={form.gcpPrivateKey}
               onChange={(e) => handleSettingChange("gcpPrivateKey", e.target.value)}
               rows={4}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500 font-mono"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent font-mono"
               placeholder="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANB..."
             />
           </div>
@@ -187,7 +187,7 @@ const SuperAdminStorage = () => {
               type="text"
               value={form.gcpBucketName}
               onChange={(e) => handleSettingChange("gcpBucketName", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
               placeholder="my-gcp-bucket"
             />
           </div>
@@ -197,24 +197,24 @@ const SuperAdminStorage = () => {
   };
 
   if (!settingsLoaded || !form) {
-    return <div className="p-8 text-slate-300">Loading storage settings...</div>;
+    return <div className="p-8 text-muted">Loading storage settings...</div>;
   }
 
   return (
     <div
       style={{
-        background: "var(--bg-main)",
+        background: "var(--bg-page)",
         minHeight: "100vh",
-        color: "var(--text-1)",
+        color: "var(--text-primary)",
       }}
       className="p-8"
     >
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Database size={32} className="text-indigo-400" />
+          <Database size={32} className="text-accent" />
           <div>
             <h1 className="text-4xl font-bold">Storage Settings</h1>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted">
               Configure centralized cloud storage providers for system file blobs.
             </p>
           </div>
@@ -223,11 +223,11 @@ const SuperAdminStorage = () => {
 
       <form onSubmit={handleSaveSettings} className="space-y-6">
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Cloud size={20} className="text-indigo-400" />
+            <Cloud size={20} className="text-accent" />
             <h2 className="text-2xl font-semibold">Provider Configuration</h2>
           </div>
           
@@ -236,7 +236,7 @@ const SuperAdminStorage = () => {
             <select
               value={form.storageProvider}
               onChange={(e) => handleSettingChange("storageProvider", e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-indigo-500"
+              className="w-full rounded-lg border border-default bg-surface px-4 py-3 text-sm text-primary outline-none focus:border-accent"
             >
               <option>Amazon S3 — ap-south-1</option>
               <option>Amazon S3 — us-east-1</option>
@@ -251,24 +251,24 @@ const SuperAdminStorage = () => {
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Shield size={20} className="text-indigo-400" />
+            <Shield size={20} className="text-accent" />
             <h2 className="text-2xl font-semibold">Global Storage Policy</h2>
           </div>
           
-          <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 cursor-pointer">
+          <label className="flex items-start gap-3 rounded-xl border border-default bg-surface p-4 cursor-pointer">
             <input
               type="checkbox"
               checked={form.enableGlobalStorage}
               onChange={(e) => handleSettingChange("enableGlobalStorage", e.target.checked)}
-              className="mt-1 h-5 w-5 rounded border-slate-700 bg-slate-800"
+              className="mt-1 h-5 w-5 rounded border-default bg-subtle"
             />
             <div>
-              <p className="font-medium text-slate-100">Enforce Global Storage</p>
-              <p className="text-sm text-slate-400">
+              <p className="font-medium text-primary">Enforce Global Storage</p>
+              <p className="text-sm text-muted">
                 When enabled, all file blobs across the entire system (all tenants and modules) will be saved securely to this configured storage provider.
               </p>
             </div>
@@ -276,30 +276,30 @@ const SuperAdminStorage = () => {
         </div>
 
         <div
-          className="rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-sm"
+          className="rounded-2xl border border-default bg-surface p-6 shadow-sm"
           style={{ backdropFilter: "blur(10px)" }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Server size={20} className="text-indigo-400" />
+            <Server size={20} className="text-accent" />
             <h2 className="text-2xl font-semibold">System Details</h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl bg-slate-950/60 border border-slate-700 p-4">
-              <div className="text-slate-400 text-sm">Status</div>
-              <div className="mt-2 font-medium text-emerald-400 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+            <div className="rounded-2xl bg-surface border border-default p-4">
+              <div className="text-muted text-sm">Status</div>
+              <div className="mt-2 font-medium text-success flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-success inline-block"></span>
                 Ready to Connect
               </div>
-              <div className="text-slate-500 text-sm mt-1">
+              <div className="text-muted text-sm mt-1">
                 Will validate credentials on save.
               </div>
             </div>
-            <div className="rounded-2xl bg-slate-950/60 border border-slate-700 p-4">
-              <div className="text-slate-400 text-sm">Current Active Provider</div>
-              <div className="mt-2 font-medium text-white">
+            <div className="rounded-2xl bg-surface border border-default p-4">
+              <div className="text-muted text-sm">Current Active Provider</div>
+              <div className="mt-2 font-medium text-primary">
                 {form.storageProvider}
               </div>
-              <div className="text-slate-500 text-sm mt-1">
+              <div className="text-muted text-sm mt-1">
                 Affects new uploads immediately.
               </div>
             </div>
@@ -310,7 +310,7 @@ const SuperAdminStorage = () => {
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-primary transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save size={18} />
             {isSaving ? "Saving configuration..." : "Save Configuration"}

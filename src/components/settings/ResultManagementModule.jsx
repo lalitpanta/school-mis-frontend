@@ -888,9 +888,9 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
             margin: "0 24px 16px 24px",
             padding: "12px 16px",
             background: "var(--success-dim)",
-            border: "1px solid var(--success)",
+            border: "1px solid var(--success-text)",
             borderRadius: "var(--radius-s)",
-            color: "var(--success)",
+            color: "var(--success-text)",
           }}
         >
           <div
@@ -908,9 +908,9 @@ const ResultManagementModule = ({ moduleType = "format" }) => {
                 fontSize: "12px",
                 padding: "6px 12px",
                 borderRadius: "var(--radius-s)",
-                border: "1px solid var(--success)",
+                border: "1px solid var(--success-text)",
                 background: "transparent",
-                color: "var(--success)",
+                color: "var(--success-text)",
                 cursor: "pointer",
               }}
             >

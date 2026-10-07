@@ -14,11 +14,11 @@ const Loader = ({ size = "md", fullPage = false, text = "" }) => {
     <div className="flex flex-col items-center gap-3">
       <div
         className={clsx(
-          "rounded-full border-indigo-500 border-t-transparent animate-spin",
+          "rounded-full border-accent border-t-transparent animate-spin",
           sizes[size],
         )}
       />
-      {text && <p className="text-sm text-slate-400 animate-pulse">{text}</p>}
+      {text && <p className="text-sm text-muted animate-pulse">{text}</p>}
     </div>
   );
 

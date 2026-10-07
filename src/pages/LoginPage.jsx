@@ -105,19 +105,19 @@ const LoginPage = () => {
   return (
     <div
       className="mis-login-page min-h-screen flex flex-col items-center justify-center px-4 py-10"
-      style={{ background: "var(--bg-main)", color: "var(--text-1)" }}
+      style={{ background: "var(--bg-page)", color: "var(--text-primary)" }}
     >
       {/* ── App Brand ── */}
       <div className="text-center mb-7">
         <div className="flex items-center justify-center gap-3 mb-3">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/30">
-            <GraduationCap size={30} className="text-[var(--accent-text)]" />
+            <GraduationCap size={30} className="text-[var(--on-accent)]" />
           </div>
-          <h1 className="text-3xl font-extrabold text-[var(--text-1)] tracking-tight">
+          <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
             School Management System
           </h1>
         </div>
-        <p className="text-sm" style={{ color: "var(--text-2)" }}>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
           Multi-Tenant School Management Platform
         </p>
       </div>
@@ -126,21 +126,21 @@ const LoginPage = () => {
       <div
         className="w-full max-w-md rounded-2xl p-7"
         style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-dim)",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-default)",
           boxShadow: "var(--shadow-card)",
         }}
       >
         {/* Card header */}
         <div className="flex items-center gap-2.5 mb-1">
           {tab === "admin" ? (
-            <Shield size={20} className="text-indigo-400" />
+            <Shield size={20} className="text-accent" />
           ) : tab === "staff" ? (
-            <Users size={20} className="text-indigo-400" />
+            <Users size={20} className="text-accent" />
           ) : (
-            <Building2 size={20} className="text-indigo-400" />
+            <Building2 size={20} className="text-accent" />
           )}
-          <h2 className="text-xl font-bold text-[var(--text-1)]">
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
             {tab === "admin"
               ? "System Admin Login"
               : tab === "staff"
@@ -148,7 +148,7 @@ const LoginPage = () => {
                 : "Tenant Login"}
           </h2>
         </div>
-        <p className="text-sm mb-5" style={{ color: "var(--text-2)" }}>
+        <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
           {tab === "admin"
             ? "Login as system administrator to manage tenants."
             : tab === "staff"
@@ -161,7 +161,7 @@ const LoginPage = () => {
           className="flex rounded-xl p-1 mb-6"
           style={{
             background: "var(--bg-surface)",
-            border: "1px solid var(--border-dim)",
+            border: "1px solid var(--border-default)",
           }}
         >
           {[
@@ -179,8 +179,8 @@ const LoginPage = () => {
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200"
               style={
                 tab === key
-                  ? { background: "var(--bg-hover)", color: "var(--text-1)" }
-                  : { background: "transparent", color: "var(--text-2)" }
+                  ? { background: "var(--bg-subtle)", color: "var(--text-primary)" }
+                  : { background: "transparent", color: "var(--text-muted)" }
               }
             >
               <Icon size={15} />
@@ -191,18 +191,18 @@ const LoginPage = () => {
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex gap-3">
+          <div className="mb-4 p-3 rounded-lg bg-danger-soft border border-danger flex gap-3">
             <AlertCircle
               size={18}
-              className="text-red-400 mt-0.5 flex-shrink-0"
+              className="text-danger mt-0.5 flex-shrink-0"
             />
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-danger">{error}</p>
           </div>
         )}
 
         {/* Demo Credentials Info */}
         {tab === "admin" && (
-          <div className="mb-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-xs text-blue-300">
+          <div className="mb-4 p-3 rounded-lg bg-accent-soft border border-accent text-xs text-accent">
             <p className="font-semibold mb-1">Demo Admin Credentials:</p>
             <p>Email: admin@system.local</p>
             <p>Password: admin123</p>
@@ -216,7 +216,7 @@ const LoginPage = () => {
             <div>
               <label
                 className="block text-sm font-medium mb-1.5"
-                style={{ color: "var(--text-2)" }}
+                style={{ color: "var(--text-muted)" }}
               >
                 Tenant Name / Slug
               </label>
@@ -233,18 +233,18 @@ const LoginPage = () => {
                 className="mis-input px-4 py-3 text-sm transition-all duration-200"
                 style={{
                   border: errors.tenantSlug
-                    ? "1px solid #f87171"
-                    : "1px solid var(--border-card)",
+                    ? "1px solid var(--danger)"
+                    : "1px solid var(--border-default)",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
                 onBlur={(e) =>
                   (e.target.style.borderColor = errors.tenantSlug
-                    ? "#f87171"
-                    : "var(--border-card)")
+                    ? "var(--danger)"
+                    : "var(--border-default)")
                 }
               />
               {errors.tenantSlug && (
-                <p className="text-xs mt-1 text-red-400">
+                <p className="text-xs mt-1 text-danger">
                   {errors.tenantSlug.message}
                 </p>
               )}
@@ -255,7 +255,7 @@ const LoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium mb-1.5"
-              style={{ color: "var(--text-2)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               Email
             </label>
@@ -271,18 +271,18 @@ const LoginPage = () => {
               className="mis-input px-4 py-3 text-sm transition-all duration-200"
               style={{
                 border: errors.email
-                  ? "1px solid #f87171"
-                  : "1px solid var(--border-card)",
+                  ? "1px solid var(--danger)"
+                  : "1px solid var(--border-default)",
               }}
               onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
               onBlur={(e) =>
                 (e.target.style.borderColor = errors.email
-                  ? "#f87171"
-                  : "var(--border-card)")
+                  ? "var(--danger)"
+                  : "var(--border-default)")
               }
             />
             {errors.email && (
-              <p className="text-xs mt-1 text-red-400">
+              <p className="text-xs mt-1 text-danger">
                 {errors.email.message}
               </p>
             )}
@@ -292,7 +292,7 @@ const LoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium mb-1.5"
-              style={{ color: "var(--text-2)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               Password
             </label>
@@ -307,26 +307,26 @@ const LoginPage = () => {
                 className="mis-input px-4 py-3 pr-12 text-sm transition-all duration-200"
                 style={{
                   border: errors.password
-                    ? "1px solid #f87171"
-                    : "1px solid var(--border-card)",
+                    ? "1px solid var(--danger)"
+                    : "1px solid var(--border-default)",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
                 onBlur={(e) =>
                   (e.target.style.borderColor = errors.password
-                    ? "#f87171"
-                    : "var(--border-card)")
+                    ? "var(--danger)"
+                    : "var(--border-default)")
                 }
               />
               <button
                 type="button"
                 onClick={() => setShowPass((v) => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-muted transition-colors"
               >
                 {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs mt-1 text-red-400">
+              <p className="text-xs mt-1 text-danger">
                 {errors.password.message}
               </p>
             )}
@@ -339,13 +339,13 @@ const LoginPage = () => {
             className="w-full py-3.5 rounded-xl text-sm font-bold mt-2 transition-all duration-200 disabled:opacity-60"
             style={{
               background: "var(--accent)",
-              color: "var(--accent-text)",
+              color: "var(--on-accent)",
               boxShadow: "0 8px 24px var(--accent-dim)",
             }}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-input/30 border-t-white rounded-full animate-spin" />
                 Signing in…
               </span>
             ) : (
@@ -356,7 +356,7 @@ const LoginPage = () => {
       </div>
 
       {/* ── Footer ── */}
-      <p className="mt-8 text-xs" style={{ color: "var(--text-3)" }}>
+      <p className="mt-8 text-xs" style={{ color: "var(--text-muted)" }}>
         Copyright © {new Date().getFullYear()} School Management System. All
         rights reserved.
       </p>

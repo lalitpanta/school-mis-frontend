@@ -210,13 +210,13 @@ const SettingsPage = () => {
       <div className="shrink-0">
         <p
           className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-          style={{ color: "var(--text-3)" }}
+          style={{ color: "var(--text-muted)" }}
         >
           Settings
         </p>
         <h1
           className="text-lg font-bold tracking-tight"
-          style={{ color: "var(--text-1)" }}
+          style={{ color: "var(--text-primary)" }}
         >
           {label}
         </h1>
@@ -225,8 +225,8 @@ const SettingsPage = () => {
       <div
         className="flex-1 min-h-0 overflow-hidden rounded-2xl"
         style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-card)",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-default)",
           boxShadow: "var(--shadow-card)",
           display: "grid",
           gridTemplateColumns: "190px minmax(0, 1fr)",
@@ -236,7 +236,7 @@ const SettingsPage = () => {
           style={{
             background: "rgba(17, 24, 39, 0.92)",
             borderRight: "1px solid rgba(148, 163, 184, 0.14)",
-            color: "#e5e7eb",
+            color: "var(--text-primary)",
             width: "190px",
             minWidth: "190px",
           }}
@@ -246,7 +246,7 @@ const SettingsPage = () => {
             <div key={group.title} className="mb-4">
               <div
                 className="px-3 pb-2 pt-2 text-[9px] font-semibold uppercase tracking-[0.18em]"
-                style={{ color: "#94a3b8" }}
+                style={{ color: "var(--accent)" }}
               >
                 {group.title}
               </div>
@@ -267,7 +267,7 @@ const SettingsPage = () => {
                       borderColor: active
                         ? "rgba(249, 115, 22, 0.35)"
                         : "transparent",
-                      color: active ? "#f8fafc" : "#cbd5e1",
+                      color: active ? "var(--text-primary)" : "var(--text-primary)",
                       padding: "8px 10px",
                       marginBottom: "2px",
                     }}
@@ -278,7 +278,7 @@ const SettingsPage = () => {
                         width: "6px",
                         height: "6px",
                         background: active
-                          ? "#f59e0b"
+                          ? "var(--danger)"
                           : "rgba(148, 163, 184, 0.35)",
                         boxShadow: active
                           ? "0 0 0 4px rgba(245, 158, 11, 0.18)"

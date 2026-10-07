@@ -133,19 +133,19 @@ const LeaveManagementPage = () => {
     switch (status) {
       case "approved":
         return (
-          <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+          <span className="px-2.5 py-1 rounded-full bg-success text-success text-xs font-bold border border-success">
             Approved
           </span>
         );
       case "rejected":
         return (
-          <span className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 text-xs font-bold border border-rose-500/20">
+          <span className="px-2.5 py-1 rounded-full bg-danger-soft text-danger text-xs font-bold border border-danger">
             Rejected
           </span>
         );
       default:
         return (
-          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20">
+          <span className="px-2.5 py-1 rounded-full bg-warning-soft text-warning text-xs font-bold border border-warning">
             Pending
           </span>
         );
@@ -156,18 +156,18 @@ const LeaveManagementPage = () => {
     <div
       className="w-full px-4 py-6 md:px-6"
       style={{
-        background: "var(--bg-main)",
+        background: "var(--bg-page)",
         minHeight: "100vh",
-        color: "var(--text-1)",
+        color: "var(--text-primary)",
       }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-100">
+            <h1 className="text-3xl font-bold text-primary">
               Leave Management
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-muted mt-1">
               {isUserAdmin
                 ? "Review student, teacher, and staff leave requests"
                 : "Request and track your leaves"}
@@ -180,14 +180,14 @@ const LeaveManagementPage = () => {
               disabled={loading}
               title="Refresh leave requests"
               aria-label="Refresh leave requests"
-              className="rounded-xl border border-slate-700 p-2.5 text-slate-300 transition hover:border-indigo-500/50 hover:text-white disabled:opacity-50"
+              className="rounded-xl border border-default p-2.5 text-muted transition hover:border-accent hover:text-primary disabled:opacity-50"
             >
               <RotateCw size={18} className={loading ? "animate-spin" : ""} />
             </button>
             {!isUserAdmin && (
               <button
                 onClick={() => setShowRequestModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent text-primary font-semibold rounded-xl shadow-lg transition-all"
               >
                 <Plus size={18} /> Request Leave
               </button>
@@ -198,51 +198,51 @@ const LeaveManagementPage = () => {
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div
-            className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-amber-500/30 transition-all"
+            className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-warning transition-all"
             onClick={() => setActiveTab("pending")}
           >
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-warning-soft text-warning flex items-center justify-center">
               <Clock size={24} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-primary">
                 {leaves.filter((l) => l.status === "pending").length}
               </div>
-              <div className="text-sm font-medium text-slate-400">Pending</div>
+              <div className="text-sm font-medium text-muted">Pending</div>
             </div>
           </div>
           <div
-            className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-emerald-500/30 transition-all"
+            className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-success transition-all"
             onClick={() => setActiveTab("approved")}
           >
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-success text-success flex items-center justify-center">
               <CheckCircle size={24} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-primary">
                 {leaves.filter((l) => l.status === "approved").length}
               </div>
-              <div className="text-sm font-medium text-slate-400">Approved</div>
+              <div className="text-sm font-medium text-muted">Approved</div>
             </div>
           </div>
           <div
-            className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-rose-500/30 transition-all"
+            className="mis-card p-6 flex items-center gap-4 cursor-pointer hover:border-danger transition-all"
             onClick={() => setActiveTab("rejected")}
           >
-            <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-danger-soft text-danger flex items-center justify-center">
               <XCircle size={24} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-primary">
                 {leaves.filter((l) => l.status === "rejected").length}
               </div>
-              <div className="text-sm font-medium text-slate-400">Rejected</div>
+              <div className="text-sm font-medium text-muted">Rejected</div>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-6 border-b border-slate-800 mb-6">
+        <div className="flex items-center gap-6 border-b border-default mb-6">
           {["pending", "approved", "rejected"].map((tab) => (
             <button
               key={tab}
@@ -250,13 +250,13 @@ const LeaveManagementPage = () => {
               className={clsx(
                 "pb-3 text-sm font-semibold capitalize transition-all relative",
                 activeTab === tab
-                  ? "text-indigo-400"
-                  : "text-slate-400 hover:text-slate-200",
+                  ? "text-accent"
+                  : "text-muted hover:text-primary",
               )}
             >
               {tab} Leaves
               {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-accent shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
               )}
             </button>
           ))}
@@ -266,15 +266,15 @@ const LeaveManagementPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
             <div className="col-span-full py-12 flex justify-center">
-              <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin"></div>
             </div>
           ) : filteredLeaves.length === 0 ? (
             <div className="col-span-full py-12 text-center mis-card">
               <FileText
                 size={48}
-                className="mx-auto mb-4 text-slate-600 opacity-50"
+                className="mx-auto mb-4 text-muted opacity-50"
               />
-              <p className="text-slate-400 font-medium">
+              <p className="text-muted font-medium">
                 No {activeTab} leave requests found.
               </p>
             </div>
@@ -286,17 +286,17 @@ const LeaveManagementPage = () => {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700">
+                    <div className="w-10 h-10 rounded-full bg-subtle flex items-center justify-center text-accent font-bold border border-default">
                       <User size={18} />
                     </div>
                     <div>
-                      <h3 className="text-slate-200 font-semibold text-sm">
+                      <h3 className="text-primary font-semibold text-sm">
                         {leave.user_name || "Unknown"}
                       </h3>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted">
                         {leave.user_email || "No email"}
                       </p>
-                      <p className="text-xs text-indigo-300">
+                      <p className="text-xs text-accent">
                         {leave.requester_type || "User"}
                       </p>
                     </div>
@@ -306,58 +306,58 @@ const LeaveManagementPage = () => {
 
                 <div className="flex-1 space-y-3 mb-4">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold mb-1 uppercase tracking-wider">
+                    <p className="text-xs text-muted font-semibold mb-1 uppercase tracking-wider">
                       Leave type
                     </p>
-                    <p className="text-sm text-slate-300">
+                    <p className="text-sm text-muted">
                       {leave.leave_type || "Other"}
                     </p>
                   </div>
-                  <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/80">
-                    <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
+                  <div className="bg-surface p-3 rounded-xl border border-default">
+                    <div className="flex items-center gap-2 text-xs text-muted mb-1">
                       <CalendarIcon size={14} /> <span>Duration</span>
                     </div>
-                    <p className="text-sm font-medium text-slate-200">
+                    <p className="text-sm font-medium text-primary">
                       {new Date(leave.start_date).toLocaleDateString()}{" "}
-                      <span className="text-slate-500 mx-1">to</span>{" "}
+                      <span className="text-muted mx-1">to</span>{" "}
                       {new Date(leave.end_date).toLocaleDateString()}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold mb-1 uppercase tracking-wider">
+                    <p className="text-xs text-muted font-semibold mb-1 uppercase tracking-wider">
                       Reason
                     </p>
-                    <p className="text-sm text-slate-300 line-clamp-2">
+                    <p className="text-sm text-muted line-clamp-2">
                       {leave.reason}
                     </p>
                   </div>
 
                   {leave.admin_reply && (
-                    <div className="mt-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10 relative">
+                    <div className="mt-3 p-3 rounded-xl bg-accent-soft border border-accent relative">
                       <MessageSquare
                         size={12}
-                        className="absolute top-3 right-3 text-indigo-500/40"
+                        className="absolute top-3 right-3 text-accent"
                       />
-                      <p className="text-xs text-indigo-400/70 font-semibold mb-1 uppercase tracking-wider">
+                      <p className="text-xs text-accent font-semibold mb-1 uppercase tracking-wider">
                         Admin Reply
                       </p>
-                      <p className="text-sm text-indigo-200">
+                      <p className="text-sm text-accent">
                         {leave.admin_reply}
                       </p>
                     </div>
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-slate-800/60 flex justify-between items-center">
-                  <span className="text-xs text-slate-500">
+                <div className="pt-4 border-t border-default flex justify-between items-center">
+                  <span className="text-xs text-muted">
                     Requested: {new Date(leave.created_at).toLocaleDateString()}
                   </span>
 
                   {isUserAdmin && leave.status === "pending" && (
                     <button
                       onClick={() => openReviewModal(leave)}
-                      className="text-xs font-bold text-indigo-400 hover:text-indigo-300 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 transition"
+                      className="text-xs font-bold text-accent hover:text-accent px-3 py-1.5 rounded-lg bg-accent-soft hover:bg-accent-soft transition"
                     >
                       Review
                     </button>
@@ -365,7 +365,7 @@ const LeaveManagementPage = () => {
                   {isUserAdmin && leave.status !== "pending" && (
                     <button
                       onClick={() => openReviewModal(leave)}
-                      className="text-xs font-bold text-slate-400 hover:text-slate-300 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition"
+                      className="text-xs font-bold text-muted hover:text-muted px-3 py-1.5 rounded-lg bg-subtle hover:bg-subtle transition"
                     >
                       Manage
                     </button>
@@ -379,26 +379,26 @@ const LeaveManagementPage = () => {
 
       {/* Request Leave Modal (Staff) */}
       {showRequestModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-800 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-white">Request Leave</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm p-4">
+          <div className="bg-surface border border-default rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-default flex justify-between items-center">
+              <h2 className="text-lg font-bold text-primary">Request Leave</h2>
               <button
                 onClick={() => setShowRequestModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-muted hover:text-primary"
               >
                 <XCircle size={20} />
               </button>
             </div>
             <form onSubmit={handleRequestSubmit} className="p-6 space-y-4">
-              <label className="block text-xs text-slate-400 font-semibold">
+              <label className="block text-xs text-muted font-semibold">
                 Leave Type
                 <select
                   value={formData.leave_type}
                   onChange={(e) =>
                     setFormData({ ...formData, leave_type: e.target.value })
                   }
-                  className="mt-1 w-full bg-[#1e293b] border border-slate-700 rounded-xl px-4 py-2 text-white outline-none focus:border-indigo-500"
+                  className="mt-1 w-full bg-subtle border border-default rounded-xl px-4 py-2 text-primary outline-none focus:border-accent"
                 >
                   <option>Other</option>
                   <option>Sick leave</option>
@@ -409,7 +409,7 @@ const LeaveManagementPage = () => {
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-slate-400 font-semibold mb-1">
+                  <label className="block text-xs text-muted font-semibold mb-1">
                     Start Date
                   </label>
                   <input
@@ -420,11 +420,11 @@ const LeaveManagementPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, start_date: e.target.value })
                     }
-                    className="w-full bg-[#1e293b] border border-slate-700 rounded-xl px-4 py-2 text-white outline-none focus:border-indigo-500"
+                    className="w-full bg-subtle border border-default rounded-xl px-4 py-2 text-primary outline-none focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 font-semibold mb-1">
+                  <label className="block text-xs text-muted font-semibold mb-1">
                     End Date
                   </label>
                   <input
@@ -435,12 +435,12 @@ const LeaveManagementPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, end_date: e.target.value })
                     }
-                    className="w-full bg-[#1e293b] border border-slate-700 rounded-xl px-4 py-2 text-white outline-none focus:border-indigo-500"
+                    className="w-full bg-subtle border border-default rounded-xl px-4 py-2 text-primary outline-none focus:border-accent"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1">
+                <label className="block text-xs text-muted font-semibold mb-1">
                   Reason for leave
                 </label>
                 <textarea
@@ -451,7 +451,7 @@ const LeaveManagementPage = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, reason: e.target.value })
                   }
-                  className="w-full bg-[#1e293b] border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 resize-none"
+                  className="w-full bg-subtle border border-default rounded-xl px-4 py-3 text-primary outline-none focus:border-accent resize-none"
                   placeholder="Provide details..."
                 ></textarea>
               </div>
@@ -459,14 +459,14 @@ const LeaveManagementPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowRequestModal(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-800 text-white font-medium hover:bg-slate-700 transition"
+                  className="flex-1 py-2.5 rounded-xl bg-subtle text-primary font-medium hover:bg-subtle transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={requestSubmitting}
-                  className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-accent text-primary font-medium hover:bg-accent transition disabled:opacity-50"
                 >
                   {requestSubmitting ? "Submitting..." : "Submit Request"}
                 </button>
@@ -478,50 +478,50 @@ const LeaveManagementPage = () => {
 
       {/* Review Leave Modal (Admin) */}
       {showReviewModal && selectedLeave && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-800 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm p-4">
+          <div className="bg-surface border border-default rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-default flex justify-between items-center">
+              <h2 className="text-lg font-bold text-primary">
                 Review Leave Request
               </h2>
               <button
                 onClick={() => setShowReviewModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-muted hover:text-primary"
               >
                 <XCircle size={20} />
               </button>
             </div>
 
-            <div className="p-6 border-b border-slate-800/60 bg-slate-900/30">
+            <div className="p-6 border-b border-default bg-subtle">
               <div className="flex gap-4 items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-full bg-accent-soft text-accent flex items-center justify-center font-bold">
                   <User size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-200">
+                  <h3 className="font-bold text-primary">
                     {selectedLeave.user_name}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-muted">
                     {selectedLeave.user_email}
                   </p>
-                  <p className="text-xs text-indigo-300">
+                  <p className="text-xs text-accent">
                     {selectedLeave.requester_type || "User"} ·{" "}
                     {selectedLeave.leave_type || "Other"}
                   </p>
                 </div>
               </div>
-              <div className="space-y-2 text-sm text-slate-300">
+              <div className="space-y-2 text-sm text-muted">
                 <p>
-                  <span className="text-slate-500 w-24 inline-block">
+                  <span className="text-muted w-24 inline-block">
                     Duration:
                   </span>{" "}
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-primary">
                     {new Date(selectedLeave.start_date).toLocaleDateString()} to{" "}
                     {new Date(selectedLeave.end_date).toLocaleDateString()}
                   </span>
                 </p>
                 <p className="flex items-start">
-                  <span className="text-slate-500 w-24 inline-block shrink-0">
+                  <span className="text-muted w-24 inline-block shrink-0">
                     Reason:
                   </span>{" "}
                   <span>{selectedLeave.reason}</span>
@@ -531,7 +531,7 @@ const LeaveManagementPage = () => {
 
             <form onSubmit={handleReviewSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-2">
+                <label className="block text-xs text-muted font-semibold mb-2">
                   Action
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -539,8 +539,8 @@ const LeaveManagementPage = () => {
                     className={clsx(
                       "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all",
                       reviewData.status === "pending"
-                        ? "bg-amber-500/10 border-amber-500 text-amber-300"
-                        : "bg-[#1e293b] border-slate-700 text-slate-400 hover:border-slate-600",
+                        ? "bg-warning-soft border-warning text-warning"
+                        : "bg-subtle border-default text-muted hover:border-default",
                     )}
                   >
                     <input
@@ -560,8 +560,8 @@ const LeaveManagementPage = () => {
                     className={clsx(
                       "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all",
                       reviewData.status === "approved"
-                        ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
-                        : "bg-[#1e293b] border-slate-700 text-slate-400 hover:border-slate-600",
+                        ? "bg-success border-success text-success"
+                        : "bg-subtle border-default text-muted hover:border-default",
                     )}
                   >
                     <input
@@ -581,8 +581,8 @@ const LeaveManagementPage = () => {
                     className={clsx(
                       "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all",
                       reviewData.status === "rejected"
-                        ? "bg-rose-500/10 border-rose-500 text-rose-400"
-                        : "bg-[#1e293b] border-slate-700 text-slate-400 hover:border-slate-600",
+                        ? "bg-danger-soft border-danger text-danger"
+                        : "bg-subtle border-default text-muted hover:border-default",
                     )}
                   >
                     <input
@@ -602,7 +602,7 @@ const LeaveManagementPage = () => {
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1">
+                <label className="block text-xs text-muted font-semibold mb-1">
                   Reply Message (Optional)
                 </label>
                 <textarea
@@ -615,7 +615,7 @@ const LeaveManagementPage = () => {
                       admin_reply: e.target.value,
                     })
                   }
-                  className="w-full bg-[#1e293b] border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 resize-none"
+                  className="w-full bg-subtle border border-default rounded-xl px-4 py-3 text-primary outline-none focus:border-accent resize-none"
                   placeholder="Provide feedback or reason..."
                 ></textarea>
               </div>
@@ -623,14 +623,14 @@ const LeaveManagementPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowReviewModal(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-800 text-white font-medium hover:bg-slate-700 transition"
+                  className="flex-1 py-2.5 rounded-xl bg-subtle text-primary font-medium hover:bg-subtle transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={reviewSubmitting}
-                  className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-accent text-primary font-medium hover:bg-accent transition disabled:opacity-50"
                 >
                   {reviewSubmitting ? "Saving..." : "Save Review"}
                 </button>

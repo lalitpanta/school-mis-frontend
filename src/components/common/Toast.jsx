@@ -11,17 +11,17 @@ const Toast = () => (
     toastOptions={{
       duration: 4000,
       style: {
-        background: "var(--bg-card)",
-        color: "var(--text-1)",
-        border: "1px solid var(--border-card)",
+        background: "var(--bg-surface)",
+        color: "var(--text-primary)",
+        border: "1px solid var(--border-default)",
         borderRadius: "12px",
         fontSize: "14px",
       },
       success: {
-        iconTheme: { primary: "#6366f1", secondary: "#fff" },
+        iconTheme: { primary: "var(--accent)", secondary: "var(--text-primary)" },
       },
       error: {
-        iconTheme: { primary: "#ef4444", secondary: "#fff" },
+        iconTheme: { primary: "var(--danger)", secondary: "var(--text-primary)" },
       },
     }}
   />

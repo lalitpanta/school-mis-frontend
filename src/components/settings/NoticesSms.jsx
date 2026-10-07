@@ -393,16 +393,16 @@ const NoticesSms = () => {
 
   if (loading) {
     return (
-      <div className="p-6 text-slate-300">Loading SMS configuration...</div>
+      <div className="p-6 text-muted">Loading SMS configuration...</div>
     );
   }
 
   const statusColor =
     smsConfig.enabled && smsConfig.api_key_configured
-      ? "text-emerald-400"
+      ? "text-success"
       : smsConfig.enabled
-        ? "text-amber-400"
-        : "text-slate-400";
+        ? "text-warning"
+        : "text-muted";
   const statusLabel =
     smsConfig.enabled && smsConfig.api_key_configured
       ? "Connected"
@@ -412,11 +412,11 @@ const NoticesSms = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl p-6 bg-slate-900 border border-slate-700/60 shadow-lg">
+      <div className="rounded-2xl p-6 bg-surface border border-default shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-semibold text-white">SMS</h2>
-            <p className="text-slate-400 mt-1">
+            <h2 className="text-2xl font-semibold text-primary">SMS</h2>
+            <p className="text-muted mt-1">
               Configure your Mega Web Link SMS provider and test delivery.
             </p>
           </div>
@@ -426,7 +426,7 @@ const NoticesSms = () => {
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition ${activeTab === tab ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"}`}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition ${activeTab === tab ? "bg-accent text-primary" : "bg-subtle text-muted hover:bg-subtle"}`}
               >
                 {tab === "notices"
                   ? "Notices"
@@ -445,10 +445,10 @@ const NoticesSms = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-primary">
                     Notice Board
                   </h3>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-muted text-sm">
                     Create announcements, assign audience, track reads and
                     archive outdated notices.
                   </p>
@@ -456,7 +456,7 @@ const NoticesSms = () => {
                 <button
                   type="button"
                   onClick={resetNoticeForm}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success text-primary hover:bg-success transition"
                 >
                   <Plus size={16} /> New Notice
                 </button>
@@ -466,17 +466,17 @@ const NoticesSms = () => {
                 {["published", "review", "draft", "archived"].map((status) => (
                   <div
                     key={status}
-                    className="rounded-2xl bg-slate-800/80 border border-slate-700 p-4"
+                    className="rounded-2xl bg-subtle border border-default p-4"
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-slate-300 uppercase tracking-[0.18em] text-[11px]">
+                      <p className="text-muted uppercase tracking-[0.18em] text-[11px]">
                         {status}
                       </p>
-                      <span className="text-white font-semibold">
+                      <span className="text-primary font-semibold">
                         {noticesByStatus[status]?.length || 0}
                       </span>
                     </div>
-                    <p className="text-slate-500 text-sm">
+                    <p className="text-muted text-sm">
                       {status === "published"
                         ? "Live notices"
                         : status === "review"
@@ -491,42 +491,42 @@ const NoticesSms = () => {
 
               <div className="space-y-4">
                 {notices.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-slate-600 p-6 text-slate-400">
+                  <div className="rounded-2xl border border-dashed border-default p-6 text-muted">
                     No notices found. Create one to begin.
                   </div>
                 ) : (
                   notices.map((notice) => (
                     <div
                       key={notice.id}
-                      className="rounded-2xl bg-slate-800/70 border border-slate-700 p-5"
+                      className="rounded-2xl bg-subtle border border-default p-5"
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-2">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-flex rounded-full bg-indigo-600/20 text-indigo-200 text-xs uppercase px-2 py-1">
+                            <span className="inline-flex rounded-full bg-accent-soft text-accent text-xs uppercase px-2 py-1">
                               {notice.category}
                             </span>
-                            <span className="text-slate-500 text-xs">
+                            <span className="text-muted text-xs">
                               {notice.audience}
                             </span>
                             {notice.pinned && (
-                              <span className="inline-flex items-center gap-1 text-amber-300 text-xs">
+                              <span className="inline-flex items-center gap-1 text-warning text-xs">
                                 <Star size={12} /> Pinned
                               </span>
                             )}
                             {notice.status && (
-                              <span className="text-slate-400 text-xs">
+                              <span className="text-muted text-xs">
                                 Status: {notice.status}
                               </span>
                             )}
                           </div>
-                          <h4 className="text-lg font-semibold text-white">
+                          <h4 className="text-lg font-semibold text-primary">
                             {notice.title}
                           </h4>
-                          <p className="text-slate-300 text-sm leading-6">
+                          <p className="text-muted text-sm leading-6">
                             {notice.content}
                           </p>
-                          <div className="flex flex-wrap gap-3 text-slate-400 text-xs">
+                          <div className="flex flex-wrap gap-3 text-muted text-xs">
                             <span>
                               Created:{" "}
                               {new Date(notice.createdAt).toLocaleDateString()}
@@ -550,13 +550,13 @@ const NoticesSms = () => {
                         <div className="flex flex-wrap items-center gap-2">
                           <button
                             onClick={() => chooseNoticeEdit(notice)}
-                            className="px-3 py-2 rounded-lg bg-slate-700 text-slate-100 text-sm hover:bg-slate-600 transition"
+                            className="px-3 py-2 rounded-lg bg-subtle text-primary text-sm hover:bg-selected transition"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleNoticeDelete(notice.id)}
-                            className="px-3 py-2 rounded-lg bg-red-500/20 text-red-300 text-sm hover:bg-red-500/25 transition"
+                            className="px-3 py-2 rounded-lg bg-danger-soft text-danger text-sm hover:bg-danger transition"
                           >
                             Delete
                           </button>
@@ -564,14 +564,14 @@ const NoticesSms = () => {
                             onClick={() =>
                               handleTogglePin(notice.id, !notice.pinned)
                             }
-                            className="px-3 py-2 rounded-lg bg-slate-700 text-slate-100 text-sm hover:bg-slate-600 transition"
+                            className="px-3 py-2 rounded-lg bg-subtle text-primary text-sm hover:bg-selected transition"
                           >
                             {notice.pinned ? "Unpin" : "Pin"}
                           </button>
                           {notice.status !== "archived" && (
                             <button
                               onClick={() => handleArchive(notice.id)}
-                              className="px-3 py-2 rounded-lg bg-slate-700 text-slate-100 text-sm hover:bg-slate-600 transition"
+                              className="px-3 py-2 rounded-lg bg-subtle text-primary text-sm hover:bg-selected transition"
                             >
                               Archive
                             </button>
@@ -579,7 +579,7 @@ const NoticesSms = () => {
                           {!notice.read && (
                             <button
                               onClick={() => handleReadNotice(notice.id)}
-                              className="px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm hover:bg-emerald-500 transition"
+                              className="px-3 py-2 rounded-lg bg-success text-primary text-sm hover:bg-success transition"
                             >
                               Mark Read
                             </button>
@@ -592,13 +592,13 @@ const NoticesSms = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
+            <div className="rounded-2xl bg-subtle border border-default p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-primary">
                     {editingNotice ? "Edit Notice" : "Create Notice"}
                   </h3>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-muted text-sm">
                     Use the notice form to create announcements and control
                     distribution.
                   </p>
@@ -606,7 +606,7 @@ const NoticesSms = () => {
                 {editingNotice && (
                   <button
                     onClick={resetNoticeForm}
-                    className="text-slate-300 text-sm hover:text-white"
+                    className="text-muted text-sm hover:text-primary"
                   >
                     Clear
                   </button>
@@ -761,7 +761,7 @@ const NoticesSms = () => {
                       />
                       Send to recipients immediately
                     </label>
-                    <div className="text-slate-400 text-sm">
+                    <div className="text-muted text-sm">
                       If checked, the notice will be emailed as soon as you save
                       it.
                     </div>
@@ -781,7 +781,7 @@ const NoticesSms = () => {
                       }))
                     }
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     One email per line or comma-separated.
                   </p>
                 </div>
@@ -791,20 +791,20 @@ const NoticesSms = () => {
                     type="file"
                     accept="image/*,application/pdf"
                     onChange={addAttachment}
-                    className="w-full text-slate-200"
+                    className="w-full text-primary"
                   />
                   {noticeForm.attachments?.length > 0 && (
                     <div className="mt-3 space-y-2">
                       {noticeForm.attachments.map((file, index) => (
                         <div
                           key={`${file.name}-${index}`}
-                          className="flex items-center justify-between gap-3 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200"
+                          className="flex items-center justify-between gap-3 rounded-lg border border-default bg-surface px-3 py-2 text-sm text-primary"
                         >
                           <div className="truncate">{file.name}</div>
                           <button
                             type="button"
                             onClick={() => removeAttachment(index)}
-                            className="text-rose-300 hover:text-rose-100"
+                            className="text-danger hover:text-danger"
                           >
                             Remove
                           </button>
@@ -825,27 +825,27 @@ const NoticesSms = () => {
 
         {activeTab === "sms" && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between rounded-2xl border border-slate-700 bg-slate-800/80 p-4">
+            <div className="flex items-center justify-between rounded-2xl border border-default bg-subtle p-4">
               <div className="flex items-center gap-3">
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${statusColor.replace("text-", "bg-")}`}
                 />
                 <div>
-                  <p className="text-sm font-semibold text-white">Status</p>
-                  <p className="text-xs text-slate-400">{statusLabel}</p>
+                  <p className="text-sm font-semibold text-primary">Status</p>
+                  <p className="text-xs text-muted">{statusLabel}</p>
                 </div>
               </div>
               <button
                 type="button"
-                className="rounded-full border border-slate-600 px-3 py-2 text-sm text-slate-200 hover:bg-slate-700"
+                className="rounded-full border border-default px-3 py-2 text-sm text-primary hover:bg-subtle"
               >
                 Test Connection
               </button>
             </div>
 
             <div className="grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
-              <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className="rounded-2xl bg-subtle border border-default p-6">
+                <h3 className="text-lg font-semibold text-primary mb-4">
                   SMS Provider
                 </h3>
                 <form onSubmit={saveSmsSettings} className="space-y-4">
@@ -878,23 +878,23 @@ const NoticesSms = () => {
                       />
                       <button
                         type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-300 hover:text-white"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-primary"
                         onClick={() => setShowApiKey((prev) => !prev)}
                       >
                         {showApiKey ? "Hide" : "Show"}
                       </button>
                     </div>
-                    <p className="mt-2 text-xs text-slate-400">
+                    <p className="mt-2 text-xs text-muted">
                       Your API key is encrypted/secured and is never exposed to
                       the client.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">
+                  <div className="rounded-2xl border border-default bg-surface p-4">
+                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-muted">
                       Sender ID Configuration
                     </h4>
-                    <p className="mb-4 text-xs text-slate-400">
+                    <p className="mb-4 text-xs text-muted">
                       Sender IDs must be approved for the corresponding operator
                       before they can be used.
                     </p>
@@ -936,8 +936,8 @@ const NoticesSms = () => {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">
+                  <div className="rounded-2xl border border-default bg-surface p-4">
+                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-muted">
                       Message Settings
                     </h4>
                     <div>
@@ -958,12 +958,12 @@ const NoticesSms = () => {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">
+                  <div className="rounded-2xl border border-default bg-surface p-4">
+                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-muted">
                       Scheduled SMS
                     </h4>
                     <label className="mb-3 flex items-center justify-between gap-3">
-                      <span className="text-sm text-slate-200">
+                      <span className="text-sm text-primary">
                         Enable Scheduling
                       </span>
                       <input
@@ -1028,57 +1028,57 @@ const NoticesSms = () => {
                 </form>
               </div>
 
-              <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className="rounded-2xl bg-subtle border border-default p-6">
+                <h3 className="text-lg font-semibold text-primary mb-4">
                   Configuration Summary
                 </h3>
-                <div className="space-y-3 text-sm text-slate-300">
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                <div className="space-y-3 text-sm text-muted">
+                  <div className="rounded-xl bg-surface p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted">
                       SMS Provider
                     </div>
-                    <div className="mt-1 text-white">Mega Web Link SMS</div>
+                    <div className="mt-1 text-primary">Mega Web Link SMS</div>
                   </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                  <div className="rounded-xl bg-surface p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted">
                       API Endpoint
                     </div>
                     <div className="mt-1 break-all">
                       https://sms.megaweblink.com.np/api/v1/sms/send/
                     </div>
                   </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                  <div className="rounded-xl bg-surface p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted">
                       API Key
                     </div>
-                    <div className="mt-1 text-white">••••••••••••••••</div>
+                    <div className="mt-1 text-primary">••••••••••••••••</div>
                   </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                  <div className="rounded-xl bg-surface p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted">
                       Operators
                     </div>
-                    <div className="mt-1 text-white">
+                    <div className="mt-1 text-primary">
                       {smsConfig.sender_id?.NT
                         ? "✓ Nepal Telecom"
                         : "— Nepal Telecom"}
                       {smsConfig.sender_id?.Ncell ? " · ✓ Ncell" : " · — Ncell"}
                     </div>
                   </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                  <div className="rounded-xl bg-surface p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted">
                       Message Type
                     </div>
-                    <div className="mt-1 text-white">
+                    <div className="mt-1 text-primary">
                       {smsConfig.message_type === "unicode"
                         ? "Unicode"
                         : "Plain"}
                     </div>
                   </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                  <div className="rounded-xl bg-surface p-3">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted">
                       Scheduling
                     </div>
-                    <div className="mt-1 text-white">
+                    <div className="mt-1 text-primary">
                       {smsConfig.scheduling_enabled ? "Enabled" : "Disabled"}
                     </div>
                   </div>
@@ -1086,8 +1086,8 @@ const NoticesSms = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="rounded-2xl bg-subtle border border-default p-6">
+              <h3 className="text-lg font-semibold text-primary mb-4">
                 Test SMS
               </h3>
               <form onSubmit={handleSmsSend} className="space-y-4">
@@ -1134,21 +1134,21 @@ const NoticesSms = () => {
           <div className="grid gap-6 lg:grid-cols-[0.65fr,0.35fr]">
             <div className="space-y-4">
               {smsTemplates.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-600 p-6 text-slate-400">
+                <div className="rounded-2xl border border-dashed border-default p-6 text-muted">
                   No SMS templates yet. Create one to reuse messages.
                 </div>
               ) : (
                 smsTemplates.map((template) => (
                   <div
                     key={template.id}
-                    className="rounded-2xl bg-slate-800/70 border border-slate-700 p-5"
+                    className="rounded-2xl bg-subtle border border-default p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h4 className="text-white font-semibold">
+                        <h4 className="text-primary font-semibold">
                           {template.name}
                         </h4>
-                        <p className="text-slate-400 text-sm mt-1">
+                        <p className="text-muted text-sm mt-1">
                           {template.content.slice(0, 120)}
                           {template.content.length > 120 ? "..." : ""}
                         </p>
@@ -1156,13 +1156,13 @@ const NoticesSms = () => {
                       <div className="flex flex-col gap-2 text-right">
                         <button
                           onClick={() => handleTemplateEdit(template)}
-                          className="text-slate-300 hover:text-white text-sm"
+                          className="text-muted hover:text-primary text-sm"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleTemplateDelete(template.id)}
-                          className="text-rose-300 hover:text-rose-100 text-sm"
+                          className="text-danger hover:text-danger text-sm"
                         >
                           Delete
                         </button>
@@ -1173,8 +1173,8 @@ const NoticesSms = () => {
               )}
             </div>
 
-            <div className="rounded-2xl bg-slate-800/80 border border-slate-700 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="rounded-2xl bg-subtle border border-default p-6">
+              <h3 className="text-lg font-semibold text-primary mb-4">
                 {editingTemplateId ? "Edit Template" : "Create Template"}
               </h3>
               <form onSubmit={handleTemplateSave} className="space-y-4">
@@ -1213,7 +1213,7 @@ const NoticesSms = () => {
                         setEditingTemplateId(null);
                         setTemplateForm({ name: "", content: "" });
                       }}
-                      className="px-4 py-2 rounded-full bg-slate-700 text-slate-200 hover:bg-slate-600 transition"
+                      className="px-4 py-2 rounded-full bg-subtle text-primary hover:bg-selected transition"
                     >
                       Cancel
                     </button>
@@ -1226,22 +1226,22 @@ const NoticesSms = () => {
         )}
 
         {activeTab === "logs" && (
-          <div className="rounded-2xl bg-slate-800/70 border border-slate-700 p-6">
+          <div className="rounded-2xl bg-subtle border border-default p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-primary">
                   SMS Delivery Logs
                 </h3>
-                <p className="text-slate-400 text-sm">
+                <p className="text-muted text-sm">
                   Track all outgoing SMS deliveries and scheduled sends.
                 </p>
               </div>
-              <div className="rounded-full bg-slate-700 px-4 py-2 text-sm text-slate-200">
+              <div className="rounded-full bg-subtle px-4 py-2 text-sm text-primary">
                 {smsLogs.length} records
               </div>
             </div>
             {smsLogs.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-600 p-6 text-slate-400">
+              <div className="rounded-2xl border border-dashed border-default p-6 text-muted">
                 No SMS activity yet.
               </div>
             ) : (
@@ -1249,27 +1249,27 @@ const NoticesSms = () => {
                 {smsLogs.slice(0, 20).map((log) => (
                   <div
                     key={log.id}
-                    className="rounded-2xl bg-slate-900/70 border border-slate-700 p-4"
+                    className="rounded-2xl bg-surface border border-default p-4"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="space-y-1">
-                        <div className="flex flex-wrap gap-2 items-center text-slate-400 text-xs uppercase tracking-[0.18em]">
+                        <div className="flex flex-wrap gap-2 items-center text-muted text-xs uppercase tracking-[0.18em]">
                           <span>{log.recipientType}</span>
                           <span>{log.status}</span>
                           {log.templateName && <span>{log.templateName}</span>}
                         </div>
-                        <p className="text-slate-200 font-semibold">{log.to}</p>
-                        <p className="text-slate-400 text-sm">
+                        <p className="text-primary font-semibold">{log.to}</p>
+                        <p className="text-muted text-sm">
                           {log.message.slice(0, 100)}
                           {log.message.length > 100 ? "..." : ""}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-slate-500 text-xs">
+                        <p className="text-muted text-xs">
                           {new Date(log.createdAt).toLocaleString()}
                         </p>
                         {log.providerResponse && (
-                          <p className="text-slate-500 text-xs mt-1">
+                          <p className="text-muted text-xs mt-1">
                             {log.providerResponse}
                           </p>
                         )}
@@ -1283,16 +1283,16 @@ const NoticesSms = () => {
         )}
 
         {activeTab === "sms" && (
-          <div className="rounded-2xl bg-slate-800/70 border border-slate-700 p-6 mt-6">
+          <div className="rounded-2xl bg-subtle border border-default p-6 mt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-white">Send SMS</h3>
-                <p className="text-slate-400 text-sm">
+                <h3 className="text-lg font-semibold text-primary">Send SMS</h3>
+                <p className="text-muted text-sm">
                   Dispatch a message to individuals or groups, including
                   scheduled sends.
                 </p>
               </div>
-              <div className="text-slate-400 text-xs">
+              <div className="text-muted text-xs">
                 If gateway is disabled, logs are still recorded but message is
                 not sent.
               </div>

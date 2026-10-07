@@ -14,16 +14,16 @@ const SuperAdminBilling = () => {
   return (
     <div
       style={{
-        background: "var(--bg-main)",
+        background: "var(--bg-page)",
         minHeight: "100vh",
-        color: "var(--text-1)",
+        color: "var(--text-primary)",
       }}
       className="p-6"
     >
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Billing</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted">
             Platform billing and invoices for the superadmin view
           </p>
         </div>
@@ -32,14 +32,14 @@ const SuperAdminBilling = () => {
       <div
         className="rounded-xl p-4"
         style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-card)",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-default)",
         }}
       >
         {loading ? (
           <div>Loading...</div>
         ) : (
-          <div className="text-sm text-slate-400">
+          <div className="text-sm text-muted">
             No billing data available in this environment.
           </div>
         )}

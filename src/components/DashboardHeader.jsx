@@ -7,8 +7,8 @@ const DashboardHeader = ({ title = "Dashboard" }) => {
     <div
       className="flex items-center justify-between mb-8 px-6 py-4 rounded-xl"
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-dim)",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-default)",
         boxShadow: "var(--shadow-card)",
       }}
     >

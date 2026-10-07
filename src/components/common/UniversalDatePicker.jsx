@@ -88,14 +88,14 @@ const BsPicker = ({ value, onChange }) => {
   }, [bsYear, bsMonth, bsDay, maxDay]); // intentionally omit value/onChange to avoid loop
 
   const sel =
-    "bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm " +
-    "text-slate-200 outline-none focus:border-indigo-500 cursor-pointer hover:border-indigo-400 transition-colors";
+    "bg-surface border border-default rounded-lg px-2 py-2 text-sm " +
+    "text-primary outline-none focus:border-accent cursor-pointer hover:border-accent transition-colors";
 
   return (
     <div className="flex flex-col gap-1.5 w-full">
       {/* ── Mode badge ── */}
-      <div className="flex items-center gap-1.5 text-[10px] font-bold text-indigo-400 uppercase tracking-widest px-0.5">
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500" />
+      <div className="flex items-center gap-1.5 text-[10px] font-bold text-accent uppercase tracking-widest px-0.5">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent" />
         Bikram Sambat
       </div>
 
@@ -144,8 +144,8 @@ const BsPicker = ({ value, onChange }) => {
       {/* ── AD equivalent (readonly reference) ── */}
       {value && (
         <div className="flex items-center gap-1.5 text-[11px] px-0.5">
-          <span className="text-slate-600">AD equivalent →</span>
-          <span className="text-slate-400 font-mono tracking-wide">
+          <span className="text-muted">AD equivalent →</span>
+          <span className="text-muted font-mono tracking-wide">
             {value}
           </span>
         </div>
@@ -183,14 +183,14 @@ const UniversalDatePicker = ({
   const calendarType = calendarTypeOverride || settings?.calendar_type || "BS";
 
   const adClass =
-    "bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm " +
-    "text-slate-200 outline-none focus:border-indigo-500 w-full " +
+    "bg-subtle border border-default rounded-lg px-3 py-2 text-sm " +
+    "text-primary outline-none focus:border-accent w-full " +
     className;
 
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && (
-        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+        <span className="text-[10px] font-black text-muted uppercase tracking-widest">
           {label}
         </span>
       )}
@@ -199,8 +199,8 @@ const UniversalDatePicker = ({
         <BsPicker value={value} onChange={onChange} />
       ) : (
         <>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest px-0.5">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-500" />
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted uppercase tracking-widest px-0.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-selected" />
             Gregorian (AD)
           </div>
           <input

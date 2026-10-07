@@ -74,7 +74,7 @@ const UserProfile = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-slate-400">Loading profile...</div>
+        <div className="text-muted">Loading profile...</div>
       </div>
     );
   }
@@ -82,7 +82,7 @@ const UserProfile = () => {
   if (!profile) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-slate-400">Profile not found</div>
+        <div className="text-muted">Profile not found</div>
       </div>
     );
   }
@@ -100,11 +100,11 @@ const UserProfile = () => {
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* Header Card */}
-      <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-8 mb-6">
+      <div className="bg-subtle border border-default rounded-2xl p-8 mb-6">
         <div className="flex items-start gap-6">
           {/* Avatar */}
           <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg">
-            <span className="text-3xl font-bold text-white">
+            <span className="text-3xl font-bold text-primary">
               {(profile.name || profile.email)
                 .split(' ')
                 .map((n) => n[0])
@@ -116,10 +116,10 @@ const UserProfile = () => {
 
           {/* User Info */}
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-white mb-1">
+            <h1 className="text-2xl font-bold text-primary mb-1">
               {profile.name || 'User'}
             </h1>
-            <div className="flex items-center gap-2 text-slate-400 mb-4">
+            <div className="flex items-center gap-2 text-muted mb-4">
               <Mail size={16} />
               <span className="text-sm">{profile.email}</span>
             </div>
@@ -130,7 +130,7 @@ const UserProfile = () => {
                 {profile.roles.map((role) => (
                   <span
                     key={role.id}
-                    className="px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 text-xs font-medium"
+                    className="px-3 py-1 rounded-full bg-accent-soft border border-accent text-accent text-xs font-medium"
                   >
                     {role.role_name}
                   </span>
@@ -140,8 +140,8 @@ const UserProfile = () => {
 
             {/* Status */}
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="text-xs text-slate-400">
+              <div className="w-2 h-2 rounded-full bg-success" />
+              <span className="text-xs text-muted">
                 Account {profile.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -150,7 +150,7 @@ const UserProfile = () => {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 text-sm font-medium transition-colors flex items-center gap-2"
+            className="px-4 py-2 rounded-lg bg-danger-soft hover:bg-danger-soft border border-danger text-danger text-sm font-medium transition-colors flex items-center gap-2"
           >
             <LogOut size={16} />
             Logout
@@ -162,32 +162,32 @@ const UserProfile = () => {
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => setExpandedSections({ profile: false, password: false, email: false, roles: false, permissions: false })}
-          className="px-4 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 text-sm font-medium transition-colors"
+          className="px-4 py-2 rounded-lg bg-subtle hover:bg-subtle border border-default text-muted text-sm font-medium transition-colors"
         >
           Collapse All
         </button>
         <button
           onClick={() => setExpandedSections({ profile: true, password: true, email: true, roles: true, permissions: true })}
-          className="px-4 py-2 rounded-lg bg-indigo-600/50 hover:bg-indigo-600 border border-indigo-500 text-indigo-300 text-sm font-medium transition-colors"
+          className="px-4 py-2 rounded-lg bg-accent hover:bg-accent border border-accent text-accent text-sm font-medium transition-colors"
         >
           Expand All
         </button>
       </div>
 
       {/* Roles Section */}
-      <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden mb-6">
+      <div className="bg-subtle border border-default rounded-2xl overflow-hidden mb-6">
         <button
           onClick={() => toggleSection('roles')}
-          className="w-full px-8 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+          className="w-full px-8 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
         >
           <div className="flex items-center gap-3">
-            <Shield size={18} className="text-indigo-400" />
-            <h2 className="text-lg font-semibold text-white">Assigned Roles</h2>
+            <Shield size={18} className="text-accent" />
+            <h2 className="text-lg font-semibold text-primary">Assigned Roles</h2>
           </div>
           {expandedSections.roles ? (
-            <ChevronUp size={18} className="text-slate-400" />
+            <ChevronUp size={18} className="text-muted" />
           ) : (
-            <ChevronDown size={18} className="text-slate-400" />
+            <ChevronDown size={18} className="text-muted" />
           )}
         </button>
 
@@ -198,13 +198,13 @@ const UserProfile = () => {
                 {profile.roles.map((role) => (
                   <div
                     key={role.id}
-                    className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30"
+                    className="bg-subtle rounded-lg p-4 border border-default"
                   >
-                    <h3 className="text-base font-semibold text-white mb-1">
+                    <h3 className="text-base font-semibold text-primary mb-1">
                       {role.role_name}
                     </h3>
                     {role.description && (
-                      <p className="text-xs text-slate-400 leading-relaxed">
+                      <p className="text-xs text-muted leading-relaxed">
                         {role.description}
                       </p>
                     )}
@@ -212,31 +212,31 @@ const UserProfile = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-slate-400 text-sm">No roles assigned</div>
+              <div className="text-muted text-sm">No roles assigned</div>
             )}
           </div>
         )}
       </div>
 
       {/* Permissions Section */}
-      <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
+      <div className="bg-subtle border border-default rounded-2xl overflow-hidden">
         <button
           onClick={() => toggleSection('permissions')}
-          className="w-full px-8 py-4 flex items-center justify-between hover:bg-white/5 transition-colors border-b border-slate-700/50"
+          className="w-full px-8 py-4 flex items-center justify-between hover:bg-surface/5 transition-colors border-b border-default"
         >
           <div className="flex items-center gap-3">
-            <Key size={18} className="text-emerald-400" />
-            <h2 className="text-lg font-semibold text-white">
+            <Key size={18} className="text-success" />
+            <h2 className="text-lg font-semibold text-primary">
               Permissions
-              <span className="ml-2 text-sm font-normal text-slate-400">
+              <span className="ml-2 text-sm font-normal text-muted">
                 ({profile.permissions?.length || 0})
               </span>
             </h2>
           </div>
           {expandedSections.permissions ? (
-            <ChevronUp size={18} className="text-slate-400" />
+            <ChevronUp size={18} className="text-muted" />
           ) : (
-            <ChevronDown size={18} className="text-slate-400" />
+            <ChevronDown size={18} className="text-muted" />
           )}
         </button>
 
@@ -246,7 +246,7 @@ const UserProfile = () => {
               <div className="space-y-6">
                 {Object.entries(permissionsByResource).map(([resource, actions]) => (
                   <div key={resource}>
-                    <h3 className="text-sm font-semibold text-white mb-3 capitalize">
+                    <h3 className="text-sm font-semibold text-primary mb-3 capitalize">
                       {resource}
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
@@ -256,14 +256,14 @@ const UserProfile = () => {
                           className={clsx(
                             'px-3 py-2 rounded-lg text-xs font-medium text-center transition-colors',
                             action === 'view'
-                              ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                              ? 'bg-accent-soft text-accent border border-accent'
                               : action === 'create'
-                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                ? 'bg-success text-success border border-success'
                                 : action === 'edit'
-                                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                  ? 'bg-warning-soft text-warning border border-warning'
                                   : action === 'delete'
-                                    ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                                    : 'bg-slate-600/20 text-slate-300 border border-slate-600/30'
+                                    ? 'bg-danger-soft text-danger border border-danger'
+                                    : 'bg-subtle text-muted border border-default'
                           )}
                         >
                           {action}
@@ -274,56 +274,56 @@ const UserProfile = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-slate-400 text-sm">No permissions assigned</div>
+              <div className="text-muted text-sm">No permissions assigned</div>
             )}
           </div>
         )}
       </div>
 
       {/* Info Box */}
-      <div className="mt-6 bg-slate-800/20 border border-slate-700/50 rounded-lg p-4 text-xs text-slate-400">
+      <div className="mt-6 bg-subtle border border-default rounded-lg p-4 text-xs text-muted">
         <p>
           <strong>Note:</strong> Your profile shows the roles and permissions assigned to your account. Permissions control what actions you can perform in each feature. Contact your administrator if you need additional access.
         </p>
       </div>
 
       {/* Change Password Section */}
-      <div className="mt-6 bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
-        <div className="w-full px-8 py-4 border-b border-slate-700/50">
+      <div className="mt-6 bg-subtle border border-default rounded-2xl overflow-hidden">
+        <div className="w-full px-8 py-4 border-b border-default">
           <div className="flex items-center gap-3">
-            <Key size={18} className="text-emerald-400" />
-            <h2 className="text-lg font-semibold text-white">Change Password</h2>
+            <Key size={18} className="text-success" />
+            <h2 className="text-lg font-semibold text-primary">Change Password</h2>
           </div>
         </div>
         <div className="px-8 py-6">
           <div className="space-y-4 max-w-md">
             <div>
-              <label className="text-xs text-slate-400 mb-1 block">Current Password</label>
+              <label className="text-xs text-muted mb-1 block">Current Password</label>
               <input
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200"
+                className="w-full px-3 py-2 rounded-lg bg-surface border border-default text-primary"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 mb-1 block">New Password</label>
+              <label className="text-xs text-muted mb-1 block">New Password</label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200"
+                className="w-full px-3 py-2 rounded-lg bg-surface border border-default text-primary"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 mb-1 block">Confirm New Password</label>
+              <label className="text-xs text-muted mb-1 block">Confirm New Password</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200"
+                className="w-full px-3 py-2 rounded-lg bg-surface border border-default text-primary"
               />
             </div>
 
@@ -363,7 +363,7 @@ const UserProfile = () => {
                   }
                 }}
                 disabled={pwdLoading}
-                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-success hover:bg-success text-primary text-sm font-medium"
               >
                 {pwdLoading ? 'Saving...' : 'Change Password'}
               </button>
@@ -374,7 +374,7 @@ const UserProfile = () => {
                   setNewPassword('');
                   setConfirmPassword('');
                 }}
-                className="px-4 py-2 rounded-lg bg-slate-700/30 text-slate-300 text-sm"
+                className="px-4 py-2 rounded-lg bg-subtle text-muted text-sm"
               >
                 Cancel
               </button>
@@ -384,33 +384,33 @@ const UserProfile = () => {
       </div>
 
       {/* Change Email Section */}
-      <div className="mt-6 bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden">
-        <div className="w-full px-8 py-4 border-b border-slate-700/50">
+      <div className="mt-6 bg-subtle border border-default rounded-2xl overflow-hidden">
+        <div className="w-full px-8 py-4 border-b border-default">
           <div className="flex items-center gap-3">
-            <Mail size={18} className="text-blue-400" />
-            <h2 className="text-lg font-semibold text-white">Change Email</h2>
+            <Mail size={18} className="text-accent" />
+            <h2 className="text-lg font-semibold text-primary">Change Email</h2>
           </div>
         </div>
         <div className="px-8 py-6">
           <div className="space-y-4 max-w-md">
             <div>
-              <label className="text-xs text-slate-400 mb-1 block">New Email Address</label>
+              <label className="text-xs text-muted mb-1 block">New Email Address</label>
               <input
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
                 placeholder={profile.email}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200"
+                className="w-full px-3 py-2 rounded-lg bg-surface border border-default text-primary"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 mb-1 block">Current Password (for verification)</label>
+              <label className="text-xs text-muted mb-1 block">Current Password (for verification)</label>
               <input
                 type={showEmailPassword ? "text" : "password"}
                 value={emailPassword}
                 onChange={(e) => setEmailPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200"
+                className="w-full px-3 py-2 rounded-lg bg-surface border border-default text-primary"
               />
             </div>
 
@@ -451,7 +451,7 @@ const UserProfile = () => {
                   }
                 }}
                 disabled={emailLoading}
-                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-accent hover:bg-accent text-primary text-sm font-medium"
               >
                 {emailLoading ? 'Saving...' : 'Change Email'}
               </button>
@@ -461,7 +461,7 @@ const UserProfile = () => {
                   setNewEmail('');
                   setEmailPassword('');
                 }}
-                className="px-4 py-2 rounded-lg bg-slate-700/30 text-slate-300 text-sm"
+                className="px-4 py-2 rounded-lg bg-subtle text-muted text-sm"
               >
                 Cancel
               </button>

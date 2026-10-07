@@ -57,37 +57,37 @@ const initialForm = () => ({
 });
 
 const styles = `
-.fee-pro { color:var(--text-1); }
+.fee-pro { color:var(--text-primary); }
 .fee-pro-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
-.fee-pro-search { display:flex; align-items:center; gap:8px; min-width:260px; flex:1; max-width:420px; padding:0 12px; background:var(--bg-input); border:1px solid var(--border-card); border-radius:9px; }
-.fee-pro-search input { width:100%; padding:10px 0; border:0; outline:0; background:transparent; color:var(--text-1); }
-.fee-pro-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 13px; border:1px solid var(--border-card); border-radius:8px; background:var(--bg-card); color:var(--text-1); font-weight:600; cursor:pointer; }
-.fee-pro-btn:hover { background:var(--bg-hover); border-color:var(--accent); }
-.fee-pro-btn.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-text); }
+.fee-pro-search { display:flex; align-items:center; gap:8px; min-width:260px; flex:1; max-width:420px; padding:0 12px; background:var(--bg-input); border:1px solid var(--border-default); border-radius:9px; }
+.fee-pro-search input { width:100%; padding:10px 0; border:0; outline:0; background:transparent; color:var(--text-primary); }
+.fee-pro-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 13px; border:1px solid var(--border-default); border-radius:8px; background:var(--bg-surface); color:var(--text-primary); font-weight:600; cursor:pointer; }
+.fee-pro-btn:hover { background:var(--bg-subtle); border-color:var(--accent); }
+.fee-pro-btn.primary { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
 .fee-pro-btn:disabled { opacity:.55; cursor:not-allowed; }
 .fee-pro-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px; }
-.fee-pro-card { background:var(--bg-card); border:1px solid var(--border-card); border-radius:10px; padding:16px; }
-.fee-pro-summary-label,.fee-pro-muted { color:var(--text-3); font-size:12px; }
+.fee-pro-card { background:var(--bg-surface); border:1px solid var(--border-default); border-radius:10px; padding:16px; }
+.fee-pro-summary-label,.fee-pro-muted { color:var(--text-muted); font-size:12px; }
 .fee-pro-summary-label { text-transform:uppercase; letter-spacing:.07em; font-weight:700; }
 .fee-pro-summary-value { margin-top:6px; font-size:22px; font-weight:800; }
-.fee-pro-table-wrap { overflow:auto; background:var(--bg-card); border:1px solid var(--border-card); border-radius:10px; }
+.fee-pro-table-wrap { overflow:auto; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:10px; }
 .fee-pro-table { width:100%; min-width:760px; border-collapse:collapse; }
-.fee-pro-table th { padding:12px 15px; text-align:left; color:var(--text-2); background:var(--bg-surface); border-bottom:1px solid var(--border-dim); font-size:12px; font-weight:700; text-transform:uppercase; }
-.fee-pro-table td { padding:13px 15px; border-bottom:1px solid var(--border-dim); font-size:14px; }
+.fee-pro-table th { padding:12px 15px; text-align:left; color:var(--text-muted); background:var(--bg-surface); border-bottom:1px solid var(--border-default); font-size:12px; font-weight:700; text-transform:uppercase; }
+.fee-pro-table td { padding:13px 15px; border-bottom:1px solid var(--border-default); font-size:14px; }
 .fee-pro-table tr:last-child td { border-bottom:0; }
 .fee-pro-name { font-weight:700; } .fee-pro-actions { display:flex; gap:4px; }
-.fee-pro-icon { display:inline-flex; padding:6px; border:0; border-radius:6px; background:transparent; color:var(--text-2); cursor:pointer; } .fee-pro-icon:hover { background:var(--bg-hover); color:var(--text-1); }
-.fee-pro-badge { display:inline-flex; padding:4px 8px; border-radius:999px; background:var(--bg-hover); color:var(--text-2); font-size:11px; font-weight:700; text-transform:capitalize; }
-.fee-pro-badge.active { color:var(--success); } .fee-pro-badge.draft { color:var(--warning); } .fee-pro-badge.archived { color:var(--danger); }
-.fee-pro-detail { margin-top:18px; } .fee-pro-rule { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid var(--border-dim); }
+.fee-pro-icon { display:inline-flex; padding:6px; border:0; border-radius:6px; background:transparent; color:var(--text-muted); cursor:pointer; } .fee-pro-icon:hover { background:var(--bg-subtle); color:var(--text-primary); }
+.fee-pro-badge { display:inline-flex; padding:4px 8px; border-radius:999px; background:var(--bg-subtle); color:var(--text-muted); font-size:11px; font-weight:700; text-transform:capitalize; }
+.fee-pro-badge.active { color:var(--success-text); } .fee-pro-badge.draft { color:var(--warning); } .fee-pro-badge.archived { color:var(--danger); }
+.fee-pro-detail { margin-top:18px; } .fee-pro-rule { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid var(--border-default); }
 .fee-pro-rule:last-child { border-bottom:0; } .fee-pro-total { display:flex; justify-content:space-between; margin-top:14px; font-weight:800; }
 .fee-pro-modal-backdrop { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:18px; background:var(--overlay); backdrop-filter:blur(7px); }
-.fee-pro-modal { width:min(760px,100%); max-height:92vh; overflow:auto; background:var(--bg-card); border:1px solid var(--border-card); border-radius:14px; padding:22px; box-shadow:var(--shadow-overlay); }
+.fee-pro-modal { width:min(760px,100%); max-height:92vh; overflow:auto; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:14px; padding:22px; box-shadow:var(--shadow-overlay); }
 .fee-pro-modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; } .fee-pro-modal h3 { margin:0; font-size:18px; }
 .fee-pro-form { display:grid; grid-template-columns:1fr 1fr; gap:12px; } .fee-pro-field { display:flex; flex-direction:column; gap:6px; } .fee-pro-field.full { grid-column:1/-1; }
-.fee-pro-field label { color:var(--text-2); font-size:12px; font-weight:700; } .fee-pro-field input,.fee-pro-field select { width:100%; padding:10px; border:1px solid var(--border-card); border-radius:8px; background:var(--bg-input); color:var(--text-1); outline:0; }
-.fee-pro-field input:focus,.fee-pro-field select:focus { border-color:var(--accent); } .fee-pro-rule-editor { margin-top:18px; padding-top:15px; border-top:1px solid var(--border-dim); }
-.fee-pro-rule-editor-row { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr auto; gap:8px; align-items:center; margin-top:8px; } .fee-pro-check { display:flex; align-items:center; gap:5px; color:var(--text-2); font-size:12px; white-space:nowrap; }
+.fee-pro-field label { color:var(--text-muted); font-size:12px; font-weight:700; } .fee-pro-field input,.fee-pro-field select { width:100%; padding:10px; border:1px solid var(--border-default); border-radius:8px; background:var(--bg-input); color:var(--text-primary); outline:0; }
+.fee-pro-field input:focus,.fee-pro-field select:focus { border-color:var(--accent); } .fee-pro-rule-editor { margin-top:18px; padding-top:15px; border-top:1px solid var(--border-default); }
+.fee-pro-rule-editor-row { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr auto; gap:8px; align-items:center; margin-top:8px; } .fee-pro-check { display:flex; align-items:center; gap:5px; color:var(--text-muted); font-size:12px; white-space:nowrap; }
 .fee-pro-modal-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:20px; }
 @media (max-width:700px) { .fee-pro-summary,.fee-pro-form { grid-template-columns:1fr; } .fee-pro-field.full { grid-column:auto; } .fee-pro-rule-editor-row { grid-template-columns:1fr 1fr; } .fee-pro-search { min-width:100%; max-width:none; } }
 `;
@@ -311,7 +311,7 @@ export default function FeeStructurePro() {
       const popup = window.open("", "_blank", "noopener,noreferrer");
       if (!popup) throw new Error("Popup blocked");
       popup.document.write(
-        `<!doctype html><html><head><title>${invoice.invoice_number}</title><style>body{font-family:Arial,sans-serif;color:#111;margin:32px}table{width:100%;border-collapse:collapse;margin-top:24px}td{padding:9px;border-bottom:1px solid #ddd}.total{font-weight:bold;text-align:right;margin-top:20px}@media print{body{margin:12mm}}</style></head><body><h1>${invoice.invoice_snapshot?.institution_name || "Institution"}</h1><p>${invoice.invoice_snapshot?.institution_address || ""}</p><h2>${invoice.invoice_snapshot?.invoice_title || "Fee Invoice"}</h2><p>Invoice: ${invoice.invoice_number}<br>Date: ${new Date(invoice.issue_date).toLocaleDateString()}<br>Student: ${invoice.student_name} (${invoice.admission_no || invoice.student_id})<br>Class: ${invoice.class_name || ""} ${invoice.section_name || ""}</p><table>${lines}</table><p class="total">Total: NPR ${Number(invoice.total || 0).toLocaleString("en-IN")}<br>Paid: NPR ${Number(invoice.amount_paid || 0).toLocaleString("en-IN")}<br>Balance: NPR ${(Number(invoice.total || 0) - Number(invoice.amount_paid || 0)).toLocaleString("en-IN")}</p><p>${invoice.invoice_snapshot?.invoice_footer || ""}</p></body></html>`,
+        `<!doctype html><html><head><title>${invoice.invoice_number}</title><style>body{font-family:Arial,sans-serif;color:var(--text-primary);margin:32px}table{width:100%;border-collapse:collapse;margin-top:24px}td{padding:9px;border-bottom:1px solid var(--text-primary)}.total{font-weight:bold;text-align:right;margin-top:20px}@media print{body{margin:12mm}}</style></head><body><h1>${invoice.invoice_snapshot?.institution_name || "Institution"}</h1><p>${invoice.invoice_snapshot?.institution_address || ""}</p><h2>${invoice.invoice_snapshot?.invoice_title || "Fee Invoice"}</h2><p>Invoice: ${invoice.invoice_number}<br>Date: ${new Date(invoice.issue_date).toLocaleDateString()}<br>Student: ${invoice.student_name} (${invoice.admission_no || invoice.student_id})<br>Class: ${invoice.class_name || ""} ${invoice.section_name || ""}</p><table>${lines}</table><p class="total">Total: NPR ${Number(invoice.total || 0).toLocaleString("en-IN")}<br>Paid: NPR ${Number(invoice.amount_paid || 0).toLocaleString("en-IN")}<br>Balance: NPR ${(Number(invoice.total || 0) - Number(invoice.amount_paid || 0)).toLocaleString("en-IN")}</p><p>${invoice.invoice_snapshot?.invoice_footer || ""}</p></body></html>`,
       );
       popup.document.close();
       popup.focus();
@@ -356,7 +356,7 @@ export default function FeeStructurePro() {
         {message && (
           <div
             className="fee-pro-card"
-            style={{ marginBottom: 14, color: "var(--text-2)" }}
+            style={{ marginBottom: 14, color: "var(--text-muted)" }}
           >
             {message}
           </div>

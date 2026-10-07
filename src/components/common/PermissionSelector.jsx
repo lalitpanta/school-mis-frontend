@@ -135,22 +135,22 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-slate-200 text-sm">
+        <h3 className="font-medium text-primary text-sm">
           Module Permissions
         </h3>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={selectAll}
-            className="text-xs text-indigo-400 hover:text-indigo-300 transition"
+            className="text-xs text-accent hover:text-accent transition"
           >
             Select All
           </button>
-          <span className="text-slate-600">|</span>
+          <span className="text-muted">|</span>
           <button
             type="button"
             onClick={clearAll}
-            className="text-xs text-slate-400 hover:text-slate-300 transition"
+            className="text-xs text-muted hover:text-muted transition"
           >
             Clear All
           </button>
@@ -170,10 +170,10 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
           return (
             <div
               key={mod.key}
-              className="border border-slate-600/50 rounded-lg bg-slate-800/40 overflow-hidden"
+              className="border border-default rounded-lg bg-subtle overflow-hidden"
             >
               {/* Module header */}
-              <div className="flex items-center gap-3 px-3 py-2.5 bg-slate-800/60">
+              <div className="flex items-center gap-3 px-3 py-2.5 bg-subtle">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -181,13 +181,13 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                     if (el) el.indeterminate = someSelected;
                   }}
                   onChange={() => toggleModule(mod.key, mod.actions)}
-                  className="w-4 h-4 rounded accent-indigo-500"
+                  className="w-4 h-4 rounded accent-[var(--accent)]"
                 />
-                <Icon size={15} className="text-indigo-400" />
-                <span className="text-sm font-medium text-white flex-1">
+                <Icon size={15} className="text-accent" />
+                <span className="text-sm font-medium text-primary flex-1">
                   {mod.label}
                 </span>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-muted">
                   {selectedCount}/{modulePermKeys.length}
                 </span>
               </div>
@@ -207,13 +207,13 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => togglePermission(permKey)}
-                        className="w-3.5 h-3.5 rounded accent-indigo-500"
+                        className="w-3.5 h-3.5 rounded accent-[var(--accent)]"
                       />
                       <span
                         className={`text-xs transition ${
                           isChecked
-                            ? "text-slate-200"
-                            : "text-slate-500 group-hover:text-slate-400"
+                            ? "text-primary"
+                            : "text-muted group-hover:text-muted"
                         }`}
                       >
                         {ACTION_LABELS[action] || action}

@@ -195,8 +195,8 @@ const EmailBodyEditor = ({ value, onChange, variables }) => {
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-700 bg-white text-slate-900">
-      <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 p-2">
+    <div className="overflow-hidden rounded-lg border border-default bg-surface text-muted">
+      <div className="flex flex-wrap items-center gap-1 border-b border-default bg-selected p-2">
         {EDITOR_COMMANDS.map(({ command, label, Icon }) => (
           <button
             key={command}
@@ -205,7 +205,7 @@ const EmailBodyEditor = ({ value, onChange, variables }) => {
             aria-label={label}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => applyCommand(command)}
-            className="rounded p-2 text-slate-700 hover:bg-slate-200"
+            className="rounded p-2 text-muted hover:bg-selected"
           >
             <Icon size={16} />
           </button>
@@ -216,7 +216,7 @@ const EmailBodyEditor = ({ value, onChange, variables }) => {
           aria-label="Insert link"
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => applyCommand("createLink")}
-          className="rounded p-2 text-slate-700 hover:bg-slate-200"
+          className="rounded p-2 text-muted hover:bg-selected"
         >
           <Link2 size={16} />
         </button>
@@ -229,10 +229,10 @@ const EmailBodyEditor = ({ value, onChange, variables }) => {
         aria-label="Email template body editor"
         aria-multiline="true"
         onInput={(event) => onChange(event.currentTarget.innerHTML)}
-        className="min-h-64 max-h-[520px] overflow-y-auto p-5 text-sm leading-6 outline-none [&_a]:text-blue-700 [&_h1]:my-3 [&_h1]:text-2xl [&_h2]:my-3 [&_h2]:text-xl [&_li]:ml-5 [&_ol]:list-decimal [&_p]:my-2 [&_ul]:list-disc"
+        className="min-h-64 max-h-[520px] overflow-y-auto p-5 text-sm leading-6 outline-none [&_a]:text-accent [&_h1]:my-3 [&_h1]:text-2xl [&_h2]:my-3 [&_h2]:text-xl [&_li]:ml-5 [&_ol]:list-decimal [&_p]:my-2 [&_ul]:list-disc"
       />
-      <div className="border-t border-slate-200 bg-slate-50 p-3">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <div className="border-t border-default bg-selected p-3">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
           Insert variable
         </p>
         <div className="flex flex-wrap gap-2">
@@ -242,7 +242,7 @@ const EmailBodyEditor = ({ value, onChange, variables }) => {
               type="button"
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => insertVariable(variable)}
-              className="rounded border border-blue-200 bg-white px-2 py-1 font-mono text-xs text-blue-700 hover:bg-blue-50"
+              className="rounded border border-accent bg-surface px-2 py-1 font-mono text-xs text-accent hover:bg-accent"
             >
               {`{{${variable}}}`}
             </button>
@@ -461,61 +461,61 @@ const Integrations = () => {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-slate-400">
+      <div className="p-8 text-center text-muted">
         Loading Integrations...
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl p-6 bg-slate-900 border border-slate-700/60 shadow-xl">
-      <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+    <div className="rounded-2xl p-6 bg-surface border border-default shadow-xl">
+      <div className="flex justify-between items-center mb-6 border-b border-default pb-4">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Mail className="text-blue-400" /> Email Settings
+          <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+            <Mail className="text-accent" /> Email Settings
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-muted mt-1">
             Configure SMTP delivery and notification templates.
           </p>
         </div>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-sm text-slate-300">Enable Email Service</span>
+            <span className="text-sm text-muted">Enable Email Service</span>
             <div
-              className={`w-12 h-6 rounded-full p-1 transition-colors ${config.enabled ? "bg-blue-600" : "bg-slate-700"}`}
+              className={`w-12 h-6 rounded-full p-1 transition-colors ${config.enabled ? "bg-accent" : "bg-subtle"}`}
               onClick={() => updateConfig("enabled", !config.enabled)}
             >
               <div
-                className={`w-4 h-4 bg-white rounded-full transition-transform ${config.enabled ? "translate-x-6" : "translate-x-0"}`}
+                className={`w-4 h-4 bg-surface rounded-full transition-transform ${config.enabled ? "translate-x-6" : "translate-x-0"}`}
               />
             </div>
           </label>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent text-primary rounded-lg transition disabled:opacity-50"
           >
             <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
           </button>
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b border-slate-700">
+      <div className="flex gap-2 mb-6 border-b border-default">
         <button
           onClick={() => setActiveTab("config")}
-          className={`px-4 py-2 border-b-2 font-medium text-sm transition ${activeTab === "config" ? "border-blue-500 text-blue-400" : "border-transparent text-slate-400 hover:text-slate-300"}`}
+          className={`px-4 py-2 border-b-2 font-medium text-sm transition ${activeTab === "config" ? "border-accent text-accent" : "border-transparent text-muted hover:text-muted"}`}
         >
           SMTP Configuration
         </button>
         <button
           onClick={() => setActiveTab("notifications")}
-          className={`px-4 py-2 border-b-2 font-medium text-sm transition ${activeTab === "notifications" ? "border-blue-500 text-blue-400" : "border-transparent text-slate-400 hover:text-slate-300"}`}
+          className={`px-4 py-2 border-b-2 font-medium text-sm transition ${activeTab === "notifications" ? "border-accent text-accent" : "border-transparent text-muted hover:text-muted"}`}
         >
           Notification Triggers
         </button>
         <button
           onClick={() => setActiveTab("templates")}
-          className={`px-4 py-2 border-b-2 font-medium text-sm transition ${activeTab === "templates" ? "border-blue-500 text-blue-400" : "border-transparent text-slate-400 hover:text-slate-300"}`}
+          className={`px-4 py-2 border-b-2 font-medium text-sm transition ${activeTab === "templates" ? "border-accent text-accent" : "border-transparent text-muted hover:text-muted"}`}
         >
           Email Templates
         </button>
@@ -526,7 +526,7 @@ const Integrations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Email Delivery
                 </label>
                 <select
@@ -534,19 +534,19 @@ const Integrations = () => {
                   onChange={(event) =>
                     updateConfig("email_provider", event.target.value)
                   }
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                 >
                   <option value="smtp">SMTP</option>
                   <option value="gmail_api">Gmail API (OAuth)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Email Address
                 </label>
                 <div className="relative">
                   <Mail
-                    className="absolute left-3 top-2.5 text-slate-500"
+                    className="absolute left-3 top-2.5 text-muted"
                     size={18}
                   />
                   <input
@@ -556,18 +556,18 @@ const Integrations = () => {
                       updateConfig("email_address", e.target.value)
                     }
                     placeholder="e.g., no-reply@yourschool.edu"
-                    className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full pl-10 pr-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Admin Notification Email
                 </label>
                 <div className="relative">
                   <Mail
-                    className="absolute left-3 top-2.5 text-slate-500"
+                    className="absolute left-3 top-2.5 text-muted"
                     size={18}
                   />
                   <input
@@ -577,10 +577,10 @@ const Integrations = () => {
                       updateConfig("admin_email", e.target.value)
                     }
                     placeholder="e.g., admin@yourschool.edu"
-                    className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full pl-10 pr-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted mt-1">
                   Receive system notifications (new user accounts, critical
                   alerts).
                 </p>
@@ -588,12 +588,12 @@ const Integrations = () => {
 
               {config.email_provider !== "gmail_api" && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     SMTP Password
                   </label>
                   <div className="relative">
                     <Key
-                      className="absolute left-3 top-2.5 text-slate-500"
+                      className="absolute left-3 top-2.5 text-muted"
                       size={18}
                     />
                     <input
@@ -603,10 +603,10 @@ const Integrations = () => {
                         updateConfig("app_password", e.target.value)
                       }
                       placeholder="Mailbox password or provider app password"
-                      className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full pl-10 pr-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     For hosted mailboxes, use the mailbox account password. Use
                     an app password only when your email provider requires one.
                   </p>
@@ -614,37 +614,37 @@ const Integrations = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Sender Name
                 </label>
                 <input
                   type="text"
                   value={config.sender_name}
                   onChange={(e) => updateConfig("sender_name", e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                 />
               </div>
-              <div className="pt-6 border-t border-slate-700/60">
-                <h3 className="text-sm font-semibold text-slate-200 mb-3">
+              <div className="pt-6 border-t border-default">
+                <h3 className="text-sm font-semibold text-primary mb-3">
                   WhatsApp Integration
                 </h3>
                 <label className="flex items-center gap-2 cursor-pointer mb-4">
-                  <span className="text-sm text-slate-300">
+                  <span className="text-sm text-muted">
                     Enable WhatsApp Service
                   </span>
                   <div
-                    className={`w-12 h-6 rounded-full p-1 transition-colors ${whatsappConfig.enabled ? "bg-green-600" : "bg-slate-700"}`}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${whatsappConfig.enabled ? "bg-success" : "bg-subtle"}`}
                     onClick={() =>
                       updateWhatsappConfig("enabled", !whatsappConfig.enabled)
                     }
                   >
                     <div
-                      className={`w-4 h-4 bg-white rounded-full transition-transform ${whatsappConfig.enabled ? "translate-x-6" : "translate-x-0"}`}
+                      className={`w-4 h-4 bg-surface rounded-full transition-transform ${whatsappConfig.enabled ? "translate-x-6" : "translate-x-0"}`}
                     />
                   </div>
                 </label>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     WhatsApp Provider
                   </label>
                   <input
@@ -654,17 +654,17 @@ const Integrations = () => {
                       updateWhatsappConfig("provider", e.target.value)
                     }
                     placeholder="twilio"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                   {config.gmail_client_secret_configured &&
                     !config.gmail_client_secret && (
-                      <p className="text-xs text-emerald-300 mt-1">
+                      <p className="text-xs text-success mt-1">
                         A client secret is saved. Leave this blank to keep it.
                       </p>
                     )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Twilio Account SID
                   </label>
                   <input
@@ -674,11 +674,11 @@ const Integrations = () => {
                       updateWhatsappConfig("account_sid", e.target.value)
                     }
                     placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Twilio Auth Token
                   </label>
                   <input
@@ -688,11 +688,11 @@ const Integrations = () => {
                       updateWhatsappConfig("auth_token", e.target.value)
                     }
                     placeholder="Your Twilio auth token"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     WhatsApp From Number
                   </label>
                   <input
@@ -702,15 +702,15 @@ const Integrations = () => {
                       updateWhatsappConfig("from_number", e.target.value)
                     }
                     placeholder="+1234567890 or whatsapp:+1234567890"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Use this when sending from a WhatsApp-enabled Twilio number.
                     Leave empty if using Messaging Service SID.
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Messaging Service SID
                   </label>
                   <input
@@ -723,15 +723,15 @@ const Integrations = () => {
                       )
                     }
                     placeholder="MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Use this if you prefer Twilio Messaging Service instead of a
                     specific WhatsApp sender number.
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Admin WhatsApp Phone
                   </label>
                   <input
@@ -744,10 +744,10 @@ const Integrations = () => {
                       )
                     }
                     placeholder="+1234567890"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-2">
+                <p className="text-xs text-muted mt-2">
                   Use Twilio account details to send WhatsApp messages. The
                   provider supports Twilio by default.
                 </p>
@@ -756,13 +756,13 @@ const Integrations = () => {
 
             {config.email_provider === "gmail_api" ? (
               <div className="space-y-4">
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted">
                   Connect your Gmail account once. Google will ask for
                   permission, then the app stores its token securely for ongoing
                   mail delivery.
                 </p>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Google OAuth Client ID
                   </label>
                   <input
@@ -772,11 +772,11 @@ const Integrations = () => {
                     onChange={(event) =>
                       updateConfig("gmail_client_id", event.target.value)
                     }
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Google OAuth Client Secret
                   </label>
                   <input
@@ -786,7 +786,7 @@ const Integrations = () => {
                     onChange={(event) =>
                       updateConfig("gmail_client_secret", event.target.value)
                     }
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                   />
                 </div>
                 <button
@@ -798,7 +798,7 @@ const Integrations = () => {
                     (!config.gmail_client_secret &&
                       !config.gmail_client_secret_configured)
                   }
-                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-primary hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Key size={16} />
                   {connectingGmail
@@ -808,12 +808,12 @@ const Integrations = () => {
                       : "Connect Gmail"}
                 </button>
                 {config.gmail_api_connected && (
-                  <p className="text-sm text-emerald-300">
+                  <p className="text-sm text-success">
                     Connected as{" "}
                     {config.gmail_authorized_email || config.email_address}.
                   </p>
                 )}
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   Add this redirect URI to your Google OAuth client:
                   https://school-mis-backend.onrender.com/v1/settings/email/gmail/callback
                 </p>
@@ -821,12 +821,12 @@ const Integrations = () => {
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     SMTP Host
                   </label>
                   <div className="relative">
                     <Server
-                      className="absolute left-3 top-2.5 text-slate-500"
+                      className="absolute left-3 top-2.5 text-muted"
                       size={18}
                     />
                     <input
@@ -835,14 +835,14 @@ const Integrations = () => {
                       onChange={(e) =>
                         updateConfig("smtp_host", e.target.value)
                       }
-                      className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full pl-10 pr-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       SMTP Port
                     </label>
                     <input
@@ -851,14 +851,14 @@ const Integrations = () => {
                       onChange={(e) =>
                         updateConfig("smtp_port", parseInt(e.target.value))
                       }
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       Connection Security
                     </label>
-                    <div className="flex items-center h-10 px-3 bg-slate-800 border border-slate-700 rounded-lg">
+                    <div className="flex items-center h-10 px-3 bg-subtle border border-default rounded-lg">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
@@ -866,9 +866,9 @@ const Integrations = () => {
                           onChange={(e) =>
                             updateConfig("smtp_secure", e.target.checked)
                           }
-                          className="rounded border-slate-600"
+                          className="rounded border-default"
                         />
-                        <span className="text-sm text-slate-300">SSL/TLS</span>
+                        <span className="text-sm text-muted">SSL/TLS</span>
                       </label>
                     </div>
                   </div>
@@ -880,7 +880,7 @@ const Integrations = () => {
 
         {activeTab === "notifications" && (
           <div className="max-w-3xl">
-            <p className="text-slate-400 text-sm mb-6">
+            <p className="text-muted text-sm mb-6">
               Select which events should automatically trigger an email
               notification.
             </p>
@@ -915,24 +915,24 @@ const Integrations = () => {
               ].map((item) => (
                 <div
                   key={item.key}
-                  className="flex items-center justify-between p-4 bg-slate-800/50 border border-slate-700/60 rounded-xl hover:bg-slate-800 transition"
+                  className="flex items-center justify-between p-4 bg-subtle border border-default rounded-xl hover:bg-subtle transition"
                 >
                   <div className="flex items-start gap-4">
                     <div
-                      className={`p-2 rounded-lg ${config.notifications[item.key] ? "bg-blue-500/20 text-blue-400" : "bg-slate-700/50 text-slate-500"}`}
+                      className={`p-2 rounded-lg ${config.notifications[item.key] ? "bg-accent-soft text-accent" : "bg-subtle text-muted"}`}
                     >
                       <Send size={20} />
                     </div>
                     <div>
-                      <h4 className="text-slate-200 font-medium">
+                      <h4 className="text-primary font-medium">
                         {item.label}
                       </h4>
-                      <p className="text-slate-400 text-sm">{item.desc}</p>
+                      <p className="text-muted text-sm">{item.desc}</p>
                     </div>
                   </div>
                   <label className="flex items-center cursor-pointer">
                     <div
-                      className={`w-12 h-6 rounded-full p-1 transition-colors ${config.notifications[item.key] ? "bg-blue-600" : "bg-slate-700"}`}
+                      className={`w-12 h-6 rounded-full p-1 transition-colors ${config.notifications[item.key] ? "bg-accent" : "bg-subtle"}`}
                       onClick={() =>
                         updateNotification(
                           item.key,
@@ -941,7 +941,7 @@ const Integrations = () => {
                       }
                     >
                       <div
-                        className={`w-4 h-4 bg-white rounded-full transition-transform ${config.notifications[item.key] ? "translate-x-6" : "translate-x-0"}`}
+                        className={`w-4 h-4 bg-surface rounded-full transition-transform ${config.notifications[item.key] ? "translate-x-6" : "translate-x-0"}`}
                       />
                     </div>
                   </label>
@@ -949,7 +949,7 @@ const Integrations = () => {
               ))}
             </div>
             <div className="mt-8">
-              <p className="text-slate-400 text-sm mb-6">
+              <p className="text-muted text-sm mb-6">
                 Select which events should automatically trigger a WhatsApp
                 notification.
               </p>
@@ -983,24 +983,24 @@ const Integrations = () => {
                 ].map((item) => (
                   <div
                     key={`whatsapp-${item.key}`}
-                    className="flex items-center justify-between p-4 bg-slate-800/50 border border-slate-700/60 rounded-xl hover:bg-slate-800 transition"
+                    className="flex items-center justify-between p-4 bg-subtle border border-default rounded-xl hover:bg-subtle transition"
                   >
                     <div className="flex items-start gap-4">
                       <div
-                        className={`p-2 rounded-lg ${whatsappConfig.notifications[item.key] ? "bg-green-500/20 text-green-400" : "bg-slate-700/50 text-slate-500"}`}
+                        className={`p-2 rounded-lg ${whatsappConfig.notifications[item.key] ? "bg-success text-success" : "bg-subtle text-muted"}`}
                       >
                         <Send size={20} />
                       </div>
                       <div>
-                        <h4 className="text-slate-200 font-medium">
+                        <h4 className="text-primary font-medium">
                           {item.label}
                         </h4>
-                        <p className="text-slate-400 text-sm">{item.desc}</p>
+                        <p className="text-muted text-sm">{item.desc}</p>
                       </div>
                     </div>
                     <label className="flex items-center cursor-pointer">
                       <div
-                        className={`w-12 h-6 rounded-full p-1 transition-colors ${whatsappConfig.notifications[item.key] ? "bg-green-600" : "bg-slate-700"}`}
+                        className={`w-12 h-6 rounded-full p-1 transition-colors ${whatsappConfig.notifications[item.key] ? "bg-success" : "bg-subtle"}`}
                         onClick={() =>
                           updateWhatsappNotification(
                             item.key,
@@ -1009,7 +1009,7 @@ const Integrations = () => {
                         }
                       >
                         <div
-                          className={`w-4 h-4 bg-white rounded-full transition-transform ${whatsappConfig.notifications[item.key] ? "translate-x-6" : "translate-x-0"}`}
+                          className={`w-4 h-4 bg-surface rounded-full transition-transform ${whatsappConfig.notifications[item.key] ? "translate-x-6" : "translate-x-0"}`}
                         />
                       </div>
                     </label>
@@ -1024,7 +1024,7 @@ const Integrations = () => {
           <div className="flex flex-col md:flex-row gap-6 max-w-6xl">
             {/* Template List */}
             <div className="w-full md:w-1/3 flex flex-col gap-2">
-              <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-2">
                 Available Templates
               </h3>
               {TEMPLATE_KEYS.map((tpl) => (
@@ -1032,7 +1032,7 @@ const Integrations = () => {
                   key={tpl.key}
                   type="button"
                   onClick={() => setSelectedTemplateKey(tpl.key)}
-                  className={`text-left px-4 py-3 rounded-lg transition-colors ${selectedTemplateKey === tpl.key ? "bg-blue-600/20 border-blue-500 text-blue-300 border" : "bg-slate-800 border-slate-700 border text-slate-300 hover:bg-slate-700"}`}
+                  className={`text-left px-4 py-3 rounded-lg transition-colors ${selectedTemplateKey === tpl.key ? "bg-accent-soft border-accent text-accent border" : "bg-subtle border-default border text-muted hover:bg-subtle"}`}
                 >
                   <div className="font-medium">{tpl.label}</div>
                   <div className="text-xs opacity-70 mt-1 truncate">
@@ -1043,28 +1043,28 @@ const Integrations = () => {
             </div>
 
             {/* Template Editor */}
-            <div className="w-full md:w-2/3 bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+            <div className="w-full md:w-2/3 bg-subtle border border-default rounded-xl p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-200 capitalize">
+                  <h3 className="text-lg font-semibold text-primary capitalize">
                     {selectedTemplateKey.replace(/_/g, " ")} Template
                   </h3>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-muted">
                     Edit the template for email or WhatsApp delivery.
                   </p>
                 </div>
-                <div className="inline-flex rounded-lg bg-slate-900 border border-slate-700 overflow-hidden">
+                <div className="inline-flex rounded-lg bg-surface border border-default overflow-hidden">
                   <button
                     type="button"
                     onClick={() => updateTemplateChannel("email")}
-                    className={`px-4 py-2 text-sm ${templateChannel === "email" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-2 text-sm ${templateChannel === "email" ? "bg-accent text-primary" : "text-muted hover:text-primary"}`}
                   >
                     Email
                   </button>
                   <button
                     type="button"
                     onClick={() => updateTemplateChannel("whatsapp")}
-                    className={`px-4 py-2 text-sm ${templateChannel === "whatsapp" ? "bg-green-600 text-white" : "text-slate-400 hover:text-slate-200"}`}
+                    className={`px-4 py-2 text-sm ${templateChannel === "whatsapp" ? "bg-success text-primary" : "text-muted hover:text-primary"}`}
                   >
                     WhatsApp
                   </button>
@@ -1079,13 +1079,13 @@ const Integrations = () => {
                     onChange={(event) => setTestRecipient(event.target.value)}
                     placeholder="Send a test to email address"
                     aria-label="Test email recipient"
-                    className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="min-w-0 flex-1 rounded-lg border border-default bg-surface px-3 py-2 text-sm text-primary placeholder:text-muted focus:border-accent focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleSendTest}
                     disabled={sendingTest}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-default px-4 py-2 text-sm font-medium text-primary hover:bg-subtle disabled:opacity-50"
                   >
                     <Send size={15} />{" "}
                     {sendingTest ? "Sending..." : "Send test"}
@@ -1096,7 +1096,7 @@ const Integrations = () => {
               <div className="space-y-4">
                 {templateChannel === "email" && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted mb-1">
                       Email Subject
                     </label>
                     <input
@@ -1113,13 +1113,13 @@ const Integrations = () => {
                           e.target.value,
                         )
                       }
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent"
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     {templateChannel === "email"
                       ? "Email body"
                       : "Message body"}
@@ -1151,16 +1151,16 @@ const Integrations = () => {
                           e.target.value,
                         )
                       }
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
+                      className="w-full px-3 py-2 bg-surface border border-default rounded-lg text-primary focus:outline-none focus:border-accent font-mono text-sm"
                     />
                   )}
                 </div>
 
-                <div className="p-4 bg-blue-900/20 border border-blue-500/20 rounded-lg">
-                  <h4 className="text-sm font-semibold text-blue-400 mb-2">
+                <div className="p-4 bg-accent-soft border border-accent rounded-lg">
+                  <h4 className="text-sm font-semibold text-accent mb-2">
                     Available Variables
                   </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-muted leading-relaxed">
                     Select a variable above to insert it at the cursor. Its
                     value is supplied by the matching system event.
                   </p>

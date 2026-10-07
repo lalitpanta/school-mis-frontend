@@ -340,16 +340,16 @@ const SuperAdminTenants = () => {
   return (
     <div
       style={{
-        background: "var(--bg-main)",
+        background: "var(--bg-page)",
         minHeight: "100vh",
-        color: "var(--text-1)",
+        color: "var(--text-primary)",
       }}
       className="p-8"
     >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
         <div>
           <h1 className="text-4xl font-bold mb-2">Tenant Management</h1>
-          <p style={{ color: "#94a3b8" }}>
+          <p style={{ color: "var(--accent)" }}>
             Create, edit, and manage tenant accounts from this dedicated module.
           </p>
         </div>
@@ -360,7 +360,7 @@ const SuperAdminTenants = () => {
               resetForm();
             }
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-primary hover:bg-accent transition"
         >
           <Plus size={18} />
           {showCreateForm ? "Hide form" : "New Tenant"}
@@ -373,7 +373,7 @@ const SuperAdminTenants = () => {
           style={{
             background: "rgba(239,68,68,0.12)",
             border: "1px solid rgba(239,68,68,0.3)",
-            color: "#f87171",
+            color: "var(--danger)",
           }}
         >
           <AlertTriangle size={18} />
@@ -386,30 +386,30 @@ const SuperAdminTenants = () => {
           <div
             className="rounded-xl p-6"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">All tenants</h2>
-              <div className="text-sm text-slate-400">
+              <div className="text-sm text-muted">
                 {tenants.length} tenants
               </div>
             </div>
             {loading ? (
               <div className="flex justify-center py-12">
-                <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
               </div>
             ) : tenants.length === 0 ? (
               <div className="text-center py-12">
                 <Building2 size={48} className="mx-auto mb-4 opacity-50" />
-                <p style={{ color: "var(--text-2)" }}>No tenants found</p>
+                <p style={{ color: "var(--text-muted)" }}>No tenants found</p>
               </div>
             ) : (
               <div className="overflow-hidden rounded-lg">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="text-slate-400 border-b border-slate-700">
+                    <tr className="text-muted border-b border-default">
                       <th className="py-3 px-4">Tenant</th>
                       <th className="py-3 px-4">Email</th>
                       <th className="py-3 px-4">Database</th>
@@ -425,7 +425,7 @@ const SuperAdminTenants = () => {
                       >
                         <td className="py-4 px-4 align-top">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-md bg-slate-700 flex items-center justify-center text-sm font-bold text-white">
+                            <div className="w-10 h-10 rounded-md bg-subtle flex items-center justify-center text-sm font-bold text-primary">
                               {tenant.name
                                 ?.split(" ")
                                 .map((s) => s[0])
@@ -435,14 +435,14 @@ const SuperAdminTenants = () => {
                             </div>
                             <div>
                               <div className="font-semibold">{tenant.name}</div>
-                              <div className="text-xs text-slate-400">
+                              <div className="text-xs text-muted">
                                 {tenant.slug}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="py-4 px-4 align-top">{tenant.email}</td>
-                        <td className="py-4 px-4 align-top text-slate-400">
+                        <td className="py-4 px-4 align-top text-muted">
                           {tenant.database_name}
                         </td>
                         <td className="py-4 px-4 align-top">
@@ -450,8 +450,8 @@ const SuperAdminTenants = () => {
                             onClick={() => handleToggleTenantStatus(tenant)}
                             className={`px-2 py-1 rounded text-xs font-semibold ${
                               tenant.is_active
-                                ? "bg-emerald-500/10 text-emerald-300"
-                                : "bg-red-500/10 text-red-300"
+                                ? "bg-success text-success"
+                                : "bg-danger-soft text-danger"
                             }`}
                           >
                             {tenant.is_active ? "Active" : "Inactive"}
@@ -463,8 +463,8 @@ const SuperAdminTenants = () => {
                               onClick={() => handleToggleTenantStatus(tenant)}
                               className={`p-2 rounded-lg transition ${
                                 tenant.is_active
-                                  ? "bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
-                                  : "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                                  ? "bg-warning-soft text-warning hover:bg-warning-soft"
+                                  : "bg-success text-success hover:bg-success"
                               }`}
                               title={
                                 tenant.is_active
@@ -480,21 +480,21 @@ const SuperAdminTenants = () => {
                             </button>
                             <button
                               onClick={() => handleEditTenant(tenant)}
-                              className="p-2 rounded-lg bg-indigo-600/10 text-indigo-300 hover:bg-indigo-600/20 transition"
+                              className="p-2 rounded-lg bg-accent-soft text-accent hover:bg-accent-soft transition"
                               title="Edit tenant"
                             >
                               <Edit2 size={16} />
                             </button>
                             <button
                               onClick={() => handleBackupTenant(tenant)}
-                              className="p-2 rounded-lg bg-emerald-600/10 text-emerald-300 hover:bg-emerald-600/20 transition"
+                              className="p-2 rounded-lg bg-success text-success hover:bg-success transition"
                               title="Download tenant backup as JSON"
                             >
                               <Download size={16} />
                             </button>
                             <button
                               onClick={() => handleDeleteTenant(tenant)}
-                              className="p-2 rounded-lg bg-slate-700/70 text-slate-200 hover:bg-slate-700 transition"
+                              className="p-2 rounded-lg bg-subtle text-primary hover:bg-subtle transition"
                               title="Soft delete tenant"
                             >
                               <Trash2 size={16} />
@@ -503,7 +503,7 @@ const SuperAdminTenants = () => {
                               onClick={() =>
                                 handlePermanentDeleteInitiate(tenant)
                               }
-                              className="p-2 rounded-lg bg-red-600/10 text-red-300 hover:bg-red-600/20 transition"
+                              className="p-2 rounded-lg bg-danger-soft text-danger hover:bg-danger-soft transition"
                               title="Permanently delete tenant"
                             >
                               <AlertTriangle size={16} />
@@ -524,8 +524,8 @@ const SuperAdminTenants = () => {
             <div
               className="rounded-xl p-6 mb-6"
               style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-card)",
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-default)",
               }}
             >
               <div className="flex items-center justify-between mb-4">
@@ -534,7 +534,7 @@ const SuperAdminTenants = () => {
                     {editingTenant ? "Edit Tenant" : "Create New Tenant"}
                   </h2>
                   {editingTenant && (
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-muted">
                       Database: {editingTenant.database_name}
                     </p>
                   )}
@@ -542,7 +542,7 @@ const SuperAdminTenants = () => {
                 {editingTenant && (
                   <button
                     onClick={handleCancelEdit}
-                    className="px-3 py-1 rounded-lg bg-slate-700 text-sm text-slate-200 hover:bg-slate-600 transition"
+                    className="px-3 py-1 rounded-lg bg-subtle text-sm text-primary hover:bg-selected transition"
                   >
                     Cancel
                   </button>
@@ -563,9 +563,9 @@ const SuperAdminTenants = () => {
                     })
                   }
                   placeholder="Tenant name"
-                  className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                  className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                   style={{
-                    background: "#1e293b",
+                    background: "var(--accent-soft)",
                     border: "1px solid rgba(255,255,255,0.08)",
                   }}
                 />
@@ -576,9 +576,9 @@ const SuperAdminTenants = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="tenant@example.com"
-                  className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                  className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                   style={{
-                    background: "#1e293b",
+                    background: "var(--accent-soft)",
                     border: "1px solid rgba(255,255,255,0.08)",
                   }}
                 />
@@ -593,9 +593,9 @@ const SuperAdminTenants = () => {
                       })
                     }
                     placeholder="slug"
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                     style={{
-                      background: "#1e293b",
+                      background: "var(--accent-soft)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   />
@@ -611,15 +611,15 @@ const SuperAdminTenants = () => {
                       })
                     }
                     placeholder="database_name"
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                     style={{
-                      background: "#1e293b",
+                      background: "var(--accent-soft)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-2">
+                  <label className="block text-xs text-muted mb-2">
                     Password
                   </label>
                   <div className="relative">
@@ -630,9 +630,9 @@ const SuperAdminTenants = () => {
                         setFormData({ ...formData, password: e.target.value })
                       }
                       placeholder="Min 6 characters"
-                      className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none pr-10"
+                      className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none pr-10"
                       style={{
-                        background: "#1e293b",
+                        background: "var(--accent-soft)",
                         border: "1px solid rgba(255,255,255,0.08)",
                       }}
                     />
@@ -645,7 +645,7 @@ const SuperAdminTenants = () => {
                     </button>
                   </div>
                   {editingTenant && (
-                    <p className="text-xs mt-2" style={{ color: "#94a3b8" }}>
+                    <p className="text-xs mt-2" style={{ color: "var(--accent)" }}>
                       Leave password blank to keep the current tenant password.
                     </p>
                   )}
@@ -669,9 +669,9 @@ const SuperAdminTenants = () => {
                           : ["dashboard", "calendar", "attendance", "settings"],
                       });
                     }}
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none mb-4"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none mb-4"
                     style={{
-                      background: "#1e293b",
+                      background: "var(--accent-soft)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   >
@@ -714,9 +714,9 @@ const SuperAdminTenants = () => {
                               }
                             }}
                             className="w-4 h-4 rounded"
-                            style={{ accentColor: "#6366f1" }}
+                            style={{ accentColor: "var(--accent)" }}
                           />
-                          <span className="text-xs text-slate-300 capitalize">
+                          <span className="text-xs text-muted capitalize">
                             {module.key}
                           </span>
                         </label>
@@ -724,8 +724,8 @@ const SuperAdminTenants = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                    <p className="text-sm text-indigo-300">
+                  <div className="p-4 rounded-lg bg-accent-soft border border-accent">
+                    <p className="text-sm text-accent">
                       Modules are automatically managed by the selected package.
                     </p>
                   </div>
@@ -735,7 +735,7 @@ const SuperAdminTenants = () => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 py-2 rounded-lg text-sm font-bold bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-50"
+                    className="flex-1 py-2 rounded-lg text-sm font-bold bg-accent text-primary hover:bg-accent disabled:opacity-50"
                   >
                     {submitting
                       ? editingTenant
@@ -749,7 +749,7 @@ const SuperAdminTenants = () => {
                     <button
                       type="button"
                       onClick={handleCancelEdit}
-                      className="px-4 py-2 rounded-lg bg-slate-700 text-white"
+                      className="px-4 py-2 rounded-lg bg-subtle text-primary"
                     >
                       Cancel
                     </button>
@@ -763,18 +763,18 @@ const SuperAdminTenants = () => {
             <div
               className="rounded-xl p-4"
               style={{
-                background: "#0f172a",
+                background: "var(--accent-soft)",
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              <div className="text-sm text-slate-300">Tenant Created</div>
-              <div className="text-xs text-slate-400 mt-2">
+              <div className="text-sm text-muted">Tenant Created</div>
+              <div className="text-xs text-muted mt-2">
                 Slug: {createdInfo.slug}
               </div>
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-muted">
                 Email: {createdInfo.email}
               </div>
-              <div className="text-xs text-slate-400 mt-1">
+              <div className="text-xs text-muted mt-1">
                 Password:{" "}
                 <span className="ml-2">
                   {showCreatedPassword
@@ -801,7 +801,7 @@ const SuperAdminTenants = () => {
                 }}
                 className="mt-3 px-3 py-2 rounded-lg text-sm"
                 style={{
-                  background: "#1e293b",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
@@ -813,26 +813,26 @@ const SuperAdminTenants = () => {
       </div>
 
       {showDeleteConfirmModal && permanentDeleteTenant && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center z-50">
           <div
             className="rounded-xl p-6 max-w-md w-full mx-4"
             style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-card)",
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
             }}
           >
             <div className="flex items-start gap-3 mb-4">
               <AlertTriangle
                 size={24}
-                className="text-orange-500 shrink-0 mt-1"
+                className="text-warning shrink-0 mt-1"
               />
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-primary">
                   Confirm Permanent Deletion
                 </h3>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-sm text-muted mt-1">
                   This will permanently delete the tenant{" "}
-                  <span className="font-semibold text-red-300">
+                  <span className="font-semibold text-danger">
                     {permanentDeleteTenant.name}
                   </span>{" "}
                   and its database.
@@ -843,12 +843,12 @@ const SuperAdminTenants = () => {
             <div
               className="mb-4 p-3 rounded-lg"
               style={{
-                background: "#1e293b",
+                background: "var(--accent-soft)",
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              <label className="block text-sm text-slate-400 mb-2">
-                Type <span className="font-bold text-white">"delete"</span> to
+              <label className="block text-sm text-muted mb-2">
+                Type <span className="font-bold text-primary">"delete"</span> to
                 confirm:
               </label>
               <input
@@ -857,9 +857,9 @@ const SuperAdminTenants = () => {
                 onChange={(e) => setDeleteConfirmationText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleConfirmDelete()}
                 placeholder='Type "delete"'
-                className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none"
+                className="w-full px-3 py-2 rounded-lg text-sm text-primary outline-none"
                 style={{
-                  background: "#0f172a",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
                 autoFocus
@@ -871,9 +871,9 @@ const SuperAdminTenants = () => {
                 onClick={handleCancelPermanentDelete}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium"
                 style={{
-                  background: "#1e293b",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  color: "#cbd5e1",
+                  color: "var(--text-primary)",
                 }}
               >
                 Cancel
@@ -884,7 +884,7 @@ const SuperAdminTenants = () => {
                   String(deleteConfirmationText).trim().toLowerCase() !==
                   "delete"
                 }
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-primary"
                 style={{
                   background:
                     String(deleteConfirmationText).trim().toLowerCase() ===
@@ -912,51 +912,51 @@ const SuperAdminTenants = () => {
       )}
 
       {showFinalConfirmModal && permanentDeleteTenant && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center z-50">
           <div
             className="rounded-xl p-6 max-w-md w-full mx-4"
             style={{
-              background: "#0f172a",
+              background: "var(--accent-soft)",
               border: "2px solid rgba(220,38,38,0.5)",
             }}
           >
             <div className="flex items-start gap-3 mb-4">
-              <AlertTriangle size={28} className="text-red-500 shrink-0 mt-1" />
+              <AlertTriangle size={28} className="text-danger shrink-0 mt-1" />
               <div>
-                <h3 className="text-lg font-bold text-red-400">
+                <h3 className="text-lg font-bold text-danger">
                   Final Warning
                 </h3>
-                <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                <p className="text-sm text-muted mt-2 leading-relaxed">
                   You are about to{" "}
                   <span className="font-bold">permanently delete</span> the
                   tenant{" "}
-                  <span className="font-semibold text-red-300">
+                  <span className="font-semibold text-danger">
                     {permanentDeleteTenant.name}
                   </span>
                   .
                 </p>
-                <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                <p className="text-sm text-muted mt-2 leading-relaxed">
                   This action will:
                 </p>
-                <ul className="text-sm text-slate-300 mt-2 ml-4 space-y-1">
+                <ul className="text-sm text-muted mt-2 ml-4 space-y-1">
                   <li>
-                    • <span className="text-red-300">Drop the database</span>{" "}
+                    • <span className="text-danger">Drop the database</span>{" "}
                     {permanentDeleteTenant.database_name}
                   </li>
                   <li>
                     •{" "}
-                    <span className="text-red-300">
+                    <span className="text-danger">
                       Delete all tenant data permanently
                     </span>
                   </li>
                   <li>
                     •{" "}
-                    <span className="text-red-300">
+                    <span className="text-danger">
                       Remove the tenant record from the system
                     </span>
                   </li>
                   <li>
-                    • <span className="text-red-300">Cannot be undone</span>
+                    • <span className="text-danger">Cannot be undone</span>
                   </li>
                 </ul>
               </div>
@@ -967,9 +967,9 @@ const SuperAdminTenants = () => {
                 onClick={handleCancelPermanentDelete}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium"
                 style={{
-                  background: "#1e293b",
+                  background: "var(--accent-soft)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  color: "#cbd5e1",
+                  color: "var(--text-primary)",
                 }}
               >
                 Cancel
@@ -977,7 +977,7 @@ const SuperAdminTenants = () => {
               <button
                 onClick={handleExecutePermanentDelete}
                 disabled={deletingPermanently}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-primary flex items-center justify-center gap-2"
                 style={{
                   background: "rgba(220,38,38,0.9)",
                   border: "1px solid rgba(220,38,38,0.7)",
@@ -986,7 +986,7 @@ const SuperAdminTenants = () => {
                 }}
               >
                 {deletingPermanently ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-input/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <Trash2 size={16} />
                 )}

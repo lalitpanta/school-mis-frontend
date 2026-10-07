@@ -45,13 +45,13 @@ const AdminRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-main)",
+          background: "var(--bg-page)",
           minHeight: "100vh",
-          color: "var(--text-1)",
+          color: "var(--text-primary)",
         }}
         className="flex items-center justify-center"
       >
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -73,13 +73,13 @@ const SuperAdminRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-main)",
+          background: "var(--bg-page)",
           minHeight: "100vh",
-          color: "var(--text-1)",
+          color: "var(--text-primary)",
         }}
         className="flex items-center justify-center"
       >
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -101,13 +101,13 @@ const TenantRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-main)",
+          background: "var(--bg-page)",
           minHeight: "100vh",
-          color: "var(--text-1)",
+          color: "var(--text-primary)",
         }}
         className="flex items-center justify-center"
       >
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -129,13 +129,13 @@ const StudentRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-main)",
+          background: "var(--bg-page)",
           minHeight: "100vh",
-          color: "var(--text-1)",
+          color: "var(--text-primary)",
         }}
         className="flex items-center justify-center"
       >
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -151,7 +151,7 @@ const TeacherPortalRoute = ({ element }) => {
   const { isAuthenticated, isStaff, user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="grid min-h-screen place-items-center bg-slate-950 text-slate-200">
+      <div className="grid min-h-screen place-items-center bg-surface text-primary">
         Loading teacher workspace...
       </div>
     );
@@ -174,13 +174,13 @@ const ProtectedRoute = ({ element }) => {
     return (
       <div
         style={{
-          background: "var(--bg-main)",
+          background: "var(--bg-page)",
           minHeight: "100vh",
-          color: "var(--text-1)",
+          color: "var(--text-primary)",
         }}
         className="flex items-center justify-center"
       >
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -197,10 +197,10 @@ const ModuleRoute = ({ element, moduleKey }) => {
   if (loading) {
     return (
       <div
-        style={{ background: "#070b14", minHeight: "100vh" }}
-        className="flex items-center justify-center text-white"
+        style={{ background: "var(--bg-page)", minHeight: "100vh" }}
+        className="flex items-center justify-center text-primary"
       >
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -591,10 +591,10 @@ const AppRoutes = () => {
         element={
           loading ? (
             <div
-              style={{ background: "#070b14", minHeight: "100vh" }}
-              className="flex items-center justify-center text-white"
+              style={{ background: "var(--bg-page)", minHeight: "100vh" }}
+              className="flex items-center justify-center text-primary"
             >
-              <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-accent border-t-accent rounded-full animate-spin" />
             </div>
           ) : isAuthenticated ? (
             isAdmin() ? (

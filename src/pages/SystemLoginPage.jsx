@@ -167,18 +167,18 @@ const SystemLoginPage = () => {
   return (
     <div
       className="mis-login-page min-h-screen flex flex-col items-center justify-center px-4 py-10"
-      style={{ background: "#070b14" }}
+      style={{ background: "var(--accent-soft)" }}
     >
       <div className="text-center mb-7">
         <div className="flex items-center justify-center gap-3 mb-3">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/30">
-            <Shield size={30} className="text-white" />
+            <Shield size={30} className="text-primary" />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl font-extrabold text-primary tracking-tight">
             System Administration
           </h1>
         </div>
-        <p className="text-sm" style={{ color: "#64748b" }}>
+        <p className="text-sm" style={{ color: "var(--accent)" }}>
           Super admin and system admin login portal
         </p>
       </div>
@@ -186,30 +186,30 @@ const SystemLoginPage = () => {
       <div
         className="w-full max-w-md rounded-2xl p-7"
         style={{
-          background: "#0f172a",
+          background: "var(--accent-soft)",
           border: "1px solid rgba(255,255,255,0.08)",
           boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
         }}
       >
         <div className="flex items-center gap-2.5 mb-1">
-          <Shield size={20} className="text-indigo-400" />
-          <h2 className="text-xl font-bold text-white">System Admin Login</h2>
+          <Shield size={20} className="text-accent" />
+          <h2 className="text-xl font-bold text-primary">System Admin Login</h2>
         </div>
-        <p className="text-sm mb-5" style={{ color: "#64748b" }}>
+        <p className="text-sm mb-5" style={{ color: "var(--accent)" }}>
           Sign in with your system email and password.
         </p>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex gap-3">
+          <div className="mb-4 p-3 rounded-lg bg-danger-soft border border-danger flex gap-3">
             <AlertCircle
               size={18}
-              className="text-red-400 mt-0.5 flex-shrink-0"
+              className="text-danger mt-0.5 flex-shrink-0"
             />
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-danger">{error}</p>
           </div>
         )}
 
-        <div className="mb-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-xs text-blue-300">
+        <div className="mb-4 p-3 rounded-lg bg-accent-soft border border-accent text-xs text-accent">
           <p className="font-semibold mb-1">Demo System Admin:</p>
           <p>Email: admin@system.local</p>
           <p>Password: admin123</p>
@@ -219,7 +219,7 @@ const SystemLoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium mb-1.5"
-              style={{ color: "#94a3b8" }}
+              style={{ color: "var(--accent)" }}
             >
               Email
             </label>
@@ -230,22 +230,22 @@ const SystemLoginPage = () => {
               })}
               type="email"
               placeholder="admin@system.local"
-              className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl text-sm text-primary outline-none transition-all duration-200"
               style={{
-                background: "#1e293b",
+                background: "var(--accent-soft)",
                 border: errors.email
-                  ? "1px solid #f87171"
+                  ? "1px solid var(--danger)"
                   : "1px solid rgba(255,255,255,0.08)",
               }}
-              onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
               onBlur={(e) =>
                 (e.target.style.borderColor = errors.email
-                  ? "#f87171"
+                  ? "var(--danger)"
                   : "rgba(255,255,255,0.08)")
               }
             />
             {errors.email && (
-              <p className="text-xs mt-1 text-red-400">
+              <p className="text-xs mt-1 text-danger">
                 {errors.email.message}
               </p>
             )}
@@ -254,7 +254,7 @@ const SystemLoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium mb-1.5"
-              style={{ color: "#94a3b8" }}
+              style={{ color: "var(--accent)" }}
             >
               Password
             </label>
@@ -266,30 +266,30 @@ const SystemLoginPage = () => {
                 })}
                 type={showPass ? "text" : "password"}
                 placeholder="••••••••••••••••"
-                className="w-full px-4 py-3 pr-12 rounded-xl text-sm text-white outline-none transition-all duration-200"
+                className="w-full px-4 py-3 pr-12 rounded-xl text-sm text-primary outline-none transition-all duration-200"
                 style={{
-                  background: "#1e293b",
+                  background: "var(--accent-soft)",
                   border: errors.password
-                    ? "1px solid #f87171"
+                    ? "1px solid var(--danger)"
                     : "1px solid rgba(255,255,255,0.08)",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
                 onBlur={(e) =>
                   (e.target.style.borderColor = errors.password
-                    ? "#f87171"
+                    ? "var(--danger)"
                     : "rgba(255,255,255,0.08)")
                 }
               />
               <button
                 type="button"
                 onClick={() => setShowPass((v) => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-muted transition-colors"
               >
                 {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs mt-1 text-red-400">
+              <p className="text-xs mt-1 text-danger">
                 {errors.password.message}
               </p>
             )}
@@ -298,17 +298,17 @@ const SystemLoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl text-sm font-bold text-white mt-2 transition-all duration-200 disabled:opacity-60"
+            className="w-full py-3.5 rounded-xl text-sm font-bold text-primary mt-2 transition-all duration-200 disabled:opacity-60"
             style={{
               background: loading
-                ? "#4338ca"
-                : "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+                ? "var(--accent)"
+                : "linear-gradient(135deg, var(--accent) 0%, var(--accent) 100%)",
               boxShadow: "0 8px 24px rgba(99,102,241,0.35)",
             }}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-input/30 border-t-white rounded-full animate-spin" />
                 Signing in…
               </span>
             ) : (
@@ -321,14 +321,14 @@ const SystemLoginPage = () => {
           <button
             type="button"
             onClick={() => setShowForgotModal(true)}
-            className="font-medium text-indigo-300 hover:text-indigo-200 transition-colors"
+            className="font-medium text-accent hover:text-accent transition-colors"
           >
             Forgot password?
           </button>
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="font-medium text-indigo-300 hover:text-indigo-200 transition-colors"
+            className="font-medium text-accent hover:text-accent transition-colors"
           >
             Tenant / Staff login
           </button>
@@ -336,14 +336,14 @@ const SystemLoginPage = () => {
       </div>
 
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface px-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-input/10 bg-surface p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">
+                <p className="text-xs uppercase tracking-[0.2em] text-accent">
                   Reset access
                 </p>
-                <h3 className="mt-1 text-2xl font-bold text-white">
+                <h3 className="mt-1 text-2xl font-bold text-primary">
                   Forgot Password
                 </h3>
               </div>
@@ -353,14 +353,14 @@ const SystemLoginPage = () => {
                   setShowForgotModal(false);
                   resetForgotPasswordState();
                 }}
-                className="rounded-full p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                className="rounded-full p-2 text-muted transition hover:bg-subtle hover:text-primary"
               >
                 <X size={18} />
               </button>
             </div>
 
             {forgotMessage && (
-              <div className="mb-4 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 text-sm text-blue-200">
+              <div className="mb-4 rounded-xl border border-accent bg-accent-soft p-3 text-sm text-accent">
                 {forgotMessage}
               </div>
             )}
@@ -368,7 +368,7 @@ const SystemLoginPage = () => {
             {forgotStep === "request" && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     System admin email
                   </label>
                   <input
@@ -376,14 +376,14 @@ const SystemLoginPage = () => {
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="admin@system.local"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <button
                   type="button"
                   disabled={forgotLoading}
                   onClick={handleForgotPasswordRequest}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-primary disabled:opacity-60"
                 >
                   {forgotLoading ? "Sending OTP..." : "Send OTP"}
                 </button>
@@ -393,7 +393,7 @@ const SystemLoginPage = () => {
             {forgotStep === "verify" && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     Enter OTP
                   </label>
                   <input
@@ -401,14 +401,14 @@ const SystemLoginPage = () => {
                     value={forgotOtp}
                     onChange={(e) => setForgotOtp(e.target.value)}
                     placeholder="123456"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <button
                   type="button"
                   disabled={forgotLoading}
                   onClick={handleForgotPasswordVerify}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-primary disabled:opacity-60"
                 >
                   {forgotLoading ? "Verifying..." : "Verify OTP"}
                 </button>
@@ -418,7 +418,7 @@ const SystemLoginPage = () => {
             {forgotStep === "reset" && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     New password
                   </label>
                   <input
@@ -426,11 +426,11 @@ const SystemLoginPage = () => {
                     value={forgotNewPassword}
                     onChange={(e) => setForgotNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     Confirm password
                   </label>
                   <input
@@ -438,14 +438,14 @@ const SystemLoginPage = () => {
                     value={forgotConfirmPassword}
                     onChange={(e) => setForgotConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <button
                   type="button"
                   disabled={forgotLoading}
                   onClick={handleForgotPasswordReset}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-primary disabled:opacity-60"
                 >
                   {forgotLoading ? "Resetting..." : "Reset Password"}
                 </button>
@@ -455,7 +455,7 @@ const SystemLoginPage = () => {
         </div>
       )}
 
-      <p className="mt-8 text-xs" style={{ color: "#334155" }}>
+      <p className="mt-8 text-xs" style={{ color: "var(--accent)" }}>
         Copyright © {new Date().getFullYear()} School Management System. All
         rights reserved.
       </p>

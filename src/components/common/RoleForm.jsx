@@ -40,7 +40,7 @@ export const RoleForm = ({ role = null, onSubmit, loading = false }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Role Name */}
       <div>
-        <label className="block text-sm font-medium text-slate-200 mb-2">
+        <label className="block text-sm font-medium text-primary mb-2">
           Role Name *
         </label>
         <input
@@ -51,19 +51,19 @@ export const RoleForm = ({ role = null, onSubmit, loading = false }) => {
             setErrors({ ...errors, role_name: "" });
           }}
           placeholder="e.g., Teacher, Administrator, Student"
-          className={`w-full px-3 py-2 bg-slate-700/40 border rounded-lg text-white text-sm focus:outline-none focus:ring-2 ${
-            errors.role_name ? "border-red-500 focus:ring-red-500" : "border-slate-600/50 focus:ring-indigo-500"
+          className={`w-full px-3 py-2 bg-subtle border rounded-lg text-primary text-sm focus:outline-none focus:ring-2 ${
+            errors.role_name ? "border-danger focus:ring-focus" : "border-default focus:ring-focus"
           }`}
           disabled={loading}
         />
         {errors.role_name && (
-          <p className="text-red-400 text-sm mt-1">{errors.role_name}</p>
+          <p className="text-danger text-sm mt-1">{errors.role_name}</p>
         )}
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-slate-200 mb-2">
+        <label className="block text-sm font-medium text-primary mb-2">
           Description
         </label>
         <textarea
@@ -73,7 +73,7 @@ export const RoleForm = ({ role = null, onSubmit, loading = false }) => {
           }
           placeholder="Enter role description"
           rows="3"
-          className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full px-3 py-2 bg-subtle border border-default rounded-lg text-primary text-sm focus:outline-none focus:ring-2 focus:ring-focus"
           disabled={loading}
         />
       </div>
@@ -90,7 +90,7 @@ export const RoleForm = ({ role = null, onSubmit, loading = false }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium disabled:bg-slate-600 disabled:cursor-not-allowed transition"
+        className="w-full bg-accent hover:bg-accent text-primary py-2 px-4 rounded-lg font-medium disabled:bg-selected disabled:cursor-not-allowed transition"
       >
         {loading ? "Saving..." : role ? "Update Role" : "Create Role"}
       </button>

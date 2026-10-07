@@ -84,9 +84,9 @@ const SuperAdminSidebar = () => {
   return (
     <aside
       style={{
-        background: "var(--bg-sidebar)",
-        borderRight: "1px solid var(--border-dim)",
-        color: "var(--text-1)",
+        background: "var(--bg-surface)",
+        borderRight: "1px solid var(--border-default)",
+        color: "var(--text-primary)",
       }}
       className={clsx(
         "relative flex flex-col h-screen shrink-0 transition-all duration-300 ease-in-out select-none z-20",
@@ -96,7 +96,7 @@ const SuperAdminSidebar = () => {
       {/* ── Logo ── */}
       <div
         className="flex items-center gap-2.5 px-4 py-5"
-        style={{ borderBottom: "1px solid var(--border-dim)" }}
+        style={{ borderBottom: "1px solid var(--border-default)" }}
       >
         <div className="w-9 h-9 shrink-0 rounded-xl bg-linear-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg overflow-hidden">
           {brandLogo ? (
@@ -106,13 +106,13 @@ const SuperAdminSidebar = () => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <GraduationCap size={18} className="text-white" />
+            <GraduationCap size={18} className="text-primary" />
           )}
         </div>
         {!collapsed && (
           <div className="leading-tight min-w-0">
-            <p className="text-white font-bold text-sm">{brandName}</p>
-            <p className="text-[10px] text-slate-500 tracking-widest uppercase">
+            <p className="text-primary font-bold text-sm">{brandName}</p>
+            <p className="text-[10px] text-muted tracking-widest uppercase">
               {brandTagline}
             </p>
           </div>
@@ -123,7 +123,7 @@ const SuperAdminSidebar = () => {
       <nav className="flex-1 overflow-y-auto py-3 px-2">
         {/* MAIN section */}
         {!collapsed && (
-          <p className="text-[10px] font-semibold tracking-widest text-slate-600 px-3 pt-1 pb-2">
+          <p className="text-[10px] font-semibold tracking-widest text-muted px-3 pt-1 pb-2">
             MAIN
           </p>
         )}
@@ -136,8 +136,8 @@ const SuperAdminSidebar = () => {
               className={clsx(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all",
                 isNavActive(to)
-                  ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25"
-                  : "text-slate-400 hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)]",
+                  ? "bg-accent-soft text-accent border border-accent"
+                  : "text-muted hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]",
               )}
             >
               <Icon size={16} className="shrink-0" />
@@ -148,16 +148,16 @@ const SuperAdminSidebar = () => {
       </nav>
 
       {/* ── Account section ── */}
-      <div className="mt-4 border-t border-[#1e293b] pt-3 px-2 pb-3">
+      <div className="mt-4 border-t border-default pt-3 px-2 pb-3">
         {!collapsed && (
-          <p className="text-[10px] font-semibold tracking-widest text-slate-600 px-3 pb-2">
+          <p className="text-[10px] font-semibold tracking-widest text-muted px-3 pb-2">
             ACCOUNT
           </p>
         )}
         <button
           onClick={handleLogout}
           title={collapsed ? "Logout" : undefined}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-danger hover:text-danger hover:bg-danger-soft transition-all"
         >
           <LogOut size={16} className="shrink-0" />
           {!collapsed && "Logout"}
@@ -167,7 +167,7 @@ const SuperAdminSidebar = () => {
       {/* ── Collapse toggle ── */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-card)] flex items-center justify-center text-[var(--text-2)] hover:text-[var(--accent-text)] hover:bg-indigo-600 transition-all z-30 shadow-lg"
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--on-accent)] hover:bg-accent transition-all z-30 shadow-lg"
       >
         {collapsed ? <ChevronRight size={11} /> : <ChevronLeft size={11} />}
       </button>

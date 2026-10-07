@@ -39,12 +39,12 @@ const getDefaultSectionForm = () => ({
 });
 
 const FLOOR_PLAN_DARK = {
-  cardBackground: "#1E293B",
-  cardBorder: "#334155",
-  blockAccents: ["#6366F1", "#22D3EE", "#F59E0B", "#10B981"],
-  textPrimary: "#FFFFFF",
-  textSecondary: "#94A3B8",
-  textMuted: "#475569",
+  cardBackground: "var(--accent-soft)",
+  cardBorder: "var(--accent)",
+  blockAccents: ["var(--accent)", "var(--accent)", "var(--danger)", "var(--success-text)"],
+  textPrimary: "var(--text-primary)",
+  textSecondary: "var(--accent)",
+  textMuted: "var(--accent)",
 };
 
 const getBlockAccent = (index) =>
@@ -343,8 +343,8 @@ const Classrooms = () => {
     <div
       className={`min-w-0 rounded-2xl p-4 ${isEditingClassroomItem ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-card)",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-default)",
       }}
     >
       <div
@@ -355,11 +355,11 @@ const Classrooms = () => {
           <div>
             <h2
               className="text-base font-semibold"
-              style={{ color: "var(--text-1)" }}
+              style={{ color: "var(--text-primary)" }}
             >
               Classroom Settings
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted">
               Manage class definitions and section assignments.
             </p>
           </div>
@@ -370,7 +370,7 @@ const Classrooms = () => {
               onClick={
                 activeTab === "classes" ? openCreateClass : openCreateSection
               }
-              className="inline-flex items-center gap-3 px-4 py-2 rounded-full text-sm font-semibold bg-linear-to-r from-indigo-600 to-emerald-500 text-white shadow-xl transform hover:scale-105 transition-transform ring-1 ring-indigo-400/30"
+              className="inline-flex items-center gap-3 px-4 py-2 rounded-full text-sm font-semibold bg-linear-to-r from-indigo-600 to-emerald-500 text-primary shadow-xl transform hover:scale-105 transition-transform ring-1 ring-focus"
             >
               <Plus size={16} />
               <span className="whitespace-nowrap">
@@ -384,14 +384,14 @@ const Classrooms = () => {
           <button
             type="button"
             onClick={() => setActiveTab("classes")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium ${activeTab === "classes" ? "bg-indigo-600 text-white shadow-lg" : "bg-slate-800 text-slate-300 hover:bg-slate-700"}`}
+            className={`px-4 py-2 rounded-xl text-sm font-medium ${activeTab === "classes" ? "bg-accent text-primary shadow-lg" : "bg-subtle text-muted hover:bg-subtle"}`}
           >
             Classes
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("sections")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium ${activeTab === "sections" ? "bg-indigo-600 text-white shadow-lg" : "bg-slate-800 text-slate-300 hover:bg-slate-700"}`}
+            className={`px-4 py-2 rounded-xl text-sm font-medium ${activeTab === "sections" ? "bg-accent text-primary shadow-lg" : "bg-subtle text-muted hover:bg-subtle"}`}
           >
             Sections
           </button>
@@ -399,16 +399,16 @@ const Classrooms = () => {
       </div>
 
       {activeTab === "classes" && (
-        <div className="overflow-hidden rounded-lg border border-slate-700/60">
+        <div className="overflow-hidden rounded-lg border border-default">
           {classrooms.length === 0 ? (
-            <div className="p-6 text-center text-slate-400">
+            <div className="p-6 text-center text-muted">
               {loading
                 ? "Loading classes..."
                 : "No classes yet. Add one to start."}
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-slate-800/60 border-b">
+              <thead className="bg-subtle border-b">
                 <tr>
                   <th className="px-4 py-3 text-left">Class name</th>
                   <th className="px-4 py-3 text-left">Total students</th>
@@ -419,7 +419,7 @@ const Classrooms = () => {
               <tbody className="divide-y divide-slate-700/60">
                 {classrooms.map((classroom) => (
                   <tr key={classroom.id}>
-                    <td className="px-4 py-3 font-medium text-white">
+                    <td className="px-4 py-3 font-medium text-primary">
                       {classroom.name}
                     </td>
                     <td className="px-4 py-3">
@@ -433,7 +433,7 @@ const Classrooms = () => {
                       <button
                         type="button"
                         onClick={() => openEditClass(classroom)}
-                        className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                        className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                         title={`Edit class ${classroom.name}`}
                         aria-label={`Edit class ${classroom.name}`}
                       >
@@ -442,7 +442,7 @@ const Classrooms = () => {
                       <button
                         type="button"
                         onClick={() => deleteClassItem(classroom)}
-                        className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                        className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                         title={`Delete class ${classroom.name}`}
                         aria-label={`Delete class ${classroom.name}`}
                       >
@@ -460,16 +460,16 @@ const Classrooms = () => {
 
       {activeTab === "sections" && (
         <div className="grid gap-6">
-          <div className="rounded-3xl border border-slate-700/70 bg-slate-900/40 p-4 shadow-inner">
+          <div className="rounded-3xl border border-default bg-surface p-4 shadow-inner">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
               <div>
                 <h2
                   className="text-base font-semibold"
-                  style={{ color: "var(--text-1)" }}
+                  style={{ color: "var(--text-primary)" }}
                 >
                   Sections
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted">
                   {sectionView === "list"
                     ? "List View"
                     : sectionView === "grid"
@@ -479,32 +479,32 @@ const Classrooms = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center bg-slate-800/60 border border-slate-700/60 rounded-lg overflow-hidden">
+                <div className="flex items-center bg-subtle border border-default rounded-lg overflow-hidden">
                   <button
                     type="button"
                     onClick={() => setSectionView("list")}
-                    className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${sectionView === "list" ? "bg-indigo-600/40 text-white" : "text-slate-300"}`}
+                    className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${sectionView === "list" ? "bg-accent text-primary" : "text-muted"}`}
                   >
                     <List size={14} /> List
                   </button>
                   <button
                     type="button"
                     onClick={() => setSectionView("grid")}
-                    className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${sectionView === "grid" ? "bg-indigo-600/40 text-white" : "text-slate-300"}`}
+                    className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${sectionView === "grid" ? "bg-accent text-primary" : "text-muted"}`}
                   >
                     <LayoutGrid size={14} /> Grid
                   </button>
                   <button
                     type="button"
                     onClick={() => setSectionView("floor")}
-                    className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${sectionView === "floor" ? "bg-indigo-600/40 text-white" : "text-slate-300"}`}
+                    className={`px-3 py-2 text-xs inline-flex items-center gap-2 ${sectionView === "floor" ? "bg-accent text-primary" : "text-muted"}`}
                   >
                     <Map size={14} /> Floor View
                   </button>
                 </div>
                 <button
                   onClick={openCreateSection}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-accent hover:bg-accent text-primary rounded"
                 >
                   <Plus size={14} /> Create
                 </button>
@@ -512,16 +512,16 @@ const Classrooms = () => {
             </div>
 
             {sectionView === "list" && (
-              <div className="overflow-hidden rounded-3xl border border-slate-700/70 bg-slate-950">
+              <div className="overflow-hidden rounded-3xl border border-default bg-surface">
                 {sections.length === 0 ? (
-                  <div className="p-6 text-center text-slate-400">
+                  <div className="p-6 text-center text-muted">
                     {loading
                       ? "Loading sections..."
                       : "No sections yet. Add one to begin."}
                   </div>
                 ) : (
                   <table className="w-full text-sm">
-                    <thead className="bg-slate-800/60 border-b">
+                    <thead className="bg-subtle border-b">
                       <tr>
                         <th className="px-4 py-3 text-left">Section</th>
                         <th className="px-4 py-3 text-left">Class</th>
@@ -536,13 +536,13 @@ const Classrooms = () => {
                     <tbody className="divide-y divide-slate-700/60">
                       {sections.map((section) => (
                         <tr key={section.id}>
-                          <td className="px-4 py-3 font-medium text-white">
+                          <td className="px-4 py-3 font-medium text-primary">
                             {section.section_name}
                           </td>
                           <td className="px-4 py-3">
                             {section.class?.class_name || "No class"}
                           </td>
-                          <td className="px-4 py-3 text-sm text-slate-300">
+                          <td className="px-4 py-3 text-sm text-muted">
                             {section.class_teacher_name || "Not assigned"}
                           </td>
                           <td className="px-4 py-3">
@@ -565,7 +565,7 @@ const Classrooms = () => {
                             <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => openEditSection(section)}
-                              className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                              className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                               title={`Edit section ${section.section_name}`}
                               aria-label={`Edit section ${section.section_name}`}
                             >
@@ -573,7 +573,7 @@ const Classrooms = () => {
                             </button>
                             <button
                               onClick={() => deleteSection(section)}
-                              className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                              className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                               title={`Delete section ${section.section_name}`}
                               aria-label={`Delete section ${section.section_name}`}
                             >
@@ -592,7 +592,7 @@ const Classrooms = () => {
             {sectionView === "grid" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sections.length === 0 ? (
-                  <div className="p-6 text-center col-span-full text-slate-400">
+                  <div className="p-6 text-center col-span-full text-muted">
                     {loading
                       ? "Loading sections..."
                       : "No sections yet. Add one to begin."}
@@ -601,38 +601,38 @@ const Classrooms = () => {
                   sections.map((section) => (
                     <div
                       key={section.id}
-                      className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-4"
+                      className="rounded-2xl border border-default bg-surface p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <div className="text-base font-semibold text-white">
+                          <div className="text-base font-semibold text-primary">
                             {section.section_name}
                           </div>
-                          <div className="text-xs text-slate-400 mt-1">
+                          <div className="text-xs text-muted mt-1">
                             {section.class?.class_name || "No class"} ·{" "}
                             {blocks.find((b) => b.id === section.block_id)
                               ?.block_name || "Unassigned"}
                           </div>
                         </div>
-                        <span className="text-xs px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-200">
+                        <span className="text-xs px-2 py-1 rounded-full bg-accent-soft text-accent">
                           {section.total_students ?? 0}
                         </span>
                       </div>
-                      <div className="mt-3 text-sm text-slate-300">
+                      <div className="mt-3 text-sm text-muted">
                         Room:{" "}
                         {rooms.find((r) => r.id === section.room_id)
                           ?.room_number || "No room"}
                       </div>
-                      <div className="mt-2 text-sm text-slate-300">
+                      <div className="mt-2 text-sm text-muted">
                         Class Teacher:{" "}
-                        <span className="text-indigo-300 font-medium">
+                        <span className="text-accent font-medium">
                           {section.class_teacher_name || "Not assigned"}
                         </span>
                       </div>
                       <div className="mt-4 flex flex-wrap gap-2">
                         <button
                           onClick={() => openEditSection(section)}
-                          className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                          className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                           title={`Edit section ${section.section_name}`}
                           aria-label={`Edit section ${section.section_name}`}
                         >
@@ -640,7 +640,7 @@ const Classrooms = () => {
                         </button>
                         <button
                           onClick={() => deleteSection(section)}
-                          className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                          className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                           title={`Delete section ${section.section_name}`}
                           aria-label={`Delete section ${section.section_name}`}
                         >
@@ -654,15 +654,15 @@ const Classrooms = () => {
             )}
 
             {sectionView === "floor" && (
-              <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-4">
-                <div className="text-sm text-slate-300 mb-4">
+              <div className="rounded-2xl border border-default bg-surface p-4">
+                <div className="text-sm text-muted mb-4">
                   Use the inline floor plan to assign sections by block, floor,
                   and room. Drag a section into a room card to update its
                   assignment.
                 </div>
 
                 {blocks.length === 0 ? (
-                  <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-6 text-slate-300">
+                  <div className="rounded-2xl border border-default bg-surface p-6 text-muted">
                     No blocks configured yet.
                   </div>
                 ) : (
@@ -678,10 +678,10 @@ const Classrooms = () => {
                       >
                         <div className="flex items-center justify-between gap-3 mb-4">
                           <div>
-                            <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                            <div className="text-xs uppercase tracking-[0.2em] text-muted">
                               Block
                             </div>
-                            <div className="text-lg font-semibold text-white">
+                            <div className="text-lg font-semibold text-primary">
                               {block.block_name}
                             </div>
                           </div>
@@ -704,13 +704,13 @@ const Classrooms = () => {
                           {roomsByBlockFloor[block.id].floors.map((floor) => (
                             <div
                               key={`${block.id}-${floor}`}
-                              className="rounded-2xl border border-slate-700/60 bg-slate-800/70 p-4"
+                              className="rounded-2xl border border-default bg-subtle p-4"
                             >
                               <div className="mb-3 flex items-center justify-between gap-2">
-                                <div className="text-sm font-semibold text-white">
+                                <div className="text-sm font-semibold text-primary">
                                   Floor {floor}
                                 </div>
-                                <span className="text-xs text-slate-400">
+                                <span className="text-xs text-muted">
                                   Drop sections into rooms
                                 </span>
                               </div>
@@ -720,7 +720,7 @@ const Classrooms = () => {
                                     floor
                                   ] || []
                                 ).length === 0 ? (
-                                  <div className="rounded-2xl border border-dashed border-slate-700/60 bg-slate-950/70 p-4 text-sm text-slate-400">
+                                  <div className="rounded-2xl border border-dashed border-default bg-surface p-4 text-sm text-muted">
                                     No rooms configured on this floor.
                                   </div>
                                 ) : (
@@ -744,18 +744,18 @@ const Classrooms = () => {
                                         if (section)
                                           moveSectionToRoom(section, room);
                                       }}
-                                      className="rounded-3xl border border-slate-700/60 bg-slate-900/80 p-4 min-h-45"
+                                      className="rounded-3xl border border-default bg-surface p-4 min-h-45"
                                     >
                                       <div className="flex items-center justify-between gap-3 mb-4">
                                         <div>
-                                          <div className="text-base font-semibold text-white">
+                                          <div className="text-base font-semibold text-primary">
                                             {room.room_number || "Room"}
                                           </div>
-                                          <div className="text-[11px] text-slate-400 mt-1">
+                                          <div className="text-[11px] text-muted mt-1">
                                             Capacity {room.total_capacity ?? 0}
                                           </div>
                                         </div>
-                                        <span className="rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-300">
+                                        <span className="rounded-full bg-subtle px-2 py-1 text-xs text-muted">
                                           {sectionsByRoom[room.id]?.length ?? 0}{" "}
                                           sections
                                         </span>
@@ -778,12 +778,12 @@ const Classrooms = () => {
                                               onDragEnd={() =>
                                                 setDraggingSectionId(null)
                                               }
-                                              className={`rounded-2xl border border-slate-700/50 bg-slate-950 p-3 text-sm text-white cursor-grab ${draggingSectionId === section.id ? "ring-2 ring-emerald-500 bg-emerald-600/25" : ""}`}
+                                              className={`rounded-2xl border border-default bg-surface p-3 text-sm text-primary cursor-grab ${draggingSectionId === section.id ? "ring-2 ring-focus bg-success" : ""}`}
                                             >
                                               <div className="font-semibold">
                                                 {section.section_name}
                                               </div>
-                                              <div className="text-[11px] text-slate-400 mt-1">
+                                              <div className="text-[11px] text-muted mt-1">
                                                 {section.class?.class_name ||
                                                   "No class"}
                                               </div>
@@ -820,7 +820,7 @@ const Classrooms = () => {
       >
         <form onSubmit={saveClass} className="space-y-4 p-2">
           <div>
-            <label className="block text-sm text-slate-300 mb-1">
+            <label className="block text-sm text-muted mb-1">
               Class name
             </label>
             <input
@@ -829,12 +829,12 @@ const Classrooms = () => {
               onChange={(e) =>
                 setClassForm((prev) => ({ ...prev, name: e.target.value }))
               }
-              className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+              className="w-full px-3 py-2 bg-subtle text-primary rounded"
             />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Total students
               </label>
               <input
@@ -848,11 +848,11 @@ const Classrooms = () => {
                     total_capacity: Number(e.target.value || 0),
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Number of sections
               </label>
               <input
@@ -866,7 +866,7 @@ const Classrooms = () => {
                     number_of_sections: Number(e.target.value || 0),
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               />
             </div>
           </div>
@@ -888,7 +888,7 @@ const Classrooms = () => {
       >
         <form onSubmit={saveSection} className="space-y-4 p-2">
           <div>
-            <label className="block text-sm text-slate-300 mb-1">Class</label>
+            <label className="block text-sm text-muted mb-1">Class</label>
             <select
               required
               value={sectionForm.class_id}
@@ -898,7 +898,7 @@ const Classrooms = () => {
                   class_id: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+              className="w-full px-3 py-2 bg-subtle text-primary rounded"
             >
               <option value="">Select a class</option>
               {classrooms.map((cls) => (
@@ -910,7 +910,7 @@ const Classrooms = () => {
           </div>
 
           <div>
-            <label className="block text-sm text-slate-300 mb-1">
+            <label className="block text-sm text-muted mb-1">
               Section name
             </label>
             <input
@@ -922,13 +922,13 @@ const Classrooms = () => {
                   section_name: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+              className="w-full px-3 py-2 bg-subtle text-primary rounded"
             />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Total students
               </label>
               <input
@@ -941,11 +941,11 @@ const Classrooms = () => {
                     total_students: Number(e.target.value || 0),
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-300 mb-1">
+              <label className="block text-sm text-muted mb-1">
                 Class Teacher
               </label>
               <select
@@ -956,7 +956,7 @@ const Classrooms = () => {
                     class_teacher_id: e.target.value,
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               >
                 <option value="">Select a teacher</option>
                 {teachers.map((teacher) => (
@@ -969,7 +969,7 @@ const Classrooms = () => {
           </div>
 
           <div>
-            <label className="block text-sm text-slate-300 mb-1">Monitor</label>
+            <label className="block text-sm text-muted mb-1">Monitor</label>
             <input
               value={sectionForm.monitor_name}
               onChange={(e) =>
@@ -978,13 +978,13 @@ const Classrooms = () => {
                   monitor_name: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+              className="w-full px-3 py-2 bg-subtle text-primary rounded"
             />
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <label className="block text-sm text-slate-300 mb-1">Block</label>
+              <label className="block text-sm text-muted mb-1">Block</label>
               <select
                 value={sectionForm.block_id}
                 onChange={(e) =>
@@ -995,7 +995,7 @@ const Classrooms = () => {
                     room_id: "",
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
               >
                 <option value="">Select block</option>
                 {blocks.map((block) => (
@@ -1006,7 +1006,7 @@ const Classrooms = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-slate-300 mb-1">Floor</label>
+              <label className="block text-sm text-muted mb-1">Floor</label>
               <select
                 value={sectionForm.floor_number}
                 onChange={(e) =>
@@ -1016,7 +1016,7 @@ const Classrooms = () => {
                     room_id: "",
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
                 disabled={!sectionForm.block_id}
               >
                 <option value="">Select floor</option>
@@ -1026,7 +1026,7 @@ const Classrooms = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-slate-300 mb-1">Room</label>
+              <label className="block text-sm text-muted mb-1">Room</label>
               <select
                 value={sectionForm.room_id}
                 onChange={(e) =>
@@ -1035,7 +1035,7 @@ const Classrooms = () => {
                     room_id: e.target.value,
                   }))
                 }
-                className="w-full px-3 py-2 bg-slate-800 text-white rounded"
+                className="w-full px-3 py-2 bg-subtle text-primary rounded"
                 disabled={!sectionForm.block_id || !sectionForm.floor_number}
               >
                 <option value="">Select room</option>

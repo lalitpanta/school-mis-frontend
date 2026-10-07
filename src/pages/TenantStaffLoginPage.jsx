@@ -237,41 +237,41 @@ const TenantStaffLoginPage = () => {
 
   return (
     <div
-      className="mis-login-page min-h-screen text-[var(--text-1)]"
-      style={{ background: "var(--bg-main)" }}
+      className="mis-login-page min-h-screen text-[var(--text-primary)]"
+      style={{ background: "var(--bg-page)" }}
     >
       <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid w-full max-w-6xl overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 shadow-[0_30px_90px_rgba(15,23,42,0.75)] backdrop-blur-md lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid w-full max-w-6xl overflow-hidden rounded-[30px] border border-input/10 bg-surface shadow-[0_30px_90px_rgba(15,23,42,0.75)] backdrop-blur-md lg:grid-cols-[1.15fr_0.85fr]">
           <div className="relative hidden overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.28),_transparent_34%),linear-gradient(135deg,_rgba(15,23,42,1),_rgba(2,6,23,1))] p-8 lg:flex lg:flex-col lg:justify-between xl:p-10">
             <div className="absolute inset-0 opacity-40">
-              <div className="absolute -left-10 top-12 h-52 w-52 rounded-full bg-indigo-500/20 blur-3xl" />
-              <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+              <div className="absolute -left-10 top-12 h-52 w-52 rounded-full bg-accent-soft blur-3xl" />
+              <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-accent-soft blur-3xl" />
             </div>
 
             <div className="relative">
               <div className="mb-8 flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/30">
-                  <Building2 size={26} className="text-white" />
+                  <Building2 size={26} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-indigo-200/80">
+                  <p className="text-xs uppercase tracking-[0.22em] text-accent">
                     SchoolMIS
                   </p>
-                  <h1 className="text-2xl font-bold tracking-tight text-white">
+                  <h1 className="text-2xl font-bold tracking-tight text-primary">
                     Tenant Portal
                   </h1>
                 </div>
               </div>
 
               <div className="max-w-md">
-                <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-200">
+                <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">
                   <ShieldCheck size={14} />
                   Professional school operations
                 </p>
-                <h2 className="text-4xl font-bold leading-tight tracking-tight text-white">
+                <h2 className="text-4xl font-bold leading-tight tracking-tight text-primary">
                   Everything your school needs to run smoothly.
                 </h2>
-                <p className="mt-4 text-base leading-7 text-slate-300">
+                <p className="mt-4 text-base leading-7 text-muted">
                   Centralize student data, calendars, attendance, employee
                   records, and academic performance into one secure digital
                   platform.
@@ -284,14 +284,14 @@ const TenantStaffLoginPage = () => {
                     key={title}
                     className="mis-login-feature flex items-start gap-3 rounded-2xl p-4"
                   >
-                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/12 text-indigo-300">
+                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-accent">
                       <Icon size={18} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-white">
+                      <h3 className="text-sm font-semibold text-primary">
                         {title}
                       </h3>
-                      <p className="mt-1 text-sm leading-6 text-slate-300">
+                      <p className="mt-1 text-sm leading-6 text-muted">
                         {text}
                       </p>
                     </div>
@@ -300,45 +300,45 @@ const TenantStaffLoginPage = () => {
               </div>
             </div>
 
-            <div className="relative mt-8 flex items-center justify-between rounded-2xl border border-emerald-400/25 bg-emerald-500/8 p-4">
+            <div className="relative mt-8 flex items-center justify-between rounded-2xl border border-success bg-success p-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-emerald-200/75">
+                <p className="text-xs uppercase tracking-[0.18em] text-success">
                   Platform status
                 </p>
-                <p className="mt-1 text-lg font-semibold text-white">
+                <p className="mt-1 text-lg font-semibold text-primary">
                   All systems online
                 </p>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-medium text-emerald-200">
+              <div className="flex items-center gap-2 rounded-full border border-success bg-success px-2.5 py-1.5 text-xs font-medium text-success">
                 <CheckCircle2 size={14} />
                 Secure access
               </div>
             </div>
           </div>
 
-          <div className="relative flex items-center justify-center bg-[#0b1220] p-6 sm:p-8 lg:p-10">
-            <div className="w-full max-w-md rounded-[26px] border border-white/10 bg-slate-900/90 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.45)] sm:p-7">
+          <div className="relative flex items-center justify-center bg-surface p-6 sm:p-8 lg:p-10">
+            <div className="w-full max-w-md rounded-[26px] border border-input/10 bg-surface p-6 shadow-[0_24px_60px_rgba(0,0,0,0.45)] sm:p-7">
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20">
-                  <Users size={22} className="text-white" />
+                  <Users size={22} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted">
                     Access portal
                   </p>
-                  <h2 className="text-2xl font-bold text-white">
+                  <h2 className="text-2xl font-bold text-primary">
                     Tenant / Staff Login
                   </h2>
                 </div>
               </div>
 
-              <p className="mb-6 text-sm leading-6 text-slate-300">
+              <p className="mb-6 text-sm leading-6 text-muted">
                 Enter your tenant name, email, and password to continue to your
                 dashboard.
               </p>
 
               {error && (
-                <div className="mb-5 flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+                <div className="mb-5 flex items-start gap-3 rounded-xl border border-danger bg-danger-soft p-3 text-sm text-danger">
                   <AlertCircle size={18} className="mt-0.5 shrink-0" />
                   <span>{error}</span>
                 </div>
@@ -346,7 +346,7 @@ const TenantStaffLoginPage = () => {
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                     Tenant name / slug
                   </label>
                   <input
@@ -360,22 +360,22 @@ const TenantStaffLoginPage = () => {
                     })}
                     type="text"
                     placeholder="tenant-name"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none transition-all duration-200 placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-focus"
                     style={{
                       borderColor: errors.tenantSlug
-                        ? "#f87171"
+                        ? "var(--danger)"
                         : "rgba(255,255,255,0.08)",
                     }}
                   />
                   {errors.tenantSlug && (
-                    <p className="mt-1 text-xs text-red-400">
+                    <p className="mt-1 text-xs text-danger">
                       {errors.tenantSlug.message}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                     Email
                   </label>
                   <input
@@ -388,22 +388,22 @@ const TenantStaffLoginPage = () => {
                     })}
                     type="email"
                     placeholder="tenant@school.local"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none transition-all duration-200 placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-focus"
                     style={{
                       borderColor: errors.email
-                        ? "#f87171"
+                        ? "var(--danger)"
                         : "rgba(255,255,255,0.08)",
                     }}
                   />
                   {errors.email && (
-                    <p className="mt-1 text-xs text-red-400">
+                    <p className="mt-1 text-xs text-danger">
                       {errors.email.message}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                     Password
                   </label>
                   <div className="relative">
@@ -414,23 +414,23 @@ const TenantStaffLoginPage = () => {
                       })}
                       type={showPass ? "text" : "password"}
                       placeholder="••••••••••••••••"
-                      className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 pr-12 text-sm text-white outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 pr-12 text-sm text-primary outline-none transition-all duration-200 placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-focus"
                       style={{
                         borderColor: errors.password
-                          ? "#f87171"
+                          ? "var(--danger)"
                           : "rgba(255,255,255,0.08)",
                       }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPass((v) => !v)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-200"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted transition-colors hover:text-primary"
                     >
                       {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="mt-1 text-xs text-red-400">
+                    <p className="mt-1 text-xs text-danger">
                       {errors.password.message}
                     </p>
                   )}
@@ -443,7 +443,7 @@ const TenantStaffLoginPage = () => {
                       setForgotTenantSlug("");
                       setShowForgotModal(true);
                     }}
-                    className="text-sm font-medium text-indigo-300 transition-colors hover:text-indigo-200"
+                    className="text-sm font-medium text-accent transition-colors hover:text-accent"
                   >
                     Forgot password?
                   </button>
@@ -452,11 +452,11 @@ const TenantStaffLoginPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-600 px-4 py-3.5 text-sm font-bold text-primary shadow-lg shadow-indigo-500/30 transition-all duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {loading ? (
                     <>
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-input/40 border-t-white" />
                       Signing in…
                     </>
                   ) : (
@@ -467,10 +467,10 @@ const TenantStaffLoginPage = () => {
                   )}
                 </button>
               </form>
-              <div className="mt-5 border-t border-white/10 pt-4 text-center">
+              <div className="mt-5 border-t border-input/10 pt-4 text-center">
                 <Link
                   to="/student/login"
-                  className="text-sm font-medium text-emerald-300 transition-colors hover:text-emerald-200"
+                  className="text-sm font-medium text-success transition-colors hover:text-success"
                 >
                   Student portal sign in
                 </Link>
@@ -481,14 +481,14 @@ const TenantStaffLoginPage = () => {
       </div>
 
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface px-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-input/10 bg-surface p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">
+                <p className="text-xs uppercase tracking-[0.2em] text-accent">
                   Reset access
                 </p>
-                <h3 className="mt-1 text-2xl font-bold text-white">
+                <h3 className="mt-1 text-2xl font-bold text-primary">
                   Forgot Password
                 </h3>
               </div>
@@ -498,14 +498,14 @@ const TenantStaffLoginPage = () => {
                   setShowForgotModal(false);
                   resetForgotPasswordState();
                 }}
-                className="rounded-full p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                className="rounded-full p-2 text-muted transition hover:bg-subtle hover:text-primary"
               >
                 <X size={18} />
               </button>
             </div>
 
             {forgotMessage && (
-              <div className="mb-4 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 text-sm text-blue-200">
+              <div className="mb-4 rounded-xl border border-accent bg-accent-soft p-3 text-sm text-accent">
                 {forgotMessage}
               </div>
             )}
@@ -513,7 +513,7 @@ const TenantStaffLoginPage = () => {
             {forgotStep === "request" && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     Tenant slug
                   </label>
                   <input
@@ -521,11 +521,11 @@ const TenantStaffLoginPage = () => {
                     value={forgotTenantSlug}
                     onChange={(e) => setForgotTenantSlug(e.target.value)}
                     placeholder="tenant-name"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     Email address
                   </label>
                   <input
@@ -533,14 +533,14 @@ const TenantStaffLoginPage = () => {
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="admin@tenant.school"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <button
                   type="button"
                   disabled={forgotLoading}
                   onClick={handleForgotPasswordRequest}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-primary disabled:opacity-60"
                 >
                   {forgotLoading ? "Sending OTP..." : "Send OTP"}
                 </button>
@@ -550,7 +550,7 @@ const TenantStaffLoginPage = () => {
             {forgotStep === "verify" && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     Enter OTP
                   </label>
                   <input
@@ -558,14 +558,14 @@ const TenantStaffLoginPage = () => {
                     value={forgotOtp}
                     onChange={(e) => setForgotOtp(e.target.value)}
                     placeholder="123456"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <button
                   type="button"
                   disabled={forgotLoading}
                   onClick={handleForgotPasswordVerify}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-primary disabled:opacity-60"
                 >
                   {forgotLoading ? "Verifying..." : "Verify OTP"}
                 </button>
@@ -575,7 +575,7 @@ const TenantStaffLoginPage = () => {
             {forgotStep === "reset" && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     New password
                   </label>
                   <input
@@ -583,11 +583,11 @@ const TenantStaffLoginPage = () => {
                     value={forgotNewPassword}
                     onChange={(e) => setForgotNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
                     Confirm password
                   </label>
                   <input
@@ -595,14 +595,14 @@ const TenantStaffLoginPage = () => {
                     value={forgotConfirmPassword}
                     onChange={(e) => setForgotConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-xl border border-white/10 bg-slate-800/90 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
+                    className="w-full rounded-xl border border-input/10 bg-subtle px-4 py-3 text-sm text-primary outline-none placeholder:text-muted focus:border-accent"
                   />
                 </div>
                 <button
                   type="button"
                   disabled={forgotLoading}
                   onClick={handleForgotPasswordReset}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-3 text-sm font-semibold text-primary disabled:opacity-60"
                 >
                   {forgotLoading ? "Resetting..." : "Reset Password"}
                 </button>

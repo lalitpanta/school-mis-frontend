@@ -396,8 +396,8 @@ const DailyReportPage = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen" style={{ background: 'var(--bg-main)' }}>
-      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-1)' }}>Daily Student Report</h2>
+    <div className="p-6 min-h-screen" style={{ background: 'var(--bg-page)' }}>
+      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Daily Student Report</h2>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
@@ -405,8 +405,8 @@ const DailyReportPage = () => {
           onClick={() => setTab('template')}
           className={`px-4 py-2 rounded font-medium transition ${
             tab === 'template'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              ? 'bg-accent text-primary'
+              : 'bg-subtle text-muted hover:bg-selected'
           }`}
         >
           Set Template
@@ -415,8 +415,8 @@ const DailyReportPage = () => {
           onClick={() => setTab('send')}
           className={`px-4 py-2 rounded font-medium transition ${
             tab === 'send'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              ? 'bg-accent text-primary'
+              : 'bg-subtle text-muted hover:bg-selected'
           }`}
         >
           Insert & Send
@@ -425,8 +425,8 @@ const DailyReportPage = () => {
           onClick={() => setTab('bulk')}
           className={`px-4 py-2 rounded font-medium transition ${
             tab === 'bulk'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              ? 'bg-accent text-primary'
+              : 'bg-subtle text-muted hover:bg-selected'
           }`}
         >
           Bulk Send
@@ -438,12 +438,12 @@ const DailyReportPage = () => {
         <div className="grid grid-cols-3 gap-6">
           {/* Form Builder */}
           <div className="col-span-2">
-            <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
-              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-1)' }}>Create/Edit Template</h3>
+            <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Create/Edit Template</h3>
 
               <div className="space-y-3 mb-4">
                 <div>
-                  <label className="block text-sm font-medium" style={{ color: 'var(--text-2)' }}>Template Name</label>
+                  <label className="block text-sm font-medium" style={{ color: 'var(--text-muted)' }}>Template Name</label>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -452,7 +452,7 @@ const DailyReportPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium" style={{ color: 'var(--text-2)' }}>Description</label>
+                  <label className="block text-sm font-medium" style={{ color: 'var(--text-muted)' }}>Description</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -465,19 +465,19 @@ const DailyReportPage = () => {
 
               {/* Sections */}
               <div className="space-y-4 mb-4">
-                <h4 className="font-medium" style={{ color: 'var(--text-1)' }}>Sections & Fields</h4>
+                <h4 className="font-medium" style={{ color: 'var(--text-primary)' }}>Sections & Fields</h4>
                 {sections.map((section, sIdx) => (
-                  <div key={sIdx} className="p-3 rounded border" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-card)' }}>
+                  <div key={sIdx} className="p-3 rounded border" style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-default)' }}>
                     <div className="flex items-center justify-between mb-3">
                       <input
                         value={section.title}
                         onChange={(e) => updateSection(sIdx, 'title', e.target.value)}
                         className="flex-1 px-2 py-1 rounded text-sm"
-                        style={{ background: 'var(--bg-input)', borderColor: 'var(--border-card)' }}
+                        style={{ background: 'var(--bg-input)', borderColor: 'var(--border-default)' }}
                       />
                       <button
                         onClick={() => removeSection(sIdx)}
-                        className="ml-2 p-1 text-red-400 hover:text-red-500"
+                        className="ml-2 p-1 text-danger hover:text-danger"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -516,7 +516,7 @@ const DailyReportPage = () => {
                           </label>
                           <button
                             onClick={() => removeFieldFromSection(sIdx, fIdx)}
-                            className="p-1 text-red-400 hover:text-red-500"
+                            className="p-1 text-danger hover:text-danger"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -524,7 +524,7 @@ const DailyReportPage = () => {
                       ))}
                       <button
                         onClick={() => addFieldToSection(sIdx)}
-                        className="mt-2 px-2 py-1 bg-slate-600 text-white rounded text-xs hover:bg-slate-700 flex items-center gap-1"
+                        className="mt-2 px-2 py-1 bg-selected text-primary rounded text-xs hover:bg-subtle flex items-center gap-1"
                       >
                         <Plus size={14} /> Add Field
                       </button>
@@ -536,13 +536,13 @@ const DailyReportPage = () => {
               <div className="flex gap-2">
                 <button
                   onClick={addSection}
-                  className="px-3 py-2 bg-slate-600 text-white rounded text-sm hover:bg-slate-700 flex items-center gap-1"
+                  className="px-3 py-2 bg-selected text-primary rounded text-sm hover:bg-subtle flex items-center gap-1"
                 >
                   <Plus size={16} /> Add Section
                 </button>
                 <button
                   onClick={saveTemplate}
-                  className="px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+                  className="px-4 py-2 bg-success text-primary rounded font-medium hover:bg-success"
                 >
                   Save Template
                 </button>
@@ -554,7 +554,7 @@ const DailyReportPage = () => {
                       setDescription('');
                       setSections(DEFAULT_SECTIONS);
                     }}
-                    className="px-4 py-2 bg-slate-600 text-white rounded font-medium hover:bg-slate-700"
+                    className="px-4 py-2 bg-selected text-primary rounded font-medium hover:bg-subtle"
                   >
                     Cancel
                   </button>
@@ -565,26 +565,26 @@ const DailyReportPage = () => {
 
           {/* Templates List */}
           <div className="col-span-1">
-            <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
-              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-1)' }}>Saved Templates</h3>
+            <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Saved Templates</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {templates.length === 0 ? (
-                  <p style={{ color: 'var(--text-3)' }}>No templates yet</p>
+                  <p style={{ color: 'var(--text-muted)' }}>No templates yet</p>
                 ) : (
                   templates.map((t) => (
-                    <div key={t.id} className="p-2 rounded border" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-card)' }}>
-                      <p className="font-medium text-sm" style={{ color: 'var(--text-1)' }}>{t.name}</p>
-                      <p className="text-xs" style={{ color: 'var(--text-3)' }}>{t.description}</p>
+                    <div key={t.id} className="p-2 rounded border" style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-default)' }}>
+                      <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{t.name}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{t.description}</p>
                       <div className="flex gap-1 mt-2">
                         <button
                           onClick={() => editTemplate(t)}
-                          className="flex-1 px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 flex items-center justify-center gap-1"
+                          className="flex-1 px-2 py-1 bg-accent text-primary rounded text-xs hover:bg-accent flex items-center justify-center gap-1"
                         >
                           <Edit2 size={12} /> Edit
                         </button>
                         <button
                           onClick={() => deleteTemplate(t.id)}
-                          className="flex-1 px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 flex items-center justify-center gap-1"
+                          className="flex-1 px-2 py-1 bg-danger text-primary rounded text-xs hover:bg-danger flex items-center justify-center gap-1"
                         >
                           <Trash2 size={12} />
                         </button>
@@ -600,16 +600,16 @@ const DailyReportPage = () => {
 
       {tab === 'bulk' && (
         <div className="grid grid-cols-1 gap-6">
-          <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
+          <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
               <div>
-                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-1)' }}>Bulk Daily Report Send</h3>
-                <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Bulk Daily Report Send</h3>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                   Review all saved reports for the selected date and send PDF links to guardian WhatsApp numbers.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                <label className="text-sm" style={{ color: 'var(--text-2)' }}>
+                <label className="text-sm" style={{ color: 'var(--text-muted)' }}>
                   Report Date
                   <input
                     type="date"
@@ -619,7 +619,7 @@ const DailyReportPage = () => {
                     style={{ minWidth: '180px' }}
                   />
                 </label>
-                <div className="flex items-center gap-2 text-sm text-slate-200">
+                <div className="flex items-center gap-2 text-sm text-primary">
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
@@ -627,7 +627,7 @@ const DailyReportPage = () => {
                       value="twilio"
                       checked={bulkSendMode === 'twilio'}
                       onChange={() => setBulkSendMode('twilio')}
-                      className="accent-sky-500"
+                      className="accent-[var(--accent)]"
                     />
                     Use Twilio
                   </label>
@@ -638,7 +638,7 @@ const DailyReportPage = () => {
                       value="link"
                       checked={bulkSendMode === 'link'}
                       onChange={() => setBulkSendMode('link')}
-                      className="accent-sky-500"
+                      className="accent-[var(--accent)]"
                     />
                     Send download link
                   </label>
@@ -646,7 +646,7 @@ const DailyReportPage = () => {
                 <button
                   onClick={sendBulkReports}
                   disabled={bulkSending || dailyReports.length === 0}
-                  className="px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="px-4 py-2 bg-success text-primary rounded font-medium hover:bg-success disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <Send size={16} />
                   {bulkSending ? 'Sending...' : 'Send'}
@@ -655,7 +655,7 @@ const DailyReportPage = () => {
             </div>
 
             {bulkResult && (
-              <div className="rounded-lg p-4 mb-4 bg-slate-800/80 border border-slate-700" style={{ color: 'var(--text-1)' }}>
+              <div className="rounded-lg p-4 mb-4 bg-subtle border border-default" style={{ color: 'var(--text-primary)' }}>
                 <p className="font-medium">Bulk send result</p>
                 <p className="text-sm">Sent: {bulkResult.details.filter((d) => d.status === 'sent').length}</p>
                 <p className="text-sm">Failed: {bulkResult.details.filter((d) => d.status === 'failed').length}</p>
@@ -664,17 +664,17 @@ const DailyReportPage = () => {
             )}
 
             {bulkLoadError && (
-              <div className="rounded-lg p-4 mb-4 bg-red-500/10 border border-red-500/30 text-sm" style={{ color: 'var(--text-1)' }}>
+              <div className="rounded-lg p-4 mb-4 bg-danger-soft border border-danger text-sm" style={{ color: 'var(--text-primary)' }}>
                 {bulkLoadError}
               </div>
             )}
 
             {bulkWhatsAppLinks.length > 0 && (
-              <div className="rounded-lg p-4 mb-4 bg-slate-900/80 border border-slate-700">
+              <div className="rounded-lg p-4 mb-4 bg-surface border border-default">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div>
-                    <p className="font-medium" style={{ color: 'var(--text-1)' }}>WhatsApp Links Ready</p>
-                    <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}>WhatsApp Links Ready</p>
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                       {bulkWhatsAppLinks.length} recipients ready. Click a link to open WhatsApp for that guardian.
                     </p>
                   </div>
@@ -690,7 +690,7 @@ const DailyReportPage = () => {
                         toast.error('Unable to copy links');
                       }
                     }}
-                    className="px-3 py-2 bg-slate-700 text-white rounded hover:bg-slate-600 text-sm"
+                    className="px-3 py-2 bg-subtle text-primary rounded hover:bg-selected text-sm"
                   >
                     Copy all links
                   </button>
@@ -702,14 +702,14 @@ const DailyReportPage = () => {
                       href={item.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="block rounded-lg border border-slate-700 px-4 py-3 bg-slate-800 hover:bg-slate-700"
+                      className="block rounded-lg border border-default px-4 py-3 bg-subtle hover:bg-subtle"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div>
-                          <p className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>{item.student_name || 'Student'}</p>
-                          <p className="text-xs text-slate-400">{item.to}</p>
+                          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{item.student_name || 'Student'}</p>
+                          <p className="text-xs text-muted">{item.to}</p>
                         </div>
-                        <span className="text-xs text-sky-300">Open WhatsApp</span>
+                        <span className="text-xs text-accent">Open WhatsApp</span>
                       </div>
                     </a>
                   ))}
@@ -721,29 +721,29 @@ const DailyReportPage = () => {
               <table className="min-w-full text-left divide-y divide-slate-700">
                 <thead>
                   <tr>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">Student</th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">Guardian</th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">Contact</th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">Class / Section</th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">PDF</th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">Status</th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-slate-400">Action</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">Student</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">Guardian</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">Contact</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">Class / Section</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">PDF</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">Status</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wide text-muted">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700">
                   {dailyReports.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-6 text-sm text-slate-400 text-center">
+                      <td colSpan={7} className="px-4 py-6 text-sm text-muted text-center">
                         No reports saved for this date.
                       </td>
                     </tr>
                   ) : (
                     dailyReports.map((report) => (
                       <tr key={report.id}>
-                        <td className="px-4 py-3 text-sm text-slate-100">{report.student_name || 'Unknown'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-100">{report.guardian_name || 'Guardian'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-100">{report.guardian_phone || report.phone_no || 'No contact'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-100">
+                        <td className="px-4 py-3 text-sm text-primary">{report.student_name || 'Unknown'}</td>
+                        <td className="px-4 py-3 text-sm text-primary">{report.guardian_name || 'Guardian'}</td>
+                        <td className="px-4 py-3 text-sm text-primary">{report.guardian_phone || report.phone_no || 'No contact'}</td>
+                        <td className="px-4 py-3 text-sm text-primary">
                           {report.class_name || 'N/A'} / {report.section_name || 'N/A'}
                         </td>
                         <td className="px-4 py-3 text-sm">
@@ -752,21 +752,21 @@ const DailyReportPage = () => {
                               href={report.pdf_url}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-sky-300 hover:text-sky-200"
+                              className="text-accent hover:text-accent"
                             >
                               View PDF
                             </a>
                           ) : (
-                            <span className="text-slate-500">No PDF</span>
+                            <span className="text-muted">No PDF</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-100">
+                        <td className="px-4 py-3 text-sm text-primary">
                           {report.sent ? 'Sent' : 'Pending'}
                         </td>
                         <td className="px-4 py-3 text-sm">
                           <button
                             onClick={() => deleteBulkReport(report.id)}
-                            className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 flex items-center gap-1"
+                            className="px-2 py-1 bg-danger text-primary rounded text-xs hover:bg-danger flex items-center gap-1"
                           >
                             <Trash2 size={14} /> Delete
                           </button>
@@ -786,24 +786,24 @@ const DailyReportPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Student List (Grouped by Class/Section) */}
           <div className="lg:col-span-2">
-            <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
-              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-1)' }}>Students by Class/Section</h3>
+            <div className="rounded-lg p-6 border" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Students by Class/Section</h3>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {Object.entries(studentsByClassSection).map(([key, classStudents]) => (
-                  <div key={key} className="border rounded p-3" style={{ borderColor: 'var(--border-card)' }}>
-                    <p className="font-semibold text-sm mb-2" style={{ color: 'var(--text-1)' }}>📚 {key}</p>
+                  <div key={key} className="border rounded p-3" style={{ borderColor: 'var(--border-default)' }}>
+                    <p className="font-semibold text-sm mb-2" style={{ color: 'var(--text-primary)' }}>📚 {key}</p>
                     <div className="space-y-2">
                       {classStudents.map((student) => (
                         <div
                           key={student.id}
                           className="flex items-center justify-between p-3 rounded border"
-                          style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-card)' }}
+                          style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-default)' }}
                         >
                           <div className="flex-1">
-                            <p className="font-medium text-sm" style={{ color: 'var(--text-1)' }}>
+                            <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
                               {student.full_name}
                             </p>
-                            <div className="text-xs mt-1 space-y-0.5" style={{ color: 'var(--text-3)' }}>
+                            <div className="text-xs mt-1 space-y-0.5" style={{ color: 'var(--text-muted)' }}>
                               <p>👨‍👩‍👧 Guardian: {student.guardian_name || 'N/A'}</p>
                               <p>📱 Contact: {student.guardian_phone || student.phone_no || 'N/A'}</p>
                             </div>
@@ -813,7 +813,7 @@ const DailyReportPage = () => {
                               <button
                                 key={template.id}
                                 onClick={() => handleStudentReportClick(student, template)}
-                                className="px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700"
+                                className="px-2 py-1 bg-accent text-primary rounded text-xs hover:bg-accent"
                                 title={`Set Report using ${template.name}`}
                               >
                                 Set Report
@@ -832,12 +832,12 @@ const DailyReportPage = () => {
           {/* Report Form / Send Panel */}
           {selectedStudent && selectedTemplate ? (
             <div className="lg:col-span-1">
-              <div className="rounded-lg p-6 border sticky top-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
+              <div className="rounded-lg p-6 border sticky top-6" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold" style={{ color: 'var(--text-1)' }}>
+                  <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                     📝 {selectedStudent.full_name}
                   </h3>
-                  <button onClick={closeReportForm} className="p-1 hover:bg-slate-700 rounded">
+                  <button onClick={closeReportForm} className="p-1 hover:bg-subtle rounded">
                     <X size={18} />
                   </button>
                 </div>
@@ -846,11 +846,11 @@ const DailyReportPage = () => {
                 <div className="space-y-4 max-h-96 overflow-y-auto mb-4">
                   {selectedTemplate.template?.sections?.map((section, sIdx) => (
                     <div key={sIdx}>
-                      <p className="font-medium text-sm mb-2" style={{ color: 'var(--text-1)' }}>{section.title}</p>
+                      <p className="font-medium text-sm mb-2" style={{ color: 'var(--text-primary)' }}>{section.title}</p>
                       {section.fields.map((field, fIdx) => (
                         <div key={fIdx} className="mb-2">
-                          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-2)' }}>
-                            {field.label} {field.required && <span className="text-red-500">*</span>}
+                          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
+                            {field.label} {field.required && <span className="text-danger">*</span>}
                           </label>
                           {field.type === 'textarea' ? (
                             <textarea
@@ -894,34 +894,34 @@ const DailyReportPage = () => {
                   <button
                     onClick={saveReport}
                     disabled={isSaving}
-                    className="w-full px-3 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 disabled:opacity-50"
+                    className="w-full px-3 py-2 bg-success text-primary rounded font-medium hover:bg-success disabled:opacity-50"
                   >
                     {isSaving ? 'Saving...' : '💾 Save Report'}
                   </button>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-sm text-green-400 text-center">✓ Report Saved</p>
+                    <p className="text-sm text-success text-center">✓ Report Saved</p>
                     <button
                       onClick={() => setSendMethod('whatsapp')}
-                      className="w-full px-3 py-2 bg-green-500 text-white rounded font-medium hover:bg-green-600 flex items-center justify-center gap-2"
+                      className="w-full px-3 py-2 bg-success text-primary rounded font-medium hover:bg-success flex items-center justify-center gap-2"
                     >
                       <Send size={16} /> Send via WhatsApp
                     </button>
                     <button
                       onClick={() => setSendMethod('email')}
-                      className="w-full px-3 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 flex items-center justify-center gap-2"
+                      className="w-full px-3 py-2 bg-accent text-primary rounded font-medium hover:bg-accent flex items-center justify-center gap-2"
                     >
                       <Send size={16} /> Send via Email
                     </button>
 
                     {sendMethod && (
-                      <div className="mt-3 p-3 rounded bg-slate-700/30 border" style={{ borderColor: 'var(--border-card)' }}>
-                        <p className="text-xs mb-2" style={{ color: 'var(--text-2)' }}>
+                      <div className="mt-3 p-3 rounded bg-subtle border" style={{ borderColor: 'var(--border-default)' }}>
+                        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
                           Ready to send via {sendMethod === 'whatsapp' ? '📱 WhatsApp' : '📧 Email'}
                         </p>
                         <button
                           onClick={() => sendReport(sendMethod)}
-                          className="w-full px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700"
+                          className="w-full px-3 py-2 bg-accent text-primary rounded text-sm hover:bg-accent"
                         >
                           Confirm & Send
                         </button>
@@ -930,7 +930,7 @@ const DailyReportPage = () => {
 
                     <button
                       onClick={closeReportForm}
-                      className="w-full px-3 py-2 bg-slate-600 text-white rounded text-sm hover:bg-slate-700"
+                      className="w-full px-3 py-2 bg-selected text-primary rounded text-sm hover:bg-subtle"
                     >
                       Close
                     </button>
@@ -940,8 +940,8 @@ const DailyReportPage = () => {
             </div>
           ) : (
             <div className="lg:col-span-1">
-              <div className="rounded-lg p-6 border text-center" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
-                <p style={{ color: 'var(--text-3)' }}>Select a student and click "Set Report" to begin</p>
+              <div className="rounded-lg p-6 border text-center" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}>
+                <p style={{ color: 'var(--text-muted)' }}>Select a student and click "Set Report" to begin</p>
               </div>
             </div>
           )}

@@ -64,7 +64,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
     >
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">
+          <label className="block text-xs font-medium text-muted mb-1">
             Title *
           </label>
           <input
@@ -73,13 +73,13 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
             placeholder="Event title"
           />
           {errors.title && (
-            <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>
+            <p className="text-xs text-danger mt-1">{errors.title.message}</p>
           )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">
+            <label className="block text-xs font-medium text-muted mb-1">
               Start Date *
             </label>
             <input
@@ -89,7 +89,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">
+            <label className="block text-xs font-medium text-muted mb-1">
               End Date *
             </label>
             <input
@@ -101,7 +101,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">
+          <label className="block text-xs font-medium text-muted mb-1">
             Type
           </label>
           <select {...register("type")} className="mis-input text-sm">
@@ -113,7 +113,7 @@ const EventModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">
+          <label className="block text-xs font-medium text-muted mb-1">
             Description
           </label>
           <textarea

@@ -495,18 +495,18 @@ const AccountingPage = () => {
   return (
     <div
       className="h-full overflow-y-auto p-6"
-      style={{ color: "var(--text-1)" }}
+      style={{ color: "var(--text-primary)" }}
     >
       <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
         <div>
           <p
             className="text-xs uppercase tracking-widest"
-            style={{ color: "var(--text-3)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             Finance
           </p>
           <h1 className="text-2xl font-bold">Accounting</h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-2)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
             Authoritative general ledger and financial controls
           </p>
         </div>
@@ -519,11 +519,11 @@ const AccountingPage = () => {
               key={key}
               className="rounded-xl border px-4 py-3"
               style={{
-                background: "var(--bg-card)",
-                borderColor: "var(--border-card)",
+                background: "var(--bg-surface)",
+                borderColor: "var(--border-default)",
               }}
             >
-              <div className="text-xs" style={{ color: "var(--text-3)" }}>
+              <div className="text-xs" style={{ color: "var(--text-muted)" }}>
                 {label}
               </div>
               <div className="font-semibold">
@@ -541,11 +541,11 @@ const AccountingPage = () => {
             onClick={() =>
               setSearchParams(key === "dashboard" ? {} : { tab: key })
             }
-            className={`shrink-0 rounded-lg px-3 py-2 text-sm ${activeTab === key ? "bg-indigo-600 text-white" : "border"}`}
+            className={`shrink-0 rounded-lg px-3 py-2 text-sm ${activeTab === key ? "bg-accent text-primary" : "border"}`}
             style={
               activeTab === key
                 ? undefined
-                : { borderColor: "var(--border-card)" }
+                : { borderColor: "var(--border-default)" }
             }
           >
             {label}
@@ -553,12 +553,12 @@ const AccountingPage = () => {
         ))}
       </div>
       {error && (
-        <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-400">
+        <div className="mb-4 rounded-lg border border-danger bg-danger-soft p-3 text-sm text-danger">
           {error}
         </div>
       )}
       {loading ? (
-        <div className="py-12 text-center" style={{ color: "var(--text-2)" }}>
+        <div className="py-12 text-center" style={{ color: "var(--text-muted)" }}>
           Loading accounting data...
         </div>
       ) : (
@@ -566,8 +566,8 @@ const AccountingPage = () => {
           <section
             className="rounded-xl border p-5"
             style={{
-              background: "var(--bg-card)",
-              borderColor: "var(--border-card)",
+              background: "var(--bg-surface)",
+              borderColor: "var(--border-default)",
             }}
           >
             <h2 className="font-semibold mb-3">
@@ -621,7 +621,7 @@ const AccountingPage = () => {
                   </select>
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white sm:col-span-4"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary sm:col-span-4"
                   >
                     {saving ? "Saving..." : "Add account"}
                   </button>
@@ -630,12 +630,12 @@ const AccountingPage = () => {
                   <div
                     key={account.id}
                     className="flex justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {account.code} · {account.name}
                     </span>
-                    <span style={{ color: "var(--text-2)" }}>
+                    <span style={{ color: "var(--text-muted)" }}>
                       {account.account_type}
                     </span>
                   </div>
@@ -711,7 +711,7 @@ const AccountingPage = () => {
                   />
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary"
                   >
                     {saving ? "Posting..." : "Post balanced journal"}
                   </button>
@@ -720,12 +720,12 @@ const AccountingPage = () => {
                   <div
                     key={journal.id}
                     className="flex justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {journal.journal_number}
                       <br />
-                      <span style={{ color: "var(--text-2)" }}>
+                      <span style={{ color: "var(--text-muted)" }}>
                         {journal.description || "Journal entry"}
                       </span>
                     </span>
@@ -741,7 +741,7 @@ const AccountingPage = () => {
                 <div
                   key={`${entry.journal_id}-${entry.account_id}`}
                   className="grid grid-cols-4 gap-2 border-b py-2 text-sm"
-                  style={{ borderColor: "var(--border-card)" }}
+                  style={{ borderColor: "var(--border-default)" }}
                 >
                   <span>
                     {formatAccountingDate(
@@ -749,14 +749,14 @@ const AccountingPage = () => {
                       accountingCalendarType,
                     )}
                     <br />
-                    <span style={{ color: "var(--text-2)" }}>
+                    <span style={{ color: "var(--text-muted)" }}>
                       {entry.journal_number}
                     </span>
                   </span>
                   <span className="col-span-2">
                     {entry.account_code} · {entry.account_name}
                     <br />
-                    <span style={{ color: "var(--text-2)" }}>
+                    <span style={{ color: "var(--text-muted)" }}>
                       {entry.description || "Ledger posting"}
                     </span>
                   </span>
@@ -853,7 +853,7 @@ const AccountingPage = () => {
                   />
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary"
                   >
                     {saving ? "Saving..." : "Save draft voucher"}
                   </button>
@@ -862,12 +862,12 @@ const AccountingPage = () => {
                   <div
                     key={voucher.id}
                     className="flex items-center justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {voucher.voucher_number}
                       <br />
-                      <span style={{ color: "var(--text-2)" }}>
+                      <span style={{ color: "var(--text-muted)" }}>
                         {voucher.voucher_type} ·{" "}
                         {voucher.narration || "No narration"}
                       </span>
@@ -878,7 +878,7 @@ const AccountingPage = () => {
                         <button
                           type="button"
                           onClick={() => postVoucher(voucher.id)}
-                          className="rounded bg-indigo-600 px-2 py-1 text-xs text-white"
+                          className="rounded bg-accent px-2 py-1 text-xs text-primary"
                         >
                           Post
                         </button>
@@ -966,7 +966,7 @@ const AccountingPage = () => {
                   </select>
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white sm:col-span-2"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary sm:col-span-2"
                   >
                     {saving ? "Saving..." : "Save gateway"}
                   </button>
@@ -975,12 +975,12 @@ const AccountingPage = () => {
                   <div
                     key={gateway.id}
                     className="flex justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {gateway.name} · {gateway.provider}
                       <br />
-                      <span style={{ color: "var(--text-2)" }}>
+                      <span style={{ color: "var(--text-muted)" }}>
                         {gateway.mode}
                       </span>
                     </span>
@@ -992,12 +992,12 @@ const AccountingPage = () => {
                   <div
                     key={transaction.id}
                     className="flex justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {transaction.external_id}
                       <br />
-                      <span style={{ color: "var(--text-2)" }}>
+                      <span style={{ color: "var(--text-muted)" }}>
                         {transaction.gateway_name}
                       </span>
                     </span>
@@ -1035,7 +1035,7 @@ const AccountingPage = () => {
                   />
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary"
                   >
                     {saving ? "Importing..." : "Import statement"}
                   </button>
@@ -1044,12 +1044,12 @@ const AccountingPage = () => {
                   <div
                     key={statement.id}
                     className="flex justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {statement.transaction_date}
                       <br />
-                      <span style={{ color: "var(--text-2)" }}>
+                      <span style={{ color: "var(--text-muted)" }}>
                         {statement.reference} · {statement.bank_account_name}
                       </span>
                     </span>
@@ -1143,7 +1143,7 @@ const AccountingPage = () => {
                   </label>
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white sm:col-span-2"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary sm:col-span-2"
                   >
                     {saving ? "Saving..." : "Save configuration"}
                   </button>
@@ -1183,7 +1183,7 @@ const AccountingPage = () => {
                     }
                     className="rounded-lg border bg-transparent px-3 py-2 text-sm"
                   />
-                  <button className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">
+                  <button className="rounded-lg bg-accent px-3 py-2 text-sm text-primary">
                     Add tax
                   </button>
                 </form>
@@ -1191,7 +1191,7 @@ const AccountingPage = () => {
                   <div
                     key={tax.id}
                     className="border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     {tax.name} · {tax.tax_type} · {tax.rate}
                     {tax.rate_kind === "percentage" ? "%" : ""}
@@ -1226,7 +1226,7 @@ const AccountingPage = () => {
                     }
                     className="rounded-lg border bg-transparent px-3 py-2 text-sm"
                   />
-                  <button className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">
+                  <button className="rounded-lg bg-accent px-3 py-2 text-sm text-primary">
                     Add cost center
                   </button>
                 </form>
@@ -1234,7 +1234,7 @@ const AccountingPage = () => {
                   <div
                     key={center.id}
                     className="border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     {center.code} · {center.name}
                   </div>
@@ -1280,7 +1280,7 @@ const AccountingPage = () => {
                   />
                   <button
                     disabled={saving}
-                    className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm text-primary"
                   >
                     Create year
                   </button>
@@ -1289,7 +1289,7 @@ const AccountingPage = () => {
                   <div
                     key={year.id}
                     className="flex items-center justify-between border-b py-2 text-sm"
-                    style={{ borderColor: "var(--border-card)" }}
+                    style={{ borderColor: "var(--border-default)" }}
                   >
                     <span>
                       {year.name} ·{" "}
@@ -1303,7 +1303,7 @@ const AccountingPage = () => {
                         accountingCalendarType,
                       ) || "-"}
                       <br />
-                      <span style={{ color: "var(--text-2)" }}>
+                      <span style={{ color: "var(--text-muted)" }}>
                         {year.is_active
                           ? "Active"
                           : year.locked_at
@@ -1316,7 +1316,7 @@ const AccountingPage = () => {
                         <button
                           type="button"
                           onClick={() => changeFiscalYear(year.id, "active")}
-                          className="rounded bg-indigo-600 px-2 py-1 text-xs text-white"
+                          className="rounded bg-accent px-2 py-1 text-xs text-primary"
                         >
                           Set active
                         </button>
@@ -1339,7 +1339,7 @@ const AccountingPage = () => {
                 <div
                   key={account.id}
                   className="flex justify-between border-b py-2 text-sm"
-                  style={{ borderColor: "var(--border-card)" }}
+                  style={{ borderColor: "var(--border-default)" }}
                 >
                   <span>
                     {account.code} · {account.name}
@@ -1357,12 +1357,12 @@ const AccountingPage = () => {
                 <div
                   key={journal.id}
                   className="flex justify-between border-b py-2 text-sm"
-                  style={{ borderColor: "var(--border-card)" }}
+                  style={{ borderColor: "var(--border-default)" }}
                 >
                   <span>
                     {journal.journal_number}
                     <br />
-                    <span style={{ color: "var(--text-2)" }}>
+                    <span style={{ color: "var(--text-muted)" }}>
                       {journal.description || "Journal entry"}
                     </span>
                   </span>
@@ -1374,7 +1374,7 @@ const AccountingPage = () => {
               ))
             )}
             {!accounts.length && !journals.length && (
-              <p style={{ color: "var(--text-2)" }}>
+              <p style={{ color: "var(--text-muted)" }}>
                 No accounting records are available yet.
               </p>
             )}
@@ -1382,8 +1382,8 @@ const AccountingPage = () => {
           <section
             className="rounded-xl border p-5"
             style={{
-              background: "var(--bg-card)",
-              borderColor: "var(--border-card)",
+              background: "var(--bg-surface)",
+              borderColor: "var(--border-default)",
             }}
           >
             <h2 className="font-semibold mb-3">Trial Balance</h2>
@@ -1391,7 +1391,7 @@ const AccountingPage = () => {
               <div
                 key={row.id}
                 className="flex justify-between border-b py-2 text-sm"
-                style={{ borderColor: "var(--border-card)" }}
+                style={{ borderColor: "var(--border-default)" }}
               >
                 <span>
                   {row.code} · {row.name}

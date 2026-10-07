@@ -93,8 +93,8 @@ const Departments = () => {
     <div
       className={`min-w-0 rounded-2xl p-4 ${isEditingDepartment ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-card)",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-default)",
       }}
     >
       <div
@@ -103,26 +103,26 @@ const Departments = () => {
       <div className="flex justify-between items-center mb-4">
         <h2
           className="text-base font-semibold"
-          style={{ color: "var(--text-1)" }}
+          style={{ color: "var(--text-primary)" }}
         >
           Departments
         </h2>
         <button
           onClick={openCreate}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+          className="inline-flex items-center gap-2 px-3 py-1 bg-accent hover:bg-accent text-primary rounded"
         >
           <Plus size={14} /> Create
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-slate-700/60">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
         {departments.length === 0 ? (
-          <div className="p-6 text-center text-slate-400">
+          <div className="p-6 text-center text-muted">
             {loading ? "Loading..." : "No departments yet."}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-slate-800/60 border-b border-slate-700/60">
+            <thead className="bg-subtle border-b border-default">
               <tr>
                 <th className="px-4 py-3 text-left">Name</th>
                 <th className="px-4 py-3 text-left">Code</th>
@@ -132,7 +132,7 @@ const Departments = () => {
             </thead>
             <tbody className="divide-y divide-slate-700/60">
               {departments.map((d) => (
-                <tr key={d.id} className="hover:bg-slate-800/40 transition">
+                <tr key={d.id} className="hover:bg-subtle transition">
                   <td className="px-4 py-3">{d.name}</td>
                   <td className="px-4 py-3">{d.code || "—"}</td>
                   <td className="px-4 py-3 text-center">
@@ -142,7 +142,7 @@ const Departments = () => {
                     <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEdit(d)}
-                      className="rounded p-2 text-indigo-300 transition hover:bg-indigo-500/15 hover:text-indigo-200"
+                      className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                       title={`Edit ${d.name}`}
                       aria-label={`Edit ${d.name}`}
                     >
@@ -150,7 +150,7 @@ const Departments = () => {
                     </button>
                     <button
                       onClick={() => handleDelete(d.id)}
-                      className="rounded p-2 text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+                      className="rounded p-2 text-danger transition hover:bg-danger-soft hover:text-danger"
                       title={`Delete ${d.name}`}
                       aria-label={`Delete ${d.name}`}
                     >
@@ -175,24 +175,24 @@ const Departments = () => {
       >
         <form onSubmit={submit} className="p-4 space-y-3">
           <div>
-            <label className="block text-sm text-slate-300 mb-1">Name *</label>
+            <label className="block text-sm text-muted mb-1">Name *</label>
             <input
               required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border rounded text-white"
+              className="w-full px-3 py-2 bg-subtle border rounded text-primary"
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-300 mb-1">Code</label>
+            <label className="block text-sm text-muted mb-1">Code</label>
             <input
               value={form.code}
               onChange={(e) => setForm({ ...form, code: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border rounded text-white"
+              className="w-full px-3 py-2 bg-subtle border rounded text-primary"
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-300 mb-1">
+            <label className="block text-sm text-muted mb-1">
               Description
             </label>
             <textarea
@@ -200,11 +200,11 @@ const Departments = () => {
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="w-full px-3 py-2 bg-slate-800 border rounded text-white"
+              className="w-full px-3 py-2 bg-subtle border rounded text-primary"
             />
           </div>
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-sm text-slate-300">
+            <label className="flex items-center gap-2 text-sm text-muted">
               <input
                 type="checkbox"
                 checked={form.is_active}

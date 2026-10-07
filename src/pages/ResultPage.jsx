@@ -46,9 +46,9 @@ const ResultPage = () => {
       <h2 className="text-xl font-semibold mb-4">Results Management</h2>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Select Classroom</label>
+        <label className="block text-sm font-medium text-muted">Select Classroom</label>
         <select
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          className="mt-1 block w-full rounded-md border-default shadow-sm"
           onChange={(e) => loadResults(e.target.value)}
           value={selectedClassroom || ''}
         >
@@ -62,7 +62,7 @@ const ResultPage = () => {
       {loading ? <p>Loading results...</p> : (
         <div>
           {results.length === 0 ? <p>No results found for this classroom.</p> : (
-            <table className="min-w-full bg-white">
+            <table className="min-w-full bg-surface">
               <thead>
                 <tr>
                   <th>Student ID</th>
