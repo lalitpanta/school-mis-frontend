@@ -1,4 +1,10 @@
-import { Fragment, useEffect, useState, useRef } from "react";
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+} from "react";
 import {
   getStudents,
   createStudent,
@@ -209,6 +215,9 @@ const RadioField = ({ label, name, value, checked, onChange }) => (
 );
 
 const Students = () => {
+  const splitLayoutRef = useRef(null);
+  const studentTableViewportRef = useRef(null);
+  const [editPanelBounds, setEditPanelBounds] = useState(null);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1221,6 +1230,46 @@ const Students = () => {
     },
   ];
   const isEditingStudent = showModal && mode === "edit";
+  useLayoutEffect(() => {
+    if (!isEditingStudent) {
+      setEditPanelBounds(null);
+      return undefined;
+    }
+
+    const updateEditPanelBounds = () => {
+      const layout = splitLayoutRef.current;
+      const tableViewport = studentTableViewportRef.current;
+      if (!layout || !tableViewport) return;
+
+      if (window.innerWidth < 768) {
+        setEditPanelBounds(null);
+        return;
+      }
+
+      const layoutBounds = layout.getBoundingClientRect();
+      const tableBounds = tableViewport.getBoundingClientRect();
+      setEditPanelBounds({
+        top: tableBounds.top - layoutBounds.top,
+        height: Math.max(
+          tableBounds.height,
+          window.innerHeight - tableBounds.top - 16,
+        ),
+      });
+    };
+
+    updateEditPanelBounds();
+    const resizeObserver = new ResizeObserver(updateEditPanelBounds);
+    if (splitLayoutRef.current) resizeObserver.observe(splitLayoutRef.current);
+    if (studentTableViewportRef.current) {
+      resizeObserver.observe(studentTableViewportRef.current);
+    }
+    window.addEventListener("resize", updateEditPanelBounds);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateEditPanelBounds);
+    };
+  }, [isEditingStudent, error, notice]);
   const displayedColumns = studentColumns.filter((column) =>
     isEditingStudent
       ? [
@@ -1272,14 +1321,15 @@ const Students = () => {
   };
   return (
     <div
-      className={`min-w-0 rounded-2xl p-4 ${isEditingStudent ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      ref={splitLayoutRef}
+      className={`min-w-0 rounded-2xl p-4 ${isEditingStudent ? "relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible max-md:h-auto max-md:min-h-0" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-card)",
       }}
     >
       <div
-        className={`min-w-0 ${isEditingStudent ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+        className={`min-w-0 ${isEditingStudent ? "flex min-h-0 flex-1 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
         <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
           <div>
@@ -1343,7 +1393,7 @@ const Students = () => {
           </div>
         )}
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60">
+        <div className="flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60 bg-[var(--bg-card)]">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <label className="relative min-w-55 max-w-[320px] flex-1">
@@ -1540,7 +1590,8 @@ const Students = () => {
           )}
           <div className="min-h-0 flex-1 overflow-hidden">
             <div
-              className={`h-full min-w-0 ${isEditingStudent ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+              ref={studentTableViewportRef}
+              className={`h-full min-w-0 ${isEditingStudent ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
             >
               {filteredStudents.length === 0 ? (
                 <div className="p-6 text-center text-slate-400">
@@ -1809,6 +1860,20 @@ const Students = () => {
         subtitle="Fill in the student's personal, academic, family, and emergency details."
         width="max-w-6xl"
         inlinePanel={isEditingStudent}
+        inlinePanelStyle={
+          isEditingStudent && editPanelBounds
+            ? {
+                position: "absolute",
+                right: "1rem",
+                top: `${editPanelBounds.top}px`,
+                height: `${editPanelBounds.height}px`,
+                width: "50%",
+                zIndex: 20,
+              }
+            : undefined
+        }
+        inlinePanelSurfaceClassName="border-l border-slate-700/60 shadow-none"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
         closeOnOverlayClick={false}
       >
         <div className={isEditingStudent ? "p-3" : "p-4 sm:p-6"}>

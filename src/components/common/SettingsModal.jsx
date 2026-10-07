@@ -9,6 +9,9 @@ const SettingsModal = ({
   width = "max-w-lg",
   sidePanel = false,
   inlinePanel = false,
+  inlinePanelStyle,
+  inlinePanelSurfaceClassName,
+  inlinePanelSurfaceStyle,
   closeOnOverlayClick = true,
   children,
   footer,
@@ -60,10 +63,12 @@ const SettingsModal = ({
       style={{
         background: sidePanel || inlinePanel ? "transparent" : "var(--overlay)",
         backdropFilter: sidePanel || inlinePanel ? "none" : "blur(10px)",
+        ...(inlinePanel ? inlinePanelStyle : {}),
       }}
     >
       <div
-        className={`app-modal-surface relative ${inlinePanel ? "flex h-full min-h-0 w-full min-w-0 flex-col rounded-xl" : sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl`} overflow-hidden border border-slate-700/70 shadow-xl`}
+        className={`app-modal-surface relative ${inlinePanel ? `flex h-full min-h-0 w-full min-w-0 flex-col ${inlinePanelSurfaceClassName || "rounded-xl border border-slate-700/70 shadow-xl"}` : sidePanel ? "flex h-dvh max-h-dvh w-[48vw] max-w-none flex-col rounded-none rounded-l-2xl border-y-0 border-r-0 max-lg:w-full max-lg:rounded-none overflow-hidden border border-slate-700/70 shadow-xl" : `w-full ${width} max-h-[calc(100vh-2rem)] rounded-2xl overflow-hidden border border-slate-700/70 shadow-xl`}`}
+        style={inlinePanel ? inlinePanelSurfaceStyle : undefined}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-700/70 px-6 py-4">
           <div className="min-w-0 flex-1">

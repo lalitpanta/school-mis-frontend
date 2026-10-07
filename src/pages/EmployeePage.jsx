@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { employeesApi } from "../api/employeesApi";
 import { getDepartments } from "../api/departmentsApi";
 import {
@@ -110,6 +110,9 @@ const handleDownloadDocument = async (employeeId, docUrl, docTitle) => {
 };
 
 export default function EmployeePage() {
+  const splitLayoutRef = useRef(null);
+  const employeeTableViewportRef = useRef(null);
+  const [editPanelBounds, setEditPanelBounds] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -538,6 +541,46 @@ export default function EmployeePage() {
     return matchesSearch && matchesStatus && matchesDepartment;
   });
   const isEditingEmployee = showModal && modalMode === "edit";
+  useLayoutEffect(() => {
+    if (!isEditingEmployee) {
+      setEditPanelBounds(null);
+      return undefined;
+    }
+
+    const updateEditPanelBounds = () => {
+      const layout = splitLayoutRef.current;
+      const tableViewport = employeeTableViewportRef.current;
+      if (!layout || !tableViewport) return;
+
+      if (window.innerWidth < 768) {
+        setEditPanelBounds(null);
+        return;
+      }
+
+      const layoutBounds = layout.getBoundingClientRect();
+      const tableBounds = tableViewport.getBoundingClientRect();
+      setEditPanelBounds({
+        top: tableBounds.top - layoutBounds.top,
+        height: Math.max(
+          tableBounds.height,
+          window.innerHeight - tableBounds.top - 16,
+        ),
+      });
+    };
+
+    updateEditPanelBounds();
+    const resizeObserver = new ResizeObserver(updateEditPanelBounds);
+    if (splitLayoutRef.current) resizeObserver.observe(splitLayoutRef.current);
+    if (employeeTableViewportRef.current) {
+      resizeObserver.observe(employeeTableViewportRef.current);
+    }
+    window.addEventListener("resize", updateEditPanelBounds);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateEditPanelBounds);
+    };
+  }, [isEditingEmployee]);
   const displayedEmployeeColumns = employeeColumns.filter((column) =>
     isEditingEmployee
       ? ["employee_id", "full_name", "status"].includes(column.key)
@@ -561,11 +604,12 @@ export default function EmployeePage() {
   });
   return (
     <div
-      className={`${isEditingEmployee ? "grid h-[calc(100vh-8rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "min-h-screen"} p-4`}
+      ref={splitLayoutRef}
+      className={`${isEditingEmployee ? "relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
       style={{ background: "var(--bg-main)" }}
     >
       <div
-        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
+        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
       >
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -685,7 +729,8 @@ export default function EmployeePage() {
             recordCount={filteredEmployees.length}
           />
           <div
-            className={`min-h-0 flex-1 ${isEditingEmployee ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+            ref={employeeTableViewportRef}
+            className={`min-h-0 flex-1 ${isEditingEmployee ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
           >
             <table
               className={`w-full ${isEditingEmployee ? "min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
@@ -871,10 +916,22 @@ export default function EmployeePage() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div
+          style={
+            modalMode === "edit" && editPanelBounds
+              ? {
+                  position: "absolute",
+                  right: "1rem",
+                  top: `${editPanelBounds.top}px`,
+                  height: `${editPanelBounds.height}px`,
+                  width: "50%",
+                  zIndex: 20,
+                }
+              : undefined
+          }
           className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none rounded-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg"} flex flex-col overflow-hidden border border-slate-700 bg-slate-900`}
+            className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none border-l border-slate-700/60 bg-[var(--bg-card)]" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} flex flex-col overflow-hidden`}
           >
             <div className="sticky top-0 flex justify-between items-center p-6 border-b border-slate-700 bg-slate-900 z-10">
               <h2 className="text-2xl font-bold text-white">
