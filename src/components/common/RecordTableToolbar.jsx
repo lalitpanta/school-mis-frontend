@@ -12,7 +12,7 @@ const RecordTableToolbar = ({
   recordCount,
   rightContent,
 }) => (
-  <div className="relative z-30 flex w-full min-w-0 shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
+  <div className="entity-admin-toolbar relative z-30 flex w-full min-w-0 shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
       <label className="relative min-w-55 max-w-[320px] flex-1">
         <Search
@@ -25,11 +25,11 @@ const RecordTableToolbar = ({
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={searchPlaceholder}
           aria-label={searchPlaceholder}
-          className="w-full rounded border border-slate-700 bg-slate-800 py-2 pl-9 pr-3 text-sm text-white focus:border-indigo-500 focus:outline-none"
+          className="entity-admin-input w-full rounded border border-slate-700 bg-slate-800 py-2 pl-9 pr-3 text-sm text-white focus:border-indigo-500 focus:outline-none"
         />
       </label>
       <details className="group relative">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">
+        <summary className="entity-admin-button inline-flex cursor-pointer list-none items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">
           <SlidersHorizontal size={16} /> Filter
         </summary>
         <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
@@ -37,7 +37,7 @@ const RecordTableToolbar = ({
         </div>
       </details>
       <details className="group relative">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">
+        <summary className="entity-admin-button inline-flex cursor-pointer list-none items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">
           <Columns3 size={16} /> Columns
         </summary>
         <div className="absolute left-0 top-full z-30 mt-2 grid max-h-80 w-56 gap-1 overflow-y-auto rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">

@@ -11,6 +11,7 @@ import {
   ArrowUpDown,
   GripVertical,
   Power,
+  Upload,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -91,6 +92,41 @@ const getDepartmentName = (id, departments) =>
 const formatArrayValue = (value) =>
   Array.isArray(value) ? value.join(", ") : value || "—";
 
+const parseCsv = (text) => {
+  const rows = [];
+  let row = [];
+  let value = "";
+  let quoted = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const character = text[index];
+    if (character === '"') {
+      if (quoted && text[index + 1] === '"') {
+        value += '"';
+        index += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (character === "," && !quoted) {
+      row.push(value);
+      value = "";
+    } else if ((character === "\n" || character === "\r") && !quoted) {
+      if (character === "\r" && text[index + 1] === "\n") index += 1;
+      row.push(value);
+      if (row.some((cell) => cell.trim())) rows.push(row);
+      row = [];
+      value = "";
+    } else {
+      value += character;
+    }
+  }
+  if (value || row.length) {
+    row.push(value);
+    if (row.some((cell) => cell.trim())) rows.push(row);
+  }
+  return rows;
+};
+
 const handleDownloadDocument = async (employeeId, docUrl, docTitle) => {
   try {
     if (!docUrl) {
@@ -116,6 +152,7 @@ const handleDownloadDocument = async (employeeId, docUrl, docTitle) => {
 export default function EmployeePage() {
   const splitLayoutRef = useRef(null);
   const employeeTableViewportRef = useRef(null);
+  const employeeImportRef = useRef(null);
   const [editPanelBounds, setEditPanelBounds] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -128,11 +165,7 @@ export default function EmployeePage() {
   const [employeeStatusFilter, setEmployeeStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [visibleEmployeeColumns, setVisibleEmployeeColumns] = useState([
-    "employee_id",
     "full_name",
-    "designation",
-    "department",
-    "email_address",
     "status",
   ]);
   const [employeeSort, setEmployeeSort] = useState({
@@ -189,6 +222,116 @@ export default function EmployeePage() {
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleEmployeeImport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    let importedCount = 0;
+
+    try {
+      setLoading(true);
+      const rows = parseCsv(await file.text());
+      if (rows.length < 2) {
+        throw new Error("The CSV must include a header and at least one employee.");
+      }
+
+      const headers = rows[0].map((header, index) =>
+        header.replace(/^\uFEFF/, "").trim().toLowerCase().replace(/\s+/g, "_") ||
+        `column_${index}`,
+      );
+      const employeesToCreate = rows.slice(1).map((row) => {
+        const employee = {};
+        headers.forEach((header, index) => {
+          const key =
+            header === "id"
+              ? "employee_id"
+              : header === "name"
+                ? "full_name"
+                : header === "email"
+                  ? "email_address"
+                  : header === "active"
+                    ? "is_active"
+                    : header;
+          const value = (row[index] || "").trim();
+          if (Object.hasOwn(emptyEmployee, key) && value) employee[key] = value;
+          if (key === "is_active" && value) {
+            employee.is_active = ["true", "1", "yes", "active"].includes(
+              value.toLowerCase(),
+            );
+          }
+        });
+        return employee;
+      });
+      const invalidRow = employeesToCreate.findIndex(
+        (employee) => !employee.employee_id || !employee.full_name,
+      );
+      if (invalidRow >= 0) {
+        throw new Error(
+          `CSV row ${invalidRow + 2} must include employee_id and full_name.`,
+        );
+      }
+
+      for (let index = 0; index < employeesToCreate.length; index += 1) {
+        try {
+          await employeesApi.createEmployee(employeesToCreate[index]);
+          importedCount += 1;
+        } catch (error) {
+          throw new Error(
+            `Import stopped at CSV row ${index + 2}: ${
+              error.response?.data?.message || error.message
+            }`,
+          );
+        }
+      }
+      const response = await employeesApi.getEmployees({ is_active: "all" });
+      setEmployees(response.data?.data || []);
+      showToast(`${employeesToCreate.length} employees imported successfully.`);
+    } catch (error) {
+      console.error("Employee CSV import failed:", error);
+      let message = error.message || "Unable to import employees.";
+      if (importedCount > 0) {
+        try {
+          const response = await employeesApi.getEmployees({ is_active: "all" });
+          setEmployees(response.data?.data || []);
+          message += ` ${importedCount} earlier rows were imported.`;
+        } catch (refreshError) {
+          console.error("Could not refresh employees after partial import:", refreshError);
+          message += ` ${importedCount} rows were imported, but the employee list could not be refreshed.`;
+        }
+      }
+      showToast(message, "error");
+    } finally {
+      event.target.value = "";
+      setLoading(false);
+    }
+  };
+
+  const exportEmployeesCsv = () => {
+    const fields = [
+      ["employee_id", "Employee ID"],
+      ["full_name", "Full Name"],
+      ["email_address", "Email"],
+      ["designation", "Designation"],
+      ["department_id", "Department ID"],
+      ["is_active", "Active"],
+    ];
+    const escapeCsv = (value) =>
+      `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const content = [
+      fields.map(([, label]) => escapeCsv(label)).join(","),
+      ...filteredEmployees.map((employee) =>
+        fields.map(([field]) => escapeCsv(employee[field])).join(","),
+      ),
+    ].join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob([content], { type: "text/csv;charset=utf-8" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "employees.csv";
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleCreateClick = () => {
@@ -489,6 +632,27 @@ export default function EmployeePage() {
     printWindow.print();
   };
 
+  const renderEmployeeIdentity = (employee) => (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
+        {employee.photograph_url ? (
+          <img src={getDocumentUrl(employee.photograph_url)} alt="" className="h-full w-full object-cover" />
+        ) : (
+          (employee.full_name || "E")
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0].toUpperCase())
+            .join("")
+        )}
+      </div>
+      <div className="min-w-0">
+        <div className="truncate font-medium text-slate-100">{employee.full_name}</div>
+        <div className="truncate text-xs text-slate-400">{employee.email_address || "—"}</div>
+      </div>
+    </div>
+  );
+
   const employeeColumns = [
     {
       key: "employee_id",
@@ -499,9 +663,7 @@ export default function EmployeePage() {
       key: "full_name",
       label: "Name",
       value: (employee) => employee.full_name,
-      render: (employee) => (
-        <span className="font-medium">{employee.full_name}</span>
-      ),
+      render: renderEmployeeIdentity,
     },
     {
       key: "designation",
@@ -526,7 +688,7 @@ export default function EmployeePage() {
       value: (employee) => employee.is_active,
       render: (employee) => (
         <span
-          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${employee.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+          className={`entity-status-pill inline-block rounded-full px-3 py-1 text-xs font-medium ${employee.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
         >
           {employee.is_active ? "Active" : "Inactive"}
         </span>
@@ -618,7 +780,7 @@ export default function EmployeePage() {
                   {employee.full_name}
                 </div>
                 <div className="truncate text-xs text-slate-400">
-                  {employee.email_address || employee.employee_id || "—"}
+                  {employee.email_address || "—"}
                 </div>
               </div>
             </div>
@@ -664,8 +826,8 @@ export default function EmployeePage() {
   return (
     <div
       ref={splitLayoutRef}
-      className={`${isEditingEmployee ? "relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
-      style={{ background: "var(--bg-main)" }}
+      className={`entity-admin-page ${isEditingEmployee ? "is-editing relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
+      style={{ background: "#080c14" }}
     >
       <div
         className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
@@ -674,7 +836,7 @@ export default function EmployeePage() {
         <div className="flex justify-between items-center">
           <div>
             <h1
-              className="text-3xl font-bold"
+              className="text-[28px] font-bold"
               style={{ color: "var(--text-1)" }}
             >
               Manage Employees
@@ -683,13 +845,29 @@ export default function EmployeePage() {
               Manage employee records and information
             </p>
           </div>
-          <button
-            onClick={handleCreateClick}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition"
-          >
-            <Plus size={20} />
-            Add Employee
-          </button>
+          <div className="flex items-center gap-2">
+            <input
+              ref={employeeImportRef}
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleEmployeeImport}
+              className="hidden"
+              aria-label="Choose employee CSV file"
+            />
+            <button
+              type="button"
+              onClick={() => employeeImportRef.current?.click()}
+              className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 transition hover:bg-slate-800"
+            >
+              <Upload size={16} /> Import
+            </button>
+            <button
+              onClick={handleCreateClick}
+              className="entity-admin-button flex items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 transition hover:bg-teal-200"
+            >
+              <Plus size={17} /> Add
+            </button>
+          </div>
         </div>
 
         {/* Toast */}
@@ -707,7 +885,7 @@ export default function EmployeePage() {
 
         {/* Employees Table */}
         <div
-          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg"
+          className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg"
           style={{
             background: "var(--bg-card)",
             border: "1px solid var(--border-card)",
@@ -801,13 +979,22 @@ export default function EmployeePage() {
               },
             ]}
             recordCount={filteredEmployees.length}
+            rightContent={
+              <button
+                type="button"
+                onClick={exportEmployeesCsv}
+                className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 text-sm text-slate-300 hover:bg-slate-800"
+              >
+                <Download size={16} /> Export CSV
+              </button>
+            }
           />
           <div
             ref={employeeTableViewportRef}
-            className={`min-h-0 flex-1 ${isEditingEmployee ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
+            className={`entity-admin-list min-h-0 flex-1 ${isEditingEmployee ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
           >
             <table
-              className={`w-full ${isEditingEmployee ? "min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
+              className="w-full min-w-0 table-fixed"
             >
               <thead
                 className="sticky top-0 z-10 border-b"
@@ -901,7 +1088,7 @@ export default function EmployeePage() {
                   pageEmployees.map((emp) => (
                     <tr
                       key={emp.id}
-                      className={`transition hover:bg-slate-800/30 ${isEditingEmployee && formData.id === emp.id ? "border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
+                      className={`entity-admin-table-row transition hover:bg-slate-800/30 ${isEditingEmployee && formData.id === emp.id ? "entity-admin-selected-row border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
                     >
                       {!isEditingEmployee && (
                         <td className="px-3 py-4 text-center">
@@ -944,7 +1131,7 @@ export default function EmployeePage() {
                             onClick={() => openViewModal(emp)}
                             title="View employee"
                             aria-label={`View ${emp.full_name}`}
-                            className={`inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
                               isEditingEmployee ? "p-1.5" : "p-2"
                             }`}
                           >
@@ -955,37 +1142,35 @@ export default function EmployeePage() {
                             onClick={() => handleEditClick(emp)}
                             title="Edit employee"
                             aria-label={`Edit ${emp.full_name}`}
-                            className={`inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
                               isEditingEmployee ? "p-1.5" : "p-2"
                             }`}
                           >
                             <Edit size={15} />
                           </button>
-                          {!isEditingEmployee && (
-                            <button
-                              type="button"
-                              onClick={() => toggleEmployeeStatus(emp)}
-                              title={
-                                emp.is_active
-                                  ? "Deactivate employee"
-                                  : "Activate employee"
-                              }
-                              aria-label={
-                                emp.is_active
-                                  ? "Deactivate employee"
-                                  : "Activate employee"
-                              }
-                              className={`inline-flex items-center justify-center rounded p-2 transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
-                            >
-                              <Power size={15} />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => toggleEmployeeStatus(emp)}
+                            title={
+                              emp.is_active
+                                ? "Deactivate employee"
+                                : "Activate employee"
+                            }
+                            aria-label={
+                              emp.is_active
+                                ? "Deactivate employee"
+                                : "Activate employee"
+                            }
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                          >
+                            <Power size={15} />
+                          </button>
                           <button
                             type="button"
                             onClick={() => setDeleteConfirm(emp.id)}
                             title="Delete employee"
                             aria-label={`Delete ${emp.full_name}`}
-                            className={`inline-flex shrink-0 items-center justify-center rounded text-red-300 transition hover:bg-red-500/30 ${
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-red-300 transition hover:bg-red-500/30 ${
                               isEditingEmployee ? "p-1.5" : "p-2"
                             }`}
                           >
@@ -1000,7 +1185,7 @@ export default function EmployeePage() {
             </table>
           </div>
           <div
-            className={`flex shrink-0 flex-wrap items-center justify-between gap-3 border-t px-3 py-3 text-xs text-slate-400 ${isEditingEmployee ? "w-full border-slate-700/60 bg-[var(--bg-card)] md:w-1/2" : "w-full"}`}
+            className={`entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t px-3 py-3 text-xs text-slate-400 ${isEditingEmployee ? "w-full border-slate-700/60 bg-[var(--bg-card)] md:w-1/2" : "w-full"}`}
             style={
               isEditingEmployee
                 ? undefined
@@ -1029,7 +1214,7 @@ export default function EmployeePage() {
             </label>
             <div className="flex items-center gap-3">
               <span>
-                {firstEmployeeRecord}-{lastEmployeeRecord} of {sortedEmployees.length}
+                {sortedEmployees.length} records
               </span>
               <span>
                 Page {visibleEmployeePage} of {employeePageCount}
@@ -1082,30 +1267,24 @@ export default function EmployeePage() {
             modalMode === "edit" && editPanelBounds
               ? {
                   position: "absolute",
-                  left: "calc(50% + 0.75rem)",
-                  right: "1rem",
+                  right: 0,
+                  width: "min(560px, calc(100% - 300px))",
                   top: `${editPanelBounds.top}px`,
                   height: `${editPanelBounds.height}px`,
                   zIndex: 20,
                 }
               : undefined
           }
-          className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? "entity-edit-panel min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
             className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} overflow-hidden`}
           >
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-3.5">
+            <div className="entity-edit-header flex h-11 shrink-0 items-center justify-between gap-4 border-b border-slate-800/70 px-5">
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg font-semibold text-white">
-                  {modalMode === "create" ? "Add Employee" : "Edit Employee"}
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-white">
+                  {modalMode === "create" ? "Add Employee" : `EDIT EMPLOYEE · ${formData.full_name}`}
                 </h2>
-                {modalMode === "edit" && (
-                  <p className="mt-0.5 truncate text-sm text-slate-400">
-                    {formData.full_name}
-                    {formData.designation ? ` · ${formData.designation}` : ""}
-                  </p>
-                )}
               </div>
               <button
                 onClick={() => setShowModal(false)}
@@ -1119,7 +1298,7 @@ export default function EmployeePage() {
             {modalMode === "edit" && (
               <nav
                 aria-label="Employee form sections"
-                className="flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
+                className="entity-edit-tabs flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
               >
                 {[
                   { label: "Personal", id: "personal", target: "employee-personal" },
@@ -1163,7 +1342,7 @@ export default function EmployeePage() {
             <form
               id="employee-edit-form"
               onSubmit={handleSubmit}
-              className={`min-h-0 flex-1 ${modalMode === "edit" ? "employee-edit-form space-y-4 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-5" : "space-y-6 overflow-y-auto p-6"}`}
+              className={`min-h-0 flex-1 ${modalMode === "edit" ? "entity-edit-form employee-edit-form space-y-4 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-5" : "space-y-6 overflow-y-auto p-6"}`}
             >
               {/* Personal Information */}
               <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
@@ -1200,6 +1379,22 @@ export default function EmployeePage() {
                         className="hidden"
                       />
                     </label>
+                    {(profilePhotoPreview || formData.photograph_url) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfilePhoto(null);
+                          setProfilePhotoPreview("");
+                          setFormData((current) => ({
+                            ...current,
+                            photograph_url: "",
+                          }));
+                        }}
+                        className="text-xs text-red-300 hover:text-red-200"
+                      >
+                        Remove
+                      </button>
+                    )}
                     {profilePhoto && (
                       <p className="max-w-xs truncate text-xs text-slate-400">
                         {profilePhoto.name}

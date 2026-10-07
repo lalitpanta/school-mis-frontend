@@ -610,3 +610,215 @@ main > * {
   border-color: #2dd4bf !important;
   outline: 2px solid rgb(45 212 191 / 15%);
 }
+
+.entity-admin-page {
+  min-height: 100%;
+  background: #080c14;
+  color: #e8ecf4;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+.entity-admin-card {
+  border: 1px solid #1b2539 !important;
+  border-radius: 16px !important;
+  background: #0f1626 !important;
+}
+
+.entity-admin-toolbar {
+  min-height: 72px;
+  padding: 16px !important;
+  border-color: #182236 !important;
+}
+
+.entity-admin-input,
+.entity-admin-page .entity-admin-toolbar select,
+.entity-admin-page .entity-admin-list-footer select {
+  height: 44px;
+  border: 1px solid #243046 !important;
+  border-radius: 10px !important;
+}
+
+.entity-admin-button {
+  min-height: 40px;
+  border-radius: 10px !important;
+}
+
+.entity-admin-icon-button {
+  width: 36px;
+  height: 36px;
+}
+
+.entity-admin-page .entity-admin-list {
+  min-width: 0;
+}
+
+.entity-admin-page thead,
+.entity-admin-page .entity-admin-table-head {
+  height: 44px;
+  background: #0c1220 !important;
+  color: #8995ab !important;
+}
+
+.entity-admin-page thead tr {
+  height: 44px;
+}
+
+.entity-admin-page thead th {
+  height: 44px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  color: #8995ab !important;
+}
+
+.entity-admin-page tbody tr,
+.entity-admin-page .entity-admin-table-row {
+  height: 68px;
+  border-color: #182236 !important;
+}
+
+.entity-admin-page .entity-admin-selected-row {
+  border-left: 3px solid #5eead4 !important;
+  background: #142034 !important;
+}
+
+.entity-admin-page tbody td {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.entity-admin-page .entity-status-pill {
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #0f2e27 !important;
+  color: #6ee7b7 !important;
+}
+
+.entity-admin-page .entity-status-pill.bg-red-500\/20 {
+  background: #341d26 !important;
+  color: #f08a8a !important;
+}
+
+.entity-admin-page .entity-admin-list-footer {
+  min-height: 56px;
+  border-color: #182236 !important;
+  background: #0f1626 !important;
+}
+
+.entity-admin-page.is-editing .entity-admin-list,
+.entity-admin-page.is-editing .entity-admin-list-footer {
+  width: calc(100% - 584px) !important;
+  flex: 0 0 auto;
+}
+
+.entity-admin-page.is-editing .entity-edit-panel {
+  position: absolute;
+  z-index: 20;
+  top: 8rem;
+  right: 0;
+  width: 560px;
+  max-width: calc(100% - 300px);
+  height: calc(100% - 8rem);
+}
+
+.entity-admin-page .entity-edit-header {
+  min-height: 44px;
+  height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
+  background: #0c1220;
+  border-color: #182236;
+}
+
+.entity-admin-page .entity-edit-header h2 {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.entity-admin-page .entity-edit-body {
+  padding: 0 !important;
+  background: #0f1626;
+}
+
+.entity-admin-page .entity-edit-header button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.entity-admin-page .entity-edit-tabs {
+  background: #0f1626;
+  border-color: #182236;
+}
+
+.entity-admin-page .entity-edit-form {
+  gap: 18px;
+}
+
+.entity-admin-page .entity-edit-form label {
+  margin-bottom: 6px;
+  color: #b6c0d2;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.entity-admin-page .entity-edit-form input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+.entity-admin-page .entity-edit-form select {
+  min-height: 44px;
+  border: 1px solid #243046;
+  border-radius: 10px;
+  background-color: #0c1220;
+  font-size: 14px;
+}
+
+.entity-admin-page .entity-edit-form input:focus,
+.entity-admin-page .entity-edit-form select:focus,
+.entity-admin-page .entity-edit-form textarea:focus {
+  border-color: #5eead4 !important;
+  outline: 2px solid rgb(94 234 212 / 22%);
+  outline-offset: 1px;
+}
+
+.entity-admin-page .entity-edit-form input:user-invalid,
+.entity-admin-page .entity-edit-form select:user-invalid,
+.entity-admin-page .entity-edit-form textarea:user-invalid {
+  border-color: #f08a8a !important;
+}
+
+.entity-admin-page .entity-edit-form div:has(> input:user-invalid)::after,
+.entity-admin-page .entity-edit-form div:has(> select:user-invalid)::after {
+  display: block;
+  margin-top: 4px;
+  color: #f08a8a;
+  content: "Please enter a valid value.";
+  font-size: 11px;
+}
+
+.entity-admin-page .entity-edit-sticky-footer,
+.entity-admin-page .employee-edit-form > div:last-child {
+  background: #0c1220 !important;
+  border-color: #182236 !important;
+}
+
+.entity-admin-page .entity-edit-sticky-footer button,
+.entity-admin-page .employee-edit-form > div:last-child button {
+  min-height: 40px;
+  border-radius: 10px;
+}
+
+@media (max-width: 767px) {
+  .entity-admin-page.is-editing .entity-admin-list,
+  .entity-admin-page.is-editing .entity-admin-list-footer {
+    width: 100% !important;
+    flex: 1 1 auto;
+  }
+
+  .entity-admin-page.is-editing .entity-edit-panel {
+    position: relative !important;
+    top: auto !important;
+    right: auto;
+    width: 100%;
+    max-width: none;
+    height: min(80dvh, 720px);
+    margin-top: 16px;
+  }
+}

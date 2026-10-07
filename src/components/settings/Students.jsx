@@ -32,6 +32,7 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
   GripVertical,
+  Power,
 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 
@@ -100,8 +101,8 @@ const emptyStudent = {
   additional_info: "",
 };
 
-const Section = ({ title, children }) => (
-  <section className="mb-5">
+const Section = ({ title, id, children }) => (
+  <section id={id} className="mb-5 scroll-mt-14">
     <h3 className="mb-3 border-b border-slate-700/60 pb-2 text-lg font-semibold text-white">
       {title}
     </h3>
@@ -227,6 +228,7 @@ const Students = () => {
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState("create");
   const [selected, setSelected] = useState(null);
+  const [activeStudentSection, setActiveStudentSection] = useState("personal");
   const [form, setForm] = useState(emptyStudent);
   const [profileFile, setProfileFile] = useState(null);
   const [documentFiles, setDocumentFiles] = useState([]);
@@ -248,14 +250,7 @@ const Students = () => {
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState([
-    "id",
-    "full_name",
-    "phone_no",
-    "classroom",
-    "section",
-    "status",
-  ]);
+  const [visibleColumns, setVisibleColumns] = useState(["full_name", "status"]);
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [expandedStudentIds, setExpandedStudentIds] = useState([]);
@@ -664,6 +659,7 @@ const Students = () => {
   const openEdit = (s) => {
     setError("");
     setNotice("");
+    setActiveStudentSection("personal");
     setMode("edit");
     setSelected(s);
     const formatDateForInput = (dStr) => {
@@ -837,6 +833,21 @@ const Students = () => {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleStudentStatus = async (student) => {
+    try {
+      setError("");
+      await updateStudent(student.id, { is_active: !student.is_active });
+      await load();
+    } catch (err) {
+      const errMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "Unable to update student status";
+      setError(errMsg);
+      console.error(err);
     }
   };
 
@@ -1142,9 +1153,29 @@ const Students = () => {
       key: "full_name",
       label: "Name",
       sortValue: (student) => student.full_name,
-      render: (student) => (
-        <span className="font-medium">{student.full_name}</span>
-      ),
+      render: (student) =>
+        isEditingStudent ? (
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
+              {(student.full_name || "S")
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part[0].toUpperCase())
+                .join("")}
+            </div>
+            <div className="min-w-0">
+              <div className="truncate font-medium text-slate-100">
+                {student.full_name}
+              </div>
+              <div className="truncate text-xs text-slate-400">
+                {student.student_mail || student.school_email || "—"}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <span className="font-medium">{student.full_name}</span>
+        ),
     },
     {
       key: "student_type",
@@ -1222,7 +1253,7 @@ const Students = () => {
       sortValue: (student) => student.is_active,
       render: (student) => (
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${student.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+          className={`entity-status-pill px-2 py-1 rounded text-xs font-medium ${student.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
         >
           {student.is_active ? "Active" : "Inactive"}
         </span>
@@ -1272,14 +1303,7 @@ const Students = () => {
   }, [isEditingStudent, error, notice]);
   const displayedColumns = studentColumns.filter((column) =>
     isEditingStudent
-      ? [
-          "id",
-          "full_name",
-          "phone_no",
-          "classroom",
-          "section",
-          "status",
-        ].includes(column.key)
+      ? ["full_name", "status"].includes(column.key)
       : visibleColumns.includes(column.key),
   );
   const sortedStudents = [...filteredStudents].sort((first, second) => {
@@ -1322,24 +1346,23 @@ const Students = () => {
   return (
     <div
       ref={splitLayoutRef}
-      className={`min-w-0 rounded-2xl p-4 ${isEditingStudent ? "relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible max-md:h-auto max-md:min-h-0" : "flex h-full min-h-0 w-full flex-col"}`}
+      className={`entity-admin-page min-w-0 ${isEditingStudent ? "is-editing relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible max-md:h-auto max-md:min-h-0" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-card)",
+        background: "transparent",
       }}
     >
       <div
         className={`min-w-0 ${isEditingStudent ? "flex min-h-0 flex-1 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
-        <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2
-              className="text-lg font-semibold"
+              className="text-[28px] font-bold"
               style={{ color: "var(--text-1)" }}
             >
               Manage Students
             </h2>
-            <p className="text-sm text-slate-400">Live data from database</p>
+            <p className="mt-1 text-sm text-slate-400">Manage student profiles, enrollment, and status.</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <input
@@ -1352,7 +1375,7 @@ const Students = () => {
             <label
               htmlFor="studentsFile"
               title="Choose CSV to import"
-              className="inline-flex items-center justify-center p-2 border border-slate-700 rounded cursor-pointer text-slate-300 hover:bg-slate-800"
+              className="entity-admin-button inline-flex h-10 items-center justify-center rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
             >
               <Upload size={16} />
             </label>
@@ -1360,13 +1383,13 @@ const Students = () => {
               onClick={handleImport}
               title="Import students"
               aria-label="Import students"
-              className="inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800"
+              className="entity-admin-button inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
             >
               <Download size={16} className="rotate-180" />
             </button>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium"
+              className="entity-admin-button inline-flex h-10 items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 hover:bg-teal-200"
             >
               <Plus size={16} /> Add Student
             </button>
@@ -1393,8 +1416,8 @@ const Students = () => {
           </div>
         )}
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60 bg-[var(--bg-card)]">
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
+        <div className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-visible rounded-lg border border-slate-700/60 bg-[var(--bg-card)]">
+          <div className="entity-admin-toolbar flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <label className="relative min-w-55 max-w-[320px] flex-1">
                 <Search
@@ -1407,7 +1430,7 @@ const Students = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search students..."
                   aria-label="Search students"
-                  className="w-full pl-9 pr-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
+                  className="entity-admin-input w-full pl-9 pr-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
                 />
               </label>
               <div className="relative">
@@ -1591,7 +1614,7 @@ const Students = () => {
           <div className="min-h-0 flex-1 overflow-hidden">
             <div
               ref={studentTableViewportRef}
-              className={`h-full min-w-0 ${isEditingStudent ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
+              className={`entity-admin-list h-full min-w-0 ${isEditingStudent ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}
             >
               {filteredStudents.length === 0 ? (
                 <div className="p-6 text-center text-slate-400">
@@ -1599,9 +1622,9 @@ const Students = () => {
                 </div>
               ) : (
                 <table
-                  className={`text-sm ${isEditingStudent ? "w-full min-w-0 table-fixed" : "w-full min-w-225 whitespace-nowrap"}`}
+                  className="w-full min-w-0 table-fixed text-sm"
                 >
-                  <thead className="sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
+                  <thead className="entity-admin-table-head sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
                     <tr>
                       {!isEditingStudent && (
                         <th className="w-24 px-3 py-3 text-center">
@@ -1635,7 +1658,7 @@ const Students = () => {
                       {displayedColumns.map((column) => (
                         <th
                           key={column.key}
-                          className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? (column.key === "id" ? "w-14" : column.key === "phone_no" ? "w-24" : column.key === "classroom" ? "w-20" : column.key === "section" ? "w-20" : column.key === "status" ? "w-24" : "") : ""}`}
+                          className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? (column.key === "classroom" ? "w-24" : column.key === "status" ? "w-24" : "") : ""}`}
                         >
                           <button
                             type="button"
@@ -1672,7 +1695,7 @@ const Students = () => {
                     {pageStudents.map((student) => (
                       <Fragment key={student.id}>
                         <tr
-                          className={`h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40 ${
+                          className={`entity-admin-table-row h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40 ${
                             isEditingStudent && selected?.id === student.id
                               ? "border-l-2 border-l-teal-400 bg-teal-500/10"
                               : ""
@@ -1740,7 +1763,7 @@ const Students = () => {
                                 onClick={() => setViewStudent(student)}
                                 title="View student"
                                 aria-label={`View ${student.full_name}`}
-                                className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
+                                className="entity-admin-icon-button rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
                               >
                                 <Eye size={15} />
                               </button>
@@ -1748,15 +1771,23 @@ const Students = () => {
                                 onClick={() => openEdit(student)}
                                 title="Edit student"
                                 aria-label={`Edit ${student.full_name}`}
-                                className="p-2 text-slate-300 hover:bg-slate-700/60 rounded"
+                                className="entity-admin-icon-button rounded p-2 text-slate-300 hover:bg-slate-700/60"
                               >
                                 <Edit size={15} />
+                              </button>
+                              <button
+                                onClick={() => toggleStudentStatus(student)}
+                                title={student.is_active ? "Deactivate student" : "Activate student"}
+                                aria-label={`${student.is_active ? "Deactivate" : "Activate"} ${student.full_name}`}
+                                className={`entity-admin-icon-button rounded p-2 ${student.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                              >
+                                <Power size={15} />
                               </button>
                               <button
                                 onClick={() => remove(student.id)}
                                 title="Delete student"
                                 aria-label={`Delete ${student.full_name}`}
-                                className="p-2 text-red-300 hover:bg-red-500/10 rounded"
+                                className="entity-admin-icon-button rounded p-2 text-red-300 hover:bg-red-500/10"
                               >
                                 <Trash2 size={15} />
                               </button>
@@ -1797,7 +1828,7 @@ const Students = () => {
               )}
             </div>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 px-4 py-3 text-xs text-slate-400">
+          <div className="entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 px-4 py-3 text-xs text-slate-400">
             <label className="flex items-center gap-2">
               Rows per page
               <select
@@ -1817,7 +1848,7 @@ const Students = () => {
             </label>
             <div className="flex items-center gap-4">
               <span>
-                {firstRecord}-{lastRecord} of {sortedStudents.length}
+                {sortedStudents.length} records
               </span>
               <span>
                 Page {visiblePage} of {pageCount}
@@ -1862,26 +1893,25 @@ const Students = () => {
       <SettingsModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        title={mode === "create" ? "Create New Student" : "Edit Student"}
+        title={
+          mode === "create"
+            ? "Create New Student"
+            : `EDIT STUDENT · ${selected?.full_name || ""}`
+        }
         subtitle={
           mode === "edit"
-            ? [
-                selected?.full_name,
-                selected?.classroom_name || selected?.class_name,
-                selected?.section_name && `Section ${selected.section_name}`,
-              ]
-                .filter(Boolean)
-                .join(" · ")
+            ? undefined
             : "Fill in the student's personal, academic, family, and emergency details."
         }
         width="max-w-6xl"
         inlinePanel={isEditingStudent}
+        inlinePanelClassName="entity-edit-panel"
         inlinePanelStyle={
           isEditingStudent && editPanelBounds
             ? {
                 position: "absolute",
-                left: "calc(50% + 0.75rem)",
-                right: "1rem",
+                right: 0,
+                width: "min(560px, calc(100% - 300px))",
                 top: `${editPanelBounds.top}px`,
                 height: `${editPanelBounds.height}px`,
                 zIndex: 20,
@@ -1890,9 +1920,44 @@ const Students = () => {
         }
         inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header h-11 min-h-11 items-center px-5 py-0"
+        inlinePanelBodyClassName="entity-edit-body px-0 py-0"
         closeOnOverlayClick={false}
       >
         <div className={isEditingStudent ? "p-0" : "p-4 sm:p-6"}>
+          {isEditingStudent && (
+            <nav
+              aria-label="Student form sections"
+              className="entity-edit-tabs sticky top-0 z-10 flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-6"
+            >
+              {[
+                { label: "Personal", id: "personal", target: "student-personal" },
+                { label: "Guardian", id: "guardian", target: "student-guardian" },
+                { label: "Class & section", id: "class", target: "student-class-section" },
+                { label: "Documents", id: "documents", target: "student-documents" },
+              ].map(({ label, id, target }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => {
+                    setActiveStudentSection(id);
+                    document.getElementById(target)?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                  aria-current={activeStudentSection === id ? "location" : undefined}
+                  className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
+                    activeStudentSection === id
+                      ? "border-teal-400 text-teal-300"
+                      : "border-transparent text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+          )}
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
               <span>⚠️ {error}</span>
@@ -1920,7 +1985,7 @@ const Students = () => {
             }}
             className={
               isEditingStudent
-                ? "w-full max-w-none space-y-5"
+                ? "entity-edit-form w-full max-w-none space-y-5 p-6"
                 : "mx-auto max-w-5xl"
             }
           >
@@ -1953,6 +2018,7 @@ const Students = () => {
 
             {/* COMMON SECTIONS */}
             <Section
+              id="student-personal"
               title="1. Personal / Basic Information"
             >
               <div className="mb-3 flex items-center gap-3">
@@ -1982,6 +2048,22 @@ const Students = () => {
                       className="hidden"
                     />
                   </label>
+                  {(profilePreview || form.profile_picture) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileFile(null);
+                        setProfilePreview("");
+                        setForm((current) => ({
+                          ...current,
+                          profile_picture: "",
+                        }));
+                      }}
+                      className="text-xs text-red-300 hover:text-red-200"
+                    >
+                      Remove
+                    </button>
+                  )}
                   {profileFile && (
                     <p className="max-w-xs truncate text-xs text-slate-400">
                       {profileFile.name}
@@ -2088,7 +2170,7 @@ const Students = () => {
                       }
                       required
                     />
-                    <div>
+                    <div id="student-class-section" className="scroll-mt-14">
                       <label className="block text-sm text-slate-300 mb-1">
                         Class / Grade *
                       </label>
@@ -2216,9 +2298,7 @@ const Students = () => {
               </div>
             </Section>
 
-            <Section
-              title="2. Contact Information"
-            >
+            <Section id="student-contact" title="2. Contact Information">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <InputField
                   label="Personal Email"
@@ -2302,7 +2382,7 @@ const Students = () => {
               </div>
             </Section>
 
-            <Section
+            <Section id="student-guardian"
               title="3. Family Information"
             >
               <div className="space-y-4">
@@ -2452,7 +2532,7 @@ const Students = () => {
               </div>
             </Section>
 
-            <Section
+            <Section id="student-documents"
               title="8. Documents"
             >
               <div className="space-y-3">
@@ -2868,7 +2948,7 @@ const Students = () => {
             <div
               className={`sticky z-20 flex flex-col gap-3 border-t border-slate-800 bg-slate-950/95 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end ${
                 isEditingStudent
-                  ? "bottom-[-1.25rem] -mx-6 -mb-5 mt-6 px-5"
+                  ? "entity-edit-sticky-footer bottom-0 -mx-6 -mb-6 mt-6 px-6"
                   : "bottom-0 -mx-4 mt-6 px-4 sm:-mx-6 sm:px-6"
               }`}
             >

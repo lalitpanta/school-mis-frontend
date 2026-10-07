@@ -136,11 +136,7 @@ const TeacherPage = () => {
   const [teacherStatusFilter, setTeacherStatusFilter] = useState("all");
   const [visibleTeacherColumns, setVisibleTeacherColumns] = useState([
     "full_name",
-    "designation",
-    "subjects_taught",
-    "department",
-    "work_email",
-    "personal_phone",
+    "status",
   ]);
   const [teacherSort, setTeacherSort] = useState({
     key: "full_name",
@@ -635,7 +631,26 @@ const TeacherPage = () => {
       label: "Name",
       value: (teacher) => teacher.full_name,
       render: (teacher) => (
-        <span className="font-medium text-white">{teacher.full_name}</span>
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
+            {teacher.profile_photo_url ? (
+              <img src={teacher.profile_photo_url} alt="" className="h-full w-full object-cover" />
+            ) : (
+              (teacher.full_name || "T")
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part[0].toUpperCase())
+                .join("")
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="truncate font-medium text-white">{teacher.full_name}</div>
+            <div className="truncate text-xs text-slate-400">
+              {teacher.work_email || teacher.personal_email || "—"}
+            </div>
+          </div>
+        </div>
       ),
     },
     {
@@ -672,7 +687,7 @@ const TeacherPage = () => {
       value: (teacher) => teacher.is_active,
       render: (teacher) => (
         <span
-          className={`inline-flex rounded-full px-2 py-1 text-xs ${teacher.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
+          className={`entity-status-pill inline-flex rounded-full px-2 py-1 text-xs ${teacher.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}
         >
           {teacher.is_active ? "Active" : "Inactive"}
         </span>
@@ -745,7 +760,7 @@ const TeacherPage = () => {
   });
   const displayedTeacherColumns = teacherColumns.filter((column) =>
     isEditingTeacher
-      ? ["id", "full_name", "status"].includes(column.key)
+      ? ["full_name", "status"].includes(column.key)
       : visibleTeacherColumns.includes(column.key),
   );
   const sortedTeachers = [...filteredTeachers].sort((first, second) => {
@@ -778,23 +793,20 @@ const TeacherPage = () => {
   return (
     <div
       ref={splitLayoutRef}
-      className={`${isEditingTeacher ? "relative flex w-full h-[calc(100dvh-5rem)] min-h-128 flex-col overflow-visible max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
+      className={`entity-admin-page ${isEditingTeacher ? "is-editing relative flex w-full h-[calc(100dvh-5rem)] min-h-128 flex-col overflow-visible max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
     >
       <div
         className={`w-full min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Manage Teachers</h1>
-            {!isEditingTeacher && (
-              <p className="text-sm text-slate-400 mt-1">
-                Manage teacher and staff records with full personal,
-                professional, qualification, and emergency details.
-              </p>
-            )}
+            <h1 className="text-[28px] font-bold text-white">Manage Teachers</h1>
+            <p className="mt-1 text-sm text-slate-400">
+              Manage teacher profiles, status, and access.
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="cursor-pointer rounded-xl bg-slate-700 px-3 py-2 text-sm text-white">
+            <label className="entity-admin-button cursor-pointer rounded-xl bg-slate-700 px-3 py-2 text-sm text-white">
               Import
               <input
                 type="file"
@@ -816,7 +828,7 @@ const TeacherPage = () => {
             </label>
             <button
               onClick={openCreateModal}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
+              className="entity-admin-button bg-teal-300 hover:bg-teal-200 text-slate-950 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition"
             >
               <Plus size={16} /> Add Teacher
             </button>
@@ -829,7 +841,7 @@ const TeacherPage = () => {
           </div>
         )}
 
-        <div className="flex w-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
+        <div className="entity-admin-card flex w-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
           <RecordTableToolbar
             searchTerm={searchTerm}
             onSearchChange={(value) => {
@@ -939,10 +951,10 @@ const TeacherPage = () => {
           />
           <div
             ref={teacherTableViewportRef}
-            className={`min-h-0 flex-1 ${isEditingTeacher ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "w-full overflow-auto"}`}
+            className={`entity-admin-list min-h-0 flex-1 ${isEditingTeacher ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "w-full overflow-auto"}`}
           >
             <table
-              className={`text-left text-sm text-slate-300 ${isEditingTeacher ? "w-full min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
+              className="w-full min-w-0 table-fixed text-left text-sm text-slate-300"
             >
               <thead className="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-800 text-slate-400">
                 <tr>
@@ -1028,7 +1040,7 @@ const TeacherPage = () => {
                   pageTeachers.map((teacher) => (
                     <tr
                       key={teacher.id}
-                      className={`border-t border-slate-800/70 hover:bg-slate-900/80 ${isEditingTeacher && selectedTeacher?.id === teacher.id ? "border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
+                      className={`entity-admin-table-row border-t border-slate-800/70 hover:bg-slate-900/80 ${isEditingTeacher && selectedTeacher?.id === teacher.id ? "entity-admin-selected-row border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
                     >
                       {!isEditingTeacher && (
                         <td className="px-3 py-4 text-center">
@@ -1073,7 +1085,7 @@ const TeacherPage = () => {
                             }}
                             title="View teacher"
                             aria-label={`View ${teacher.full_name}`}
-                            className="rounded p-2 text-slate-300 hover:bg-slate-700/60"
+                            className="entity-admin-icon-button rounded p-2 text-slate-300 hover:bg-slate-700/60"
                           >
                             <Eye size={15} />
                           </button>
@@ -1081,7 +1093,7 @@ const TeacherPage = () => {
                             onClick={() => openEditModal(teacher)}
                             title="Edit teacher"
                             aria-label={`Edit ${teacher.full_name}`}
-                            className="rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
+                            className="entity-admin-icon-button rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
                           >
                             <Edit size={15} />
                           </button>
@@ -1106,7 +1118,7 @@ const TeacherPage = () => {
                                 ? "Deactivate teacher"
                                 : "Activate teacher"
                             }
-                            className={`rounded p-2 ${teacher.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                            className={`entity-admin-icon-button rounded p-2 ${teacher.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
                           >
                             <Power size={15} />
                           </button>
@@ -1114,7 +1126,7 @@ const TeacherPage = () => {
                             onClick={() => handleDelete(teacher.id)}
                             title="Delete teacher"
                             aria-label={`Delete ${teacher.full_name}`}
-                            className="rounded p-2 text-red-300 hover:bg-red-500/10"
+                            className="entity-admin-icon-button rounded p-2 text-red-300 hover:bg-red-500/10"
                           >
                             <Trash2 size={15} />
                           </button>
@@ -1127,7 +1139,7 @@ const TeacherPage = () => {
             </table>
           </div>
           <div
-            className={`flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 bg-slate-900/40 px-3 py-3 text-xs text-slate-400 ${isEditingTeacher ? "w-full md:w-1/2" : "w-full"}`}
+            className={`entity-admin-list-footer flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 bg-slate-900/40 px-3 py-3 text-xs text-slate-400 ${isEditingTeacher ? "w-full md:w-1/2" : "w-full"}`}
           >
             <label className="flex items-center gap-2">
               Rows per page
@@ -1148,7 +1160,7 @@ const TeacherPage = () => {
             </label>
             <div className="flex items-center gap-3">
               <span>
-                {firstTeacherRecord}-{lastTeacherRecord} of {sortedTeachers.length}
+                {sortedTeachers.length} records
               </span>
               <span>
                 Page {visibleTeacherPage} of {teacherPageCount}
@@ -1200,8 +1212,8 @@ const TeacherPage = () => {
             modalMode === "edit" && editPanelBounds
               ? {
                   position: "absolute",
-                  left: "calc(50% + 0.75rem)",
                   right: 0,
+                  width: "min(560px, calc(100% - 300px))",
                   top: `${editPanelBounds.top}px`,
                   alignSelf: "start",
                   height: `${editPanelBounds.height}px`,
@@ -1209,24 +1221,18 @@ const TeacherPage = () => {
                 }
               : undefined
           }
-          className={`${modalMode === "edit" ? `z-20 min-h-0 min-w-0 ${editPanelBounds ? "" : "w-full md:absolute md:right-0 md:left-[calc(50%_+_0.75rem)]"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? `entity-edit-panel z-20 min-h-0 min-w-0 ${editPanelBounds ? "" : "w-full md:absolute md:right-0 md:w-[min(560px,calc(100%-300px))]"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
             className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
           >
-            <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-4">
+            <div className="entity-edit-header flex h-11 items-center justify-between gap-4 border-b border-slate-800/70 px-5">
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg font-semibold text-white">
-                  {modalMode === "create" ? "Add Teacher" : "Edit Teacher"}
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-white">
+                  {modalMode === "create"
+                    ? "Add Teacher"
+                    : `EDIT TEACHER · ${selectedTeacher?.full_name || ""}`}
                 </h2>
-                {modalMode === "edit" && (
-                  <p className="mt-0.5 truncate text-sm text-slate-400">
-                    {selectedTeacher?.full_name}
-                    {selectedTeacher?.designation
-                      ? ` · ${selectedTeacher.designation}`
-                      : ""}
-                  </p>
-                )}
               </div>
               <button
                 onClick={closeModal}
@@ -1239,7 +1245,7 @@ const TeacherPage = () => {
             {modalMode === "edit" && (
               <nav
                 aria-label="Teacher form sections"
-                className="flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
+                className="entity-edit-tabs flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
               >
                 {[
                   { label: "Personal", id: "personal", target: "teacher-personal" },
@@ -1280,7 +1286,7 @@ const TeacherPage = () => {
             <form
               id="teacher-edit-form"
               onSubmit={handleSubmit}
-              className={`px-5 py-5 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-5 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
+              className={`px-5 py-5 ${modalMode === "edit" ? "entity-edit-form min-h-0 flex-1 space-y-5 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
             >
               <div className="space-y-5">
                 <h3 id="teacher-personal" className="scroll-mt-4 text-lg font-semibold text-white">
@@ -1314,6 +1320,22 @@ const TeacherPage = () => {
                           className="hidden"
                         />
                       </label>
+                      {(profilePhotoPreview || formData.profile_photo_url) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfilePhoto(null);
+                            setProfilePhotoPreview("");
+                            setFormData((current) => ({
+                              ...current,
+                              profile_photo_url: "",
+                            }));
+                          }}
+                          className="text-xs text-red-300 hover:text-red-200"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                     <div className="grid gap-3 md:grid-cols-2">
                       <div>
