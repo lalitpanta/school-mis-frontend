@@ -347,15 +347,14 @@ const DailyReportPage = () => {
     }
 
     try {
-      const recipient = method === 'whatsapp' ? selectedStudent.guardian_phone : selectedStudent.guardian_mail;
-      if (!recipient) {
-        toast.error(`Guardian ${method === 'whatsapp' ? 'phone' : 'email'} not found`);
-        return;
-      }
-
-      const message = `Daily Report for ${selectedStudent.full_name}: ${selectedTemplate.name}`;
-      
       if (method === 'whatsapp') {
+        const recipient = selectedStudent.guardian_phone || selectedStudent.phone_no;
+        if (!recipient) {
+          toast.error('Guardian phone not found');
+          return;
+        }
+
+        const message = `Daily Report for ${selectedStudent.full_name}: ${selectedTemplate.name}`;
         // Get the PDF URL if available (from the saved report)
         try {
           const reportsRes = await dailyApi.listReports({ studentId: selectedStudent.id });
@@ -377,12 +376,14 @@ const DailyReportPage = () => {
           toast.success('WhatsApp opened. Please send the message.');
         }
       } else if (method === 'email') {
-        toast.success('Email sending would be implemented here');
+        const response = await dailyApi.sendReportEmail(savedReportId);
+        toast.success(`Daily report emailed to ${response.data.data.sent_to}`);
       }
 
       setSendMethod(null);
     } catch (err) {
-      toast.error('Failed to send report');
+      console.error('Failed to send daily report', err);
+      toast.error(err.response?.data?.message || 'Failed to send report');
     }
   };
 
