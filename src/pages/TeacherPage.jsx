@@ -692,7 +692,10 @@ const TeacherPage = () => {
       const tableBounds = tableViewport.getBoundingClientRect();
       setEditPanelBounds({
         top: tableBounds.top - layoutBounds.top,
-        height: tableBounds.height,
+        height: Math.max(
+          tableBounds.height,
+          window.innerHeight - tableBounds.top - 16,
+        ),
       });
     };
 
@@ -751,7 +754,7 @@ const TeacherPage = () => {
   return (
     <div
       ref={splitLayoutRef}
-      className={`${isEditingTeacher ? "relative w-full h-[calc(100dvh-5rem)] min-h-128 overflow-hidden max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
+      className={`${isEditingTeacher ? "relative w-full h-[calc(100dvh-5rem)] min-h-128 overflow-visible max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
     >
       <div
         className={`w-full min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
@@ -1120,9 +1123,9 @@ const TeacherPage = () => {
             </div>
             <form
               onSubmit={handleSubmit}
-              className={`px-6 py-4 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
+              className={`px-6 py-6 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-6 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
             >
-              <div className="space-y-3">
+              <div className="space-y-5">
                 <h3 className="text-lg font-semibold text-white">
                   Personal Details
                 </h3>
