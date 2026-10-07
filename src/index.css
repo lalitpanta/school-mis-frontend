@@ -577,3 +577,36 @@ main > * {
     transform: scaleY(1);
   }
 }
+
+.employee-edit-card {
+  border: 1px solid var(--border-card);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  padding: 0.875rem;
+}
+
+.employee-edit-form label {
+  color: var(--text-2);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.employee-edit-form input:not([type="file"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ),
+.employee-edit-form select,
+.employee-edit-form textarea {
+  border: 1px solid var(--border-dim) !important;
+  border-radius: 0.7rem !important;
+  background-color: var(--bg-input) !important;
+  color: var(--text-1) !important;
+  font-size: 0.75rem;
+  padding: 0.45rem 0.65rem !important;
+}
+
+.employee-edit-form input:focus,
+.employee-edit-form select:focus,
+.employee-edit-form textarea:focus {
+  border-color: #2dd4bf !important;
+  outline: 2px solid rgb(45 212 191 / 15%);
+}

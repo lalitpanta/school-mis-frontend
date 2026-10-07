@@ -122,6 +122,7 @@ export default function EmployeePage() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create");
+  const [activeEmployeeSection, setActiveEmployeeSection] = useState("personal");
   const [formData, setFormData] = useState(emptyEmployee);
   const [searchTerm, setSearchTerm] = useState("");
   const [employeeStatusFilter, setEmployeeStatusFilter] = useState("all");
@@ -201,6 +202,7 @@ export default function EmployeePage() {
 
   const handleEditClick = (emp) => {
     setViewEmployee(emp);
+    setActiveEmployeeSection("personal");
     setFormData({
       ...emp,
       date_of_birth: normalizeDateForInput(emp.date_of_birth),
@@ -587,11 +589,46 @@ export default function EmployeePage() {
       window.removeEventListener("resize", updateEditPanelBounds);
     };
   }, [isEditingEmployee]);
-  const displayedEmployeeColumns = employeeColumns.filter((column) =>
-    isEditingEmployee
-      ? ["employee_id", "full_name", "status"].includes(column.key)
-      : visibleEmployeeColumns.includes(column.key),
-  );
+  const displayedEmployeeColumns = isEditingEmployee
+    ? [
+        {
+          key: "employee",
+          label: "Employee",
+          value: (employee) => employee.full_name,
+          render: (employee) => (
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500/15 text-[10px] font-semibold text-teal-200">
+                {employee.photograph_url ? (
+                  <img
+                    src={getDocumentUrl(employee.photograph_url)}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  (employee.full_name || "E")
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0].toUpperCase())
+                    .join("")
+                )}
+              </div>
+              <div className="min-w-0">
+                <div className="truncate font-medium text-slate-100">
+                  {employee.full_name}
+                </div>
+                <div className="truncate text-xs text-slate-400">
+                  {employee.email_address || employee.employee_id || "—"}
+                </div>
+              </div>
+            </div>
+          ),
+        },
+        employeeColumns.find((column) => column.key === "status"),
+      ]
+    : employeeColumns.filter((column) =>
+        visibleEmployeeColumns.includes(column.key),
+      );
   const sortedEmployees = [...filteredEmployees].sort((first, second) => {
     const column = employeeColumns.find(
       (item) => item.key === employeeSort.key,
@@ -817,7 +854,7 @@ export default function EmployeePage() {
                   {displayedEmployeeColumns.map((column) => (
                     <th
                       key={column.key}
-                      className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? (column.key === "employee_id" ? "w-24" : column.key === "status" ? "w-24" : "") : "px-4"}`}
+                      className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? (column.key === "status" ? "w-24" : "") : "px-4"}`}
                       style={{ color: "var(--text-2)" }}
                     >
                       <button
@@ -840,7 +877,7 @@ export default function EmployeePage() {
                     </th>
                   ))}
                   <th
-                    className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-36" : "px-6 text-sm"}`}
+                    className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-28" : "px-6 text-sm"}`}
                     style={{ color: "var(--text-2)" }}
                   >
                     Actions
@@ -896,47 +933,65 @@ export default function EmployeePage() {
                             : column.value(emp) || "—"}
                         </td>
                       ))}
-                      <td className="px-6 py-4 text-center space-x-2">
-                        <button
-                          onClick={() => openViewModal(emp)}
-                          title="View employee"
-                          aria-label={`View ${emp.full_name}`}
-                          className="inline-flex items-center justify-center rounded p-2 text-slate-300 transition hover:bg-slate-600"
-                        >
-                          <Eye size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(emp)}
-                          title="Edit employee"
-                          aria-label={`Edit ${emp.full_name}`}
-                          className="inline-flex items-center justify-center rounded p-2 text-slate-300 transition hover:bg-slate-600"
-                        >
-                          <Edit size={14} />
-                        </button>
-                        <button
-                          onClick={() => toggleEmployeeStatus(emp)}
-                          title={
-                            emp.is_active
-                              ? "Deactivate employee"
-                              : "Activate employee"
-                          }
-                          aria-label={
-                            emp.is_active
-                              ? "Deactivate employee"
-                              : "Activate employee"
-                          }
-                          className={`inline-flex items-center justify-center rounded p-2 transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
-                        >
-                          <Power size={15} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(emp.id)}
-                          title="Delete employee"
-                          aria-label={`Delete ${emp.full_name}`}
-                          className="inline-flex items-center justify-center rounded p-2 text-red-300 transition hover:bg-red-500/30"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                      <td
+                        className={`py-3 text-center ${
+                          isEditingEmployee ? "px-1" : "px-6"
+                        }`}
+                      >
+                        <div className="inline-flex flex-nowrap items-center justify-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => openViewModal(emp)}
+                            title="View employee"
+                            aria-label={`View ${emp.full_name}`}
+                            className={`inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
+                              isEditingEmployee ? "p-1.5" : "p-2"
+                            }`}
+                          >
+                            <Eye size={15} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleEditClick(emp)}
+                            title="Edit employee"
+                            aria-label={`Edit ${emp.full_name}`}
+                            className={`inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
+                              isEditingEmployee ? "p-1.5" : "p-2"
+                            }`}
+                          >
+                            <Edit size={15} />
+                          </button>
+                          {!isEditingEmployee && (
+                            <button
+                              type="button"
+                              onClick={() => toggleEmployeeStatus(emp)}
+                              title={
+                                emp.is_active
+                                  ? "Deactivate employee"
+                                  : "Activate employee"
+                              }
+                              aria-label={
+                                emp.is_active
+                                  ? "Deactivate employee"
+                                  : "Activate employee"
+                              }
+                              className={`inline-flex items-center justify-center rounded p-2 transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                            >
+                              <Power size={15} />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setDeleteConfirm(emp.id)}
+                            title="Delete employee"
+                            aria-label={`Delete ${emp.full_name}`}
+                            className={`inline-flex shrink-0 items-center justify-center rounded text-red-300 transition hover:bg-red-500/30 ${
+                              isEditingEmployee ? "p-1.5" : "p-2"
+                            }`}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -1038,9 +1093,9 @@ export default function EmployeePage() {
           className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none rounded-xl border border-slate-700/70 bg-[var(--bg-card)] shadow-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} flex flex-col overflow-hidden`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} overflow-hidden`}
           >
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-4">
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-3.5">
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg font-semibold text-white">
                   {modalMode === "create" ? "Add Employee" : "Edit Employee"}
@@ -1061,18 +1116,62 @@ export default function EmployeePage() {
               </button>
             </div>
 
+            {modalMode === "edit" && (
+              <nav
+                aria-label="Employee form sections"
+                className="flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
+              >
+                {[
+                  { label: "Personal", id: "personal", target: "employee-personal" },
+                  { label: "Contact", id: "contact", target: "employee-contact" },
+                  {
+                    label: "Employment",
+                    id: "employment",
+                    target: "employee-employment",
+                  },
+                  {
+                    label: "Documents",
+                    id: "documents",
+                    target: "employee-documents",
+                  },
+                ].map(({ label, id, target }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      setActiveEmployeeSection(id);
+                      document.getElementById(target)?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }}
+                    aria-current={
+                      activeEmployeeSection === id ? "location" : undefined
+                    }
+                    className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
+                      activeEmployeeSection === id
+                        ? "border-teal-400 text-teal-300"
+                        : "border-transparent text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </nav>
+            )}
+
             <form
               id="employee-edit-form"
               onSubmit={handleSubmit}
-              className={`min-h-0 flex-1 overflow-y-auto ${modalMode === "edit" ? "space-y-5 p-5" : "space-y-6 p-6"}`}
+              className={`min-h-0 flex-1 ${modalMode === "edit" ? "employee-edit-form space-y-4 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-5" : "space-y-6 overflow-y-auto p-6"}`}
             >
               {/* Personal Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-3">
+              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+                <h3 id="employee-personal" className="scroll-mt-4 text-base font-semibold text-white mb-3">
                   Personal Information
                 </h3>
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-600 bg-slate-800">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-700 bg-teal-500/15 text-sm font-semibold text-teal-200">
                     {profilePhotoPreview || formData.photograph_url ? (
                       <img
                         src={
@@ -1083,13 +1182,16 @@ export default function EmployeePage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-                        No photo
-                      </div>
+                      (formData.full_name || "E")
+                        .split(/\s+/)
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((part) => part[0].toUpperCase())
+                        .join("")
                     )}
                   </div>
                   <div className="flex flex-col items-start gap-2">
-                    <label className="cursor-pointer rounded-xl border border-slate-600 bg-slate-700/60 px-3 py-2 text-sm text-slate-100 transition hover:bg-slate-700">
+                    <label className="cursor-pointer rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-100 transition hover:bg-slate-700">
                       Upload Photo
                       <input
                         type="file"
@@ -1223,7 +1325,7 @@ export default function EmployeePage() {
                       <option value="AB-">AB-</option>
                     </select>
                   </div>
-                  <div>
+                  <div id="employee-contact">
                     <label className="block text-sm font-medium text-slate-300 mb-1">
                       Mobile Number
                     </label>
@@ -1299,8 +1401,8 @@ export default function EmployeePage() {
               </div>
 
               {/* Identification Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+                <h3 className="text-base font-semibold text-white mb-4">
                   Identification Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1368,8 +1470,8 @@ export default function EmployeePage() {
               </div>
 
               {/* Employment Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+                <h3 id="employee-employment" className="scroll-mt-4 text-base font-semibold text-white mb-4">
                   Employment Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1497,8 +1599,8 @@ export default function EmployeePage() {
               </div>
 
               {/* Salary & Payroll Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+                <h3 className="text-base font-semibold text-white mb-4">
                   Salary & Payroll Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1638,8 +1740,8 @@ export default function EmployeePage() {
               </div>
 
               {/* Education Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+                <h3 className="text-base font-semibold text-white mb-4">
                   Education Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1707,8 +1809,8 @@ export default function EmployeePage() {
               </div>
 
               {/* Documents */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">
+              <div className={modalMode === "edit" ? "employee-edit-card" : ""}>
+                <h3 id="employee-documents" className="scroll-mt-4 text-base font-semibold text-white mb-4">
                   Documents
                 </h3>
                 <div>
@@ -1749,7 +1851,7 @@ export default function EmployeePage() {
               <div
                 className={`z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end ${
                   modalMode === "edit"
-                    ? "sticky bottom-[-1.25rem] -mx-5 -mb-5 border-t border-slate-800 bg-slate-950/95 px-5 py-3 backdrop-blur"
+                    ? "sticky bottom-[-1.25rem] z-10 -mx-4 -mb-4 border-t border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur sm:-mx-5 sm:-mb-5 sm:px-5"
                     : "sticky bottom-0 border-t border-slate-700 bg-slate-900 pt-4"
                 }`}
               >
@@ -1766,7 +1868,11 @@ export default function EmployeePage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  className={`rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    modalMode === "edit"
+                      ? "bg-teal-400 text-slate-950 hover:bg-teal-300"
+                      : "bg-indigo-600 hover:bg-indigo-500"
+                  }`}
                 >
                   {loading
                     ? "Saving..."
