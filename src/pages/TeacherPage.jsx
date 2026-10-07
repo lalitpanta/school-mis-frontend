@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { teachersApi } from "../api/teachersApi";
 import { getDepartments } from "../api/departmentsApi";
 import { getCourses } from "../api/coursesApi";
@@ -150,6 +150,9 @@ const TeacherPage = () => {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState("");
   const [attachments, setAttachments] = useState([]);
+  const splitLayoutRef = useRef(null);
+  const teacherTableViewportRef = useRef(null);
+  const [editPanelBounds, setEditPanelBounds] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewTeacher, setViewTeacher] = useState(null);
   const [showAllDocumentsModal, setShowAllDocumentsModal] = useState(false);
@@ -669,6 +672,43 @@ const TeacherPage = () => {
     },
   ];
   const isEditingTeacher = showModal && modalMode === "edit";
+  useLayoutEffect(() => {
+    if (!isEditingTeacher) {
+      setEditPanelBounds(null);
+      return undefined;
+    }
+
+    const updateEditPanelBounds = () => {
+      const layout = splitLayoutRef.current;
+      const tableViewport = teacherTableViewportRef.current;
+      if (!layout || !tableViewport) return;
+
+      if (window.innerWidth < 768) {
+        setEditPanelBounds(null);
+        return;
+      }
+
+      const layoutBounds = layout.getBoundingClientRect();
+      const tableBounds = tableViewport.getBoundingClientRect();
+      setEditPanelBounds({
+        top: tableBounds.top - layoutBounds.top,
+        height: tableBounds.height,
+      });
+    };
+
+    updateEditPanelBounds();
+    const resizeObserver = new ResizeObserver(updateEditPanelBounds);
+    if (splitLayoutRef.current) resizeObserver.observe(splitLayoutRef.current);
+    if (teacherTableViewportRef.current) {
+      resizeObserver.observe(teacherTableViewportRef.current);
+    }
+    window.addEventListener("resize", updateEditPanelBounds);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateEditPanelBounds);
+    };
+  }, [isEditingTeacher, error]);
   const filteredTeachers = teachers.filter((teacher) => {
     const query = searchTerm.trim().toLowerCase();
     const matchesSearch =
@@ -710,6 +750,7 @@ const TeacherPage = () => {
 
   return (
     <div
+      ref={splitLayoutRef}
       className={`${isEditingTeacher ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-2 gap-4 overflow-hidden max-md:h-auto max-md:max-h-none max-md:grid-cols-1" : "space-y-6"}`}
     >
       <div
@@ -853,6 +894,7 @@ const TeacherPage = () => {
             }
           />
           <div
+            ref={teacherTableViewportRef}
             className={`min-h-0 flex-1 ${isEditingTeacher ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
           >
             <table
@@ -1045,6 +1087,15 @@ const TeacherPage = () => {
 
       {showModal && (
         <div
+          style={
+            modalMode === "edit" && editPanelBounds
+              ? {
+                  alignSelf: "start",
+                  height: `${editPanelBounds.height}px`,
+                  marginTop: `${editPanelBounds.top}px`,
+                }
+              : undefined
+          }
           className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
