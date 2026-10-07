@@ -901,19 +901,17 @@ export default function EmployeePage() {
                           onClick={() => openViewModal(emp)}
                           title="View employee"
                           aria-label={`View ${emp.full_name}`}
-                          className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
+                          className="inline-flex items-center justify-center rounded p-2 text-slate-300 transition hover:bg-slate-600"
                         >
                           <Eye size={14} />
-                          {!isEditingEmployee && "View"}
                         </button>
                         <button
                           onClick={() => handleEditClick(emp)}
                           title="Edit employee"
                           aria-label={`Edit ${emp.full_name}`}
-                          className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-slate-700/60 text-slate-300 hover:bg-slate-600`}
+                          className="inline-flex items-center justify-center rounded p-2 text-slate-300 transition hover:bg-slate-600"
                         >
                           <Edit size={14} />
-                          {!isEditingEmployee && "Edit"}
                         </button>
                         <button
                           onClick={() => toggleEmployeeStatus(emp)}
@@ -935,10 +933,9 @@ export default function EmployeePage() {
                           onClick={() => setDeleteConfirm(emp.id)}
                           title="Delete employee"
                           aria-label={`Delete ${emp.full_name}`}
-                          className={`inline-flex items-center gap-1 rounded text-xs transition ${isEditingEmployee ? "p-2" : "px-3 py-1"} bg-red-500/20 text-red-300 hover:bg-red-500/30`}
+                          className="inline-flex items-center justify-center rounded p-2 text-red-300 transition hover:bg-red-500/30"
                         >
                           <Trash2 size={14} />
-                          {!isEditingEmployee && "Delete"}
                         </button>
                       </td>
                     </tr>

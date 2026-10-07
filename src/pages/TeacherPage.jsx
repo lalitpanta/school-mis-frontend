@@ -151,6 +151,7 @@ const TeacherPage = () => {
   const [selectedTeacherIds, setSelectedTeacherIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create");
+  const [activeTeacherSection, setActiveTeacherSection] = useState("personal");
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [formData, setFormData] = useState(emptyTeacher);
   const [profilePhoto, setProfilePhoto] = useState(null);
@@ -230,6 +231,7 @@ const TeacherPage = () => {
       return;
     }
     setModalMode("edit");
+    setActiveTeacherSection("personal");
     setSelectedTeacher(teacher);
     setSelectedCourseIds(assignedCourses.map((course) => String(course.id)));
     setFormData({
@@ -1026,7 +1028,7 @@ const TeacherPage = () => {
                   pageTeachers.map((teacher) => (
                     <tr
                       key={teacher.id}
-                      className="border-t border-slate-800/70 hover:bg-slate-900/80"
+                      className={`border-t border-slate-800/70 hover:bg-slate-900/80 ${isEditingTeacher && selectedTeacher?.id === teacher.id ? "border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
                     >
                       {!isEditingTeacher && (
                         <td className="px-3 py-4 text-center">
@@ -1212,31 +1214,82 @@ const TeacherPage = () => {
           <div
             className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col border-l border-slate-700/60 bg-slate-900/40" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
           >
-            <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-5">
+            <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-4">
               <div className="min-w-0 flex-1">
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-lg font-semibold text-white">
                   {modalMode === "create" ? "Add Teacher" : "Edit Teacher"}
                 </h2>
+                {modalMode === "edit" && (
+                  <p className="mt-0.5 truncate text-sm text-slate-400">
+                    {selectedTeacher?.full_name}
+                    {selectedTeacher?.designation
+                      ? ` · ${selectedTeacher.designation}`
+                      : ""}
+                  </p>
+                )}
               </div>
               <button
                 onClick={closeModal}
-                className="text-slate-400 hover:text-white"
+                aria-label="Close teacher editor"
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
+            {modalMode === "edit" && (
+              <nav
+                aria-label="Teacher form sections"
+                className="flex shrink-0 gap-5 overflow-x-auto border-b border-slate-800/70 px-5"
+              >
+                {[
+                  { label: "Personal", id: "personal", target: "teacher-personal" },
+                  { label: "Contact", id: "contact", target: "teacher-contact" },
+                  {
+                    label: "Employment",
+                    id: "employment",
+                    target: "teacher-employment",
+                  },
+                  {
+                    label: "Documents",
+                    id: "documents",
+                    target: "teacher-documents",
+                  },
+                ].map(({ label, id, target }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTeacherSection(id);
+                      document.getElementById(target)?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }}
+                    aria-current={activeTeacherSection === id ? "location" : undefined}
+                    className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
+                      activeTeacherSection === id
+                        ? "border-teal-400 text-teal-300"
+                        : "border-transparent text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </nav>
+            )}
             <form
+              id="teacher-edit-form"
               onSubmit={handleSubmit}
-              className={`px-6 py-6 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-6 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
+              className={`px-5 py-5 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-5 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
             >
               <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-white">
+                <h3 id="teacher-personal" className="scroll-mt-4 text-lg font-semibold text-white">
                   Personal Details
                 </h3>
                 {(
-                  <div className="rounded-3xl border border-slate-700/80 bg-slate-900/80 p-3">
+                  <div className="rounded-2xl border border-slate-700/80 bg-slate-900/70 p-3">
                     <div className="mb-3 flex items-center gap-3">
-                      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-700 bg-teal-500/15 text-sm font-semibold text-teal-200">
                         {profilePhotoPreview ? (
                           <img
                             src={profilePhotoPreview}
@@ -1244,9 +1297,12 @@ const TeacherPage = () => {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-sm text-slate-500">
-                            No photo
-                          </div>
+                          (formData.full_name || "T")
+                            .split(/\s+/)
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map((part) => part[0].toUpperCase())
+                            .join("")
                         )}
                       </div>
                       <label className="cursor-pointer rounded-xl border border-slate-600/80 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-100 hover:bg-slate-700">
@@ -1466,7 +1522,7 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 id="teacher-employment" className="scroll-mt-4 text-lg font-semibold text-white">
                   Professional Information
                 </h3>
                 {(
@@ -2200,7 +2256,7 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 id="teacher-contact" className="scroll-mt-4 text-lg font-semibold text-white">
                   Emergency Contact
                 </h3>
                 {(
@@ -2266,7 +2322,7 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <h3 className="text-lg font-semibold text-white">
+                <h3 id="teacher-documents" className="scroll-mt-4 text-lg font-semibold text-white">
                   Required Documents
                 </h3>
                 {(
@@ -2359,7 +2415,7 @@ const TeacherPage = () => {
                 </section>
               )}
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <div className="sticky bottom-[-1.25rem] z-10 -mx-5 -mb-5 flex flex-col gap-3 border-t border-slate-800 bg-slate-950/95 px-5 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
