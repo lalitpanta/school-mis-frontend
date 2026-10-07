@@ -1671,7 +1671,13 @@ const Students = () => {
                   <tbody className="divide-y divide-slate-700/60">
                     {pageStudents.map((student) => (
                       <Fragment key={student.id}>
-                        <tr className="h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40">
+                        <tr
+                          className={`h-14 border-b border-slate-700/50 transition hover:bg-slate-800/40 ${
+                            isEditingStudent && selected?.id === student.id
+                              ? "border-l-2 border-l-teal-400 bg-teal-500/10"
+                              : ""
+                          }`}
+                        >
                           {!isEditingStudent && (
                             <td className="px-3 py-3 text-center">
                               <div className="inline-flex items-center gap-1 text-slate-500">
@@ -1857,7 +1863,17 @@ const Students = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         title={mode === "create" ? "Create New Student" : "Edit Student"}
-        subtitle="Fill in the student's personal, academic, family, and emergency details."
+        subtitle={
+          mode === "edit"
+            ? [
+                selected?.full_name,
+                selected?.classroom_name || selected?.class_name,
+                selected?.section_name && `Section ${selected.section_name}`,
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : "Fill in the student's personal, academic, family, and emergency details."
+        }
         width="max-w-6xl"
         inlinePanel={isEditingStudent}
         inlinePanelStyle={
@@ -1876,7 +1892,7 @@ const Students = () => {
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
         closeOnOverlayClick={false}
       >
-        <div className={isEditingStudent ? "p-3" : "p-4 sm:p-6"}>
+        <div className={isEditingStudent ? "p-0" : "p-4 sm:p-6"}>
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
               <span>⚠️ {error}</span>
@@ -1902,10 +1918,14 @@ const Students = () => {
                 event.preventDefault();
               }
             }}
-            className="mx-auto max-w-5xl"
+            className={
+              isEditingStudent
+                ? "w-full max-w-none space-y-5"
+                : "mx-auto max-w-5xl"
+            }
           >
             {/* STUDENT TYPE SELECTOR */}
-            <div className="mb-6 p-4 bg-slate-800/50 rounded border border-slate-700">
+            <div className="mb-6 rounded-2xl border border-slate-700/80 bg-slate-900/70 p-4">
               <h3 className="font-semibold text-slate-200 mb-3">
                 Student Type <span className="text-red-400">*</span>
               </h3>
@@ -1936,7 +1956,7 @@ const Students = () => {
               title="1. Personal / Basic Information"
             >
               <div className="mb-3 flex items-center gap-3">
-                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-700 bg-teal-500/15 text-sm font-semibold text-teal-200">
                   {profilePreview || form.profile_picture ? (
                     <img
                       src={profilePreview || getImageUrl(form.profile_picture)}
@@ -1944,13 +1964,16 @@ const Students = () => {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-                      No photo
-                    </div>
+                    (form.full_name || "S")
+                      .split(/\s+/)
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((part) => part[0].toUpperCase())
+                      .join("")
                   )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
-                  <label className="cursor-pointer rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 transition hover:bg-slate-700">
+                  <label                   className="cursor-pointer rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700">
                     Upload Photo
                     <input
                       type="file"
@@ -2842,15 +2865,25 @@ const Students = () => {
               </section>
             )}
 
-            <div className="sticky bottom-0 z-20 -mx-4 mt-6 flex justify-end gap-3 border-t border-slate-700 bg-slate-950/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
+            <div
+              className={`sticky z-20 flex flex-col gap-3 border-t border-slate-800 bg-slate-950/95 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end ${
+                isEditingStudent
+                  ? "bottom-[-1.25rem] -mx-6 -mb-5 mt-6 px-5"
+                  : "bottom-0 -mx-4 mt-6 px-4 sm:-mx-6 sm:px-6"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-slate-700/60 text-white rounded hover:bg-slate-700"
+                className="rounded-xl border border-slate-700/80 px-4 py-2 text-sm text-slate-200 transition hover:bg-slate-800"
               >
                 Cancel
               </button>
-              <Button type="submit" loading={loading}>
+              <Button
+                type="submit"
+                loading={loading}
+                className="rounded-xl px-4 py-2 text-sm font-semibold"
+              >
                 {mode === "create" ? "Create Student" : "Save Changes"}
               </Button>
             </div>
