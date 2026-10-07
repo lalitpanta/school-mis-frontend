@@ -710,7 +710,7 @@ const TeacherPage = () => {
 
   return (
     <div
-      className={`${isEditingTeacher ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "space-y-6"}`}
+      className={`${isEditingTeacher ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-2 gap-4 overflow-hidden max-md:h-auto max-md:max-h-none max-md:grid-cols-1" : "space-y-6"}`}
     >
       <div
         className={`min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
@@ -1065,7 +1065,7 @@ const TeacherPage = () => {
             </div>
             <form
               onSubmit={handleSubmit}
-              className={`px-6 py-4 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-4 overflow-y-auto" : "space-y-6"}`}
+              className={`px-6 py-4 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden" : "space-y-6"}`}
             >
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white">
