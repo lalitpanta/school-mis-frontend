@@ -150,16 +150,6 @@ const TeacherPage = () => {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState("");
   const [attachments, setAttachments] = useState([]);
-  const [openSections, setOpenSections] = useState({
-    personal: true,
-    professional: false,
-    qualification: false,
-    experience: false,
-    legal: false,
-    emergency: false,
-    documents: false,
-    banking: false,
-  });
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewTeacher, setViewTeacher] = useState(null);
   const [showAllDocumentsModal, setShowAllDocumentsModal] = useState(false);
@@ -216,16 +206,6 @@ const TeacherPage = () => {
     setProfilePhoto(null);
     setProfilePhotoPreview("");
     setAttachments([]);
-    setOpenSections({
-      personal: true,
-      professional: false,
-      qualification: false,
-      experience: false,
-      legal: false,
-      emergency: false,
-      documents: false,
-      banking: false,
-    });
     setError(null);
     setShowModal(true);
   };
@@ -272,16 +252,6 @@ const TeacherPage = () => {
     setProfilePhoto(null);
     setProfilePhotoPreview(teacher.profile_photo_url || "");
     setAttachments([]);
-    setOpenSections({
-      personal: true,
-      professional: false,
-      qualification: false,
-      experience: false,
-      legal: false,
-      emergency: false,
-      documents: false,
-      banking: false,
-    });
     setError(null);
     setShowModal(true);
   };
@@ -481,23 +451,7 @@ const TeacherPage = () => {
     setProfilePhoto(null);
     setProfilePhotoPreview("");
     setAttachments([]);
-    setOpenSections({
-      personal: true,
-      professional: false,
-      qualification: false,
-      experience: false,
-      legal: false,
-      emergency: false,
-      documents: false,
-    });
     setError(null);
-  };
-
-  const toggleSection = (section) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
   };
 
   const handlePhotoChange = (event) => {
@@ -1114,23 +1068,10 @@ const TeacherPage = () => {
               className={`px-6 py-4 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-4 overflow-y-auto" : "space-y-6"}`}
             >
               <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={() => toggleSection("personal")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Personal Details
-                    </h3>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.personal ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.personal ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.personal && (
+                <h3 className="text-lg font-semibold text-white">
+                  Personal Details
+                </h3>
+                {(
                   <div className="rounded-3xl border border-slate-700/80 bg-slate-900/80 p-3">
                     <div className="mb-3 flex items-center gap-3">
                       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
@@ -1363,26 +1304,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("professional")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Professional Information
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      Employment, department, reporting and assignment details.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.professional ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.professional ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.professional && (
+                <h3 className="text-lg font-semibold text-white">
+                  Professional Information
+                </h3>
+                {(
                   <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
@@ -1607,27 +1532,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("qualification")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Qualification & Education
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      Academic background, certifications, and teaching license
-                      information.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.qualification ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.qualification ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.qualification && (
+                <h3 className="text-lg font-semibold text-white">
+                  Qualification & Education
+                </h3>
+                {(
                   <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
@@ -1741,27 +1649,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("banking")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Banking & Insurance
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      Bank account, salary, provident fund and insurance
-                      details.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.banking ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.banking ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.banking && (
+                <h3 className="text-lg font-semibold text-white">
+                  Banking & Insurance
+                </h3>
+                {(
                   <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
@@ -1930,27 +1821,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("experience")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Experience
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      Previous roles, organisation history, and reason for
-                      leaving.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.experience ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.experience ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.experience && (
+                <h3 className="text-lg font-semibold text-white">
+                  Experience
+                </h3>
+                {(
                   <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
@@ -2049,27 +1923,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("legal")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Identity & Legal
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      National IDs, passport, tax ID and other legal identity
-                      documents.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.legal ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.legal ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.legal && (
+                <h3 className="text-lg font-semibold text-white">
+                  Identity & Legal
+                </h3>
+                {(
                   <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
@@ -2181,26 +2038,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("emergency")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Emergency Contact
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      Emergency contact name, relationship, phone and address.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.emergency ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.emergency ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.emergency && (
+                <h3 className="text-lg font-semibold text-white">
+                  Emergency Contact
+                </h3>
+                {(
                   <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-2">
                     <div>
                       <label className="text-sm text-slate-300">
@@ -2263,26 +2104,10 @@ const TeacherPage = () => {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => toggleSection("documents")}
-                  className="flex w-full items-center justify-between rounded-3xl border border-slate-700/80 bg-slate-950 px-4 py-4 text-left"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold text-white">
-                      Required Documents
-                    </h3>
-                    <p className="text-sm text-slate-400">
-                      Attach certifications, IDs and other teacher documents.
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.documents ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
-                  >
-                    {openSections.documents ? "-" : "+"}
-                  </span>
-                </button>
-                {openSections.documents && (
+                <h3 className="text-lg font-semibold text-white">
+                  Required Documents
+                </h3>
+                {(
                   <div className="space-y-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4">
                     <div className="rounded-3xl border border-slate-700/80 bg-slate-950 p-4">
                       <label className="text-sm text-slate-300">

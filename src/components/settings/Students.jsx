@@ -15,7 +15,6 @@ import {
   Edit,
   Download,
   Upload,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -95,26 +94,13 @@ const emptyStudent = {
   additional_info: "",
 };
 
-const Section = ({ title, open, onToggle, children }) => (
-  <div className="mb-4 overflow-hidden rounded-lg border border-slate-700/60">
-    <button
-      type="button"
-      aria-expanded={open}
-      className="flex w-full items-center justify-between bg-slate-800/40 p-4 text-left transition hover:bg-slate-800/70"
-      onClick={onToggle}
-    >
-      <span className="font-semibold text-slate-100">{title}</span>
-      <ChevronDown
-        size={18}
-        className={`shrink-0 transform text-slate-400 transition ${open ? "rotate-180" : ""}`}
-      />
-    </button>
-    {open && (
-      <div className="border-t border-slate-700/60 bg-slate-900/30 p-4 sm:p-5">
-        {children}
-      </div>
-    )}
-  </div>
+const Section = ({ title, children }) => (
+  <section className="mb-5">
+    <h3 className="mb-3 border-b border-slate-700/60 pb-2 text-lg font-semibold text-white">
+      {title}
+    </h3>
+    <div>{children}</div>
+  </section>
 );
 
 const InputField = ({
@@ -256,35 +242,6 @@ const Students = () => {
   const [viewStudent, setViewStudent] = useState(null);
   const [showDocumentViewer, setShowDocumentViewer] = useState(false);
   const fileRef = useRef();
-  const [expandedSections, setExpandedSections] = useState({
-    personal: true,
-    contact: true,
-    family: false,
-    transportation: false,
-    dietary: false,
-    learning: false,
-    education: false,
-    medical: false,
-    classroom: true,
-    status: false,
-    additional: false,
-    documents: false,
-  });
-
-  const toggleSection = (key) =>
-    setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
-  const expandAll = () =>
-    setExpandedSections(
-      Object.keys(expandedSections).reduce((a, k) => ({ ...a, [k]: true }), {}),
-    );
-  const collapseAll = () =>
-    setExpandedSections(
-      Object.keys(expandedSections).reduce(
-        (a, k) => ({ ...a, [k]: false }),
-        {},
-      ),
-    );
-
   const isUniversity = form.student_type === "university";
   const isSchool = form.student_type === "school";
   const getImageUrl = (value) => {
@@ -1896,28 +1853,9 @@ const Students = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mb-4">
-              <button
-                type="button"
-                onClick={expandAll}
-                className="px-3 py-1 bg-indigo-600/60 text-white rounded text-xs hover:bg-indigo-600"
-              >
-                Expand All
-              </button>
-              <button
-                type="button"
-                onClick={collapseAll}
-                className="px-3 py-1 bg-slate-700/60 text-white rounded text-xs hover:bg-slate-700"
-              >
-                Collapse All
-              </button>
-            </div>
-
             {/* COMMON SECTIONS */}
             <Section
               title="1. Personal / Basic Information"
-              open={expandedSections.personal}
-              onToggle={() => toggleSection("personal")}
             >
               <div className="mb-3 flex items-center gap-3">
                 <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
@@ -2179,8 +2117,6 @@ const Students = () => {
 
             <Section
               title="2. Contact Information"
-              open={expandedSections.contact}
-              onToggle={() => toggleSection("contact")}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <InputField
@@ -2267,8 +2203,6 @@ const Students = () => {
 
             <Section
               title="3. Family Information"
-              open={expandedSections.family}
-              onToggle={() => toggleSection("family")}
             >
               <div className="space-y-4">
                 <div className="border-l-4 border-blue-500 pl-4">
@@ -2419,8 +2353,6 @@ const Students = () => {
 
             <Section
               title="8. Documents"
-              open={expandedSections.documents}
-              onToggle={() => toggleSection("documents")}
             >
               <div className="space-y-3">
                 <p className="text-sm text-slate-400">
@@ -2590,8 +2522,6 @@ const Students = () => {
               <>
                 <Section
                   title="4. Transportation Information"
-                  open={expandedSections.transportation}
-                  onToggle={() => toggleSection("transportation")}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <CheckboxField
@@ -2626,8 +2556,6 @@ const Students = () => {
 
                 <Section
                   title="5. Previous Education"
-                  open={expandedSections.education}
-                  onToggle={() => toggleSection("education")}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
@@ -2650,8 +2578,6 @@ const Students = () => {
               <>
                 <Section
                   title="4. Learning & ECA"
-                  open={expandedSections.learning}
-                  onToggle={() => toggleSection("learning")}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <TextAreaField
@@ -2683,8 +2609,6 @@ const Students = () => {
               title={
                 isSchool ? "6. Dietary Information" : "5. Dietary Information"
               }
-              open={expandedSections.dietary}
-              onToggle={() => toggleSection("dietary")}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <InputField
@@ -2712,8 +2636,6 @@ const Students = () => {
               title={
                 isSchool ? "7. Medical Information" : "6. Medical Information"
               }
-              open={expandedSections.medical}
-              onToggle={() => toggleSection("medical")}
             >
               <div className="space-y-4">
                 <div>
@@ -2799,8 +2721,6 @@ const Students = () => {
                   ? "9. Additional Information"
                   : "8. Additional Information"
               }
-              open={expandedSections.additional}
-              onToggle={() => toggleSection("additional")}
             >
               <div className="grid grid-cols-1 gap-3">
                 <TextAreaField
