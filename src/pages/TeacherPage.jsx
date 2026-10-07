@@ -751,7 +751,7 @@ const TeacherPage = () => {
   return (
     <div
       ref={splitLayoutRef}
-      className={`${isEditingTeacher ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-2 gap-4 overflow-hidden max-md:h-auto max-md:max-h-none max-md:grid-cols-1" : "space-y-6"}`}
+      className={`${isEditingTeacher ? "relative h-[calc(100vh-10rem)] max-h-192 min-h-128 overflow-hidden max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
     >
       <div
         className={`min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
@@ -1090,13 +1090,16 @@ const TeacherPage = () => {
           style={
             modalMode === "edit" && editPanelBounds
               ? {
+                  position: "absolute",
+                  right: 0,
                   alignSelf: "start",
                   height: `${editPanelBounds.height}px`,
                   marginTop: `${editPanelBounds.top}px`,
+                  width: "50%",
                 }
               : undefined
           }
-          className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? `z-20 min-h-0 min-w-0 ${editPanelBounds ? "w-1/2" : "w-full md:absolute md:right-0 md:w-1/2"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
             className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-2xl" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl"} overflow-hidden border border-slate-700/70 bg-slate-950 shadow-2xl`}
