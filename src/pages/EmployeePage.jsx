@@ -897,6 +897,40 @@ export default function EmployeePage() {
                 <h3 className="text-lg font-semibold text-white mb-4">
                   Personal Information
                 </h3>
+                <div className="mb-5 flex items-center gap-4">
+                  <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-slate-600 bg-slate-800">
+                    {profilePhotoPreview || formData.photograph_url ? (
+                      <img
+                        src={
+                          profilePhotoPreview ||
+                          getDocumentUrl(formData.photograph_url)
+                        }
+                        alt="Employee profile"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
+                        No photo
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start gap-2">
+                    <label className="cursor-pointer rounded-xl border border-slate-600 bg-slate-700/60 px-3 py-2 text-sm text-slate-100 transition hover:bg-slate-700">
+                      Upload Photo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        className="hidden"
+                      />
+                    </label>
+                    {profilePhoto && (
+                      <p className="max-w-xs truncate text-xs text-slate-400">
+                        {profilePhoto.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -1086,32 +1120,6 @@ export default function EmployeePage() {
                       rows="2"
                       className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
                     />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
-                      Photograph
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600 rounded text-white"
-                    />
-                    {profilePhoto && (
-                      <p className="text-sm text-green-400 mt-1">
-                        {profilePhoto.name}
-                      </p>
-                    )}
-                    {(profilePhotoPreview || formData.photograph_url) && (
-                      <img
-                        src={
-                          profilePhotoPreview ||
-                          getDocumentUrl(formData.photograph_url)
-                        }
-                        alt="Employee"
-                        className="mt-2 w-20 h-20 rounded object-cover"
-                      />
-                    )}
                   </div>
                 </div>
               </div>

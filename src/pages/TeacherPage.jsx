@@ -1101,12 +1101,6 @@ const TeacherPage = () => {
                 <h2 className="text-xl font-semibold text-white">
                   {modalMode === "create" ? "Add Teacher" : "Edit Teacher"}
                 </h2>
-                {modalMode === "create" && (
-                  <p className="mt-1 break-words text-sm leading-relaxed text-slate-300">
-                    Fill personal, professional, qualification, experience,
-                    legal, and emergency details.
-                  </p>
-                )}
               </div>
               <button
                 onClick={closeModal}
@@ -1141,9 +1135,9 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.personal && (
-                  <div className="grid gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-[220px_1fr]">
-                    <div className="flex flex-col items-center gap-4 rounded-3xl border border-slate-700/80 bg-slate-950 p-4 text-center">
-                      <div className="h-32 w-32 overflow-hidden rounded-full bg-slate-800">
+                  <div className="grid items-start gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-[112px_minmax(0,1fr)]">
+                    <div className="flex w-fit flex-col items-center gap-3 self-start text-center">
+                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
                         {profilePhotoPreview ? (
                           <img
                             src={profilePhotoPreview}
@@ -1156,7 +1150,7 @@ const TeacherPage = () => {
                           </div>
                         )}
                       </div>
-                      <label className="cursor-pointer rounded-2xl border border-slate-600/80 bg-slate-800 px-4 py-2 text-sm text-slate-100 hover:bg-slate-700">
+                      <label className="cursor-pointer rounded-xl border border-slate-600/80 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-100 hover:bg-slate-700">
                         Upload Photo
                         <input
                           type="file"
