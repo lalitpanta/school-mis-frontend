@@ -1092,10 +1092,11 @@ const TeacherPage = () => {
               ? {
                   position: "absolute",
                   right: 0,
+                  top: `${editPanelBounds.top}px`,
                   alignSelf: "start",
                   height: `${editPanelBounds.height}px`,
-                  marginTop: `${editPanelBounds.top}px`,
                   width: "50%",
+                  zIndex: 20,
                 }
               : undefined
           }

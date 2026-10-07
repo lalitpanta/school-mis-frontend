@@ -12,7 +12,7 @@ const RecordTableToolbar = ({
   recordCount,
   rightContent,
 }) => (
-  <div className="flex w-full shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
+  <div className="relative z-30 flex w-full min-w-0 shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-700/60 p-3">
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
       <label className="relative min-w-55 max-w-[320px] flex-1">
         <Search
