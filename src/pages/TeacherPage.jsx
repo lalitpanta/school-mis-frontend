@@ -1111,9 +1111,9 @@ const TeacherPage = () => {
             </div>
             <form
               onSubmit={handleSubmit}
-              className={`space-y-6 px-6 py-6 ${modalMode === "edit" ? "min-h-0 flex-1 overflow-y-auto" : ""}`}
+              className={`px-6 py-4 ${modalMode === "edit" ? "min-h-0 flex-1 space-y-4 overflow-y-auto" : "space-y-6"}`}
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <button
                   type="button"
                   onClick={() => toggleSection("personal")}
@@ -1123,10 +1123,6 @@ const TeacherPage = () => {
                     <h3 className="text-base font-semibold text-white">
                       Personal Details
                     </h3>
-                    <p className="text-sm text-slate-400">
-                      Profile photo, contact information, and basic personal
-                      identity fields.
-                    </p>
                   </div>
                   <span
                     className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${openSections.personal ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-slate-700 text-slate-400"}`}
@@ -1135,9 +1131,9 @@ const TeacherPage = () => {
                   </span>
                 </button>
                 {openSections.personal && (
-                  <div className="grid items-start gap-4 rounded-3xl border border-slate-700/80 bg-slate-900/80 p-4 md:grid-cols-[112px_minmax(0,1fr)]">
-                    <div className="flex w-fit flex-col items-center gap-3 self-start text-center">
-                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
+                  <div className="rounded-3xl border border-slate-700/80 bg-slate-900/80 p-3">
+                    <div className="mb-3 flex items-center gap-3">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
                         {profilePhotoPreview ? (
                           <img
                             src={profilePhotoPreview}
@@ -1159,13 +1155,8 @@ const TeacherPage = () => {
                           className="hidden"
                         />
                       </label>
-                      {profilePhotoPreview && (
-                        <p className="text-xs text-slate-400">
-                          Selected photo will show in the teacher profile.
-                        </p>
-                      )}
                     </div>
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-3 md:grid-cols-2">
                       <div>
                         <label className="text-sm text-slate-300">
                           Full Name

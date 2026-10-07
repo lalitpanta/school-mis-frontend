@@ -890,15 +890,15 @@ export default function EmployeePage() {
 
             <form
               onSubmit={handleSubmit}
-              className="overflow-y-auto flex-1 p-6 space-y-6"
+              className={`min-h-0 flex-1 overflow-y-auto ${modalMode === "edit" ? "space-y-4 p-4" : "space-y-6 p-6"}`}
             >
               {/* Personal Information */}
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">
+                <h3 className="text-lg font-semibold text-white mb-3">
                   Personal Information
                 </h3>
-                <div className="mb-5 flex items-center gap-4">
-                  <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-slate-600 bg-slate-800">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-600 bg-slate-800">
                     {profilePhotoPreview || formData.photograph_url ? (
                       <img
                         src={
@@ -931,7 +931,7 @@ export default function EmployeePage() {
                     )}
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">
                       Employee ID *

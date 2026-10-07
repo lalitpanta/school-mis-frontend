@@ -1841,7 +1841,7 @@ const Students = () => {
         inlinePanel={isEditingStudent}
         closeOnOverlayClick={false}
       >
-        <div className="p-4 sm:p-6">
+        <div className={isEditingStudent ? "p-3" : "p-4 sm:p-6"}>
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-300 text-sm flex justify-between items-center">
               <span>⚠️ {error}</span>
@@ -1919,6 +1919,37 @@ const Students = () => {
               open={expandedSections.personal}
               onToggle={() => toggleSection("personal")}
             >
+              <div className="mb-3 flex items-center gap-3">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate-700 bg-slate-800">
+                  {profilePreview || form.profile_picture ? (
+                    <img
+                      src={profilePreview || getImageUrl(form.profile_picture)}
+                      alt="Student profile"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
+                      No photo
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col items-start gap-2">
+                  <label className="cursor-pointer rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 transition hover:bg-slate-700">
+                    Upload Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={onProfileFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                  {profileFile && (
+                    <p className="max-w-xs truncate text-xs text-slate-400">
+                      {profileFile.name}
+                    </p>
+                  )}
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <InputField
                   label="Full Name *"
@@ -1928,26 +1959,6 @@ const Students = () => {
                   }
                   required
                 />
-                <div>
-                  <label className="block text-sm text-slate-300 mb-1">
-                    Profile Picture
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={onProfileFileChange}
-                    className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
-                  />
-                  {profilePreview && (
-                    <div className="mt-2">
-                      <img
-                        src={profilePreview}
-                        alt="Profile preview"
-                        className="h-16 w-16 rounded object-cover border border-slate-700"
-                      />
-                    </div>
-                  )}
-                </div>
                 <SelectField
                   label="Nationality *"
                   value={form.nationality}
