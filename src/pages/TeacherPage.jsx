@@ -1106,7 +1106,7 @@ const TeacherPage = () => {
           className={`${modalMode === "edit" ? `z-20 min-h-0 min-w-0 ${editPanelBounds ? "w-1/2" : "w-full md:absolute md:right-0 md:w-1/2"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-2xl" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl"} overflow-hidden border border-slate-700/70 bg-slate-950 shadow-2xl`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col border-l border-slate-700/60 bg-slate-900/40" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
           >
             <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-6 py-5">
               <div className="min-w-0 flex-1">
