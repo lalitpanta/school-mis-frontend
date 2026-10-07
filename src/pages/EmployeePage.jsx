@@ -11,6 +11,10 @@ import {
   ArrowUpDown,
   GripVertical,
   Power,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import config from "../config/config";
 import RecordTableToolbar from "../components/common/RecordTableToolbar";
@@ -134,6 +138,8 @@ export default function EmployeePage() {
     key: "employee_id",
     direction: "asc",
   });
+  const [employeePageSize, setEmployeePageSize] = useState(10);
+  const [employeeCurrentPage, setEmployeeCurrentPage] = useState(1);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState([]);
   const [viewEmployee, setViewEmployee] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -602,6 +608,22 @@ export default function EmployeePage() {
           });
     return employeeSort.direction === "asc" ? comparison : -comparison;
   });
+  const employeePageCount = Math.max(
+    1,
+    Math.ceil(sortedEmployees.length / employeePageSize),
+  );
+  const visibleEmployeePage = Math.min(employeeCurrentPage, employeePageCount);
+  const pageEmployees = sortedEmployees.slice(
+    (visibleEmployeePage - 1) * employeePageSize,
+    visibleEmployeePage * employeePageSize,
+  );
+  const firstEmployeeRecord = sortedEmployees.length
+    ? (visibleEmployeePage - 1) * employeePageSize + 1
+    : 0;
+  const lastEmployeeRecord = Math.min(
+    visibleEmployeePage * employeePageSize,
+    sortedEmployees.length,
+  );
   return (
     <div
       ref={splitLayoutRef}
@@ -656,7 +678,10 @@ export default function EmployeePage() {
         >
           <RecordTableToolbar
             searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
+            onSearchChange={(value) => {
+              setSearchTerm(value);
+              setEmployeeCurrentPage(1);
+            }}
             searchPlaceholder="Search employees..."
             columns={employeeColumns}
             visibleColumns={visibleEmployeeColumns}
@@ -673,9 +698,10 @@ export default function EmployeePage() {
                   Status
                   <select
                     value={employeeStatusFilter}
-                    onChange={(event) =>
-                      setEmployeeStatusFilter(event.target.value)
-                    }
+                    onChange={(event) => {
+                      setEmployeeStatusFilter(event.target.value);
+                      setEmployeeCurrentPage(1);
+                    }}
                     className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
                     <option value="all">All statuses</option>
@@ -687,9 +713,10 @@ export default function EmployeePage() {
                   Department
                   <select
                     value={departmentFilter}
-                    onChange={(event) =>
-                      setDepartmentFilter(event.target.value)
-                    }
+                    onChange={(event) => {
+                      setDepartmentFilter(event.target.value);
+                      setEmployeeCurrentPage(1);
+                    }}
                     className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
                     <option value="all">All departments</option>
@@ -705,6 +732,7 @@ export default function EmployeePage() {
                   onClick={() => {
                     setEmployeeStatusFilter("all");
                     setDepartmentFilter("all");
+                    setEmployeeCurrentPage(1);
                   }}
                   className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
                 >
@@ -715,15 +743,24 @@ export default function EmployeePage() {
             views={[
               {
                 label: "All employees",
-                onSelect: () => setEmployeeStatusFilter("all"),
+                onSelect: () => {
+                  setEmployeeStatusFilter("all");
+                  setEmployeeCurrentPage(1);
+                },
               },
               {
                 label: "Active employees",
-                onSelect: () => setEmployeeStatusFilter("active"),
+                onSelect: () => {
+                  setEmployeeStatusFilter("active");
+                  setEmployeeCurrentPage(1);
+                },
               },
               {
                 label: "Inactive employees",
-                onSelect: () => setEmployeeStatusFilter("inactive"),
+                onSelect: () => {
+                  setEmployeeStatusFilter("inactive");
+                  setEmployeeCurrentPage(1);
+                },
               },
             ]}
             recordCount={filteredEmployees.length}
@@ -749,8 +786,8 @@ export default function EmployeePage() {
                         type="checkbox"
                         aria-label="Select all visible employees"
                         checked={
-                          sortedEmployees.length > 0 &&
-                          sortedEmployees.every((employee) =>
+                          pageEmployees.length > 0 &&
+                          pageEmployees.every((employee) =>
                             selectedEmployeeIds.includes(employee.id),
                           )
                         }
@@ -760,14 +797,14 @@ export default function EmployeePage() {
                               ? Array.from(
                                   new Set([
                                     ...current,
-                                    ...sortedEmployees.map(
+                                    ...pageEmployees.map(
                                       (employee) => employee.id,
                                     ),
                                   ]),
                                 )
                               : current.filter(
                                   (id) =>
-                                    !sortedEmployees.some(
+                                    !pageEmployees.some(
                                       (employee) => employee.id === id,
                                     ),
                                 ),
@@ -824,7 +861,7 @@ export default function EmployeePage() {
                     </td>
                   </tr>
                 ) : (
-                  sortedEmployees.map((emp) => (
+                  pageEmployees.map((emp) => (
                     <tr
                       key={emp.id}
                       className="hover:bg-slate-800/30 transition"
@@ -909,6 +946,79 @@ export default function EmployeePage() {
                 )}
               </tbody>
             </table>
+          </div>
+          <div
+            className={`flex shrink-0 flex-wrap items-center justify-between gap-3 border-t px-3 py-3 text-xs text-slate-400 ${isEditingEmployee ? "w-full border-slate-700/60 bg-[var(--bg-card)] md:w-1/2" : "w-full"}`}
+            style={
+              isEditingEmployee
+                ? undefined
+                : {
+                    borderColor: "var(--border-card)",
+                    background: "var(--bg-card)",
+                  }
+            }
+          >
+            <label className="flex items-center gap-2">
+              Rows per page
+              <select
+                value={employeePageSize}
+                onChange={(event) => {
+                  setEmployeePageSize(Number(event.target.value));
+                  setEmployeeCurrentPage(1);
+                }}
+                className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
+              >
+                {[10, 25, 50].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-center gap-3">
+              <span>
+                {firstEmployeeRecord}-{lastEmployeeRecord} of {sortedEmployees.length}
+              </span>
+              <span>
+                Page {visibleEmployeePage} of {employeePageCount}
+              </span>
+              <div className="flex items-center gap-1">
+                {[
+                  { label: "First page", Icon: ChevronsLeft, page: 1 },
+                  {
+                    label: "Previous page",
+                    Icon: ChevronLeft,
+                    page: visibleEmployeePage - 1,
+                  },
+                  {
+                    label: "Next page",
+                    Icon: ChevronRight,
+                    page: visibleEmployeePage + 1,
+                  },
+                  {
+                    label: "Last page",
+                    Icon: ChevronsRight,
+                    page: employeePageCount,
+                  },
+                ].map(({ label, Icon, page }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-label={label}
+                    title={label}
+                    disabled={
+                      label.includes("First") || label.includes("Previous")
+                        ? visibleEmployeePage === 1
+                        : visibleEmployeePage === employeePageCount
+                    }
+                    onClick={() => setEmployeeCurrentPage(page)}
+                    className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Icon size={15} />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

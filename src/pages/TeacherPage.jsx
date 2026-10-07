@@ -12,6 +12,10 @@ import {
   ArrowUpDown,
   GripVertical,
   Power,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import config from "../config/config";
 import RecordTableToolbar from "../components/common/RecordTableToolbar";
@@ -142,6 +146,8 @@ const TeacherPage = () => {
     key: "full_name",
     direction: "asc",
   });
+  const [teacherPageSize, setTeacherPageSize] = useState(10);
+  const [teacherCurrentPage, setTeacherCurrentPage] = useState(1);
   const [selectedTeacherIds, setSelectedTeacherIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create");
@@ -750,6 +756,22 @@ const TeacherPage = () => {
     );
     return teacherSort.direction === "asc" ? comparison : -comparison;
   });
+  const teacherPageCount = Math.max(
+    1,
+    Math.ceil(sortedTeachers.length / teacherPageSize),
+  );
+  const visibleTeacherPage = Math.min(teacherCurrentPage, teacherPageCount);
+  const pageTeachers = sortedTeachers.slice(
+    (visibleTeacherPage - 1) * teacherPageSize,
+    visibleTeacherPage * teacherPageSize,
+  );
+  const firstTeacherRecord = sortedTeachers.length
+    ? (visibleTeacherPage - 1) * teacherPageSize + 1
+    : 0;
+  const lastTeacherRecord = Math.min(
+    visibleTeacherPage * teacherPageSize,
+    sortedTeachers.length,
+  );
 
   return (
     <div
@@ -808,7 +830,10 @@ const TeacherPage = () => {
         <div className="flex w-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/40">
           <RecordTableToolbar
             searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
+            onSearchChange={(value) => {
+              setSearchTerm(value);
+              setTeacherCurrentPage(1);
+            }}
             searchPlaceholder="Search teachers..."
             columns={teacherColumns}
             visibleColumns={visibleTeacherColumns}
@@ -825,9 +850,10 @@ const TeacherPage = () => {
                   Designation
                   <input
                     value={filterDesignation}
-                    onChange={(event) =>
-                      setFilterDesignation(event.target.value)
-                    }
+                    onChange={(event) => {
+                      setFilterDesignation(event.target.value);
+                      setTeacherCurrentPage(1);
+                    }}
                     className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   />
                 </label>
@@ -835,9 +861,10 @@ const TeacherPage = () => {
                   Status
                   <select
                     value={teacherStatusFilter}
-                    onChange={(event) =>
-                      setTeacherStatusFilter(event.target.value)
-                    }
+                    onChange={(event) => {
+                      setTeacherStatusFilter(event.target.value);
+                      setTeacherCurrentPage(1);
+                    }}
                     className="w-full rounded border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
                   >
                     <option value="all">All statuses</option>
@@ -847,7 +874,10 @@ const TeacherPage = () => {
                 </label>
                 <button
                   type="button"
-                  onClick={() => loadData()}
+                  onClick={() => {
+                    setTeacherCurrentPage(1);
+                    loadData();
+                  }}
                   className="justify-self-start text-xs text-indigo-300 hover:text-indigo-200"
                 >
                   Apply filters
@@ -857,15 +887,24 @@ const TeacherPage = () => {
             views={[
               {
                 label: "All teachers",
-                onSelect: () => setTeacherStatusFilter("all"),
+                onSelect: () => {
+                  setTeacherStatusFilter("all");
+                  setTeacherCurrentPage(1);
+                },
               },
               {
                 label: "Active teachers",
-                onSelect: () => setTeacherStatusFilter("active"),
+                onSelect: () => {
+                  setTeacherStatusFilter("active");
+                  setTeacherCurrentPage(1);
+                },
               },
               {
                 label: "Inactive teachers",
-                onSelect: () => setTeacherStatusFilter("inactive"),
+                onSelect: () => {
+                  setTeacherStatusFilter("inactive");
+                  setTeacherCurrentPage(1);
+                },
               },
             ]}
             recordCount={filteredTeachers.length}
@@ -911,8 +950,8 @@ const TeacherPage = () => {
                         type="checkbox"
                         aria-label="Select all visible teachers"
                         checked={
-                          sortedTeachers.length > 0 &&
-                          sortedTeachers.every((teacher) =>
+                          pageTeachers.length > 0 &&
+                          pageTeachers.every((teacher) =>
                             selectedTeacherIds.includes(teacher.id),
                           )
                         }
@@ -922,14 +961,14 @@ const TeacherPage = () => {
                               ? Array.from(
                                   new Set([
                                     ...current,
-                                    ...sortedTeachers.map(
+                                    ...pageTeachers.map(
                                       (teacher) => teacher.id,
                                     ),
                                   ]),
                                 )
                               : current.filter(
                                   (id) =>
-                                    !sortedTeachers.some(
+                                    !pageTeachers.some(
                                       (teacher) => teacher.id === id,
                                     ),
                                 ),
@@ -984,7 +1023,7 @@ const TeacherPage = () => {
                     </td>
                   </tr>
                 ) : (
-                  sortedTeachers.map((teacher) => (
+                  pageTeachers.map((teacher) => (
                     <tr
                       key={teacher.id}
                       className="border-t border-slate-800/70 hover:bg-slate-900/80"
@@ -1084,6 +1123,71 @@ const TeacherPage = () => {
                 )}
               </tbody>
             </table>
+          </div>
+          <div
+            className={`flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-700/60 bg-slate-900/40 px-3 py-3 text-xs text-slate-400 ${isEditingTeacher ? "w-full md:w-1/2" : "w-full"}`}
+          >
+            <label className="flex items-center gap-2">
+              Rows per page
+              <select
+                value={teacherPageSize}
+                onChange={(event) => {
+                  setTeacherPageSize(Number(event.target.value));
+                  setTeacherCurrentPage(1);
+                }}
+                className="rounded border border-slate-700 bg-slate-800 px-2 py-1.5 text-sm text-slate-200"
+              >
+                {[10, 25, 50].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-center gap-3">
+              <span>
+                {firstTeacherRecord}-{lastTeacherRecord} of {sortedTeachers.length}
+              </span>
+              <span>
+                Page {visibleTeacherPage} of {teacherPageCount}
+              </span>
+              <div className="flex items-center gap-1">
+                {[
+                  { label: "First page", Icon: ChevronsLeft, page: 1 },
+                  {
+                    label: "Previous page",
+                    Icon: ChevronLeft,
+                    page: visibleTeacherPage - 1,
+                  },
+                  {
+                    label: "Next page",
+                    Icon: ChevronRight,
+                    page: visibleTeacherPage + 1,
+                  },
+                  {
+                    label: "Last page",
+                    Icon: ChevronsRight,
+                    page: teacherPageCount,
+                  },
+                ].map(({ label, Icon, page }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-label={label}
+                    title={label}
+                    disabled={
+                      label.includes("First") || label.includes("Previous")
+                        ? visibleTeacherPage === 1
+                        : visibleTeacherPage === teacherPageCount
+                    }
+                    onClick={() => setTeacherCurrentPage(page)}
+                    className="rounded border border-slate-700 p-1.5 text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Icon size={15} />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
