@@ -898,7 +898,7 @@ const TeacherPage = () => {
           />
           <div
             ref={teacherTableViewportRef}
-            className={`min-h-0 flex-1 ${isEditingTeacher ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+            className={`min-h-0 flex-1 ${isEditingTeacher ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "w-full overflow-auto"}`}
           >
             <table
               className={`text-left text-sm text-slate-300 ${isEditingTeacher ? "w-full min-w-0 table-fixed" : "min-w-225 whitespace-nowrap"}`}
