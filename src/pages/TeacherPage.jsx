@@ -751,7 +751,7 @@ const TeacherPage = () => {
   return (
     <div
       ref={splitLayoutRef}
-      className={`${isEditingTeacher ? "relative w-full h-[calc(100vh-10rem)] max-h-192 min-h-128 overflow-hidden max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
+      className={`${isEditingTeacher ? "relative w-full h-[calc(100dvh-5rem)] min-h-128 overflow-hidden max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
     >
       <div
         className={`w-full min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
