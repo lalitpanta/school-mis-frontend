@@ -1864,15 +1864,15 @@ const Students = () => {
           isEditingStudent && editPanelBounds
             ? {
                 position: "absolute",
+                left: "calc(50% + 0.75rem)",
                 right: "1rem",
                 top: `${editPanelBounds.top}px`,
                 height: `${editPanelBounds.height}px`,
-                width: "50%",
                 zIndex: 20,
               }
             : undefined
         }
-        inlinePanelSurfaceClassName="border-l border-slate-700/60 shadow-none"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
         closeOnOverlayClick={false}
       >

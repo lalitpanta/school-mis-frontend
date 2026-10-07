@@ -1200,19 +1200,19 @@ const TeacherPage = () => {
             modalMode === "edit" && editPanelBounds
               ? {
                   position: "absolute",
+                  left: "calc(50% + 0.75rem)",
                   right: 0,
                   top: `${editPanelBounds.top}px`,
                   alignSelf: "start",
                   height: `${editPanelBounds.height}px`,
-                  width: "50%",
                   zIndex: 20,
                 }
               : undefined
           }
-          className={`${modalMode === "edit" ? `z-20 min-h-0 min-w-0 ${editPanelBounds ? "w-1/2" : "w-full md:absolute md:right-0 md:w-1/2"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
+          className={`${modalMode === "edit" ? `z-20 min-h-0 min-w-0 ${editPanelBounds ? "" : "w-full md:absolute md:right-0 md:left-[calc(50%_+_0.75rem)]"}` : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col border-l border-slate-700/60 bg-slate-900/40" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
+            className={`${modalMode === "edit" ? "flex h-full min-h-0 w-full min-w-0 max-w-none flex-col rounded-xl border border-slate-700/70 bg-slate-900/70 shadow-lg" : "max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700/70 bg-slate-950 shadow-2xl"} overflow-hidden`}
           >
             <div className="flex items-center justify-between gap-4 border-b border-slate-800/70 px-5 py-4">
               <div className="min-w-0 flex-1">

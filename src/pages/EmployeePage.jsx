@@ -1027,10 +1027,10 @@ export default function EmployeePage() {
             modalMode === "edit" && editPanelBounds
               ? {
                   position: "absolute",
+                  left: "calc(50% + 0.75rem)",
                   right: "1rem",
                   top: `${editPanelBounds.top}px`,
                   height: `${editPanelBounds.height}px`,
-                  width: "50%",
                   zIndex: 20,
                 }
               : undefined
@@ -1038,7 +1038,7 @@ export default function EmployeePage() {
           className={`${modalMode === "edit" ? "min-h-0 min-w-0" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"}`}
         >
           <div
-            className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none border-l border-slate-700/60 bg-[var(--bg-card)]" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} flex flex-col overflow-hidden`}
+            className={`${modalMode === "edit" ? "h-full min-h-0 w-full min-w-0 max-w-none rounded-xl border border-slate-700/70 bg-[var(--bg-card)] shadow-lg" : "max-h-[90vh] w-full max-w-4xl rounded-lg border border-slate-700 bg-slate-900"} flex flex-col overflow-hidden`}
           >
             <div className="sticky top-0 flex justify-between items-center p-6 border-b border-slate-700 bg-slate-900 z-10">
               <h2 className="text-2xl font-bold text-white">
