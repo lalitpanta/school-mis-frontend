@@ -1070,7 +1070,7 @@ export default function EmployeePage() {
                     </th>
                   ))}
                   <th
-                    className={`px-2 py-4 text-center text-xs font-semibold ${isEditingEmployee ? "w-28" : "px-6 text-sm"}`}
+                    className={`text-center text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? "w-28 px-2 py-4" : "w-40 px-4 py-3"}`}
                     style={{ color: "var(--text-2)" }}
                   >
                     Actions
@@ -1128,7 +1128,7 @@ export default function EmployeePage() {
                       ))}
                       <td
                         className={`py-3 text-center ${
-                          isEditingEmployee ? "px-1" : "px-6"
+                          isEditingEmployee ? "px-1" : "w-40 px-4"
                         }`}
                       >
                         <div className="inline-flex flex-nowrap items-center justify-center gap-1">
@@ -1137,9 +1137,7 @@ export default function EmployeePage() {
                             onClick={() => openViewModal(emp)}
                             title="View employee"
                             aria-label={`View ${emp.full_name}`}
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
-                              isEditingEmployee ? "p-1.5" : "p-2"
-                            }`}
+                            className="entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
                           >
                             <Eye size={15} />
                           </button>
@@ -1148,9 +1146,7 @@ export default function EmployeePage() {
                             onClick={() => handleEditClick(emp)}
                             title="Edit employee"
                             aria-label={`Edit ${emp.full_name}`}
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-slate-300 transition hover:bg-slate-600 ${
-                              isEditingEmployee ? "p-1.5" : "p-2"
-                            }`}
+                            className="entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded p-2 text-slate-300 hover:bg-slate-700/60"
                           >
                             <Edit size={15} />
                           </button>
@@ -1167,7 +1163,7 @@ export default function EmployeePage() {
                                 ? "Deactivate employee"
                                 : "Activate employee"
                             }
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded transition ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
+                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded p-2 ${emp.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
                           >
                             <Power size={15} />
                           </button>
@@ -1176,9 +1172,7 @@ export default function EmployeePage() {
                             onClick={() => setDeleteConfirm(emp.id)}
                             title="Delete employee"
                             aria-label={`Delete ${emp.full_name}`}
-                            className={`entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded text-red-300 transition hover:bg-red-500/30 ${
-                              isEditingEmployee ? "p-1.5" : "p-2"
-                            }`}
+                            className="entity-admin-icon-button inline-flex shrink-0 items-center justify-center rounded p-2 text-red-300 hover:bg-red-500/10"
                           >
                             <Trash2 size={15} />
                           </button>

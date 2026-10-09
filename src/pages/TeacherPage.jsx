@@ -1023,7 +1023,7 @@ const TeacherPage = () => {
                       </button>
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide">
+                  <th className="w-40 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide">
                     Actions
                   </th>
                 </tr>
@@ -1079,8 +1079,8 @@ const TeacherPage = () => {
                             : column.value(teacher) || "—"}
                         </td>
                       ))}
-                      <td className="px-4 py-3 text-right">
-                        <div className="inline-flex items-center gap-1">
+                      <td className="w-40 px-4 py-3 text-center">
+                        <div className="inline-flex items-center justify-center gap-1">
                           <button
                             type="button"
                             onClick={() => {
@@ -1092,7 +1092,7 @@ const TeacherPage = () => {
                             }}
                             title="View teacher"
                             aria-label={`View ${teacher.full_name}`}
-                            className="entity-admin-icon-button rounded p-2 text-muted hover:bg-subtle"
+                            className="entity-admin-icon-button rounded p-2 text-indigo-300 hover:bg-indigo-500/10"
                           >
                             <Eye size={15} />
                           </button>
@@ -1100,7 +1100,7 @@ const TeacherPage = () => {
                             onClick={() => openEditModal(teacher)}
                             title="Edit teacher"
                             aria-label={`Edit ${teacher.full_name}`}
-                            className="entity-admin-icon-button rounded p-2 text-accent hover:bg-accent-soft"
+                            className="entity-admin-icon-button rounded p-2 text-slate-300 hover:bg-slate-700/60"
                           >
                             <Edit size={15} />
                           </button>
@@ -1125,7 +1125,7 @@ const TeacherPage = () => {
                                 ? "Deactivate teacher"
                                 : "Activate teacher"
                             }
-                            className={`entity-admin-icon-button rounded p-2 ${teacher.is_active ? "text-danger hover:bg-danger-soft" : "text-success hover:bg-success"}`}
+                            className={`entity-admin-icon-button rounded p-2 ${teacher.is_active ? "text-red-300 hover:bg-red-500/10" : "text-green-300 hover:bg-green-500/10"}`}
                           >
                             <Power size={15} />
                           </button>
@@ -1133,7 +1133,7 @@ const TeacherPage = () => {
                             onClick={() => handleDelete(teacher.id)}
                             title="Delete teacher"
                             aria-label={`Delete ${teacher.full_name}`}
-                            className="entity-admin-icon-button rounded p-2 text-danger hover:bg-danger-soft"
+                            className="entity-admin-icon-button rounded p-2 text-red-300 hover:bg-red-500/10"
                           >
                             <Trash2 size={15} />
                           </button>
