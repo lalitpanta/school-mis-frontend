@@ -101,12 +101,12 @@ const RecordTableToolbar = ({
             <div
               id="record-table-columns-panel"
               data-record-table-popover
-              className="absolute left-0 top-full z-50 mt-2 grid w-56 gap-1 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl"
+              className="absolute left-0 top-full z-50 mt-2 grid w-max gap-1 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl"
             >
               {columns.map((column) => (
                 <label
                   key={column.key}
-                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                  className="flex cursor-pointer items-center gap-2 whitespace-nowrap rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
                 >
                   <input
                     type="checkbox"
