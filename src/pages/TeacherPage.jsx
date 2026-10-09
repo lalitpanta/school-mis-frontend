@@ -841,7 +841,7 @@ const TeacherPage = () => {
           </div>
         )}
 
-        <div className="entity-admin-card flex w-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-default bg-surface">
+        <div className="entity-admin-card flex w-full min-h-0 flex-1 flex-col overflow-visible rounded-2xl border border-default bg-surface">
           <RecordTableToolbar
             searchTerm={searchTerm}
             onSearchChange={(value) => {
