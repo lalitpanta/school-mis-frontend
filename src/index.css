@@ -33,6 +33,32 @@
   --shadow-card: 0 12px 32px rgba(15, 23, 42, 0.08);
   --shadow-overlay: 0 24px 70px rgba(15, 23, 42, 0.2);
   --overlay: rgba(15, 23, 42, 0.32);
+
+  /* Compatibility aliases for modules using the earlier theme token names. */
+  --bg-page: var(--bg-main);
+  --bg-subtle: var(--bg-hover);
+  --border-default: var(--border-card);
+  --border-soft: var(--border-dim);
+  --text-primary: var(--text-1);
+  --text-h: var(--text-1);
+  --text-muted: var(--text-2);
+  --text-dim: var(--text-2);
+  --text-faint: var(--text-3);
+  --on-accent: var(--accent-text);
+  --accent-2: var(--accent);
+  --accent-pink: var(--accent);
+  --accent-soft: var(--accent-dim);
+  --accent-bg: var(--accent-dim);
+  --accent-border: var(--accent-dim);
+  --surface: var(--bg-card);
+  --surface-2: var(--bg-surface);
+  --surface-3: var(--bg-hover);
+  --surface-hover: var(--bg-hover);
+  --success-text: var(--success);
+  --success-dim: rgba(22, 128, 94, 0.12);
+  --danger-dim: rgba(194, 65, 93, 0.12);
+  --warn: var(--warning);
+  --warn-dim: rgba(180, 83, 9, 0.12);
 }
 
 .dark {
@@ -59,6 +85,9 @@
   --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.28);
   --shadow-overlay: 0 24px 70px rgba(0, 0, 0, 0.52);
   --overlay: rgba(2, 6, 23, 0.74);
+  --success-dim: rgba(67, 211, 158, 0.14);
+  --danger-dim: rgba(251, 113, 133, 0.14);
+  --warn-dim: rgba(251, 191, 36, 0.14);
 }
 
 /* Compatibility bridge for legacy Tailwind color utilities. */
@@ -613,28 +642,28 @@ main > * {
 
 .entity-admin-page {
   min-height: 100%;
-  background: #080c14;
-  color: #e8ecf4;
+  background: var(--bg-page);
+  color: var(--text-primary);
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 .entity-admin-card {
-  border: 1px solid #1b2539 !important;
+  border: 1px solid var(--border-card) !important;
   border-radius: 16px !important;
-  background: #0f1626 !important;
+  background: var(--bg-card) !important;
 }
 
 .entity-admin-toolbar {
   min-height: 72px;
   padding: 16px !important;
-  border-color: #182236 !important;
+  border-color: var(--border-dim) !important;
 }
 
 .entity-admin-input,
 .entity-admin-page .entity-admin-toolbar select,
 .entity-admin-page .entity-admin-list-footer select {
   height: 44px;
-  border: 1px solid #243046 !important;
+  border: 1px solid var(--border-card) !important;
   border-radius: 10px !important;
 }
 
@@ -655,8 +684,8 @@ main > * {
 .entity-admin-page thead,
 .entity-admin-page .entity-admin-table-head {
   height: 44px;
-  background: #0c1220 !important;
-  color: #8995ab !important;
+  background: var(--bg-surface) !important;
+  color: var(--text-3) !important;
 }
 
 .entity-admin-page thead tr {
@@ -667,18 +696,18 @@ main > * {
   height: 44px;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  color: #8995ab !important;
+  color: var(--text-3) !important;
 }
 
 .entity-admin-page tbody tr,
 .entity-admin-page .entity-admin-table-row {
   height: 68px;
-  border-color: #182236 !important;
+  border-color: var(--border-dim) !important;
 }
 
 .entity-admin-page .entity-admin-selected-row {
-  border-left: 3px solid #5eead4 !important;
-  background: #142034 !important;
+  border-left: 3px solid var(--accent) !important;
+  background: var(--accent-dim) !important;
 }
 
 .entity-admin-page tbody td {
@@ -689,19 +718,19 @@ main > * {
 .entity-admin-page .entity-status-pill {
   border-radius: 999px;
   padding: 4px 10px;
-  background: #0f2e27 !important;
-  color: #6ee7b7 !important;
+  background: var(--success-dim) !important;
+  color: var(--success-text) !important;
 }
 
 .entity-admin-page .entity-status-pill.bg-red-500\/20 {
-  background: #341d26 !important;
-  color: #f08a8a !important;
+  background: var(--danger-dim) !important;
+  color: var(--danger) !important;
 }
 
 .entity-admin-page .entity-admin-list-footer {
   min-height: 56px;
-  border-color: #182236 !important;
-  background: #0f1626 !important;
+  border-color: var(--border-dim) !important;
+  background: var(--bg-card) !important;
 }
 
 .entity-admin-page.is-editing .entity-admin-list,
@@ -725,8 +754,8 @@ main > * {
   height: 44px;
   padding-top: 0;
   padding-bottom: 0;
-  background: #0c1220;
-  border-color: #182236;
+  background: var(--bg-surface);
+  border-color: var(--border-dim);
 }
 
 .entity-admin-page .entity-edit-header h2 {
@@ -736,7 +765,7 @@ main > * {
 
 .entity-admin-page .entity-edit-body {
   padding: 0 !important;
-  background: #0f1626;
+  background: var(--bg-card);
 }
 
 .entity-admin-page .entity-edit-header button {
@@ -746,8 +775,8 @@ main > * {
 }
 
 .entity-admin-page .entity-edit-tabs {
-  background: #0f1626;
-  border-color: #182236;
+  background: var(--bg-card);
+  border-color: var(--border-dim);
 }
 
 .entity-admin-page .entity-edit-form {
@@ -756,7 +785,7 @@ main > * {
 
 .entity-admin-page .entity-edit-form label {
   margin-bottom: 6px;
-  color: #b6c0d2;
+  color: var(--text-2);
   font-size: 12px;
   font-weight: 600;
 }
@@ -764,14 +793,15 @@ main > * {
 .entity-admin-page .entity-edit-form input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
 .entity-admin-page .entity-edit-form select {
   min-height: 44px;
-  border: 1px solid #243046;
+  border: 1px solid var(--border-card);
   border-radius: 10px;
-  background-color: #0c1220;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .entity-admin-page .entity-create-form {
-  color: #e8ecf4;
+  color: var(--text-primary);
 }
 
 .entity-admin-page .entity-create-section {
@@ -781,11 +811,11 @@ main > * {
 
 .entity-admin-page .entity-create-section h3 {
   margin-bottom: 0.75rem;
-  border-bottom: 1px solid #243046;
+  border-bottom: 1px solid var(--border-card);
   padding-bottom: 0.5rem;
   font-size: 18px;
   font-weight: 600;
-  color: #e8ecf4;
+  color: var(--text-primary);
 }
 
 .entity-admin-page .entity-create-form .grid {
@@ -794,7 +824,7 @@ main > * {
 
 .entity-admin-page .entity-create-form label {
   margin-bottom: 6px;
-  color: #b6c0d2;
+  color: var(--text-2);
   font-size: 12px;
   font-weight: 600;
 }
@@ -803,40 +833,40 @@ main > * {
 .entity-admin-page .entity-create-form select,
 .entity-admin-page .entity-create-form textarea {
   min-height: 44px;
-  border: 1px solid #243046;
+  border: 1px solid var(--border-card);
   border-radius: 10px;
-  background-color: #0c1220;
-  color: #e8ecf4;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .entity-admin-page .entity-create-form input:focus,
 .entity-admin-page .entity-create-form select:focus,
 .entity-admin-page .entity-create-form textarea:focus {
-  border-color: #5eead4 !important;
-  outline: 2px solid rgb(94 234 212 / 22%);
+  border-color: var(--accent) !important;
+  outline: 2px solid var(--accent-dim);
   outline-offset: 1px;
 }
 
 .entity-admin-page .entity-edit-form input:focus,
 .entity-admin-page .entity-edit-form select:focus,
 .entity-admin-page .entity-edit-form textarea:focus {
-  border-color: #5eead4 !important;
-  outline: 2px solid rgb(94 234 212 / 22%);
+  border-color: var(--accent) !important;
+  outline: 2px solid var(--accent-dim);
   outline-offset: 1px;
 }
 
 .entity-admin-page .entity-edit-form input:user-invalid,
 .entity-admin-page .entity-edit-form select:user-invalid,
 .entity-admin-page .entity-edit-form textarea:user-invalid {
-  border-color: #f08a8a !important;
+  border-color: var(--danger) !important;
 }
 
 .entity-admin-page .entity-edit-form div:has(> input:user-invalid)::after,
 .entity-admin-page .entity-edit-form div:has(> select:user-invalid)::after {
   display: block;
   margin-top: 4px;
-  color: #f08a8a;
+  color: var(--danger);
   content: "Please enter a valid value.";
   font-size: 11px;
 }
@@ -844,8 +874,8 @@ main > * {
 .entity-admin-page .entity-edit-sticky-footer,
 .entity-admin-page .employee-edit-form > div:last-child,
 .entity-admin-page .entity-create-form > div:last-child {
-  background: #0c1220 !important;
-  border-color: #182236 !important;
+  background: var(--bg-surface) !important;
+  border-color: var(--border-dim) !important;
 }
 
 .entity-admin-page .entity-edit-sticky-footer button,

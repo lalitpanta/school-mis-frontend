@@ -234,8 +234,8 @@ const SettingsPage = () => {
       >
         <aside
           style={{
-            background: "rgba(17, 24, 39, 0.92)",
-            borderRight: "1px solid rgba(148, 163, 184, 0.14)",
+            background: "var(--bg-sidebar)",
+            borderRight: "1px solid var(--border-dim)",
             color: "var(--text-primary)",
             width: "190px",
             minWidth: "190px",
@@ -262,12 +262,14 @@ const SettingsPage = () => {
                     className="w-full flex items-center gap-2.5 rounded-xl border text-left text-sm font-medium transition-all duration-150"
                     style={{
                       background: active
-                        ? "rgba(249, 115, 22, 0.12)"
+                        ? "var(--accent-dim)"
                         : "transparent",
                       borderColor: active
-                        ? "rgba(249, 115, 22, 0.35)"
+                        ? "var(--accent)"
                         : "transparent",
-                      color: active ? "var(--text-primary)" : "var(--text-primary)",
+                      color: active
+                        ? "var(--text-primary)"
+                        : "var(--text-muted)",
                       padding: "8px 10px",
                       marginBottom: "2px",
                     }}
@@ -278,10 +280,10 @@ const SettingsPage = () => {
                         width: "6px",
                         height: "6px",
                         background: active
-                          ? "var(--danger)"
-                          : "rgba(148, 163, 184, 0.35)",
+                          ? "var(--accent)"
+                          : "var(--border-card)",
                         boxShadow: active
-                          ? "0 0 0 4px rgba(245, 158, 11, 0.18)"
+                          ? "0 0 0 4px var(--accent-dim)"
                           : "none",
                         flexShrink: 0,
                       }}

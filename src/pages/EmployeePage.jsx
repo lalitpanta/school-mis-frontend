@@ -827,7 +827,6 @@ export default function EmployeePage() {
     <div
       ref={splitLayoutRef}
       className={`entity-admin-page ${isEditingEmployee ? "is-editing relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
-      style={{ background: "#080c14" }}
     >
       <div
         className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
