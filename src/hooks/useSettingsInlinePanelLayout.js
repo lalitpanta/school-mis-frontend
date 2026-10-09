@@ -37,15 +37,17 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
       );
       const panelTop = (tableHeader?.getBoundingClientRect().top ?? listBounds.top) -
         layoutBounds.top;
+      const panelLeft = listBounds.right - layoutBounds.left + INLINE_PANEL_GAP;
+      const availablePanelWidth = layoutBounds.right - listBounds.right - INLINE_PANEL_GAP;
       const panelWidth = Math.max(
         0,
-        Math.min(560, layoutBounds.width - 300),
+        Math.min(560, availablePanelWidth),
       );
       const nextStyle = {
         position: "absolute",
         top: `${panelTop}px`,
-        right: "0px",
-        left: "auto",
+        left: `${panelLeft}px`,
+        right: "auto",
         width: `${panelWidth}px`,
         height: `${Math.max(
           listBounds.bottom - (layoutBounds.top + panelTop),
