@@ -897,6 +897,18 @@ main > * {
   border-color: var(--border-dim);
 }
 
+.entity-admin-page .student-entity-edit-header {
+  min-height: 52px;
+  height: 52px;
+  align-items: center;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.entity-admin-page .student-entity-edit-header h2 {
+  line-height: 1.25;
+}
+
 .entity-admin-page .entity-edit-header h2 {
   font-size: 12px;
   letter-spacing: 0.06em;

@@ -836,6 +836,50 @@ const Students = () => {
     }
   };
 
+  const handleBulkDeleteStudents = async () => {
+    const ids = selectedStudentIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected student${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteStudent(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+
+      setSelectedStudentIds(failedIds);
+      await load();
+
+      if (failedIds.length > 0) {
+        const firstFailure = results.find(
+          (result) => result.status === "rejected",
+        )?.reason;
+        const failureMessage =
+          firstFailure?.response?.data?.message || firstFailure?.message || "";
+        setError(
+          `${deletedCount} student${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted.${failureMessage ? ` ${failureMessage}` : ""}`,
+        );
+      } else {
+        setError(
+          `✅ ${deletedCount} student${deletedCount === 1 ? "" : "s"} deleted successfully`,
+        );
+        setTimeout(() => setError(""), 3000);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleStudentStatus = async (student) => {
     try {
       setError("");
@@ -1597,18 +1641,29 @@ const Students = () => {
               </button>
             </div>
           </div>
-          {selectedStudentIds.length > 0 && (
+          {!isEditingStudent && selectedStudentIds.length > 0 && (
             <div className="flex shrink-0 items-center justify-between border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
               <span className="text-slate-300">
                 {selectedStudentIds.length} selected
               </span>
-              <button
-                type="button"
-                onClick={() => setSelectedStudentIds([])}
-                className="text-xs text-indigo-300 hover:text-indigo-200"
-              >
-                Clear selection
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleBulkDeleteStudents}
+                  disabled={loading}
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 text-sm font-medium text-red-300 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 size={16} />
+                  Delete selected
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedStudentIds([])}
+                  className="text-xs text-indigo-300 hover:text-indigo-200"
+                >
+                  Clear selection
+                </button>
+              </div>
             </div>
           )}
           <div className="min-h-0 flex-1 overflow-hidden">
@@ -1928,7 +1983,7 @@ const Students = () => {
         }
         inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header h-11 min-h-11 items-center px-5 py-0"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-0 py-0"
         closeOnOverlayClick={false}
       >
