@@ -1666,7 +1666,7 @@ const Students = () => {
                       {displayedColumns.map((column) => (
                         <th
                           key={column.key}
-                          className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? (column.key === "classroom" ? "w-24" : column.key === "status" ? "w-24" : "") : ""}`}
+                          className={`px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ${isEditingStudent ? (column.key === "classroom" ? "w-24" : column.key === "status" ? "w-24" : "") : ""}`}
                         >
                           <button
                             type="button"
@@ -1758,14 +1758,14 @@ const Students = () => {
                           {displayedColumns.map((column) => (
                             <td
                               key={column.key}
-                              className={`px-3 py-3 text-slate-300 ${isEditingStudent ? "truncate" : ""}`}
+                              className={`px-2 py-3 text-slate-300 ${isEditingStudent ? "truncate" : ""}`}
                             >
                               {column.render
                                 ? column.render(student)
                                 : (student[column.key] ?? "—")}
                             </td>
                           ))}
-                          <td className="w-40 px-4 py-3 text-center">
+                          <td className="w-40 px-2 py-3 text-center">
                             <div className="inline-flex items-center justify-center gap-1">
                               <button
                                 onClick={() => setViewStudent(student)}

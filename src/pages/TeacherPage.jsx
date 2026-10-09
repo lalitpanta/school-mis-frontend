@@ -1002,7 +1002,7 @@ const TeacherPage = () => {
                   {displayedTeacherColumns.map((column) => (
                     <th
                       key={column.key}
-                      className={`px-2 py-3 text-xs font-medium uppercase tracking-wide ${isEditingTeacher ? (column.key === "id" ? "w-16" : column.key === "status" ? "w-24" : "") : "px-4"}`}
+                      className={`px-2 py-3 text-xs font-medium uppercase tracking-wide ${isEditingTeacher ? (column.key === "id" ? "w-16" : column.key === "status" ? "w-24" : "") : ""}`}
                     >
                       <button
                         type="button"
@@ -1072,14 +1072,14 @@ const TeacherPage = () => {
                       {displayedTeacherColumns.map((column) => (
                         <td
                           key={column.key}
-                          className={`px-2 py-4 ${isEditingTeacher ? "truncate" : "px-4"}`}
+                          className={`px-2 py-4 ${isEditingTeacher ? "truncate" : ""}`}
                         >
                           {column.render
                             ? column.render(teacher)
                             : column.value(teacher) || "—"}
                         </td>
                       ))}
-                      <td className="w-40 px-4 py-3 text-center">
+                      <td className="w-40 px-2 py-3 text-center">
                         <div className="inline-flex items-center justify-center gap-1">
                           <button
                             type="button"

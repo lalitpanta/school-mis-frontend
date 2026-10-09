@@ -1047,7 +1047,7 @@ export default function EmployeePage() {
                   {displayedEmployeeColumns.map((column) => (
                     <th
                       key={column.key}
-                      className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? (column.key === "status" ? "w-24" : "") : "px-4"}`}
+                      className={`px-2 py-4 text-left text-xs font-semibold uppercase tracking-wide ${isEditingEmployee ? (column.key === "status" ? "w-24" : "") : ""}`}
                       style={{ color: "var(--text-2)" }}
                     >
                       <button
@@ -1119,7 +1119,7 @@ export default function EmployeePage() {
                       {displayedEmployeeColumns.map((column) => (
                         <td
                           key={column.key}
-                          className={`px-2 py-4 text-sm text-slate-300 ${isEditingEmployee ? "truncate" : "px-4"}`}
+                          className={`px-2 py-4 text-sm text-slate-300 ${isEditingEmployee ? "truncate" : ""}`}
                         >
                           {column.render
                             ? column.render(emp)
@@ -1128,7 +1128,7 @@ export default function EmployeePage() {
                       ))}
                       <td
                         className={`py-3 text-center ${
-                          isEditingEmployee ? "px-1" : "w-40 px-4"
+                          isEditingEmployee ? "px-1" : "w-40 px-2"
                         }`}
                       >
                         <div className="inline-flex flex-nowrap items-center justify-center gap-1">
