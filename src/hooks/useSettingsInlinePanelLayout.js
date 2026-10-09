@@ -31,7 +31,8 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
 
       const layoutBounds = layout.getBoundingClientRect();
       const listBounds = activeList.getBoundingClientRect();
-      const panelTop = listBounds.top - layoutBounds.top;
+      const containingBlockTop = layoutBounds.top + layout.clientTop;
+      const panelTop = listBounds.top - containingBlockTop;
       const nextStyle = {
         position: "absolute",
         top: `${panelTop}px`,
