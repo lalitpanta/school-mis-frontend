@@ -277,8 +277,9 @@ const Rooms = () => {
         </div>
       </div>
 
+      <div className="min-h-0 flex-1 overflow-hidden">
       {viewMode === "list" && (
-        <div className="entity-admin-list min-h-0 flex-1 overflow-auto rounded-lg border border-default">
+        <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingRoom ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
           {rooms.length === 0 ? (
             <div className="p-6 text-center text-muted">
               {loading
@@ -286,7 +287,7 @@ const Rooms = () => {
                 : "No rooms yet. Create a room to get started."}
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full min-w-0 table-fixed text-sm">
               <thead className="bg-subtle border-b">
                 <tr>
                   <th className="px-4 py-3 text-left">Room Number</th>
@@ -343,7 +344,7 @@ const Rooms = () => {
       )}
 
       {viewMode === "grid" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className={`entity-admin-list h-full min-w-0 ${isEditingRoom ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"} grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3`}>
           {rooms.length === 0 ? (
             <div className="p-6 text-center col-span-full text-muted">
               {loading
@@ -402,7 +403,7 @@ const Rooms = () => {
       )}
 
       {viewMode === "floor" && (
-        <div className="rounded-2xl border border-default bg-surface p-4">
+        <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default bg-surface p-4 ${isEditingRoom ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
           <div className="text-sm text-muted mb-4">
             Use the inline floor plan to assign rooms by block and floor. Drag a
             room into a floor card to update its location, or drop it into
@@ -588,6 +589,7 @@ const Rooms = () => {
         </div>
       )}
 
+      </div>
       </div>
       <SettingsModal
         open={showModal}

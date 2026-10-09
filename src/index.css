@@ -930,7 +930,7 @@ main > * {
   top: 7rem;
   right: 0;
   z-index: 20;
-  width: min(560px, calc(100% - 300px));
+  width: min(560px, calc(50% - 0.5rem));
   height: calc(100% - 7rem);
   min-width: 0;
 }
@@ -1123,9 +1123,7 @@ main > * {
 }
 
 .entity-admin-page[data-settings-screen].is-editing .entity-admin-list {
-  width: 50%;
   min-width: 0;
-  flex: 0 0 50%;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -1142,6 +1140,30 @@ main > * {
   padding-left: 0.5rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list td:last-child > div {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list td:last-child button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list td:last-child button svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
 }
 
 .entity-admin-page[data-settings-screen="users"].is-editing .entity-admin-list tr > :nth-child(2),
@@ -1176,6 +1198,10 @@ main > * {
 .settings-inline-edit-panel .app-modal-body > div,
 .settings-inline-edit-panel .app-modal-body > form {
   min-height: 100%;
+}
+
+.settings-inline-edit-panel .app-modal-body form {
+  padding: 16px !important;
 }
 
 .settings-inline-edit-panel form > div:has(> button[type="submit"]) {

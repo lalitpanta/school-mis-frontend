@@ -85,10 +85,14 @@ const SettingsModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 text-slate-300 transition hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-200"
+            className={
+              inlinePanel
+                ? "inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-muted transition hover:bg-subtle hover:text-primary"
+                : "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 text-slate-300 transition hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-200"
+            }
             aria-label="Close modal"
           >
-            <X size={18} />
+            <X size={inlinePanel ? 20 : 18} />
           </button>
         </div>
 

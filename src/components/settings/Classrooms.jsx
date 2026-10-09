@@ -409,7 +409,8 @@ const Classrooms = () => {
       </div>
 
       {activeTab === "classes" && (
-        <div className="entity-admin-list entity-admin-list--classes min-h-0 flex-1 overflow-auto rounded-lg border border-default">
+        <div className="min-h-0 flex-1 overflow-hidden">
+        <div className={`entity-admin-list entity-admin-list--classes h-full min-w-0 rounded-lg border border-default ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
           {classrooms.length === 0 ? (
             <div className="p-6 text-center text-muted">
               {loading
@@ -417,7 +418,7 @@ const Classrooms = () => {
                 : "No classes yet. Add one to start."}
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full min-w-0 table-fixed text-sm">
               <thead className="bg-subtle border-b">
                 <tr>
                   <th className="px-4 py-3 text-left">Class name</th>
@@ -466,11 +467,12 @@ const Classrooms = () => {
             </table>
           )}
         </div>
+        </div>
       )}
 
       {activeTab === "sections" && (
-        <div className="grid gap-6">
-          <div className="rounded-3xl border border-default bg-surface p-4 shadow-inner">
+        <div className={`grid min-h-0 ${isEditingClassroomItem ? "flex-1 overflow-hidden" : ""} gap-6`}>
+          <div className={`rounded-3xl border border-default bg-surface p-4 shadow-inner ${isEditingClassroomItem ? "flex min-h-0 flex-col overflow-hidden" : ""}`}>
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
               <div>
                 <h2
@@ -522,7 +524,7 @@ const Classrooms = () => {
             </div>
 
             {sectionView === "list" && (
-              <div className="entity-admin-list entity-admin-list--sections min-h-0 flex-1 overflow-auto rounded-3xl border border-default bg-surface">
+              <div className={`entity-admin-list entity-admin-list--sections min-h-0 flex-1 min-w-0 rounded-lg border border-default bg-surface ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
                 {sections.length === 0 ? (
                   <div className="p-6 text-center text-muted">
                     {loading
@@ -530,7 +532,7 @@ const Classrooms = () => {
                       : "No sections yet. Add one to begin."}
                   </div>
                 ) : (
-                  <table className="w-full text-sm">
+                  <table className="w-full min-w-0 table-fixed text-sm">
                     <thead className="bg-subtle border-b">
                       <tr>
                         <th className="px-4 py-3 text-left">Section</th>
@@ -600,7 +602,7 @@ const Classrooms = () => {
             )}
 
             {sectionView === "grid" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className={`entity-admin-list entity-admin-list--sections h-full min-w-0 ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"} grid grid-cols-1 gap-4 md:grid-cols-2`}>
                 {sections.length === 0 ? (
                   <div className="p-6 text-center col-span-full text-muted">
                     {loading
@@ -664,7 +666,7 @@ const Classrooms = () => {
             )}
 
             {sectionView === "floor" && (
-              <div className="rounded-2xl border border-default bg-surface p-4">
+              <div className={`entity-admin-list entity-admin-list--sections h-full min-w-0 rounded-lg border border-default bg-surface p-4 ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
                 <div className="text-sm text-muted mb-4">
                   Use the inline floor plan to assign sections by block, floor,
                   and room. Drag a section into a room card to update its

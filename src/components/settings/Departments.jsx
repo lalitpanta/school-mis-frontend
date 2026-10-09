@@ -123,13 +123,14 @@ const Departments = () => {
         </button>
       </div>
 
-      <div className="entity-admin-list min-h-0 flex-1 overflow-auto rounded-lg border border-default">
+      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingDepartment ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
         {departments.length === 0 ? (
           <div className="p-6 text-center text-muted">
             {loading ? "Loading..." : "No departments yet."}
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b border-default">
               <tr>
                 <th className="px-4 py-3 text-left">Name</th>
@@ -171,6 +172,7 @@ const Departments = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
       </div>
 

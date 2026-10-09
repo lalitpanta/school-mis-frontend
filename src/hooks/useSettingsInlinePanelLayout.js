@@ -20,29 +20,30 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
         return;
       }
 
+      const lists = Array.from(layout.querySelectorAll(".entity-admin-list"));
       const header = Array.from(layout.querySelectorAll("thead")).find(
         (element) => element.getClientRects().length > 0,
       );
-      if (!header) {
+      const activeList = header?.closest(".entity-admin-list") ||
+        lists.find((element) => element.getClientRects().length > 0);
+      if (!activeList) {
         setPanelStyle(null);
         return;
       }
 
       const layoutBounds = layout.getBoundingClientRect();
-      const headerBounds = header.getBoundingClientRect();
-      const panelTop = headerBounds.top - layoutBounds.top;
-      const listBounds = header.closest(".entity-admin-list")
-        ?.getBoundingClientRect();
+      const listBounds = activeList.getBoundingClientRect();
+      const panelTop = header?.getBoundingClientRect().top ?? listBounds.top;
       const panelBottom = Math.max(
-        listBounds?.bottom ?? layoutBounds.bottom,
+        listBounds.bottom || layoutBounds.bottom,
         window.innerHeight - 16,
       );
       const nextStyle = {
         position: "absolute",
         top: `${panelTop}px`,
         right: "0px",
-        width: "min(560px, calc(100% - 300px))",
-        height: `${Math.max(320, panelBottom - headerBounds.top)}px`,
+        width: "min(560px, calc(50% - 0.5rem))",
+        height: `${Math.max(320, panelBottom - panelTop)}px`,
         zIndex: 20,
       };
 
