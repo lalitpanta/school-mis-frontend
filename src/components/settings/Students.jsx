@@ -1153,29 +1153,26 @@ const Students = () => {
       key: "full_name",
       label: "Name",
       sortValue: (student) => student.full_name,
-      render: (student) =>
-        isEditingStudent ? (
-          <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-500/15 text-xs font-semibold text-teal-200">
-              {(student.full_name || "S")
-                .split(/\s+/)
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((part) => part[0].toUpperCase())
-                .join("")}
+      render: (student) => (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-semibold text-accent">
+            {(student.full_name || "S")
+              .split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((part) => part[0].toUpperCase())
+              .join("")}
+          </div>
+          <div className="min-w-0">
+            <div className="truncate font-medium text-primary">
+              {student.full_name}
             </div>
-            <div className="min-w-0">
-              <div className="truncate font-medium text-slate-100">
-                {student.full_name}
-              </div>
-              <div className="truncate text-xs text-slate-400">
-                {student.student_mail || student.school_email || "—"}
-              </div>
+            <div className="truncate text-xs text-muted">
+              {student.student_mail || student.school_email || "—"}
             </div>
           </div>
-        ) : (
-          <span className="font-medium">{student.full_name}</span>
-        ),
+        </div>
+      ),
     },
     {
       key: "student_type",
@@ -1689,7 +1686,7 @@ const Students = () => {
                           </button>
                         </th>
                       ))}
-                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
+                      <th className="w-40 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">
                         Actions
                       </th>
                     </tr>
@@ -1760,8 +1757,8 @@ const Students = () => {
                                 : (student[column.key] ?? "—")}
                             </td>
                           ))}
-                          <td className="px-4 py-3 text-right">
-                            <div className="inline-flex items-center gap-1">
+                          <td className="w-40 px-4 py-3 text-center">
+                            <div className="inline-flex items-center justify-center gap-1">
                               <button
                                 onClick={() => setViewStudent(student)}
                                 title="View student"
