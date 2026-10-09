@@ -1,37 +1,25 @@
 /* Results Module Design System */
-:root {
-  --bg: var(--accent);
-  --surface: var(--accent);
-  --surface-2: var(--accent);
-  --surface-3: var(--accent);
-  --border: var(--accent);
-  --border-soft: var(--accent);
+.results-module {
+  --bg: var(--bg-page);
+  --surface: var(--bg-card);
+  --surface-2: var(--bg-surface);
+  --surface-3: var(--bg-subtle);
+  --border: var(--border-default);
+  --border-soft: var(--border-dim);
   --text: var(--text-primary);
-  --text-dim: var(--accent);
-  --text-faint: var(--accent);
-  --accent: var(--accent);
-  --accent-dim: var(--accent);
+  --text-dim: var(--text-muted);
   --accent-strong: var(--accent);
-  --success: var(--success-text);
-  --success-dim: var(--success-text);
-  --warn: var(--danger);
-  --warn-dim: var(--danger);
-  --danger: var(--danger);
-  --danger-dim: var(--danger);
+  --success-border: var(--success);
+  --warn: var(--warning);
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 18px;
-  --shadow:
-    0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow: var(--shadow-card);
 }
 
 /* Base container */
 .results-module {
-  background: linear-gradient(
-    180deg,
-    var(--surface) 0%,
-    rgba(18, 24, 38, 0.8) 100%
-  );
+  background: var(--bg-card);
   color: var(--text);
   font-family: "Inter", sans-serif;
   border-radius: var(--radius-l);
@@ -179,7 +167,7 @@
 
 .step.filled {
   border-color: var(--accent);
-  background: linear-gradient(180deg, var(--accent), var(--accent));
+  background: var(--accent-dim);
 }
 
 .step-label {
@@ -208,7 +196,7 @@
 }
 
 .step.filled .step-num {
-  background: var(--success-text);
+  background: var(--success-dim);
   color: var(--success-text);
 }
 
@@ -709,7 +697,7 @@ td {
 .btn-primary {
   background: var(--accent);
   border: 1px solid var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 600;
   font-size: 13.5px;
   padding: 9px 18px;
