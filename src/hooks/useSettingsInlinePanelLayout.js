@@ -1,6 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 
 const INLINE_LAYOUT_MIN_WIDTH = 768;
+const INLINE_PANEL_GAP = 16;
 
 export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
   const [panelStyle, setPanelStyle] = useState(null);
@@ -36,16 +37,22 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
       const panelTop =
         (header?.getBoundingClientRect().top ?? listBounds.top) -
         layoutBounds.top;
+      const panelLeft = listBounds.right - layoutBounds.left + INLINE_PANEL_GAP;
       const panelTopInViewport = layoutBounds.top + panelTop;
       const panelHeight = Math.max(
         listBounds.bottom - panelTopInViewport,
         window.innerHeight - panelTopInViewport - 16,
       );
+      const panelWidth = Math.max(
+        0,
+        layoutBounds.right - (listBounds.right + INLINE_PANEL_GAP),
+      );
       const nextStyle = {
         position: "absolute",
         top: `${panelTop}px`,
-        right: "0px",
-        width: "min(560px, calc(100% - 300px))",
+        left: `${panelLeft}px`,
+        right: "auto",
+        width: `${panelWidth}px`,
         height: `${Math.max(320, panelHeight)}px`,
         zIndex: 20,
       };
