@@ -31,18 +31,11 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
 
       const layoutBounds = layout.getBoundingClientRect();
       const listBounds = activeList.getBoundingClientRect();
-      const tableHeader = Array.from(activeList.querySelectorAll("thead")).find(
-        (element) => element.getClientRects().length > 0,
-      );
-      const panelTop = (tableHeader?.getBoundingClientRect().top ?? listBounds.top) -
-        layoutBounds.top;
+      const panelTop = listBounds.top - layoutBounds.top;
       const nextStyle = {
         position: "absolute",
         top: `${panelTop}px`,
-        height: `${Math.max(
-          listBounds.bottom - (layoutBounds.top + panelTop),
-          window.innerHeight - (layoutBounds.top + panelTop) - 16,
-        )}px`,
+        height: `${listBounds.height}px`,
         zIndex: 20,
       };
 
@@ -58,9 +51,6 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
     resizeObserver.observe(layout);
     layout.querySelectorAll(".entity-admin-list").forEach((list) => {
       resizeObserver.observe(list);
-      list.querySelectorAll("thead").forEach((header) => {
-        resizeObserver.observe(header);
-      });
     });
     const mutationObserver = new MutationObserver(updatePanelPosition);
     mutationObserver.observe(layout, { childList: true, subtree: true });
