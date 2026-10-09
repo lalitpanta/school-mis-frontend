@@ -9,6 +9,11 @@ import { RoleSelector } from "../common/RoleSelector";
 import { Plus, Trash2, Edit, X } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
+import RecordTableToolbar from "../common/RecordTableToolbar";
+import CsvImportControls from "../common/CsvImportControls";
+import CsvExportButton from "../common/CsvExportButton";
+import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
+import toast from "react-hot-toast";
 
 const DEFAULT_MODULE_ACCESS = [
   "dashboard",
@@ -34,7 +39,6 @@ const UsersStaff = () => {
   const [students, setStudents] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [sections, setSections] = useState([]);
-  const [roles, setRoles] = useState([]);
   const [departmentsList, setDepartmentsList] = useState([]);
   const [availableModules, setAvailableModules] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +46,13 @@ const UsersStaff = () => {
   const [modalMode, setModalMode] = useState("create");
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [visibleColumns, setVisibleColumns] = useState([
+    "user",
+    "phone",
+    "roles",
+    "status",
+  ]);
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -90,7 +101,7 @@ const UsersStaff = () => {
       setLoading(true);
       const [
         usersRes,
-        rolesRes,
+        ,
         teachersRes,
         studentsRes,
         employeesRes,
@@ -383,12 +394,149 @@ const UsersStaff = () => {
 
   const filteredUsers = users.filter((user) => {
     const term = searchTerm.toLowerCase();
+    if (statusFilter !== "all" && Boolean(user.is_active) !== (statusFilter === "active")) {
+      return false;
+    }
     return (
-      user.email.toLowerCase().includes(term) ||
+      (user.email || "").toLowerCase().includes(term) ||
       (user.name && user.name.toLowerCase().includes(term)) ||
       (user.phone && user.phone.toLowerCase().includes(term))
     );
   });
+  const userColumns = [
+    { key: "user", label: "User" },
+    { key: "phone", label: "Phone" },
+    { key: "roles", label: "Roles" },
+    { key: "status", label: "Status" },
+  ];
+  const toggleUserColumn = (key) =>
+    setVisibleColumns((current) =>
+      current.includes(key)
+        ? current.filter((column) => column !== key)
+        : [...current, key],
+    );
+  const importUsersCsv = async (file) => {
+    try {
+      const rows = parseRecordCsv(await file.text());
+      let imported = 0;
+      const failures = [];
+      const knownEmails = new Set(users.map((user) => (user.email || "").toLowerCase()));
+      for (const row of rows) {
+        const values = row.values;
+        const email = values.email?.trim();
+        const name = values.name?.trim();
+        const inferredType = values.teacher_id
+          ? "teacher"
+          : values.student_id
+            ? "student"
+            : values.employee_id
+              ? "employee"
+              : "custom";
+        const userType = (values.user_type || inferredType).toLowerCase();
+        if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          failures.push(`Row ${row.rowNumber}: valid name and email are required.`);
+          continue;
+        }
+        if (knownEmails.has(email.toLowerCase())) {
+          failures.push(`Row ${row.rowNumber}: ${email} already exists.`);
+          continue;
+        }
+        if (!["custom", "teacher", "student", "employee"].includes(userType)) {
+          failures.push(`Row ${row.rowNumber}: unsupported user_type.`);
+          continue;
+        }
+        const linkKey = `${userType}_id`;
+        const linkedId = values[linkKey];
+        const linkedRecords =
+          userType === "teacher"
+            ? teachers
+            : userType === "student"
+              ? students
+              : userType === "employee"
+                ? employees
+                : [];
+        const linkedRecord =
+          userType === "custom"
+            ? null
+            : linkedRecords.find((record) => String(record.id) === linkedId);
+        if (userType !== "custom" && !linkedRecord) {
+          failures.push(`Row ${row.rowNumber}: a valid ${linkKey} is required.`);
+          continue;
+        }
+        if (
+          userType === "student" &&
+          (linkedRecord.student_mail || linkedRecord.school_email || linkedRecord.email) &&
+          String(linkedRecord.student_mail || linkedRecord.school_email || linkedRecord.email)
+            .trim()
+            .toLowerCase() !== email.toLowerCase()
+        ) {
+          failures.push(`Row ${row.rowNumber}: student email must match the linked student's email.`);
+          continue;
+        }
+        const roleIds = (values.role_ids || "")
+          .split(/[;|]/)
+          .map((id) => id.trim())
+          .filter(Boolean)
+          .map((id) => availableRoles.find((role) => String(role.id) === id)?.id);
+        if ((values.role_ids || "").trim() && roleIds.some((id) => id === undefined)) {
+          failures.push(`Row ${row.rowNumber}: role_ids contains an unknown role.`);
+          continue;
+        }
+        try {
+          await usersApi.createUser({
+            name,
+            email,
+            phone: values.phone || "",
+            department_store: values.department_store || "",
+            authority_mode: "role_access",
+            module_access: userType === "student" ? getStudentPortalModules() : [],
+            role_ids:
+              roleIds.length > 0
+                ? roleIds
+                : userType === "student"
+                  ? getStudentRoleIds(availableRoles)
+                  : [],
+            ...(userType === "teacher" ? { teacher_id: linkedId } : {}),
+            ...(userType === "student"
+              ? { student_id: linkedId, section_id: values.section_id || "" }
+              : {}),
+            ...(userType === "employee" ? { employee_id: linkedId } : {}),
+          });
+          knownEmails.add(email.toLowerCase());
+          imported += 1;
+        } catch (err) {
+          failures.push(
+            `Row ${row.rowNumber}: ${err.response?.data?.error || err.message || "creation failed"}`,
+          );
+        }
+      }
+      if (imported) await loadData();
+      if (failures.length) {
+        toast.error(`${imported} users imported; ${failures.length} row(s) failed. ${failures[0]}`);
+      } else {
+        toast.success(`${imported} users imported. Setup links are sent by the server.`);
+      }
+    } catch (err) {
+      toast.error(err.message || "Could not read this CSV file.");
+    }
+  };
+  const exportUsersCsv = () =>
+    downloadRecordCsv(
+      "users-staff.csv",
+      [
+        { label: "name", value: (user) => user.name },
+        { label: "email", value: (user) => user.email },
+        { label: "phone", value: (user) => user.phone },
+        { label: "user_type", value: (user) => user.user_type || (user.teacher_id ? "teacher" : user.student_id ? "student" : user.employee_id ? "employee" : "custom") },
+        { label: "teacher_id", value: (user) => user.teacher_id },
+        { label: "student_id", value: (user) => user.student_id },
+        { label: "employee_id", value: (user) => user.employee_id },
+        { label: "section_id", value: (user) => user.section_id },
+        { label: "role_ids", value: (user) => user.roles?.map((role) => role.id) },
+        { label: "is_active", value: (user) => user.is_active },
+      ],
+      filteredUsers,
+    );
   const isEditingUser = showModal && modalMode === "edit";
   const editPanelStyle = useSettingsInlinePanelLayout(isEditingUser, layoutRef);
 
@@ -432,24 +580,36 @@ const UsersStaff = () => {
       )}
 
       {/* Search and Create */}
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-default pb-3">
-        <input
-          type="text"
-          placeholder="Search by name, email, or phone..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          aria-label="Search users and staff"
-          className="min-w-48 flex-1 rounded-lg border border-default bg-subtle px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-focus"
-        />
-        <button
-          onClick={openCreateModal}
-          className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent"
-        >
-          <Plus size={16} />
-          Create User
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-end gap-2 border-b border-default pb-3">
+        <CsvImportControls onImport={importUsersCsv} entityLabel="users" disabled={loading} />
+        <button onClick={openCreateModal} className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent">
+          <Plus size={16} /> Create User
         </button>
       </div>
 
+      <RecordTableToolbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search by name, email, or phone..."
+        columns={userColumns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={toggleUserColumn}
+        filterContent={
+          <label className="grid gap-1 text-sm text-slate-300">
+            Status
+            <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+              <option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+            </select>
+          </label>
+        }
+        views={[
+          { label: "All users", onSelect: () => setStatusFilter("all") },
+          { label: "Active users", onSelect: () => setStatusFilter("active") },
+          { label: "Inactive users", onSelect: () => setStatusFilter("inactive") },
+        ]}
+        recordCount={filteredUsers.length}
+        rightContent={<CsvExportButton onExport={exportUsersCsv} entityLabel="users" disabled={!users.length} />}
+      />
       {/* Users Table */}
       <div className="min-h-0 flex-1 overflow-hidden">
       <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingUser ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -463,16 +623,16 @@ const UsersStaff = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b border-default">
               <tr>
-                <th className="px-4 py-3 text-left text-muted font-medium">
+                <th className={`px-4 py-3 text-left text-muted font-medium ${!visibleColumns.includes("user") ? "hidden" : ""}`}>
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-muted font-medium">
+                <th className={`px-4 py-3 text-left text-muted font-medium ${!visibleColumns.includes("phone") ? "hidden" : ""}`}>
                   Phone
                 </th>
-                <th className="px-4 py-3 text-left text-muted font-medium">
+                <th className={`px-4 py-3 text-left text-muted font-medium ${!visibleColumns.includes("roles") ? "hidden" : ""}`}>
                   Roles
                 </th>
-                <th className="px-4 py-3 text-center text-muted font-medium">
+                <th className={`px-4 py-3 text-center text-muted font-medium ${!visibleColumns.includes("status") ? "hidden" : ""}`}>
                   Status
                 </th>
                 <th className="px-4 py-3 text-right text-muted font-medium">
@@ -483,7 +643,7 @@ const UsersStaff = () => {
             <tbody className="divide-y divide-slate-700/60">
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-subtle transition">
-                  <td className="px-4 py-3">
+                  <td className={`px-4 py-3 ${!visibleColumns.includes("user") ? "hidden" : ""}`}>
                     <div>
                       <span className="font-medium text-primary">
                         {user.name || "—"}
@@ -491,10 +651,10 @@ const UsersStaff = () => {
                       <div className="text-xs text-muted">{user.email}</div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-muted text-xs">
+                  <td className={`px-4 py-3 text-muted text-xs ${!visibleColumns.includes("phone") ? "hidden" : ""}`}>
                     {user.phone || <span className="text-muted">—</span>}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={`px-4 py-3 ${!visibleColumns.includes("roles") ? "hidden" : ""}`}>
                     <div className="flex flex-wrap gap-2">
                       {user.roles && user.roles.length > 0 ? (
                         user.roles.map((role) => (
@@ -512,7 +672,7 @@ const UsersStaff = () => {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className={`px-4 py-3 text-center ${!visibleColumns.includes("status") ? "hidden" : ""}`}>
                     <span
                       className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${
                         user.is_active

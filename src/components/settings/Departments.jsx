@@ -9,6 +9,11 @@ import Button from "../common/Button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
+import RecordTableToolbar from "../common/RecordTableToolbar";
+import CsvImportControls from "../common/CsvImportControls";
+import CsvExportButton from "../common/CsvExportButton";
+import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
+import toast from "react-hot-toast";
 
 const Departments = () => {
   const layoutRef = useRef(null);
@@ -17,6 +22,9 @@ const Departments = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create");
   const [selected, setSelected] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [visibleColumns, setVisibleColumns] = useState(["name", "code", "active"]);
   const [form, setForm] = useState({
     name: "",
     code: "",
@@ -35,6 +43,82 @@ const Departments = () => {
       setLoading(false);
     }
   };
+
+  const filteredDepartments = departments.filter((department) => {
+    const text = `${department.name || ""} ${department.code || ""} ${department.description || ""}`.toLowerCase();
+    return (
+      text.includes(searchTerm.toLowerCase()) &&
+      (statusFilter === "all" ||
+        Boolean(department.is_active) === (statusFilter === "active"))
+    );
+  });
+  const departmentColumns = [
+    { key: "name", label: "Name" },
+    { key: "code", label: "Code" },
+    { key: "active", label: "Active" },
+  ];
+  const toggleDepartmentColumn = (key) =>
+    setVisibleColumns((current) =>
+      current.includes(key)
+        ? current.filter((column) => column !== key)
+        : [...current, key],
+    );
+  const importDepartmentsCsv = async (file) => {
+    try {
+      const rows = parseRecordCsv(await file.text());
+      let imported = 0;
+      const failures = [];
+      const existingNames = new Set(
+        departments.map((department) => department.name?.toLowerCase()),
+      );
+      for (const row of rows) {
+        const name = row.values.name?.trim();
+        if (!name) {
+          failures.push(`Row ${row.rowNumber}: name is required.`);
+          continue;
+        }
+        if (existingNames.has(name.toLowerCase())) {
+          failures.push(`Row ${row.rowNumber}: department "${name}" already exists.`);
+          continue;
+        }
+        try {
+          await createDepartment({
+            name,
+            code: row.values.code || "",
+            description: row.values.description || "",
+            is_active: !["false", "0", "no", "inactive"].includes(
+              (row.values.is_active || "true").toLowerCase(),
+            ),
+          });
+          existingNames.add(name.toLowerCase());
+          imported += 1;
+        } catch (err) {
+          failures.push(
+            `Row ${row.rowNumber}: ${err.response?.data?.message || err.message || "creation failed"}`,
+          );
+        }
+      }
+      if (imported) await load();
+      if (failures.length) {
+        toast.error(`${imported} departments imported; ${failures.length} row(s) failed. ${failures[0]}`);
+      } else {
+        toast.success(`${imported} departments imported.`);
+      }
+    } catch (err) {
+      toast.error(err.message || "Could not read this CSV file.");
+    }
+  };
+  const exportDepartmentsCsv = () =>
+    downloadRecordCsv(
+      "departments.csv",
+      [
+        { label: "name", value: (department) => department.name },
+        { label: "code", value: (department) => department.code },
+        { label: "description", value: (department) => department.description },
+        { label: "is_active", value: (department) => department.is_active },
+      ],
+      filteredDepartments,
+    );
 
   useEffect(() => {
     load();
@@ -108,24 +192,47 @@ const Departments = () => {
       <div
         className={`w-full min-w-0 ${isEditingDepartment ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2
           className="text-[28px] font-bold"
           style={{ color: "var(--text-primary)" }}
         >
           Departments
         </h2>
-        <button
-          onClick={openCreate}
-          className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent"
-        >
-          <Plus size={14} /> Create
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <CsvImportControls onImport={importDepartmentsCsv} entityLabel="departments" disabled={loading} />
+          <button onClick={openCreate} className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent">
+            <Plus size={14} /> Create
+          </button>
+        </div>
       </div>
 
+      <RecordTableToolbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search departments..."
+        columns={departmentColumns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={toggleDepartmentColumn}
+        filterContent={
+          <label className="grid gap-1 text-sm text-slate-300">
+            Status
+            <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+              <option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+            </select>
+          </label>
+        }
+        views={[
+          { label: "All departments", onSelect: () => setStatusFilter("all") },
+          { label: "Active departments", onSelect: () => setStatusFilter("active") },
+          { label: "Inactive departments", onSelect: () => setStatusFilter("inactive") },
+        ]}
+        recordCount={filteredDepartments.length}
+        rightContent={<CsvExportButton onExport={exportDepartmentsCsv} entityLabel="departments" disabled={!departments.length} />}
+      />
       <div className="min-h-0 flex-1 overflow-hidden">
       <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingDepartment ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
-        {departments.length === 0 ? (
+        {filteredDepartments.length === 0 ? (
           <div className="p-6 text-center text-muted">
             {loading ? "Loading..." : "No departments yet."}
           </div>
@@ -133,18 +240,18 @@ const Departments = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b border-default">
               <tr>
-                <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Code</th>
-                <th className="px-4 py-3">Active</th>
+                <th className={`px-4 py-3 text-left ${!visibleColumns.includes("name") ? "hidden" : ""}`}>Name</th>
+                <th className={`px-4 py-3 text-left ${!visibleColumns.includes("code") ? "hidden" : ""}`}>Code</th>
+                <th className={`px-4 py-3 ${!visibleColumns.includes("active") ? "hidden" : ""}`}>Active</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/60">
-              {departments.map((d) => (
+              {filteredDepartments.map((d) => (
                 <tr key={d.id} className="hover:bg-subtle transition">
-                  <td className="px-4 py-3">{d.name}</td>
-                  <td className="px-4 py-3">{d.code || "—"}</td>
-                  <td className="px-4 py-3 text-center">
+                  <td className={`px-4 py-3 ${!visibleColumns.includes("name") ? "hidden" : ""}`}>{d.name}</td>
+                  <td className={`px-4 py-3 ${!visibleColumns.includes("code") ? "hidden" : ""}`}>{d.code || "—"}</td>
+                  <td className={`px-4 py-3 text-center ${!visibleColumns.includes("active") ? "hidden" : ""}`}>
                     {d.is_active ? "Yes" : "No"}
                   </td>
                   <td className="px-4 py-3 text-right">

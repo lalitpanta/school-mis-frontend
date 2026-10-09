@@ -22,11 +22,9 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
       }
 
       const lists = Array.from(layout.querySelectorAll(".entity-admin-list"));
-      const header = Array.from(layout.querySelectorAll("thead")).find(
+      const activeList = lists.find(
         (element) => element.getClientRects().length > 0,
       );
-      const activeList = header?.closest(".entity-admin-list") ||
-        lists.find((element) => element.getClientRects().length > 0);
       if (!activeList) {
         setPanelStyle(null);
         return;
@@ -34,15 +32,8 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
 
       const layoutBounds = layout.getBoundingClientRect();
       const listBounds = activeList.getBoundingClientRect();
-      const panelTop =
-        (header?.getBoundingClientRect().top ?? listBounds.top) -
-        layoutBounds.top;
+      const panelTop = listBounds.top - layoutBounds.top;
       const panelLeft = listBounds.right - layoutBounds.left + INLINE_PANEL_GAP;
-      const panelTopInViewport = layoutBounds.top + panelTop;
-      const panelHeight = Math.max(
-        listBounds.bottom - panelTopInViewport,
-        window.innerHeight - panelTopInViewport - 16,
-      );
       const panelWidth = Math.max(
         0,
         layoutBounds.right - (listBounds.right + INLINE_PANEL_GAP),
@@ -53,7 +44,7 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
         left: `${panelLeft}px`,
         right: "auto",
         width: `${panelWidth}px`,
-        height: `${Math.max(320, panelHeight)}px`,
+        height: `${listBounds.height}px`,
         zIndex: 20,
       };
 

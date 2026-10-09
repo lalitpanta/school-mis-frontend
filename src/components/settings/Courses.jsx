@@ -14,14 +14,15 @@ import {
   Trash2,
   Edit,
   ChevronDown,
-  Eye,
   Power,
-  Search,
-  Bookmark,
-  SlidersHorizontal,
 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
+import RecordTableToolbar from "../common/RecordTableToolbar";
+import CsvImportControls from "../common/CsvImportControls";
+import CsvExportButton from "../common/CsvExportButton";
+import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
+import toast from "react-hot-toast";
 
 const SUBJECT_TYPES = [
   "Core",
@@ -291,12 +292,16 @@ const Courses = () => {
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(emptyCourse);
   const [searchTerm, setSearchTerm] = useState("");
+  const [visibleColumns, setVisibleColumns] = useState([
+    "code",
+    "name",
+    "class_section",
+    "status",
+  ]);
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [classroomFilter, setClassroomFilter] = useState("all");
   const [sectionFilter, setSectionFilter] = useState("all");
-  const [showViewMenu, setShowViewMenu] = useState(false);
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     basic: true,
     classification: true,
@@ -511,12 +516,120 @@ const Courses = () => {
       .join(" ");
     return haystack.includes(normalizedSearch);
   });
-  const activeFilterCount = [
-    typeFilter,
-    statusFilter,
-    classroomFilter,
-    sectionFilter,
-  ].filter((value) => value !== "all").length;
+  const courseColumns = [
+    { key: "code", label: "Code" },
+    { key: "name", label: "Name" },
+    { key: "class_section", label: "Class / section" },
+    { key: "status", label: "Status" },
+  ];
+  const toggleCourseColumn = (key) =>
+    setVisibleColumns((current) =>
+      current.includes(key)
+        ? current.filter((column) => column !== key)
+        : [...current, key],
+    );
+  const importCoursesCsv = async (file) => {
+    const numericFields = new Set([
+      "periods_per_week", "period_duration_minutes", "credit_hours_theory",
+      "credit_hours_lab", "total_contact_hours_per_week", "full_marks_theory",
+      "pass_marks_theory", "full_marks_practical", "pass_marks_practical",
+      "grade_point", "minimum_cgpa_to_enroll", "max_enrollment",
+    ]);
+    const relationFields = new Set(["primary_teacher_id", "classroom_id", "section_id"]);
+    const arrayFields = new Set([
+      "category_tags", "scheduled_days", "assessment_components",
+      "prerequisite_courses", "corequisite_courses", "learning_outcomes", "textbooks",
+    ]);
+    const booleanFields = new Set([
+      "is_active", "show_in_student_portal", "allow_online_submission",
+      "attendance_required", "include_in_progress_report", "is_elective",
+    ]);
+    const parseBoolean = (value) =>
+      !["false", "0", "no", "inactive"].includes(value.toLowerCase());
+    try {
+      const rows = parseRecordCsv(await file.text());
+      let imported = 0;
+      const failures = [];
+      const knownCourseCodes = new Set(
+        courses.map((course) => course.course_code?.toLowerCase()),
+      );
+      for (const row of rows) {
+        const values = row.values;
+        const courseName = values.course_name?.trim();
+        const courseCode = values.course_code?.trim();
+        if (!courseName || !courseCode) {
+          failures.push(`Row ${row.rowNumber}: course_name and course_code are required.`);
+          continue;
+        }
+        if (knownCourseCodes.has(courseCode.toLowerCase())) {
+          failures.push(`Row ${row.rowNumber}: course code "${courseCode}" already exists.`);
+          continue;
+        }
+        const payload = { ...emptyCourse, course_name: courseName, course_code: courseCode };
+        let invalidValue = null;
+        Object.keys(emptyCourse).forEach((key) => {
+          if (!(key in values) || key === "course_name" || key === "course_code") return;
+          const value = values[key];
+          if (value === "") return;
+          if (arrayFields.has(key)) {
+            payload[key] = value ? value.split(/[;|]/).map((item) => item.trim()).filter(Boolean) : [];
+          } else if (booleanFields.has(key)) {
+            payload[key] = parseBoolean(value);
+          } else if (numericFields.has(key)) {
+            if (value === "") return;
+            const number = Number(value);
+            if (!Number.isFinite(number)) invalidValue = key;
+            else payload[key] = number;
+          } else if (relationFields.has(key)) {
+            if (!value) payload[key] = null;
+            else if (!/^\d+$/.test(value)) invalidValue = key;
+            else payload[key] = Number(value);
+          } else {
+            payload[key] = value;
+          }
+        });
+        if (invalidValue) {
+          failures.push(`Row ${row.rowNumber}: ${invalidValue} must contain a valid value.`);
+          continue;
+        }
+        if (payload.classroom_id && !classrooms.some((item) => String(item.id) === String(payload.classroom_id))) {
+          failures.push(`Row ${row.rowNumber}: classroom_id does not exist.`);
+          continue;
+        }
+        if (payload.primary_teacher_id && !teachers.some((item) => String(item.id) === String(payload.primary_teacher_id))) {
+          failures.push(`Row ${row.rowNumber}: primary_teacher_id does not exist.`);
+          continue;
+        }
+        try {
+          await createCourse(payload);
+          knownCourseCodes.add(courseCode.toLowerCase());
+          imported += 1;
+        } catch (err) {
+          failures.push(`Row ${row.rowNumber}: ${err.response?.data?.message || err.message || "creation failed"}`);
+        }
+      }
+      if (imported) await load();
+      if (failures.length) toast.error(`${imported} courses imported; ${failures.length} row(s) failed. ${failures[0]}`);
+      else toast.success(`${imported} courses imported.`);
+    } catch (err) {
+      toast.error(err.message || "Could not read this CSV file.");
+    }
+  };
+  const exportCoursesCsv = () =>
+    downloadRecordCsv(
+      "courses.csv",
+      [
+        { label: "course_name", value: (course) => course.course_name },
+        { label: "course_code", value: (course) => course.course_code },
+        { label: "subject_type", value: (course) => course.subject_type },
+        { label: "department", value: (course) => course.department },
+        { label: "classroom_id", value: (course) => course.classroom_id },
+        { label: "section_id", value: (course) => course.section_id },
+        { label: "primary_teacher_id", value: (course) => course.primary_teacher_id },
+        { label: "is_active", value: (course) => course.is_active },
+      ],
+      filteredCourses,
+    );
   const isEditingCourse = showModal && mode === "edit";
   const editPanelStyle = useSettingsInlinePanelLayout(
     isEditingCourse,
@@ -528,7 +641,6 @@ const Courses = () => {
     setStatusFilter(view.status || "all");
     setClassroomFilter("all");
     setSectionFilter("all");
-    setShowViewMenu(false);
   };
 
   return (
@@ -551,13 +663,12 @@ const Courses = () => {
           >
             Courses Management
           </h2>
-          <Button
-            onClick={openCreate}
-            icon={Plus}
-            className="settings-admin-create-button"
-          >
-            Add Course
-          </Button>
+          <div className="flex items-center gap-2">
+            <CsvImportControls onImport={importCoursesCsv} entityLabel="courses" disabled={loading} />
+            <Button onClick={openCreate} icon={Plus} className="settings-admin-create-button">
+              Add Course
+            </Button>
+          </div>
         </div>
 
         {error && (
@@ -572,154 +683,48 @@ const Courses = () => {
           </div>
         )}
 
-        <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-default pb-3">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            <label className="relative min-w-48 max-w-[320px] flex-1">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
-              />
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search courses..."
-                aria-label="Search courses"
-                className="w-full rounded border border-default bg-subtle py-2 pl-9 pr-3 text-primary focus:border-accent focus:outline-none"
-              />
-            </label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowViewMenu((open) => !open);
-                  setShowFilterMenu(false);
-                }}
-                aria-expanded={showViewMenu}
-                className="inline-flex items-center gap-2 rounded border border-default px-3 py-2 text-sm text-muted hover:bg-subtle"
-              >
-                <Bookmark size={16} /> Views
-              </button>
-              {showViewMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-default bg-surface p-1 shadow-xl">
-                  {[
-                    { label: "All courses" },
-                    { label: "Active courses", status: "active" },
-                    { label: "Inactive courses", status: "inactive" },
-                    { label: "Core courses", type: "Core" },
-                    { label: "Elective courses", type: "Elective" },
-                  ].map((view) => (
-                    <button
-                      key={view.label}
-                      type="button"
-                      onClick={() => applyCourseView(view)}
-                      className="block w-full rounded px-3 py-2 text-left text-sm text-primary hover:bg-subtle"
-                    >
-                      {view.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowFilterMenu((open) => !open);
-                  setShowViewMenu(false);
-                }}
-                aria-label="Filter courses"
-                aria-expanded={showFilterMenu}
-                className={`relative inline-flex items-center justify-center rounded border border-default p-2 text-muted hover:bg-subtle ${activeFilterCount ? "text-accent" : ""}`}
-              >
-                <SlidersHorizontal size={17} />
-                {activeFilterCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] text-primary">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-              {showFilterMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-default bg-surface p-3 shadow-xl">
-                  <label className="grid gap-1 text-xs text-muted">
-                    Subject type
-                    <select
-                      value={typeFilter}
-                      onChange={(event) => setTypeFilter(event.target.value)}
-                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
-                    >
-                      <option value="all">All types</option>
-                      {SUBJECT_TYPES.map((type) => (
-                        <option key={type} value={type}>
-                          {type}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="grid gap-1 text-xs text-muted">
-                    Status
-                    <select
-                      value={statusFilter}
-                      onChange={(event) => setStatusFilter(event.target.value)}
-                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
-                    >
-                      <option value="all">All statuses</option>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </label>
-                  <label className="grid gap-1 text-xs text-muted">
-                    Class
-                    <select
-                      value={classroomFilter}
-                      onChange={(event) =>
-                        setClassroomFilter(event.target.value)
-                      }
-                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
-                    >
-                      <option value="all">All classes</option>
-                      {classroomOptions.map((classroom) => (
-                        <option key={classroom.id} value={classroom.id}>
-                          {classroom.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="grid gap-1 text-xs text-muted">
-                    Section
-                    <select
-                      value={sectionFilter}
-                      onChange={(event) => setSectionFilter(event.target.value)}
-                      className="w-full rounded border border-default bg-subtle px-3 py-2 text-primary focus:border-accent focus:outline-none"
-                    >
-                      <option value="all">All sections</option>
-                      {sectionOptions.map((section) => (
-                        <option key={section} value={section}>
-                          {section}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTypeFilter("all");
-                      setStatusFilter("all");
-                      setClassroomFilter("all");
-                      setSectionFilter("all");
-                    }}
-                    className="justify-self-start text-xs text-accent hover:text-accent"
-                  >
-                    Clear filters
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <span className="text-sm text-muted">
-            {filteredCourses.length} records
-          </span>
-        </div>
+        <RecordTableToolbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          searchPlaceholder="Search courses..."
+          columns={courseColumns}
+          visibleColumns={visibleColumns}
+          onToggleColumn={toggleCourseColumn}
+          filterContent={
+            <>
+              <label className="grid gap-1 text-sm text-slate-300">Subject type
+                <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+                  <option value="all">All types</option>{SUBJECT_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </label>
+              <label className="grid gap-1 text-sm text-slate-300">Status
+                <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+                  <option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+                </select>
+              </label>
+              <label className="grid gap-1 text-sm text-slate-300">Class
+                <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={classroomFilter} onChange={(event) => setClassroomFilter(event.target.value)}>
+                  <option value="all">All classes</option>{classroomOptions.map((classroom) => <option key={classroom.id} value={classroom.id}>{classroom.name}</option>)}
+                </select>
+              </label>
+              <label className="grid gap-1 text-sm text-slate-300">Section
+                <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)}>
+                  <option value="all">All sections</option>{sectionOptions.map((section) => <option key={section} value={section}>{section}</option>)}
+                </select>
+              </label>
+              <button type="button" onClick={() => { setTypeFilter("all"); setStatusFilter("all"); setClassroomFilter("all"); setSectionFilter("all"); }} className="text-left text-sm text-accent">Clear filters</button>
+            </>
+          }
+          views={[
+            { label: "All courses", onSelect: () => applyCourseView({}) },
+            { label: "Active courses", onSelect: () => applyCourseView({ status: "active" }) },
+            { label: "Inactive courses", onSelect: () => applyCourseView({ status: "inactive" }) },
+            { label: "Core courses", onSelect: () => applyCourseView({ type: "Core" }) },
+            { label: "Elective courses", onSelect: () => applyCourseView({ type: "Elective" }) },
+          ]}
+          recordCount={filteredCourses.length}
+          rightContent={<CsvExportButton onExport={exportCoursesCsv} entityLabel="courses" disabled={!courses.length} />}
+        />
 
         <div className="min-h-0 flex-1 overflow-hidden">
         <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingCourse ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -731,16 +736,16 @@ const Courses = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b sticky top-0">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium">
+                <th className={`px-4 py-3 text-left text-xs font-medium ${!visibleColumns.includes("code") ? "hidden" : ""}`}>
                   Code
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
+                <th className={`px-4 py-3 text-left text-xs font-medium ${!visibleColumns.includes("name") ? "hidden" : ""}`}>
                   Name
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
+                <th className={`px-4 py-3 text-left text-xs font-medium ${!visibleColumns.includes("class_section") ? "hidden" : ""}`}>
                   Class / Section
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium">
+                <th className={`px-4 py-3 text-left text-xs font-medium ${!visibleColumns.includes("status") ? "hidden" : ""}`}>
                   Status
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-medium">
@@ -754,10 +759,10 @@ const Courses = () => {
                   key={course.id}
                   className="border-b border-default hover:bg-subtle"
                 >
-                  <td className="px-4 py-3 text-primary">
+                  <td className={`px-4 py-3 text-primary ${!visibleColumns.includes("code") ? "hidden" : ""}`}>
                     {course.course_code}
                   </td>
-                  <td className="px-4 py-3 text-primary">
+                  <td className={`px-4 py-3 text-primary ${!visibleColumns.includes("name") ? "hidden" : ""}`}>
                     <button
                       type="button"
                       onClick={() => openView(course)}
@@ -767,7 +772,7 @@ const Courses = () => {
                       {course.course_name}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-muted">
+                  <td className={`px-4 py-3 text-muted ${!visibleColumns.includes("class_section") ? "hidden" : ""}`}>
                     <span>
                       {course.class_name || course.classroom_name || "—"}
                     </span>
@@ -776,7 +781,7 @@ const Courses = () => {
                       {getSectionNames(course).join(", ") || "All sections"}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={`px-4 py-3 ${!visibleColumns.includes("status") ? "hidden" : ""}`}>
                     {course.is_active ? (
                       <span className="px-2 py-1 bg-success text-success rounded text-xs">
                         Active

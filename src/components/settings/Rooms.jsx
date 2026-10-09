@@ -6,6 +6,10 @@ import SettingsModal from "../common/SettingsModal";
 import { useSettings } from "../../context/SettingsContext";
 import toast from "react-hot-toast";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
+import RecordTableToolbar from "../common/RecordTableToolbar";
+import CsvImportControls from "../common/CsvImportControls";
+import CsvExportButton from "../common/CsvExportButton";
+import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
 
 const ROOM_TYPES = [
   "Classroom",
@@ -50,6 +54,12 @@ const Rooms = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [viewMode, setViewMode] = useState("list");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [assignmentFilter, setAssignmentFilter] = useState("all");
+  const [visibleColumns, setVisibleColumns] = useState([
+    "room_number", "block", "floor", "type", "capacity",
+  ]);
   const [form, setForm] = useState(getDefaultForm(floorCount));
   const [editingRoom, setEditingRoom] = useState(null);
   const isEditingRoom = showModal && editingRoom !== null;
@@ -73,17 +83,35 @@ const Rooms = () => {
     return Array.from({ length: floorCount }, (_, index) => index + 1);
   }, [selectedBlock, floorCount]);
 
+  const filteredRooms = useMemo(
+    () =>
+      rooms.filter((room) => {
+        const text = `${room.room_number || ""} ${room.room_type || ""} ${
+          blocks.find((block) => String(block.id) === String(room.block_id))
+            ?.block_name || ""
+        }`.toLowerCase();
+        return (
+          text.includes(searchTerm.toLowerCase()) &&
+          (typeFilter === "all" || room.room_type === typeFilter) &&
+          (assignmentFilter === "all" ||
+            (assignmentFilter === "assigned"
+              ? Boolean(room.floor_number)
+              : !room.floor_number))
+        );
+      }),
+    [rooms, blocks, searchTerm, typeFilter, assignmentFilter],
+  );
   const unassignedRooms = useMemo(
-    () => rooms.filter((room) => !room.floor_number),
-    [rooms],
+    () => filteredRooms.filter((room) => !room.floor_number),
+    [filteredRooms],
   );
 
   const roomsByFloor = useMemo(() => {
     return floorOptions.reduce((acc, floor) => {
-      acc[floor] = rooms.filter((room) => room.floor_number === floor);
+      acc[floor] = filteredRooms.filter((room) => room.floor_number === floor);
       return acc;
     }, {});
-  }, [rooms, floorOptions]);
+  }, [filteredRooms, floorOptions]);
 
   const roomsByBlockFloor = useMemo(() => {
     const grouping = {};
@@ -104,7 +132,7 @@ const Rooms = () => {
       };
     });
 
-    rooms.forEach((room) => {
+    filteredRooms.forEach((room) => {
       const group = room.block_id ? grouping[room.block_id] : null;
       if (group) {
         if (room.floor_number && group.roomsByFloor[room.floor_number]) {
@@ -116,7 +144,88 @@ const Rooms = () => {
     });
 
     return grouping;
-  }, [blocks, rooms, floorCount]);
+  }, [blocks, filteredRooms, floorCount]);
+
+  const roomColumns = [
+    { key: "room_number", label: "Room number" },
+    { key: "block", label: "Block" },
+    { key: "floor", label: "Floor" },
+    { key: "type", label: "Type" },
+    { key: "capacity", label: "Capacity" },
+  ];
+  const toggleRoomColumn = (key) =>
+    setVisibleColumns((current) =>
+      current.includes(key)
+        ? current.filter((column) => column !== key)
+        : [...current, key],
+    );
+  const importRoomsCsv = async (file) => {
+    try {
+      const rows = parseRecordCsv(await file.text());
+      let imported = 0;
+      const failures = [];
+      const seenRoomNumbers = new Set(rooms.map((room) => String(room.room_number).toLowerCase()));
+      for (const row of rows) {
+        const values = row.values;
+        const roomNumber = values.room_number?.trim();
+        if (!roomNumber) {
+          failures.push(`Row ${row.rowNumber}: room_number is required.`);
+          continue;
+        }
+        if (seenRoomNumbers.has(roomNumber.toLowerCase())) {
+          failures.push(`Row ${row.rowNumber}: room ${roomNumber} already exists.`);
+          continue;
+        }
+        const block = values.block_id
+          ? blocks.find((item) => String(item.id) === values.block_id)
+          : null;
+        if (values.block_id && !block) {
+          failures.push(`Row ${row.rowNumber}: block_id does not exist.`);
+          continue;
+        }
+        const floor = values.floor_number ? Number(values.floor_number) : null;
+        const capacity = Number(values.total_capacity || 0);
+        const validFloors =
+          block && Array.isArray(block.floors) && block.floors.length
+            ? block.floors
+            : Array.from({ length: floorCount }, (_, index) => index + 1);
+        if ((floor !== null && (!Number.isInteger(floor) || !validFloors.includes(floor))) || !Number.isFinite(capacity) || capacity < 0) {
+          failures.push(`Row ${row.rowNumber}: floor_number or total_capacity is invalid.`);
+          continue;
+        }
+        try {
+          await roomsApi.createRoom({
+            room_number: roomNumber,
+            block_id: block?.id || null,
+            floor_number: floor,
+            room_type: values.room_type || "Classroom",
+            total_capacity: capacity,
+          });
+          seenRoomNumbers.add(roomNumber.toLowerCase());
+          imported += 1;
+        } catch (err) {
+          failures.push(`Row ${row.rowNumber}: ${err.response?.data?.message || err.message || "creation failed"}`);
+        }
+      }
+      if (imported) await loadRooms();
+      if (failures.length) toast.error(`${imported} rooms imported; ${failures.length} row(s) failed. ${failures[0]}`);
+      else toast.success(`${imported} rooms imported.`);
+    } catch (err) {
+      toast.error(err.message || "Could not read this CSV file.");
+    }
+  };
+  const exportRoomsCsv = () =>
+    downloadRecordCsv(
+      "rooms.csv",
+      [
+        { label: "room_number", value: (room) => room.room_number },
+        { label: "block_id", value: (room) => room.block_id },
+        { label: "floor_number", value: (room) => room.floor_number },
+        { label: "room_type", value: (room) => room.room_type },
+        { label: "total_capacity", value: (room) => room.total_capacity },
+      ],
+      filteredRooms,
+    );
 
   const viewLabel = {
     list: "List View",
@@ -245,6 +354,7 @@ const Rooms = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <CsvImportControls onImport={importRoomsCsv} entityLabel="rooms" disabled={loading} />
           <div className="flex items-center bg-subtle border border-default rounded-lg overflow-hidden">
             <button
               type="button"
@@ -277,10 +387,39 @@ const Rooms = () => {
         </div>
       </div>
 
+      <RecordTableToolbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search rooms..."
+        columns={roomColumns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={toggleRoomColumn}
+        filterContent={
+          <>
+            <label className="grid gap-1 text-sm text-slate-300">Room type
+              <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+                <option value="all">All room types</option>{ROOM_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm text-slate-300">Floor assignment
+              <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={assignmentFilter} onChange={(event) => setAssignmentFilter(event.target.value)}>
+                <option value="all">All rooms</option><option value="assigned">Assigned</option><option value="unassigned">Unassigned</option>
+              </select>
+            </label>
+          </>
+        }
+        views={[
+          { label: "All rooms", onSelect: () => { setTypeFilter("all"); setAssignmentFilter("all"); } },
+          ...ROOM_TYPES.map((type) => ({ label: `${type} rooms`, onSelect: () => setTypeFilter(type) })),
+          { label: "Unassigned rooms", onSelect: () => setAssignmentFilter("unassigned") },
+        ]}
+        recordCount={filteredRooms.length}
+        rightContent={<CsvExportButton onExport={exportRoomsCsv} entityLabel="rooms" disabled={!rooms.length} />}
+      />
       <div className="min-h-0 flex-1 overflow-hidden">
       {viewMode === "list" && (
         <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingRoom ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
-          {rooms.length === 0 ? (
+          {filteredRooms.length === 0 ? (
             <div className="p-6 text-center text-muted">
               {loading
                 ? "Loading rooms..."
@@ -290,31 +429,31 @@ const Rooms = () => {
             <table className="w-full min-w-0 table-fixed text-sm">
               <thead className="bg-subtle border-b">
                 <tr>
-                  <th className="px-4 py-3 text-left">Room Number</th>
-                  <th className="px-4 py-3 text-left">Block</th>
-                  <th className="px-4 py-3 text-left">Floor</th>
-                  <th className="px-4 py-3 text-left">Type</th>
-                  <th className="px-4 py-3 text-right">Capacity</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("room_number") ? "hidden" : ""}`}>Room Number</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("block") ? "hidden" : ""}`}>Block</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("floor") ? "hidden" : ""}`}>Floor</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("type") ? "hidden" : ""}`}>Type</th>
+                  <th className={`px-4 py-3 text-right ${!visibleColumns.includes("capacity") ? "hidden" : ""}`}>Capacity</th>
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/60">
-                {rooms.map((room) => (
+                {filteredRooms.map((room) => (
                   <tr key={room.id}>
-                    <td className="px-4 py-3 font-medium text-primary">
+                    <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("room_number") ? "hidden" : ""}`}>
                       {room.room_number || "—"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={`px-4 py-3 ${!visibleColumns.includes("block") ? "hidden" : ""}`}>
                       {blocks.find((block) => block.id === room.block_id)
                         ?.block_name || "Unassigned"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={`px-4 py-3 ${!visibleColumns.includes("floor") ? "hidden" : ""}`}>
                       {room.floor_number
                         ? `Floor ${room.floor_number}`
                         : "Unassigned"}
                     </td>
-                    <td className="px-4 py-3">{room.room_type || "—"}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className={`px-4 py-3 ${!visibleColumns.includes("type") ? "hidden" : ""}`}>{room.room_type || "—"}</td>
+                    <td className={`px-4 py-3 text-right ${!visibleColumns.includes("capacity") ? "hidden" : ""}`}>
                       {room.total_capacity ?? 0}
                     </td>
                     <td className="px-4 py-3 text-right space-x-2">
@@ -345,14 +484,14 @@ const Rooms = () => {
 
       {viewMode === "grid" && (
         <div className={`entity-admin-list h-full min-w-0 ${isEditingRoom ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"} grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3`}>
-          {rooms.length === 0 ? (
+          {filteredRooms.length === 0 ? (
             <div className="p-6 text-center col-span-full text-muted">
               {loading
                 ? "Loading rooms..."
                 : "No rooms yet. Create a room to get started."}
             </div>
           ) : (
-            rooms.map((room) => (
+            filteredRooms.map((room) => (
               <div
                 key={room.id}
                 className="rounded-2xl border border-default bg-surface p-4"

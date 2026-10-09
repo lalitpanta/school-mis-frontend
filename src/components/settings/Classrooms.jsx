@@ -21,6 +21,10 @@ import SettingsModal from "../common/SettingsModal";
 import toast from "react-hot-toast";
 import { useSettings } from "../../context/SettingsContext";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
+import RecordTableToolbar from "../common/RecordTableToolbar";
+import CsvImportControls from "../common/CsvImportControls";
+import CsvExportButton from "../common/CsvExportButton";
+import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
 
 const getDefaultClassForm = () => ({
   name: "",
@@ -71,6 +75,12 @@ const Classrooms = () => {
   const [rooms, setRooms] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sectionClassFilter, setSectionClassFilter] = useState("all");
+  const [roomAssignmentFilter, setRoomAssignmentFilter] = useState("all");
+  const [visibleColumns, setVisibleColumns] = useState([
+    "name", "capacity", "sections",
+  ]);
 
   const [showClassModal, setShowClassModal] = useState(false);
   const [classMode, setClassMode] = useState("create");
@@ -91,10 +101,156 @@ const Classrooms = () => {
     isEditingClassroomItem,
     layoutRef,
   );
+  const filteredClassrooms = classrooms.filter((classroom) =>
+    `${classroom.name || ""} ${classroom.total_capacity || ""}`.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+  const filteredSections = sections.filter((section) => {
+    const classroomName = section.class?.class_name || "";
+    return (
+      `${section.section_name || ""} ${classroomName} ${section.class_teacher_name || ""}`.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (sectionClassFilter === "all" || String(section.class_id) === sectionClassFilter) &&
+      (roomAssignmentFilter === "all" ||
+        (roomAssignmentFilter === "assigned" ? Boolean(section.room_id) : !section.room_id))
+    );
+  });
+  const classroomColumns = [
+    { key: "name", label: "Class name" },
+    { key: "capacity", label: "Total students" },
+    { key: "sections", label: "Sections" },
+  ];
+  const sectionColumns = [
+    { key: "section", label: "Section" },
+    { key: "class", label: "Class" },
+    { key: "teacher", label: "Class teacher" },
+    { key: "block", label: "Block" },
+    { key: "floor", label: "Floor" },
+    { key: "room", label: "Room" },
+    { key: "students", label: "Students" },
+  ];
+  const activeColumns = activeTab === "classes" ? classroomColumns : sectionColumns;
+  const toggleClassroomColumn = (key) =>
+    setVisibleColumns((current) =>
+      current.includes(key)
+        ? current.filter((column) => column !== key)
+        : [...current, key],
+    );
+  const importClassroomCsv = async (file) => {
+    try {
+      const rows = parseRecordCsv(await file.text());
+      let imported = 0;
+      const failures = [];
+      const knownClasses = new Set(
+        classrooms.map((classroom) => classroom.name?.trim().toLowerCase()),
+      );
+      const knownSections = new Set(
+        sections.map(
+          (section) =>
+            `${section.class_id}:${section.section_name?.trim().toLowerCase()}`,
+        ),
+      );
+      for (const row of rows) {
+        const values = row.values;
+        try {
+          if (activeTab === "classes") {
+            const name = values.name?.trim();
+            if (!name) throw new Error("name is required");
+            if (knownClasses.has(name.toLowerCase())) throw new Error(`class "${name}" already exists`);
+            const capacity = Number(values.total_capacity || 0);
+            const sectionCount = Number(values.number_of_sections || 0);
+            if (!Number.isFinite(capacity) || !Number.isFinite(sectionCount)) {
+              throw new Error("capacity and section count must be numbers");
+            }
+            await createClassroom({
+              name,
+              total_capacity: capacity,
+              number_of_sections: sectionCount,
+            });
+            knownClasses.add(name.toLowerCase());
+          } else {
+            const classId = Number(values.class_id);
+            const sectionName = values.section_name?.trim();
+            if (!Number.isInteger(classId) || !classrooms.some((item) => Number(item.id) === classId)) {
+              throw new Error("class_id must refer to an existing class");
+            }
+            if (!sectionName) throw new Error("section_name is required");
+            const sectionKey = `${classId}:${sectionName.toLowerCase()}`;
+            if (knownSections.has(sectionKey)) throw new Error(`section "${sectionName}" already exists in this class`);
+            const optionalIds = ["block_id", "room_id"];
+            for (const key of optionalIds) {
+              if (values[key] && !/^\d+$/.test(values[key])) throw new Error(`${key} must be numeric`);
+            }
+            if (values.block_id && !blocks.some((block) => String(block.id) === values.block_id)) {
+              throw new Error("block_id does not exist");
+            }
+            if (values.room_id && !rooms.some((room) => String(room.id) === values.room_id)) {
+              throw new Error("room_id does not exist");
+            }
+            if (values.class_teacher_id && !teachers.some((teacher) => String(teacher.id) === values.class_teacher_id)) {
+              throw new Error("class_teacher_id does not exist");
+            }
+            const totalStudents = Number(values.total_students || 0);
+            const floorNumber = values.floor_number ? Number(values.floor_number) : null;
+            if (!Number.isInteger(totalStudents) || totalStudents < 0) throw new Error("total_students must be a non-negative integer");
+            if (floorNumber !== null && (!Number.isInteger(floorNumber) || floorNumber < 1 || floorNumber > floorCount)) throw new Error("floor_number is outside the configured floor range");
+            await sectionsApi.createSection({
+              class_id: classId,
+              section_name: sectionName,
+              total_students: totalStudents,
+              monitor_name: values.monitor_name || null,
+              block_id: values.block_id ? Number(values.block_id) : null,
+              floor_number: floorNumber,
+              room_id: values.room_id ? Number(values.room_id) : null,
+              class_teacher_id: values.class_teacher_id || null,
+            });
+            knownSections.add(sectionKey);
+          }
+          imported += 1;
+        } catch (err) {
+          failures.push(`Row ${row.rowNumber}: ${err.response?.data?.message || err.message || "creation failed"}`);
+        }
+      }
+      if (imported) await loadData();
+      if (failures.length) toast.error(`${imported} ${activeTab} imported; ${failures.length} row(s) failed. ${failures[0]}`);
+      else toast.success(`${imported} ${activeTab} imported.`);
+    } catch (err) {
+      toast.error(err.message || "Could not read this CSV file.");
+    }
+  };
+  const exportClassroomCsv = () => {
+    const isClasses = activeTab === "classes";
+    downloadRecordCsv(
+      isClasses ? "classes.csv" : "sections.csv",
+      isClasses
+        ? [
+            { label: "name", value: (item) => item.name },
+            { label: "total_capacity", value: (item) => item.total_capacity },
+            { label: "number_of_sections", value: (item) => item.number_of_sections },
+          ]
+        : [
+            { label: "class_id", value: (item) => item.class_id },
+            { label: "section_name", value: (item) => item.section_name },
+            { label: "total_students", value: (item) => item.total_students },
+            { label: "monitor_name", value: (item) => item.monitor_name },
+            { label: "block_id", value: (item) => item.block_id },
+            { label: "floor_number", value: (item) => item.floor_number },
+            { label: "room_id", value: (item) => item.room_id },
+            { label: "class_teacher_id", value: (item) => item.class_teacher_id },
+          ],
+      isClasses ? filteredClassrooms : filteredSections,
+    );
+  };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    setVisibleColumns(
+      activeTab === "classes"
+        ? ["name", "capacity", "sections"]
+        : ["section", "class", "teacher", "block", "floor", "room", "students"],
+    );
+  }, [activeTab]);
 
   const loadData = async () => {
     setLoading(true);
@@ -374,7 +530,8 @@ const Classrooms = () => {
             </p>
           </div>
 
-          <div className="ml-4">
+          <div className="ml-4 flex items-center gap-2">
+            <CsvImportControls onImport={importClassroomCsv} entityLabel={activeTab} disabled={loading} />
             <button
               type="button"
               onClick={
@@ -408,10 +565,41 @@ const Classrooms = () => {
         </div>
       </div>
 
+      <RecordTableToolbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder={`Search ${activeTab}...`}
+        columns={activeColumns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={toggleClassroomColumn}
+        filterContent={activeTab === "sections" ? (
+          <>
+            <label className="grid gap-1 text-sm text-slate-300">Class
+              <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={sectionClassFilter} onChange={(event) => setSectionClassFilter(event.target.value)}>
+                <option value="all">All classes</option>{classrooms.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm text-slate-300">Room assignment
+              <select className="entity-admin-input rounded border border-slate-700 px-2 py-2" value={roomAssignmentFilter} onChange={(event) => setRoomAssignmentFilter(event.target.value)}>
+                <option value="all">All sections</option><option value="assigned">Room assigned</option><option value="unassigned">No room</option>
+              </select>
+            </label>
+          </>
+        ) : <span className="text-sm text-slate-400">No additional filters</span>}
+        views={[
+          { label: activeTab === "classes" ? "All classes" : "All sections", onSelect: () => { setSectionClassFilter("all"); setRoomAssignmentFilter("all"); } },
+          ...(activeTab === "sections" ? [
+            { label: "Sections with a room", onSelect: () => setRoomAssignmentFilter("assigned") },
+            { label: "Sections without a room", onSelect: () => setRoomAssignmentFilter("unassigned") },
+          ] : []),
+        ]}
+        recordCount={activeTab === "classes" ? filteredClassrooms.length : filteredSections.length}
+        rightContent={<CsvExportButton onExport={exportClassroomCsv} entityLabel={activeTab} disabled={activeTab === "classes" ? !classrooms.length : !sections.length} />}
+      />
       {activeTab === "classes" && (
         <div className="min-h-0 flex-1 overflow-hidden">
         <div className={`entity-admin-list entity-admin-list--classes h-full min-w-0 rounded-lg border border-default ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
-          {classrooms.length === 0 ? (
+          {filteredClassrooms.length === 0 ? (
             <div className="p-6 text-center text-muted">
               {loading
                 ? "Loading classes..."
@@ -421,22 +609,22 @@ const Classrooms = () => {
             <table className="w-full min-w-0 table-fixed text-sm">
               <thead className="bg-subtle border-b">
                 <tr>
-                  <th className="px-4 py-3 text-left">Class name</th>
-                  <th className="px-4 py-3 text-left">Total students</th>
-                  <th className="px-4 py-3 text-left">Sections</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("name") ? "hidden" : ""}`}>Class name</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("capacity") ? "hidden" : ""}`}>Total students</th>
+                  <th className={`px-4 py-3 text-left ${!visibleColumns.includes("sections") ? "hidden" : ""}`}>Sections</th>
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/60">
-                {classrooms.map((classroom) => (
+                {filteredClassrooms.map((classroom) => (
                   <tr key={classroom.id}>
-                    <td className="px-4 py-3 font-medium text-primary">
+                    <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("name") ? "hidden" : ""}`}>
                       {classroom.name}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={`px-4 py-3 ${!visibleColumns.includes("capacity") ? "hidden" : ""}`}>
                       {classroom.total_capacity ?? 0}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={`px-4 py-3 ${!visibleColumns.includes("sections") ? "hidden" : ""}`}>
                       {classroom.number_of_sections ?? 0}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -525,7 +713,7 @@ const Classrooms = () => {
 
             {sectionView === "list" && (
               <div className={`entity-admin-list entity-admin-list--sections min-h-0 flex-1 min-w-0 rounded-lg border border-default bg-surface ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
-                {sections.length === 0 ? (
+                {filteredSections.length === 0 ? (
                   <div className="p-6 text-center text-muted">
                     {loading
                       ? "Loading sections..."
@@ -535,42 +723,42 @@ const Classrooms = () => {
                   <table className="w-full min-w-0 table-fixed text-sm">
                     <thead className="bg-subtle border-b">
                       <tr>
-                        <th className="px-4 py-3 text-left">Section</th>
-                        <th className="px-4 py-3 text-left">Class</th>
-                        <th className="px-4 py-3 text-left">Class Teacher</th>
-                        <th className="px-4 py-3 text-left">Block</th>
-                        <th className="px-4 py-3 text-left">Floor</th>
-                        <th className="px-4 py-3 text-left">Room</th>
-                        <th className="px-4 py-3 text-right">Students</th>
+                        <th className={`px-4 py-3 text-left ${!visibleColumns.includes("section") ? "hidden" : ""}`}>Section</th>
+                        <th className={`px-4 py-3 text-left ${!visibleColumns.includes("class") ? "hidden" : ""}`}>Class</th>
+                        <th className={`px-4 py-3 text-left ${!visibleColumns.includes("teacher") ? "hidden" : ""}`}>Class Teacher</th>
+                        <th className={`px-4 py-3 text-left ${!visibleColumns.includes("block") ? "hidden" : ""}`}>Block</th>
+                        <th className={`px-4 py-3 text-left ${!visibleColumns.includes("floor") ? "hidden" : ""}`}>Floor</th>
+                        <th className={`px-4 py-3 text-left ${!visibleColumns.includes("room") ? "hidden" : ""}`}>Room</th>
+                        <th className={`px-4 py-3 text-right ${!visibleColumns.includes("students") ? "hidden" : ""}`}>Students</th>
                         <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700/60">
-                      {sections.map((section) => (
+                      {filteredSections.map((section) => (
                         <tr key={section.id}>
-                          <td className="px-4 py-3 font-medium text-primary">
+                          <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("section") ? "hidden" : ""}`}>
                             {section.section_name}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className={`px-4 py-3 ${!visibleColumns.includes("class") ? "hidden" : ""}`}>
                             {section.class?.class_name || "No class"}
                           </td>
-                          <td className="px-4 py-3 text-sm text-muted">
+                          <td className={`px-4 py-3 text-sm text-muted ${!visibleColumns.includes("teacher") ? "hidden" : ""}`}>
                             {section.class_teacher_name || "Not assigned"}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className={`px-4 py-3 ${!visibleColumns.includes("block") ? "hidden" : ""}`}>
                             {blocks.find((b) => b.id === section.block_id)
                               ?.block_name || "Unassigned"}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className={`px-4 py-3 ${!visibleColumns.includes("floor") ? "hidden" : ""}`}>
                             {section.floor_number
                               ? `Floor ${section.floor_number}`
                               : "No floor"}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className={`px-4 py-3 ${!visibleColumns.includes("room") ? "hidden" : ""}`}>
                             {rooms.find((r) => r.id === section.room_id)
                               ?.room_number || "No room"}
                           </td>
-                          <td className="px-4 py-3 text-right">
+                          <td className={`px-4 py-3 text-right ${!visibleColumns.includes("students") ? "hidden" : ""}`}>
                             {section.total_students ?? 0}
                           </td>
                           <td className="px-4 py-3 text-right">
@@ -603,14 +791,14 @@ const Classrooms = () => {
 
             {sectionView === "grid" && (
               <div className={`entity-admin-list entity-admin-list--sections h-full min-w-0 ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"} grid grid-cols-1 gap-4 md:grid-cols-2`}>
-                {sections.length === 0 ? (
+                {filteredSections.length === 0 ? (
                   <div className="p-6 text-center col-span-full text-muted">
                     {loading
                       ? "Loading sections..."
                       : "No sections yet. Add one to begin."}
                   </div>
                 ) : (
-                  sections.map((section) => (
+                  filteredSections.map((section) => (
                     <div
                       key={section.id}
                       className="rounded-2xl border border-default bg-surface p-4"
