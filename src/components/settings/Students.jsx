@@ -101,9 +101,9 @@ const emptyStudent = {
   additional_info: "",
 };
 
-const Section = ({ title, id, children }) => (
+const Section = ({ title, id, children, titleClassName = "text-lg" }) => (
   <section id={id} className="mb-5 scroll-mt-14">
-    <h3 className="mb-3 border-b border-slate-700/60 pb-2 text-lg font-semibold text-white">
+    <h3 className={`mb-3 border-b border-slate-700/60 pb-2 ${titleClassName} font-semibold text-white`}>
       {title}
     </h3>
     <div>{children}</div>
@@ -162,37 +162,6 @@ const TextAreaField = ({ label, value, onChange, rows = 3 }) => (
       className="w-full px-3 py-2 bg-slate-800 text-white rounded border border-slate-700 focus:border-indigo-500 focus:outline-none"
     />
   </div>
-);
-
-const CheckboxField = ({ label, checked, onChange }) => (
-  <label
-    htmlFor={`chk_${label}`}
-    className={`flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 py-3 transition ${
-      checked
-        ? "border-indigo-400/70 bg-indigo-500/10"
-        : "border-slate-700 bg-slate-900/70 hover:border-slate-600 hover:bg-slate-800/80"
-    }`}
-  >
-    <span className="flex items-center gap-3">
-      <input
-        id={`chk_${label}`}
-        type="checkbox"
-        checked={checked || false}
-        onChange={onChange}
-        className="h-5 w-5 shrink-0 cursor-pointer accent-indigo-500"
-      />
-      <span className="text-sm font-medium text-slate-200">{label}</span>
-    </span>
-    <span
-      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-        checked
-          ? "bg-indigo-500/20 text-indigo-200"
-          : "bg-slate-800 text-slate-400"
-      }`}
-    >
-      {checked ? "Yes" : "No"}
-    </span>
-  </label>
 );
 
 const RadioField = ({ label, name, value, checked, onChange }) => (
@@ -2766,35 +2735,57 @@ const Students = () => {
               <>
                 <Section
                   title="4. Transportation Information"
+                  titleClassName="text-sm"
                 >
-                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <CheckboxField
-                      label="Requires Transportation"
-                      checked={form.transportation_required}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          transportation_required: e.target.checked,
-                        })
-                      }
-                    />
-                    <CheckboxField
-                      label="Uses Bus Service"
-                      checked={form.bus_service}
-                      onChange={(e) =>
-                        setForm({ ...form, bus_service: e.target.checked })
-                      }
-                    />
-                    <CheckboxField
-                      label="Requires Hostel Facility"
-                      checked={form.hostel_required}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          hostel_required: e.target.checked,
-                        })
-                      }
-                    />
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    {[
+                      {
+                        key: "transportation_required",
+                        label: "Requires Transportation",
+                      },
+                      { key: "bus_service", label: "Uses Bus Service" },
+                      {
+                        key: "hostel_required",
+                        label: "Requires Hostel Facility",
+                      },
+                    ].map(({ key, label }) => (
+                      <fieldset
+                        key={key}
+                        className="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-slate-700 bg-slate-900/60 px-3 py-2"
+                      >
+                        <legend className="sr-only">{label}</legend>
+                        <span className="min-w-0 text-xs font-medium leading-4 text-slate-200">
+                          {label}
+                        </span>
+                        <div
+                          role="radiogroup"
+                          aria-label={label}
+                          className="flex shrink-0 items-center gap-2.5"
+                        >
+                          {[true, false].map((value) => (
+                            <label
+                              key={String(value)}
+                              className="inline-flex cursor-pointer items-center gap-1 text-xs text-slate-300"
+                            >
+                              <input
+                                type="radio"
+                                name={`transport-${key}`}
+                                value={String(value)}
+                                checked={Boolean(form[key]) === value}
+                                onChange={() =>
+                                  setForm((current) => ({
+                                    ...current,
+                                    [key]: value,
+                                  }))
+                                }
+                                className="h-3.5 w-3.5 accent-indigo-400"
+                              />
+                              {value ? "Yes" : "No"}
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                    ))}
                   </div>
                 </Section>
 
