@@ -546,7 +546,7 @@ const Courses = () => {
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2
-            className="text-lg font-semibold"
+            className="text-[28px] font-bold"
             style={{ color: "var(--text-primary)" }}
           >
             Courses Management

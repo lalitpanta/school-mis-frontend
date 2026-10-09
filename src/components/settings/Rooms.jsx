@@ -236,12 +236,12 @@ const Rooms = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
         <div>
           <h2
-            className="text-base font-semibold"
+            className="text-[28px] font-bold"
             style={{ color: "var(--text-primary)" }}
           >
             Rooms
           </h2>
-          <p className="text-xs text-muted">{viewLabel[viewMode]}</p>
+          <p className="mt-1 text-sm text-muted">{viewLabel[viewMode]}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

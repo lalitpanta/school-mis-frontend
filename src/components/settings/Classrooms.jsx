@@ -364,12 +364,12 @@ const Classrooms = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2
-              className="text-base font-semibold"
+              className="text-[28px] font-bold"
               style={{ color: "var(--text-primary)" }}
             >
               Classroom Settings
             </h2>
-            <p className="text-xs text-muted">
+            <p className="mt-1 text-sm text-muted">
               Manage class definitions and section assignments.
             </p>
           </div>

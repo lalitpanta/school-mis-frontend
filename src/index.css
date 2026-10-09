@@ -1189,6 +1189,15 @@ main > * {
   overflow: hidden;
 }
 
+.settings-inline-edit-panel .entity-edit-header {
+  min-height: 52px;
+  height: 52px;
+}
+
+.settings-inline-edit-panel .entity-edit-header h2 {
+  text-transform: uppercase;
+}
+
 .settings-inline-edit-panel .app-modal-body {
   display: flex;
   flex-direction: column;

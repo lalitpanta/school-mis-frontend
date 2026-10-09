@@ -94,10 +94,10 @@ const RolesPermissions = () => {
       >
       {/* Header */}
       <div>
-        <h2 className="text-lg font-semibold text-primary mb-2">
+        <h2 className="text-[28px] font-bold text-primary">
           Roles & Permissions
         </h2>
-        <p className="text-sm text-muted">
+        <p className="mt-1 text-sm text-muted">
           Manage roles and assign permissions to users
         </p>
       </div>

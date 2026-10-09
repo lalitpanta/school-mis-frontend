@@ -33,17 +33,20 @@ export default function useSettingsInlinePanelLayout(enabled, layoutRef) {
 
       const layoutBounds = layout.getBoundingClientRect();
       const listBounds = activeList.getBoundingClientRect();
-      const panelTop = header?.getBoundingClientRect().top ?? listBounds.top;
-      const panelBottom = Math.max(
-        listBounds.bottom || layoutBounds.bottom,
-        window.innerHeight - 16,
+      const panelTop =
+        (header?.getBoundingClientRect().top ?? listBounds.top) -
+        layoutBounds.top;
+      const panelTopInViewport = layoutBounds.top + panelTop;
+      const panelHeight = Math.max(
+        listBounds.bottom - panelTopInViewport,
+        window.innerHeight - panelTopInViewport - 16,
       );
       const nextStyle = {
         position: "absolute",
         top: `${panelTop}px`,
         right: "0px",
-        width: "min(560px, calc(50% - 0.5rem))",
-        height: `${Math.max(320, panelBottom - panelTop)}px`,
+        width: "min(560px, calc(100% - 300px))",
+        height: `${Math.max(320, panelHeight)}px`,
         zIndex: 20,
       };
 

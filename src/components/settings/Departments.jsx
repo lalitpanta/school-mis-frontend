@@ -110,7 +110,7 @@ const Departments = () => {
       >
       <div className="flex justify-between items-center mb-4">
         <h2
-          className="text-base font-semibold"
+          className="text-[28px] font-bold"
           style={{ color: "var(--text-primary)" }}
         >
           Departments

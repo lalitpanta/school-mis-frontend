@@ -403,8 +403,8 @@ const UsersStaff = () => {
       >
       {/* Header */}
       <div>
-        <h2 className="text-lg font-semibold text-primary mb-2">Users & Staff</h2>
-        <p className="text-sm text-muted">
+        <h2 className="text-[28px] font-bold text-primary">Users & Staff</h2>
+        <p className="mt-1 text-sm text-muted">
           Create users, assign roles, and send secure portal setup links
         </p>
       </div>
