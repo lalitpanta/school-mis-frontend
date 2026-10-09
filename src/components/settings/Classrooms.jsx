@@ -16,6 +16,7 @@ import {
   LayoutGrid,
   List,
   Map,
+  Power,
 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import toast from "react-hot-toast";
@@ -25,6 +26,8 @@ import RecordTableToolbar from "../common/RecordTableToolbar";
 import CsvImportControls from "../common/CsvImportControls";
 import CsvExportButton from "../common/CsvExportButton";
 import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
+import RecordSelectCheckbox from "../common/RecordSelectCheckbox";
+import BulkDeleteBar from "../common/BulkDeleteBar";
 
 const getDefaultClassForm = () => ({
   name: "",
@@ -81,6 +84,8 @@ const Classrooms = () => {
   const [visibleColumns, setVisibleColumns] = useState([
     "name", "capacity", "sections",
   ]);
+  const [selectedClassroomIds, setSelectedClassroomIds] = useState([]);
+  const [selectedSectionIds, setSelectedSectionIds] = useState([]);
 
   const [showClassModal, setShowClassModal] = useState(false);
   const [classMode, setClassMode] = useState("create");
@@ -113,6 +118,14 @@ const Classrooms = () => {
         (roomAssignmentFilter === "assigned" ? Boolean(section.room_id) : !section.room_id))
     );
   });
+  const visibleClassroomIds = filteredClassrooms.map((classroom) => classroom.id);
+  const visibleSectionIds = filteredSections.map((section) => section.id);
+  const allVisibleClassroomsSelected =
+    visibleClassroomIds.length > 0 &&
+    visibleClassroomIds.every((id) => selectedClassroomIds.includes(id));
+  const allVisibleSectionsSelected =
+    visibleSectionIds.length > 0 &&
+    visibleSectionIds.every((id) => selectedSectionIds.includes(id));
   const classroomColumns = [
     { key: "name", label: "Class name" },
     { key: "capacity", label: "Total students" },
@@ -321,11 +334,58 @@ const Classrooms = () => {
     setLoading(true);
     try {
       await deleteClassroom(classroom.id);
+      setSelectedClassroomIds((current) =>
+        current.filter((id) => id !== classroom.id),
+      );
       toast.success("Class deleted");
       await loadData();
     } catch (err) {
       console.error(err);
       toast.error("Delete failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleClassroomActive = async (classroom) => {
+    const isActive = classroom.is_active !== false;
+    try {
+      setLoading(true);
+      await updateClassroom(classroom.id, { is_active: !isActive });
+      toast.success(`Class ${isActive ? "deactivated" : "activated"}`);
+      await loadData();
+    } catch (err) {
+      console.error("Failed to update class status:", err);
+      toast.error(err.response?.data?.message || "Failed to update class status");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDeleteClassrooms = async () => {
+    const ids = selectedClassroomIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected class${ids.length === 1 ? "" : "es"}? This cannot be undone.`,
+      )
+    ) return;
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(ids.map((id) => deleteClassroom(id)));
+      const failedIds = ids.filter((_, index) => results[index].status === "rejected");
+      const deletedCount = ids.length - failedIds.length;
+      setSelectedClassroomIds(failedIds);
+      await loadData();
+      if (failedIds.length) {
+        toast.error(`${deletedCount} classes deleted; ${failedIds.length} could not be deleted.`);
+      } else {
+        toast.success(`${deletedCount} class${deletedCount === 1 ? "" : "es"} deleted.`);
+      }
+    } catch (err) {
+      console.error("Failed to refresh classes after bulk deletion:", err);
+      toast.error("Could not refresh classes after bulk deletion.");
     } finally {
       setLoading(false);
     }
@@ -404,11 +464,43 @@ const Classrooms = () => {
     setLoading(true);
     try {
       await sectionsApi.deleteSection(section.id);
+      setSelectedSectionIds((current) =>
+        current.filter((id) => id !== section.id),
+      );
       toast.success("Section deleted");
       await loadData();
     } catch (err) {
       console.error(err);
       toast.error("Delete failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDeleteSections = async () => {
+    const ids = selectedSectionIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected section${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) return;
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(ids.map((id) => sectionsApi.deleteSection(id)));
+      const failedIds = ids.filter((_, index) => results[index].status === "rejected");
+      const deletedCount = ids.length - failedIds.length;
+      setSelectedSectionIds(failedIds);
+      await loadData();
+      if (failedIds.length) {
+        toast.error(`${deletedCount} sections deleted; ${failedIds.length} could not be deleted.`);
+      } else {
+        toast.success(`${deletedCount} section${deletedCount === 1 ? "" : "s"} deleted.`);
+      }
+    } catch (err) {
+      console.error("Failed to refresh sections after bulk deletion:", err);
+      toast.error("Could not refresh sections after bulk deletion.");
     } finally {
       setLoading(false);
     }
@@ -596,6 +688,17 @@ const Classrooms = () => {
         recordCount={activeTab === "classes" ? filteredClassrooms.length : filteredSections.length}
         rightContent={<CsvExportButton onExport={exportClassroomCsv} entityLabel={activeTab} disabled={activeTab === "classes" ? !classrooms.length : !sections.length} />}
       />
+      <BulkDeleteBar
+        count={activeTab === "classes" ? selectedClassroomIds.length : selectedSectionIds.length}
+        itemLabel={activeTab === "classes" ? "classes" : "sections"}
+        disabled={loading}
+        onDelete={activeTab === "classes" ? handleBulkDeleteClassrooms : handleBulkDeleteSections}
+        onClear={() =>
+          activeTab === "classes"
+            ? setSelectedClassroomIds([])
+            : setSelectedSectionIds([])
+        }
+      />
       {activeTab === "classes" && (
         <div className="min-h-0 flex-1 overflow-hidden">
         <div className={`entity-admin-list entity-admin-list--classes h-full min-w-0 rounded-lg border border-default ${isEditingClassroomItem ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -609,6 +712,19 @@ const Classrooms = () => {
             <table className="w-full min-w-0 table-fixed text-sm">
               <thead className="bg-subtle border-b">
                 <tr>
+                  <th className="w-10 px-2 text-center">
+                    <RecordSelectCheckbox
+                      checked={allVisibleClassroomsSelected}
+                      onChange={(event) =>
+                        setSelectedClassroomIds((current) =>
+                          event.target.checked
+                            ? [...new Set([...current, ...visibleClassroomIds])]
+                            : current.filter((id) => !visibleClassroomIds.includes(id)),
+                        )
+                      }
+                      label="Select all visible classes"
+                    />
+                  </th>
                   <th className={`px-4 py-3 text-left ${!visibleColumns.includes("name") ? "hidden" : ""}`}>Class name</th>
                   <th className={`px-4 py-3 text-left ${!visibleColumns.includes("capacity") ? "hidden" : ""}`}>Total students</th>
                   <th className={`px-4 py-3 text-left ${!visibleColumns.includes("sections") ? "hidden" : ""}`}>Sections</th>
@@ -618,6 +734,19 @@ const Classrooms = () => {
               <tbody className="divide-y divide-slate-700/60">
                 {filteredClassrooms.map((classroom) => (
                   <tr key={classroom.id}>
+                    <td className="w-10 px-2 text-center">
+                      <RecordSelectCheckbox
+                        checked={selectedClassroomIds.includes(classroom.id)}
+                        onChange={(event) =>
+                          setSelectedClassroomIds((current) =>
+                            event.target.checked
+                              ? [...new Set([...current, classroom.id])]
+                              : current.filter((id) => id !== classroom.id),
+                          )
+                        }
+                        label={`Select class ${classroom.name}`}
+                      />
+                    </td>
                     <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("name") ? "hidden" : ""}`}>
                       {classroom.name}
                     </td>
@@ -637,6 +766,16 @@ const Classrooms = () => {
                         aria-label={`Edit class ${classroom.name}`}
                       >
                         <Edit size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => toggleClassroomActive(classroom)}
+                        disabled={loading}
+                        className={`rounded p-2 disabled:opacity-50 ${classroom.is_active === false ? "text-success hover:bg-success" : "text-warning hover:bg-warning-soft"}`}
+                        title={`${classroom.is_active === false ? "Activate" : "Deactivate"} class ${classroom.name}`}
+                        aria-label={`${classroom.is_active === false ? "Activate" : "Deactivate"} class ${classroom.name}`}
+                      >
+                        <Power size={15} />
                       </button>
                       <button
                         type="button"
@@ -723,6 +862,19 @@ const Classrooms = () => {
                   <table className="w-full min-w-0 table-fixed text-sm">
                     <thead className="bg-subtle border-b">
                       <tr>
+                        <th className="w-10 px-2 text-center">
+                          <RecordSelectCheckbox
+                            checked={allVisibleSectionsSelected}
+                            onChange={(event) =>
+                              setSelectedSectionIds((current) =>
+                                event.target.checked
+                                  ? [...new Set([...current, ...visibleSectionIds])]
+                                  : current.filter((id) => !visibleSectionIds.includes(id)),
+                              )
+                            }
+                            label="Select all visible sections"
+                          />
+                        </th>
                         <th className={`px-4 py-3 text-left ${!visibleColumns.includes("section") ? "hidden" : ""}`}>Section</th>
                         <th className={`px-4 py-3 text-left ${!visibleColumns.includes("class") ? "hidden" : ""}`}>Class</th>
                         <th className={`px-4 py-3 text-left ${!visibleColumns.includes("teacher") ? "hidden" : ""}`}>Class Teacher</th>
@@ -736,6 +888,19 @@ const Classrooms = () => {
                     <tbody className="divide-y divide-slate-700/60">
                       {filteredSections.map((section) => (
                         <tr key={section.id}>
+                          <td className="w-10 px-2 text-center">
+                            <RecordSelectCheckbox
+                              checked={selectedSectionIds.includes(section.id)}
+                              onChange={(event) =>
+                                setSelectedSectionIds((current) =>
+                                  event.target.checked
+                                    ? [...new Set([...current, section.id])]
+                                    : current.filter((id) => id !== section.id),
+                                )
+                              }
+                              label={`Select section ${section.section_name}`}
+                            />
+                          </td>
                           <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("section") ? "hidden" : ""}`}>
                             {section.section_name}
                           </td>
@@ -804,6 +969,17 @@ const Classrooms = () => {
                       className="rounded-2xl border border-default bg-surface p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
+                        <RecordSelectCheckbox
+                          checked={selectedSectionIds.includes(section.id)}
+                          onChange={(event) =>
+                            setSelectedSectionIds((current) =>
+                              event.target.checked
+                                ? [...new Set([...current, section.id])]
+                                : current.filter((id) => id !== section.id),
+                            )
+                          }
+                          label={`Select section ${section.section_name}`}
+                        />
                         <div>
                           <div className="text-base font-semibold text-primary">
                             {section.section_name}
@@ -980,6 +1156,17 @@ const Classrooms = () => {
                                               }
                                               className={`rounded-2xl border border-default bg-surface p-3 text-sm text-primary cursor-grab ${draggingSectionId === section.id ? "ring-2 ring-focus bg-success" : ""}`}
                                             >
+                                              <RecordSelectCheckbox
+                                                checked={selectedSectionIds.includes(section.id)}
+                                                onChange={(e) =>
+                                                  setSelectedSectionIds((current) =>
+                                                    e.target.checked
+                                                      ? [...new Set([...current, section.id])]
+                                                      : current.filter((id) => id !== section.id),
+                                                  )
+                                                }
+                                                label={`Select section ${section.section_name}`}
+                                              />
                                               <div className="font-semibold">
                                                 {section.section_name}
                                               </div>

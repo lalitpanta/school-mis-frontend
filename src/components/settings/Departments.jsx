@@ -6,7 +6,7 @@ import {
   deleteDepartment,
 } from "../../api/departmentsApi";
 import Button from "../common/Button";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Power } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 import RecordTableToolbar from "../common/RecordTableToolbar";
@@ -14,6 +14,8 @@ import CsvImportControls from "../common/CsvImportControls";
 import CsvExportButton from "../common/CsvExportButton";
 import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
 import toast from "react-hot-toast";
+import RecordSelectCheckbox from "../common/RecordSelectCheckbox";
+import BulkDeleteBar from "../common/BulkDeleteBar";
 
 const Departments = () => {
   const layoutRef = useRef(null);
@@ -25,6 +27,8 @@ const Departments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [visibleColumns, setVisibleColumns] = useState(["name", "code", "active"]);
+  const [selectedDepartmentIds, setSelectedDepartmentIds] = useState([]);
+  const [updatingDepartmentId, setUpdatingDepartmentId] = useState(null);
   const [form, setForm] = useState({
     name: "",
     code: "",
@@ -52,6 +56,12 @@ const Departments = () => {
         Boolean(department.is_active) === (statusFilter === "active"))
     );
   });
+  const visibleDepartmentIds = filteredDepartments.map(
+    (department) => department.id,
+  );
+  const allVisibleDepartmentsSelected =
+    visibleDepartmentIds.length > 0 &&
+    visibleDepartmentIds.every((id) => selectedDepartmentIds.includes(id));
   const departmentColumns = [
     { key: "name", label: "Name" },
     { key: "code", label: "Code" },
@@ -165,9 +175,71 @@ const Departments = () => {
     try {
       setLoading(true);
       await deleteDepartment(id);
+      setSelectedDepartmentIds((current) =>
+        current.filter((selectedId) => selectedId !== id),
+      );
       await load();
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleDepartmentActive = async (department) => {
+    try {
+      setUpdatingDepartmentId(department.id);
+      await updateDepartment(department.id, {
+        is_active: !Boolean(department.is_active),
+      });
+      await load();
+      toast.success(
+        `Department ${department.is_active ? "deactivated" : "activated"}.`,
+      );
+    } catch (err) {
+      console.error("Failed to update department status:", err);
+      toast.error(
+        err.response?.data?.message || "Failed to update department status.",
+      );
+    } finally {
+      setUpdatingDepartmentId(null);
+    }
+  };
+
+  const handleBulkDeleteDepartments = async () => {
+    const ids = selectedDepartmentIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected department${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteDepartment(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+      setSelectedDepartmentIds(failedIds);
+      await load();
+      if (failedIds.length > 0) {
+        toast.error(
+          `${deletedCount} department${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted.`,
+        );
+      } else {
+        toast.success(
+          `${deletedCount} department${deletedCount === 1 ? "" : "s"} deleted.`,
+        );
+      }
+    } catch (err) {
+      console.error("Failed to complete bulk department deletion:", err);
+      toast.error("Could not refresh departments after bulk deletion.");
     } finally {
       setLoading(false);
     }
@@ -230,6 +302,13 @@ const Departments = () => {
         recordCount={filteredDepartments.length}
         rightContent={<CsvExportButton onExport={exportDepartmentsCsv} entityLabel="departments" disabled={!departments.length} />}
       />
+      <BulkDeleteBar
+        count={selectedDepartmentIds.length}
+        itemLabel="departments"
+        disabled={loading}
+        onDelete={handleBulkDeleteDepartments}
+        onClear={() => setSelectedDepartmentIds([])}
+      />
       <div className="min-h-0 flex-1 overflow-hidden">
       <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingDepartment ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
         {filteredDepartments.length === 0 ? (
@@ -240,6 +319,23 @@ const Departments = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b border-default">
               <tr>
+                <th className="w-10 px-2 text-center">
+                  <RecordSelectCheckbox
+                    checked={allVisibleDepartmentsSelected}
+                    onChange={(event) =>
+                      setSelectedDepartmentIds((current) =>
+                        event.target.checked
+                          ? Array.from(
+                              new Set([...current, ...visibleDepartmentIds]),
+                            )
+                          : current.filter(
+                              (id) => !visibleDepartmentIds.includes(id),
+                            ),
+                      )
+                    }
+                    label="Select all visible departments"
+                  />
+                </th>
                 <th className={`px-4 py-3 text-left ${!visibleColumns.includes("name") ? "hidden" : ""}`}>Name</th>
                 <th className={`px-4 py-3 text-left ${!visibleColumns.includes("code") ? "hidden" : ""}`}>Code</th>
                 <th className={`px-4 py-3 ${!visibleColumns.includes("active") ? "hidden" : ""}`}>Active</th>
@@ -249,6 +345,19 @@ const Departments = () => {
             <tbody className="divide-y divide-slate-700/60">
               {filteredDepartments.map((d) => (
                 <tr key={d.id} className="hover:bg-subtle transition">
+                  <td className="w-10 px-2 text-center">
+                    <RecordSelectCheckbox
+                      checked={selectedDepartmentIds.includes(d.id)}
+                      onChange={(event) =>
+                        setSelectedDepartmentIds((current) =>
+                          event.target.checked
+                            ? [...new Set([...current, d.id])]
+                            : current.filter((id) => id !== d.id),
+                        )
+                      }
+                      label={`Select department ${d.name}`}
+                    />
+                  </td>
                   <td className={`px-4 py-3 ${!visibleColumns.includes("name") ? "hidden" : ""}`}>{d.name}</td>
                   <td className={`px-4 py-3 ${!visibleColumns.includes("code") ? "hidden" : ""}`}>{d.code || "—"}</td>
                   <td className={`px-4 py-3 text-center ${!visibleColumns.includes("active") ? "hidden" : ""}`}>
@@ -263,6 +372,15 @@ const Departments = () => {
                       aria-label={`Edit ${d.name}`}
                     >
                       <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleToggleDepartmentActive(d)}
+                      disabled={updatingDepartmentId === d.id}
+                      className={`rounded p-2 disabled:opacity-50 ${d.is_active ? "text-warning hover:bg-warning-soft" : "text-success hover:bg-success"}`}
+                      title={`${d.is_active ? "Deactivate" : "Activate"} ${d.name}`}
+                      aria-label={`${d.is_active ? "Deactivate" : "Activate"} ${d.name}`}
+                    >
+                      <Power size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(d.id)}

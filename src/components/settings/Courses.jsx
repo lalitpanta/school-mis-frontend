@@ -23,6 +23,8 @@ import CsvImportControls from "../common/CsvImportControls";
 import CsvExportButton from "../common/CsvExportButton";
 import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
 import toast from "react-hot-toast";
+import RecordSelectCheckbox from "../common/RecordSelectCheckbox";
+import BulkDeleteBar from "../common/BulkDeleteBar";
 
 const SUBJECT_TYPES = [
   "Core",
@@ -290,6 +292,7 @@ const Courses = () => {
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState("create");
   const [selected, setSelected] = useState(null);
+  const [selectedCourseIds, setSelectedCourseIds] = useState([]);
   const [form, setForm] = useState(emptyCourse);
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleColumns, setVisibleColumns] = useState([
@@ -451,6 +454,7 @@ const Courses = () => {
       setError("");
       setLoading(true);
       await deleteCourse(id);
+      setSelectedCourseIds((current) => current.filter((selectedId) => selectedId !== id));
       await load();
     } catch (e) {
       const errMsg =
@@ -516,6 +520,50 @@ const Courses = () => {
       .join(" ");
     return haystack.includes(normalizedSearch);
   });
+  const visibleCourseIds = filteredCourses.map((course) => course.id);
+  const allVisibleCoursesSelected =
+    visibleCourseIds.length > 0 &&
+    visibleCourseIds.every((id) => selectedCourseIds.includes(id));
+
+  const handleBulkDeleteCourses = async () => {
+    const ids = selectedCourseIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected course${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteCourse(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+      setSelectedCourseIds(failedIds);
+      await load();
+      if (failedIds.length > 0) {
+        const reason = results.find(
+          (result) => result.status === "rejected",
+        )?.reason;
+        setError(
+          `${deletedCount} course${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted.${reason?.response?.data?.message ? ` ${reason.response.data.message}` : ""}`,
+        );
+      } else {
+        toast.success(`${deletedCount} course${deletedCount === 1 ? "" : "s"} deleted.`);
+      }
+    } catch (err) {
+      console.error("Failed to complete bulk course deletion:", err);
+      setError("Could not refresh courses after bulk deletion.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const courseColumns = [
     { key: "code", label: "Code" },
     { key: "name", label: "Name" },
@@ -725,6 +773,13 @@ const Courses = () => {
           recordCount={filteredCourses.length}
           rightContent={<CsvExportButton onExport={exportCoursesCsv} entityLabel="courses" disabled={!courses.length} />}
         />
+        <BulkDeleteBar
+          count={selectedCourseIds.length}
+          itemLabel="courses"
+          disabled={loading}
+          onDelete={handleBulkDeleteCourses}
+          onClear={() => setSelectedCourseIds([])}
+        />
 
         <div className="min-h-0 flex-1 overflow-hidden">
         <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingCourse ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -736,6 +791,23 @@ const Courses = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b sticky top-0">
               <tr>
+                <th className="w-10 px-2 text-center">
+                  <RecordSelectCheckbox
+                    checked={allVisibleCoursesSelected}
+                    onChange={(event) =>
+                      setSelectedCourseIds((current) =>
+                        event.target.checked
+                          ? Array.from(
+                              new Set([...current, ...visibleCourseIds]),
+                            )
+                          : current.filter(
+                              (id) => !visibleCourseIds.includes(id),
+                            ),
+                      )
+                    }
+                    label="Select all visible courses"
+                  />
+                </th>
                 <th className={`px-4 py-3 text-left text-xs font-medium ${!visibleColumns.includes("code") ? "hidden" : ""}`}>
                   Code
                 </th>
@@ -759,6 +831,19 @@ const Courses = () => {
                   key={course.id}
                   className="border-b border-default hover:bg-subtle"
                 >
+                  <td className="w-10 px-2 text-center">
+                    <RecordSelectCheckbox
+                      checked={selectedCourseIds.includes(course.id)}
+                      onChange={(event) =>
+                        setSelectedCourseIds((current) =>
+                          event.target.checked
+                            ? [...new Set([...current, course.id])]
+                            : current.filter((id) => id !== course.id),
+                        )
+                      }
+                      label={`Select course ${course.course_name}`}
+                    />
+                  </td>
                   <td className={`px-4 py-3 text-primary ${!visibleColumns.includes("code") ? "hidden" : ""}`}>
                     {course.course_code}
                   </td>
@@ -808,7 +893,7 @@ const Courses = () => {
                             : `Activate ${course.course_name}`
                         }
                       >
-                        <Power size={16} />
+                        <Power size={15} />
                       </button>
                       <button
                         onClick={() => openEdit(course)}

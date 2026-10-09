@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { roomsApi } from "../../api/roomsApi";
 import Button from "../common/Button";
-import { Plus, Edit, Trash2, LayoutGrid, List, Map } from "lucide-react";
+import { Plus, Edit, Trash2, LayoutGrid, List, Map, Power } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import { useSettings } from "../../context/SettingsContext";
 import toast from "react-hot-toast";
@@ -10,6 +10,8 @@ import RecordTableToolbar from "../common/RecordTableToolbar";
 import CsvImportControls from "../common/CsvImportControls";
 import CsvExportButton from "../common/CsvExportButton";
 import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
+import RecordSelectCheckbox from "../common/RecordSelectCheckbox";
+import BulkDeleteBar from "../common/BulkDeleteBar";
 
 const ROOM_TYPES = [
   "Classroom",
@@ -62,6 +64,7 @@ const Rooms = () => {
   ]);
   const [form, setForm] = useState(getDefaultForm(floorCount));
   const [editingRoom, setEditingRoom] = useState(null);
+  const [selectedRoomIds, setSelectedRoomIds] = useState([]);
   const isEditingRoom = showModal && editingRoom !== null;
   const editPanelStyle = useSettingsInlinePanelLayout(isEditingRoom, layoutRef);
 
@@ -101,6 +104,17 @@ const Rooms = () => {
       }),
     [rooms, blocks, searchTerm, typeFilter, assignmentFilter],
   );
+  const visibleRoomIds = filteredRooms.map((room) => room.id);
+  const allVisibleRoomsSelected =
+    visibleRoomIds.length > 0 &&
+    visibleRoomIds.every((id) => selectedRoomIds.includes(id));
+
+  const toggleRoomSelection = (roomId, selected) =>
+    setSelectedRoomIds((current) =>
+      selected
+        ? [...new Set([...current, roomId])]
+        : current.filter((id) => id !== roomId),
+    );
   const unassignedRooms = useMemo(
     () => filteredRooms.filter((room) => !room.floor_number),
     [filteredRooms],
@@ -319,11 +333,66 @@ const Rooms = () => {
     try {
       setLoading(true);
       await roomsApi.deleteRoom(room.id);
+      setSelectedRoomIds((current) => current.filter((id) => id !== room.id));
       toast.success("Room deleted");
       await loadRooms();
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete room");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleRoomActive = async (room) => {
+    const isActive = room.is_active !== false;
+    try {
+      setLoading(true);
+      await roomsApi.updateRoom(room.id, { is_active: !isActive });
+      toast.success(`Room ${isActive ? "deactivated" : "activated"}`);
+      await loadRooms();
+    } catch (err) {
+      console.error("Failed to update room status:", err);
+      toast.error(
+        err.response?.data?.message || "Failed to update room status",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDeleteRooms = async () => {
+    const ids = selectedRoomIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected room${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => roomsApi.deleteRoom(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+      setSelectedRoomIds(failedIds);
+      await loadRooms();
+      if (failedIds.length > 0) {
+        toast.error(
+          `${deletedCount} room${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted.`,
+        );
+      } else {
+        toast.success(`${deletedCount} room${deletedCount === 1 ? "" : "s"} deleted`);
+      }
+    } catch (err) {
+      console.error("Failed to complete bulk room deletion:", err);
+      toast.error("Could not refresh rooms after bulk deletion");
     } finally {
       setLoading(false);
     }
@@ -416,6 +485,13 @@ const Rooms = () => {
         recordCount={filteredRooms.length}
         rightContent={<CsvExportButton onExport={exportRoomsCsv} entityLabel="rooms" disabled={!rooms.length} />}
       />
+      <BulkDeleteBar
+        count={selectedRoomIds.length}
+        itemLabel="rooms"
+        disabled={loading}
+        onDelete={handleBulkDeleteRooms}
+        onClear={() => setSelectedRoomIds([])}
+      />
       <div className="min-h-0 flex-1 overflow-hidden">
       {viewMode === "list" && (
         <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingRoom ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -429,6 +505,19 @@ const Rooms = () => {
             <table className="w-full min-w-0 table-fixed text-sm">
               <thead className="bg-subtle border-b">
                 <tr>
+                  <th className="w-10 px-2 text-center">
+                    <RecordSelectCheckbox
+                      checked={allVisibleRoomsSelected}
+                      onChange={(event) =>
+                        setSelectedRoomIds((current) =>
+                          event.target.checked
+                            ? Array.from(new Set([...current, ...visibleRoomIds]))
+                            : current.filter((id) => !visibleRoomIds.includes(id)),
+                        )
+                      }
+                      label="Select all visible rooms"
+                    />
+                  </th>
                   <th className={`px-4 py-3 text-left ${!visibleColumns.includes("room_number") ? "hidden" : ""}`}>Room Number</th>
                   <th className={`px-4 py-3 text-left ${!visibleColumns.includes("block") ? "hidden" : ""}`}>Block</th>
                   <th className={`px-4 py-3 text-left ${!visibleColumns.includes("floor") ? "hidden" : ""}`}>Floor</th>
@@ -440,7 +529,14 @@ const Rooms = () => {
               <tbody className="divide-y divide-slate-700/60">
                 {filteredRooms.map((room) => (
                   <tr key={room.id}>
-                    <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("room_number") ? "hidden" : ""}`}>
+                      <td className="w-10 px-2 text-center">
+                        <RecordSelectCheckbox
+                          checked={selectedRoomIds.includes(room.id)}
+                          onChange={(event) => toggleRoomSelection(room.id, event.target.checked)}
+                          label={`Select room ${room.room_number}`}
+                        />
+                      </td>
+                      <td className={`px-4 py-3 font-medium text-primary ${!visibleColumns.includes("room_number") ? "hidden" : ""}`}>
                       {room.room_number || "—"}
                     </td>
                     <td className={`px-4 py-3 ${!visibleColumns.includes("block") ? "hidden" : ""}`}>
@@ -465,6 +561,16 @@ const Rooms = () => {
                         aria-label={`Edit room ${room.room_number || ""}`}
                       >
                         <Edit size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => toggleRoomActive(room)}
+                        disabled={loading}
+                        className={`rounded p-2 disabled:opacity-50 ${room.is_active === false ? "text-success hover:bg-success" : "text-warning hover:bg-warning-soft"}`}
+                        title={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                        aria-label={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                      >
+                        <Power size={15} />
                       </button>
                       <button
                         onClick={() => deleteRoom(room)}
@@ -500,6 +606,11 @@ const Rooms = () => {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
+                    <RecordSelectCheckbox
+                      checked={selectedRoomIds.includes(room.id)}
+                      onChange={(event) => toggleRoomSelection(room.id, event.target.checked)}
+                      label={`Select room ${room.room_number}`}
+                    />
                     <div className="text-base font-semibold text-primary">
                       {room.room_number || "Room"}
                     </div>
@@ -527,6 +638,16 @@ const Rooms = () => {
                     aria-label={`Edit room ${room.room_number || ""}`}
                   >
                     <Edit size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleRoomActive(room)}
+                    disabled={loading}
+                    className={`rounded p-2 disabled:opacity-50 ${room.is_active === false ? "text-success hover:bg-success" : "text-warning hover:bg-warning-soft"}`}
+                    title={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                    aria-label={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                  >
+                    <Power size={16} />
                   </button>
                   <button
                     onClick={() => deleteRoom(room)}
@@ -642,6 +763,25 @@ const Rooms = () => {
                               }
                               className="rounded-2xl border border-default bg-surface p-3 text-sm text-primary cursor-grab"
                             >
+                              <div className="mb-2 flex items-center justify-between">
+                                <RecordSelectCheckbox
+                                  checked={selectedRoomIds.includes(room.id)}
+                                  onChange={(event) =>
+                                    toggleRoomSelection(room.id, event.target.checked)
+                                  }
+                                  label={`Select room ${room.room_number}`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => toggleRoomActive(room)}
+                                  disabled={loading}
+                                  className={`rounded p-1 disabled:opacity-50 ${room.is_active === false ? "text-success" : "text-warning"}`}
+                                  aria-label={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                                  title={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                                >
+                                  <Power size={14} />
+                                </button>
+                              </div>
                               <div className="font-semibold">
                                 {room.room_number || "Room"}
                               </div>
@@ -703,7 +843,26 @@ const Rooms = () => {
                             }
                             className="rounded-2xl border border-default bg-surface p-3 text-sm text-primary cursor-grab"
                           >
-                            <div className="font-semibold">
+                           <div className="mb-2 flex items-center justify-between">
+                             <RecordSelectCheckbox
+                               checked={selectedRoomIds.includes(room.id)}
+                               onChange={(event) =>
+                                 toggleRoomSelection(room.id, event.target.checked)
+                               }
+                               label={`Select room ${room.room_number}`}
+                             />
+                             <button
+                               type="button"
+                               onClick={() => toggleRoomActive(room)}
+                               disabled={loading}
+                               className={`rounded p-1 disabled:opacity-50 ${room.is_active === false ? "text-success" : "text-warning"}`}
+                               aria-label={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                               title={`${room.is_active === false ? "Activate" : "Deactivate"} room ${room.room_number || ""}`}
+                             >
+                               <Power size={14} />
+                             </button>
+                           </div>
+                           <div className="font-semibold">
                               {room.room_number || "Room"}
                             </div>
                             <div className="text-[11px] text-muted mt-1">

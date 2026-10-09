@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRolesPermissions } from "../../context/RolesPermissionsContext";
 import { RoleForm } from "../common/RoleForm";
-import { Shield, Plus, Edit, Trash2, X } from "lucide-react";
+import { Shield, Plus, Edit, Trash2, X, Power } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import clsx from "clsx";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
@@ -10,6 +10,8 @@ import CsvImportControls from "../common/CsvImportControls";
 import CsvExportButton from "../common/CsvExportButton";
 import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
 import toast from "react-hot-toast";
+import RecordSelectCheckbox from "../common/RecordSelectCheckbox";
+import BulkDeleteBar from "../common/BulkDeleteBar";
 
 const RolesPermissions = () => {
   const layoutRef = useRef(null);
@@ -36,6 +38,8 @@ const RolesPermissions = () => {
     "permissions",
   ]);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [selectedRoleIds, setSelectedRoleIds] = useState([]);
+  const [togglingRoleId, setTogglingRoleId] = useState(null);
 
   useEffect(() => {
     fetchRoles();
@@ -64,9 +68,32 @@ const RolesPermissions = () => {
   const handleDeleteRole = async (roleId) => {
     try {
       await deleteRole(roleId);
+      setSelectedRoleIds((current) => current.filter((id) => id !== roleId));
       setDeleteConfirm(null);
     } catch (err) {
       console.error("Error deleting role:", err);
+    }
+  };
+
+  const handleToggleRoleActive = async (role) => {
+    const isActive = role.is_active !== false;
+    try {
+      setTogglingRoleId(role.id);
+      await updateRole(role.id, { is_active: !isActive });
+      await fetchRoles();
+      toast.success(
+        `Role ${isActive ? "deactivated" : "activated"}. Changes apply to staff access immediately.`,
+      );
+    } catch (err) {
+      console.error("Failed to update role status:", err);
+      toast.error(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to update role status.",
+      );
+    } finally {
+      setTogglingRoleId(null);
     }
   };
 
@@ -95,6 +122,39 @@ const RolesPermissions = () => {
         (roleFilter === "system" ? role.is_system : !role.is_system))
     );
   });
+  const deletableRoleIds = filteredRoles
+    .filter((role) => !role.is_system)
+    .map((role) => role.id);
+  const allVisibleRolesSelected =
+    deletableRoleIds.length > 0 &&
+    deletableRoleIds.every((id) => selectedRoleIds.includes(id));
+
+  const handleBulkDeleteRoles = async () => {
+    const ids = selectedRoleIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected role${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    const results = await Promise.allSettled(ids.map((id) => deleteRole(id)));
+    const failedIds = ids.filter(
+      (_, index) => results[index].status === "rejected",
+    );
+    const deletedCount = ids.length - failedIds.length;
+    setSelectedRoleIds(failedIds);
+    await fetchRoles();
+    if (failedIds.length > 0) {
+      toast.error(
+        `${deletedCount} role${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted.`,
+      );
+    } else {
+      toast.success(`${deletedCount} role${deletedCount === 1 ? "" : "s"} deleted.`);
+    }
+  };
   const roleColumns = [
     { key: "role_name", label: "Role name" },
     { key: "description", label: "Description" },
@@ -228,6 +288,13 @@ const RolesPermissions = () => {
         recordCount={filteredRoles.length}
         rightContent={<CsvExportButton onExport={exportRolesCsv} entityLabel="roles" disabled={!roles.length} />}
       />
+      <BulkDeleteBar
+        count={selectedRoleIds.length}
+        itemLabel="roles"
+        disabled={loading}
+        onDelete={handleBulkDeleteRoles}
+        onClear={() => setSelectedRoleIds([])}
+      />
       {/* Roles Table */}
       <div className="min-h-0 flex-1 overflow-hidden">
       <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingRole ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -239,6 +306,19 @@ const RolesPermissions = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b border-default">
               <tr>
+                <th className="w-10 px-2 text-center">
+                  <RecordSelectCheckbox
+                    checked={allVisibleRolesSelected}
+                    onChange={(event) =>
+                      setSelectedRoleIds((current) =>
+                        event.target.checked
+                          ? Array.from(new Set([...current, ...deletableRoleIds]))
+                          : current.filter((id) => !deletableRoleIds.includes(id)),
+                      )
+                    }
+                    label="Select all visible deletable roles"
+                  />
+                </th>
                 <th className={`px-4 py-3 text-left text-muted font-medium ${!visibleColumns.includes("role_name") ? "hidden" : ""}`}>
                   Role Name
                 </th>
@@ -256,7 +336,22 @@ const RolesPermissions = () => {
             <tbody className="divide-y divide-slate-700/60">
               {filteredRoles.map((role) => (
                 <tr key={role.id} className="hover:bg-subtle transition">
-                  <td className={`px-4 py-3 ${!visibleColumns.includes("role_name") ? "hidden" : ""}`}>
+                <td className="w-10 px-2 text-center">
+                  {!role.is_system && (
+                    <RecordSelectCheckbox
+                      checked={selectedRoleIds.includes(role.id)}
+                      onChange={(event) =>
+                        setSelectedRoleIds((current) =>
+                          event.target.checked
+                            ? [...new Set([...current, role.id])]
+                            : current.filter((id) => id !== role.id),
+                        )
+                      }
+                      label={`Select role ${role.role_name}`}
+                    />
+                  )}
+                </td>
+                <td className={`px-4 py-3 ${!visibleColumns.includes("role_name") ? "hidden" : ""}`}>
                     <div className="flex items-center gap-2">
                       <Shield size={14} className="text-accent" />
                       <span className="font-medium text-primary">
@@ -267,6 +362,15 @@ const RolesPermissions = () => {
                           System
                         </span>
                       )}
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded ${
+                          role.is_active === false
+                            ? "bg-danger-soft text-danger"
+                            : "bg-success text-success"
+                        }`}
+                      >
+                        {role.is_active === false ? "Inactive" : "Active"}
+                      </span>
                     </div>
                   </td>
                   <td className={`px-4 py-3 text-muted ${!visibleColumns.includes("description") ? "hidden" : ""}`}>
@@ -286,6 +390,20 @@ const RolesPermissions = () => {
                       aria-label={`Edit ${role.role_name}`}
                     >
                       <Edit size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleRoleActive(role)}
+                      disabled={togglingRoleId === role.id}
+                      className={`rounded p-2 transition disabled:cursor-wait disabled:opacity-50 ${
+                        role.is_active === false
+                          ? "text-success hover:bg-success"
+                          : "text-warning hover:bg-warning-soft"
+                      }`}
+                      title={`${role.is_active === false ? "Activate" : "Deactivate"} ${role.role_name}`}
+                      aria-label={`${role.is_active === false ? "Activate" : "Deactivate"} ${role.role_name}`}
+                    >
+                      <Power size={15} />
                     </button>
                     {!role.is_system && (
                       <button

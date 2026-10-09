@@ -14,6 +14,8 @@ import CsvImportControls from "../common/CsvImportControls";
 import CsvExportButton from "../common/CsvExportButton";
 import { downloadRecordCsv, parseRecordCsv } from "../../utils/recordCsv";
 import toast from "react-hot-toast";
+import RecordSelectCheckbox from "../common/RecordSelectCheckbox";
+import BulkDeleteBar from "../common/BulkDeleteBar";
 
 const DEFAULT_MODULE_ACCESS = [
   "dashboard",
@@ -47,6 +49,7 @@ const UsersStaff = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [togglingUserId, setTogglingUserId] = useState(null);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [visibleColumns, setVisibleColumns] = useState([
     "user",
@@ -309,10 +312,55 @@ const UsersStaff = () => {
     try {
       setLoading(true);
       await usersApi.deleteUser(userId);
+      setSelectedUserIds((current) => current.filter((id) => id !== userId));
       await loadData();
       setDeleteConfirm(null);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to delete user");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const visibleUserIds = filteredUsers.map((user) => user.id);
+  const allVisibleUsersSelected =
+    visibleUserIds.length > 0 &&
+    visibleUserIds.every((id) => selectedUserIds.includes(id));
+
+  const handleBulkDeleteUsers = async () => {
+    const ids = selectedUserIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(
+        `Delete ${ids.length} selected user${ids.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => usersApi.deleteUser(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+      setSelectedUserIds(failedIds);
+      await loadData();
+      if (failedIds.length > 0) {
+        toast.error(
+          `${deletedCount} user${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted.`,
+        );
+      } else {
+        toast.success(
+          `${deletedCount} user${deletedCount === 1 ? "" : "s"} deleted.`,
+        );
+      }
+    } catch (err) {
+      console.error("Failed to complete bulk user deletion:", err);
+      toast.error("Could not refresh users after bulk deletion.");
     } finally {
       setLoading(false);
     }
@@ -632,6 +680,13 @@ const UsersStaff = () => {
         recordCount={filteredUsers.length}
         rightContent={<CsvExportButton onExport={exportUsersCsv} entityLabel="users" disabled={!users.length} />}
       />
+      <BulkDeleteBar
+        count={selectedUserIds.length}
+        itemLabel="users"
+        disabled={loading}
+        onDelete={handleBulkDeleteUsers}
+        onClear={() => setSelectedUserIds([])}
+      />
       {/* Users Table */}
       <div className="min-h-0 flex-1 overflow-hidden">
       <div className={`entity-admin-list h-full min-w-0 rounded-lg border border-default ${isEditingUser ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}>
@@ -645,6 +700,19 @@ const UsersStaff = () => {
           <table className="w-full min-w-0 table-fixed text-sm">
             <thead className="bg-subtle border-b border-default">
               <tr>
+                <th className="w-10 px-2 text-center">
+                  <RecordSelectCheckbox
+                    checked={allVisibleUsersSelected}
+                    onChange={(event) =>
+                      setSelectedUserIds((current) =>
+                        event.target.checked
+                          ? Array.from(new Set([...current, ...visibleUserIds]))
+                          : current.filter((id) => !visibleUserIds.includes(id)),
+                      )
+                    }
+                    label="Select all visible users"
+                  />
+                </th>
                 <th className={`px-4 py-3 text-left text-muted font-medium ${!visibleColumns.includes("user") ? "hidden" : ""}`}>
                   User
                 </th>
@@ -665,6 +733,19 @@ const UsersStaff = () => {
             <tbody className="divide-y divide-slate-700/60">
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-subtle transition">
+                  <td className="w-10 px-2 text-center">
+                    <RecordSelectCheckbox
+                      checked={selectedUserIds.includes(user.id)}
+                      onChange={(event) =>
+                        setSelectedUserIds((current) =>
+                          event.target.checked
+                            ? [...new Set([...current, user.id])]
+                            : current.filter((id) => id !== user.id),
+                        )
+                      }
+                      label={`Select ${user.name || user.email}`}
+                    />
+                  </td>
                   <td className={`px-4 py-3 ${!visibleColumns.includes("user") ? "hidden" : ""}`}>
                     <div>
                       <span className="font-medium text-primary">
