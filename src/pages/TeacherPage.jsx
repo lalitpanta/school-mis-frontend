@@ -779,11 +779,15 @@ const TeacherPage = () => {
 
       const layoutBounds = layout.getBoundingClientRect();
       const tableBounds = tableViewport.getBoundingClientRect();
+      const headerBounds = tableViewport
+        .querySelector("thead")
+        ?.getBoundingClientRect();
+      const panelTop = headerBounds?.top ?? tableBounds.top;
       setEditPanelBounds({
-        top: tableBounds.top - layoutBounds.top,
+        top: panelTop - layoutBounds.top,
         height: Math.max(
-          tableBounds.height,
-          window.innerHeight - tableBounds.top - 16,
+          tableBounds.bottom - panelTop,
+          window.innerHeight - panelTop - 16,
         ),
       });
     };
