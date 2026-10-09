@@ -872,13 +872,13 @@ main > * {
   background: var(--bg-card) !important;
 }
 
-.entity-admin-page.is-editing .entity-admin-list,
-.entity-admin-page.is-editing .entity-admin-list-footer {
+.entity-admin-page.is-editing:not([data-settings-screen]) .entity-admin-list,
+.entity-admin-page.is-editing:not([data-settings-screen]) .entity-admin-list-footer {
   width: calc(100% - 584px) !important;
   flex: 0 0 auto;
 }
 
-.entity-admin-page.is-editing .entity-edit-panel {
+.entity-admin-page.is-editing:not([data-settings-screen]) .entity-edit-panel {
   position: absolute;
   z-index: 20;
   top: 8rem;
@@ -928,7 +928,7 @@ main > * {
 .settings-inline-edit-panel {
   position: absolute;
   top: 7rem;
-  right: 1rem;
+  right: 0;
   z-index: 20;
   width: min(560px, calc(100% - 300px));
   height: calc(100% - 7rem);
@@ -1098,14 +1098,20 @@ main > * {
   }
 }
 
-@media (max-width: 1023px) {
-  .entity-admin-page.is-editing {
+@media (max-width: 767px) {
+  .entity-admin-page[data-settings-screen].is-editing {
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
   }
 
-  .settings-inline-edit-panel {
+  .entity-admin-page[data-settings-screen].is-editing .entity-admin-list,
+  .entity-admin-page[data-settings-screen].is-editing .entity-admin-list-footer {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  .entity-admin-page[data-settings-screen].is-editing .settings-inline-edit-panel {
     position: relative !important;
     top: auto !important;
     right: auto !important;
@@ -1114,6 +1120,47 @@ main > * {
     height: min(75dvh, 720px) !important;
     margin-top: 16px;
   }
+}
+
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list {
+  width: 50%;
+  min-width: 0;
+  flex: 0 0 50%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list th,
+.entity-admin-page[data-settings-screen].is-editing .entity-admin-list td {
+  overflow: hidden;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entity-admin-page[data-settings-screen="users"].is-editing .entity-admin-list tr > :nth-child(2),
+.entity-admin-page[data-settings-screen="users"].is-editing .entity-admin-list tr > :nth-child(3),
+.entity-admin-page[data-settings-screen="roles"].is-editing .entity-admin-list tr > :nth-child(2),
+.entity-admin-page[data-settings-screen="departments"].is-editing .entity-admin-list tr > :nth-child(2),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--classes tr > :nth-child(2),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--classes tr > :nth-child(3),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--sections tr > :nth-child(3),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--sections tr > :nth-child(4),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--sections tr > :nth-child(5),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--sections tr > :nth-child(6),
+.entity-admin-page[data-settings-screen="classrooms"].is-editing .entity-admin-list--sections tr > :nth-child(7),
+.entity-admin-page[data-settings-screen="rooms"].is-editing .entity-admin-list tr > :nth-child(2),
+.entity-admin-page[data-settings-screen="rooms"].is-editing .entity-admin-list tr > :nth-child(3),
+.entity-admin-page[data-settings-screen="rooms"].is-editing .entity-admin-list tr > :nth-child(5),
+.entity-admin-page[data-settings-screen="courses"].is-editing .entity-admin-list tr > :nth-child(1),
+.entity-admin-page[data-settings-screen="courses"].is-editing .entity-admin-list tr > :nth-child(3) {
+  display: none;
 }
 
 .settings-inline-edit-panel .app-modal-surface {

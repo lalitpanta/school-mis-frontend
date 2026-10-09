@@ -52,7 +52,7 @@ const Rooms = () => {
   const [viewMode, setViewMode] = useState("list");
   const [form, setForm] = useState(getDefaultForm(floorCount));
   const [editingRoom, setEditingRoom] = useState(null);
-  const isEditingRoom = showModal;
+  const isEditingRoom = showModal && editingRoom !== null;
   const editPanelStyle = useSettingsInlinePanelLayout(isEditingRoom, layoutRef);
 
   const selectedBlock = useMemo(
@@ -223,14 +223,15 @@ const Rooms = () => {
   return (
     <div
       ref={layoutRef}
-      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingRoom ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      data-settings-screen="rooms"
+      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingRoom ? "is-editing flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible max-md:h-auto max-md:min-h-0" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-surface)",
         border: "1px solid var(--border-default)",
       }}
     >
       <div
-        className={`min-w-0 ${isEditingRoom ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+        className={`w-full min-w-0 ${isEditingRoom ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
         <div>
@@ -277,7 +278,7 @@ const Rooms = () => {
       </div>
 
       {viewMode === "list" && (
-        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
+        <div className="entity-admin-list min-h-0 flex-1 overflow-auto rounded-lg border border-default">
           {rooms.length === 0 ? (
             <div className="p-6 text-center text-muted">
               {loading

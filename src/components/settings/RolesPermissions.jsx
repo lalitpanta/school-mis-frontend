@@ -80,16 +80,17 @@ const RolesPermissions = () => {
     role.role_name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const isEditingRole = showModal;
+  const isEditingRole = showModal && modalMode === "edit";
   const editPanelStyle = useSettingsInlinePanelLayout(isEditingRole, layoutRef);
 
   return (
     <div
       ref={layoutRef}
-      className={`entity-admin-page relative min-w-0 rounded-2xl border border-default bg-subtle p-4 ${isEditingRole ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      data-settings-screen="roles"
+      className={`entity-admin-page relative min-w-0 rounded-2xl border border-default bg-subtle p-4 ${isEditingRole ? "is-editing flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible max-md:h-auto max-md:min-h-0" : "flex h-full min-h-0 w-full flex-col"}`}
     >
       <div
-        className={`min-w-0 ${isEditingRole ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+        className={`w-full min-w-0 ${isEditingRole ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
       {/* Header */}
       <div>
@@ -133,7 +134,7 @@ const RolesPermissions = () => {
       </div>
 
       {/* Roles Table */}
-      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-default">
+      <div className="entity-admin-list min-h-0 flex-1 overflow-auto rounded-lg border border-default">
         {filteredRoles.length === 0 ? (
           <div className="p-6 text-center text-muted bg-subtle">
             {loading ? "Loading roles..." : "No roles found."}

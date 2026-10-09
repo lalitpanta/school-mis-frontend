@@ -84,7 +84,9 @@ const Classrooms = () => {
   const [sectionForm, setSectionForm] = useState(getDefaultSectionForm());
   const [draggingSectionId, setDraggingSectionId] = useState(null);
   const [sectionView, setSectionView] = useState("list");
-  const isEditingClassroomItem = showClassModal || showSectionModal;
+  const isEditingClassroomItem =
+    (showClassModal && classMode === "edit") ||
+    (showSectionModal && sectionMode === "edit");
   const editPanelStyle = useSettingsInlinePanelLayout(
     isEditingClassroomItem,
     layoutRef,
@@ -348,14 +350,15 @@ const Classrooms = () => {
   return (
     <div
       ref={layoutRef}
-      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingClassroomItem ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      data-settings-screen="classrooms"
+      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingClassroomItem ? "is-editing flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible max-md:h-auto max-md:min-h-0" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-surface)",
         border: "1px solid var(--border-default)",
       }}
     >
       <div
-        className={`min-w-0 ${isEditingClassroomItem ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
+        className={`w-full min-w-0 ${isEditingClassroomItem ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
       >
       <div className="flex flex-col gap-3 mb-4">
         <div className="flex items-center justify-between">
@@ -406,7 +409,7 @@ const Classrooms = () => {
       </div>
 
       {activeTab === "classes" && (
-        <div className="overflow-hidden rounded-lg border border-default">
+        <div className="entity-admin-list entity-admin-list--classes min-h-0 flex-1 overflow-auto rounded-lg border border-default">
           {classrooms.length === 0 ? (
             <div className="p-6 text-center text-muted">
               {loading
@@ -519,7 +522,7 @@ const Classrooms = () => {
             </div>
 
             {sectionView === "list" && (
-              <div className="overflow-hidden rounded-3xl border border-default bg-surface">
+              <div className="entity-admin-list entity-admin-list--sections min-h-0 flex-1 overflow-auto rounded-3xl border border-default bg-surface">
                 {sections.length === 0 ? (
                   <div className="p-6 text-center text-muted">
                     {loading
