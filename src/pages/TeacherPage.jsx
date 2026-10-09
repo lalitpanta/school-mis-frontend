@@ -959,9 +959,13 @@ const TeacherPage = () => {
               <thead className="sticky top-0 z-10 border-b border-default bg-subtle text-muted">
                 <tr>
                   {!isEditingTeacher && (
-                    <th className="w-12 px-3 py-3 text-center">
+                    <th className="w-16 px-3 py-3 text-center">
                       <div className="inline-flex items-center justify-center gap-2">
-                        <span className="w-3.5 shrink-0" aria-hidden="true" />
+                        <GripVertical
+                          size={14}
+                          className="shrink-0 text-muted"
+                          aria-hidden="true"
+                        />
                         <input
                           type="checkbox"
                           aria-label="Select all visible teachers"
@@ -1046,7 +1050,7 @@ const TeacherPage = () => {
                       className={`entity-admin-table-row border-t border-default hover:bg-surface ${isEditingTeacher && selectedTeacher?.id === teacher.id ? "entity-admin-selected-row border-l-2 border-l-accent bg-accent-soft" : ""}`}
                     >
                       {!isEditingTeacher && (
-                        <td className="px-3 py-4 text-center">
+                        <td className="w-16 px-3 py-4 text-center">
                           <div className="inline-flex items-center gap-2 text-muted">
                             <GripVertical size={14} aria-hidden="true" />
                             <input
@@ -2464,8 +2468,7 @@ const TeacherPage = () => {
       {showViewModal && viewTeacher && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4">
           <div
-            className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default shadow-2xl"
-            style={{ backgroundColor: "var(--bg-card)", opacity: 1 }}
+            className="app-modal-surface max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default shadow-2xl"
           >
             <div className="flex items-center justify-between gap-4 border-b border-default px-6 py-4">
               <div>

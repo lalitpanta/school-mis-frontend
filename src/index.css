@@ -412,6 +412,11 @@ textarea {
 }
 
 /* Shared modal styling for popup forms */
+.app-modal-surface {
+  background-color: var(--bg-card) !important;
+  background-image: none !important;
+}
+
 .app-modal-surface
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .app-modal-surface select,

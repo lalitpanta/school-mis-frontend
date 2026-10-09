@@ -1004,9 +1004,13 @@ export default function EmployeePage() {
               >
                 <tr>
                   {!isEditingEmployee && (
-                    <th className="w-12 px-3 py-4 text-center">
+                    <th className="w-16 px-3 py-4 text-center">
                       <div className="inline-flex items-center justify-center gap-2">
-                        <span className="w-3.5 shrink-0" aria-hidden="true" />
+                        <GripVertical
+                          size={14}
+                          className="shrink-0 text-slate-500"
+                          aria-hidden="true"
+                        />
                         <input
                           type="checkbox"
                           aria-label="Select all visible employees"
@@ -1093,7 +1097,7 @@ export default function EmployeePage() {
                       className={`entity-admin-table-row transition hover:bg-slate-800/30 ${isEditingEmployee && formData.id === emp.id ? "entity-admin-selected-row border-l-2 border-l-teal-400 bg-teal-500/10" : ""}`}
                     >
                       {!isEditingEmployee && (
-                        <td className="px-3 py-4 text-center">
+                        <td className="w-16 px-3 py-4 text-center">
                           <div className="inline-flex items-center gap-2 text-slate-500">
                             <GripVertical size={14} aria-hidden="true" />
                             <input
