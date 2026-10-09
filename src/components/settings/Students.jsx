@@ -1470,7 +1470,7 @@ const Students = () => {
                           }
                           className="record-table-checkbox"
                         />
-                        {column.label}
+                        <span>{column.label}</span>
                       </label>
                     ))}
                   </div>

@@ -746,7 +746,21 @@ main > * {
 }
 
 .record-table-menu-item {
+  display: grid;
+  grid-template-columns: 16px max-content;
+  justify-content: start !important;
+  justify-items: start;
   cursor: pointer;
+}
+
+.record-table-popover .record-table-checkbox {
+  width: 15px !important;
+  min-width: 15px;
+  max-width: 15px;
+  height: 15px;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 15px;
 }
 
 .record-table-menu-item:hover,
