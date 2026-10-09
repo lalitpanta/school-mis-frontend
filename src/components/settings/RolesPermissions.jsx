@@ -312,14 +312,18 @@ const RolesPermissions = () => {
       <SettingsModal
         open={showModal}
         onClose={closeModal}
-        title={modalMode === "create" ? "Create New Role" : "Edit Role"}
+        title={
+          modalMode === "create"
+            ? "Create New Role"
+            : `EDIT ROLE · ${selectedRole?.role_name || ""}`
+        }
         width="max-w-2xl"
         inlinePanel={isEditingRole}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <div className="min-h-full">

@@ -286,14 +286,18 @@ const Departments = () => {
       <SettingsModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        title={modalMode === "create" ? "Create Department" : "Edit Department"}
+        title={
+          modalMode === "create"
+            ? "Create Department"
+            : `EDIT DEPARTMENT · ${form.name || selected?.name || ""}`
+        }
         width="max-w-md"
         inlinePanel={isEditingDepartment}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={submit} className="p-4 space-y-3">

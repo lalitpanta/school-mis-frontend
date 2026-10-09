@@ -735,7 +735,11 @@ const Rooms = () => {
       <SettingsModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        title={editingRoom ? "Edit Room" : "Create Room"}
+        title={
+          editingRoom
+            ? `EDIT ROOM · ${form.room_number || editingRoom.room_number || ""}`
+            : "Create Room"
+        }
         subtitle={
           editingRoom
             ? "Update the room settings."
@@ -745,9 +749,9 @@ const Rooms = () => {
         inlinePanel={isEditingRoom}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={saveRoom} className="space-y-4 p-2">

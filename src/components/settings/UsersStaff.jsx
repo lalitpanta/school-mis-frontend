@@ -752,14 +752,18 @@ const UsersStaff = () => {
       <SettingsModal
         open={showModal}
         onClose={closeModal}
-        title={modalMode === "create" ? "Create New User" : "Edit User"}
+        title={
+          modalMode === "create"
+            ? "Create New User"
+            : `EDIT USER · ${formData.name || formData.email || ""}`
+        }
         width="max-w-md"
         inlinePanel={isEditingUser}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <div className="min-h-full">

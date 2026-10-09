@@ -826,6 +826,10 @@ main > * {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list thead th:last-child {
   text-transform: uppercase;
 }
 
@@ -981,7 +985,7 @@ main > * {
   top: 7rem;
   right: 0;
   z-index: 20;
-  width: min(560px, calc(50% - 0.5rem));
+  width: min(560px, calc(100% - 300px));
   height: calc(100% - 7rem);
   min-width: 0;
 }
@@ -1238,14 +1242,19 @@ main > * {
 
 .settings-inline-edit-panel .app-modal-surface {
   overflow: hidden;
+  border-color: var(--border-dim) !important;
 }
 
 .settings-inline-edit-panel .entity-edit-header {
   min-height: 52px;
   height: 52px;
+  align-items: center;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .settings-inline-edit-panel .entity-edit-header h2 {
+  line-height: 1.25;
   text-transform: uppercase;
 }
 

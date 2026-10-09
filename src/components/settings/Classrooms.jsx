@@ -1014,14 +1014,18 @@ const Classrooms = () => {
       <SettingsModal
         open={showClassModal}
         onClose={() => setShowClassModal(false)}
-        title={classMode === "edit" ? "Edit Class" : "Create Class"}
+        title={
+          classMode === "edit"
+            ? `EDIT CLASS · ${classForm.name || selectedClass?.name || ""}`
+            : "Create Class"
+        }
         width="max-w-md"
         inlinePanel={isEditingClassroomItem}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={saveClass} className="space-y-4 p-2">
@@ -1087,15 +1091,19 @@ const Classrooms = () => {
       <SettingsModal
         open={showSectionModal}
         onClose={() => setShowSectionModal(false)}
-        title={sectionMode === "edit" ? "Edit Section" : "Create Section"}
+        title={
+          sectionMode === "edit"
+            ? `EDIT SECTION · ${sectionForm.section_name || selectedSection?.section_name || ""}`
+            : "Create Section"
+        }
         subtitle="Assign a section to class, block, floor, and room."
         width="max-w-lg"
         inlinePanel={isEditingClassroomItem}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={saveSection} className="space-y-4 p-2">

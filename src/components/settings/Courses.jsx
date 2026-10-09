@@ -848,15 +848,15 @@ const Courses = () => {
             ? "Add New Course"
             : mode === "view"
               ? "Course Details"
-              : "Edit Course"
+              : `EDIT COURSE · ${form.course_name || selected?.course_name || ""}`
         }
         width="max-w-4xl"
         inlinePanel={isEditingCourse}
         inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
         inlinePanelStyle={editPanelStyle}
-        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceClassName="rounded-xl border border-slate-700/70 shadow-lg"
         inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
-        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelHeaderClassName="entity-edit-header student-entity-edit-header items-center px-5"
         inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         {mode === "view" && (
