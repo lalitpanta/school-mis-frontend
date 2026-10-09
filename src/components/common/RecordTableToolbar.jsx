@@ -54,7 +54,7 @@ const RecordTableToolbar = ({
       aria-expanded={openPopover === name}
       aria-controls={`record-table-${name}-panel`}
       onClick={() => togglePopover(name)}
-      className={`entity-admin-button inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 ${className}`}
+      className={`record-table-popover-trigger entity-admin-button inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 ${className}`}
     >
       {icon}
       {label}
@@ -86,11 +86,12 @@ const RecordTableToolbar = ({
             <div
               id="record-table-filter-panel"
               data-record-table-popover
-              className="absolute left-0 top-full z-50 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl"
+              className="record-table-popover record-table-popover--filter absolute left-0 top-full z-50 mt-2 grid gap-3"
               onClick={(event) => {
                 if (event.target.closest("button")) setOpenPopover(null);
               }}
             >
+              <h3 className="record-table-popover-heading">Filter records</h3>
               {filterContent}
             </div>
           )}
@@ -101,12 +102,13 @@ const RecordTableToolbar = ({
             <div
               id="record-table-columns-panel"
               data-record-table-popover
-              className="absolute left-0 top-full z-50 mt-2 grid w-max gap-1 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl"
+              className="record-table-popover record-table-popover--columns absolute left-0 top-full z-50 mt-2 grid gap-1"
             >
+              <h3 className="record-table-popover-heading">Visible columns</h3>
               {columns.map((column) => (
                 <label
                   key={column.key}
-                  className="flex cursor-pointer items-center gap-2 whitespace-nowrap rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                  className="record-table-menu-item"
                 >
                   <input
                     type="checkbox"
@@ -116,7 +118,7 @@ const RecordTableToolbar = ({
                       visibleColumns.length === 1
                     }
                     onChange={() => onToggleColumn(column.key)}
-                    className="accent-indigo-500"
+                    className="record-table-checkbox"
                   />
                   {column.label}
                 </label>
@@ -135,8 +137,9 @@ const RecordTableToolbar = ({
             <div
               id="record-table-views-panel"
               data-record-table-popover
-              className="absolute left-0 top-full z-50 mt-2 grid w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl"
+              className="record-table-popover record-table-popover--views absolute left-0 top-full z-50 mt-2 grid gap-1"
             >
+              <h3 className="record-table-popover-heading">Saved views</h3>
               {views.map((view) => (
                 <button
                   key={view.label}
@@ -145,7 +148,7 @@ const RecordTableToolbar = ({
                     view.onSelect();
                     setOpenPopover(null);
                   }}
-                  className="rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                  className="record-table-menu-action"
                 >
                   {view.label}
                 </button>

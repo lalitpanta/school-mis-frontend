@@ -908,7 +908,7 @@ export default function EmployeePage() {
             }
             filterContent={
               <>
-                <label className="grid gap-1 text-xs text-slate-400">
+                <label className="record-table-filter-field">
                   Status
                   <select
                     value={employeeStatusFilter}
@@ -923,7 +923,7 @@ export default function EmployeePage() {
                     <option value="inactive">Inactive</option>
                   </select>
                 </label>
-                <label className="grid gap-1 text-xs text-slate-400">
+                <label className="record-table-filter-field">
                   Department
                   <select
                     value={departmentFilter}

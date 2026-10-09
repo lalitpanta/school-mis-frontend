@@ -860,7 +860,7 @@ const TeacherPage = () => {
             }
             filterContent={
               <>
-                <label className="grid gap-1 text-xs text-muted">
+                <label className="record-table-filter-field">
                   Designation
                   <input
                     value={filterDesignation}
@@ -871,7 +871,7 @@ const TeacherPage = () => {
                     className="w-full rounded border border-default bg-subtle px-3 py-2 text-sm text-primary"
                   />
                 </label>
-                <label className="grid gap-1 text-xs text-muted">
+                <label className="record-table-filter-field">
                   Status
                   <select
                     value={teacherStatusFilter}

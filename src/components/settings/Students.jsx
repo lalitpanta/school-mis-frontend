@@ -1442,16 +1442,17 @@ const Students = () => {
                     setShowFilterMenu(false);
                   }}
                   aria-expanded={showColumnMenu}
-                  className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+                  className="record-table-popover-trigger inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
                 >
                   <Columns3 size={16} /> Columns
                 </button>
                 {showColumnMenu && (
-                  <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl">
+                  <div className="record-table-popover record-table-popover--columns absolute left-0 top-full z-50 mt-2 grid gap-1">
+                    <h3 className="record-table-popover-heading">Visible columns</h3>
                     {studentColumns.map((column) => (
                       <label
                         key={column.key}
-                        className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                        className="record-table-menu-item"
                       >
                         <input
                           type="checkbox"
@@ -1467,7 +1468,7 @@ const Students = () => {
                                 : [...current, column.key],
                             )
                           }
-                          className="accent-indigo-500"
+                          className="record-table-checkbox"
                         />
                         {column.label}
                       </label>
@@ -1484,12 +1485,13 @@ const Students = () => {
                     setShowFilterMenu(false);
                   }}
                   aria-expanded={showViewMenu}
-                  className="inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
+                  className="record-table-popover-trigger inline-flex items-center gap-2 px-3 py-2 border border-slate-700 rounded text-sm text-slate-300 hover:bg-slate-800"
                 >
                   <Bookmark size={16} /> Views
                 </button>
                 {showViewMenu && (
-                  <div className="absolute left-0 top-full z-30 mt-2 w-48 rounded border border-slate-700 bg-slate-900 p-1 shadow-xl">
+                  <div className="record-table-popover record-table-popover--views absolute left-0 top-full z-50 mt-2 grid gap-1">
+                    <h3 className="record-table-popover-heading">Saved views</h3>
                     {[
                       { label: "All students", type: "all" },
                       { label: "Active students", status: "active" },
@@ -1501,7 +1503,7 @@ const Students = () => {
                         key={view.label}
                         type="button"
                         onClick={() => applyStudentView(view)}
-                        className="block w-full rounded px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                        className="record-table-menu-action"
                       >
                         {view.label}
                       </button>
@@ -1519,7 +1521,7 @@ const Students = () => {
                   }}
                   aria-label="Filter students"
                   aria-expanded={showFilterMenu}
-                  className={`relative inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
+                  className={`record-table-popover-trigger relative inline-flex items-center justify-center p-2 border border-slate-700 rounded text-slate-300 hover:bg-slate-800 ${activeFilterCount ? "text-indigo-300" : ""}`}
                 >
                   <SlidersHorizontal size={17} />
                   {activeFilterCount > 0 && (
@@ -1529,8 +1531,9 @@ const Students = () => {
                   )}
                 </button>
                 {showFilterMenu && (
-                  <div className="absolute left-0 top-full z-30 mt-2 grid w-64 gap-3 rounded border border-slate-700 bg-slate-900 p-3 shadow-xl">
-                    <label className="grid gap-1 text-xs text-slate-400">
+                  <div className="record-table-popover record-table-popover--filter absolute left-0 top-full z-50 mt-2 grid gap-3">
+                    <h3 className="record-table-popover-heading">Filter students</h3>
+                    <label className="record-table-filter-field">
                       Student type
                       <select
                         value={typeFilter}
@@ -1542,7 +1545,7 @@ const Students = () => {
                         <option value="university">University</option>
                       </select>
                     </label>
-                    <label className="grid gap-1 text-xs text-slate-400">
+                    <label className="record-table-filter-field">
                       Status
                       <select
                         value={statusFilter}
@@ -1554,7 +1557,7 @@ const Students = () => {
                         <option value="inactive">Inactive</option>
                       </select>
                     </label>
-                    <label className="grid gap-1 text-xs text-slate-400">
+                    <label className="record-table-filter-field">
                       Classroom
                       <select
                         value={classroomFilter}
