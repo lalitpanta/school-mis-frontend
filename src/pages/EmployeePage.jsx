@@ -224,9 +224,12 @@ export default function EmployeePage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleEmployeeImport = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleEmployeeImport = async () => {
+    const file = employeeImportRef.current?.files?.[0];
+    if (!file) {
+      showToast("Select a CSV file to import.", "error");
+      return;
+    }
     let importedCount = 0;
 
     try {
@@ -302,7 +305,7 @@ export default function EmployeePage() {
       }
       showToast(message, "error");
     } finally {
-      event.target.value = "";
+      if (employeeImportRef.current) employeeImportRef.current.value = "";
       setLoading(false);
     }
   };
@@ -468,6 +471,46 @@ export default function EmployeePage() {
     } catch (error) {
       showToast("Failed to delete employee", "error");
       console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDeleteEmployees = async () => {
+    const ids = selectedEmployeeIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(`Delete ${ids.length} selected employee${ids.length === 1 ? "" : "s"}? This cannot be undone.`)
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => employeesApi.deleteEmployee(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+
+      setSelectedEmployeeIds(failedIds);
+      await loadEmployees();
+
+      if (failedIds.length > 0) {
+        const firstFailure = results.find(
+          (result) => result.status === "rejected",
+        )?.reason;
+        showToast(
+          `${deletedCount} employee${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted. ${
+            firstFailure?.response?.data?.message || firstFailure?.message || ""
+          }`.trim(),
+          "error",
+        );
+      } else {
+        showToast(`${deletedCount} employee${deletedCount === 1 ? "" : "s"} deleted successfully.`);
+      }
     } finally {
       setLoading(false);
     }
@@ -829,10 +872,10 @@ export default function EmployeePage() {
       className={`entity-admin-page ${isEditingEmployee ? "is-editing relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
     >
       <div
-        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "w-full min-w-0 space-y-6"}`}
+        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "w-full min-w-0"}`}
       >
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1
               className="text-[28px] font-bold"
@@ -844,27 +887,38 @@ export default function EmployeePage() {
               Manage employee records and information
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <input
               ref={employeeImportRef}
               type="file"
               accept=".csv,text/csv"
-              onChange={handleEmployeeImport}
               className="hidden"
               aria-label="Choose employee CSV file"
             />
             <button
               type="button"
               onClick={() => employeeImportRef.current?.click()}
-              className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 transition hover:bg-slate-800"
+              title="Choose CSV to import"
+              aria-label="Choose employee CSV file"
+              className="entity-admin-button inline-flex h-10 items-center justify-center rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
             >
-              <Upload size={16} /> Import
+              <Upload size={16} />
             </button>
             <button
-              onClick={handleCreateClick}
-              className="entity-admin-button flex items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 transition hover:bg-teal-200"
+              type="button"
+              onClick={handleEmployeeImport}
+              title="Import employees"
+              aria-label="Import employees"
+              className="entity-admin-button inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
             >
-              <Plus size={17} /> Add
+              <Download size={16} className="rotate-180" />
+            </button>
+            <button
+              type="button"
+              onClick={handleCreateClick}
+              className="entity-admin-button inline-flex h-10 items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 hover:bg-teal-200"
+            >
+              <Plus size={16} /> Add Employee
             </button>
           </div>
         </div>
@@ -872,7 +926,7 @@ export default function EmployeePage() {
         {/* Toast */}
         {toast && (
           <div
-            className={`p-4 rounded-lg ${
+            className={`mb-5 p-4 rounded-lg ${
               toast.type === "error"
                 ? "bg-red-500/20 text-red-300 border border-red-500/50"
                 : "bg-green-500/20 text-green-300 border border-green-500/50"
@@ -982,12 +1036,37 @@ export default function EmployeePage() {
               <button
                 type="button"
                 onClick={exportEmployeesCsv}
-                className="entity-admin-button inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 text-sm text-slate-300 hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-slate-300 hover:bg-slate-800"
               >
                 <Download size={16} /> Export CSV
               </button>
             }
           />
+          {!isEditingEmployee && selectedEmployeeIds.length > 0 && (
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
+              <span className="text-slate-300">
+                {selectedEmployeeIds.length} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleBulkDeleteEmployees}
+                  disabled={loading}
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 text-sm font-medium text-red-300 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 size={16} />
+                  Delete selected
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedEmployeeIds([])}
+                  className="text-xs text-indigo-300 hover:text-indigo-200"
+                >
+                  Clear selection
+                </button>
+              </div>
+            </div>
+          )}
           <div
             ref={employeeTableViewportRef}
             className={`entity-admin-list min-h-0 flex-1 ${isEditingEmployee ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "overflow-auto"}`}

@@ -9,6 +9,7 @@ import {
   X,
   Eye,
   Download,
+  Upload,
   ArrowUpDown,
   GripVertical,
   Power,
@@ -155,6 +156,7 @@ const TeacherPage = () => {
   const [attachments, setAttachments] = useState([]);
   const splitLayoutRef = useRef(null);
   const teacherTableViewportRef = useRef(null);
+  const teacherImportRef = useRef(null);
   const [editPanelBounds, setEditPanelBounds] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewTeacher, setViewTeacher] = useState(null);
@@ -620,6 +622,70 @@ const TeacherPage = () => {
     }
   };
 
+  const handleTeacherImport = async () => {
+    const file = teacherImportRef.current?.files?.[0];
+    if (!file) {
+      setError("Select a CSV file to import.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    setLoading(true);
+    setError(null);
+    try {
+      await teachersApi.importTeachers(formData);
+      await loadData();
+      toast.success("Teachers imported successfully.");
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Failed to import teachers.");
+    } finally {
+      if (teacherImportRef.current) teacherImportRef.current.value = "";
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDeleteTeachers = async () => {
+    const ids = selectedTeacherIds;
+    if (
+      ids.length === 0 ||
+      !window.confirm(`Delete ${ids.length} selected teacher${ids.length === 1 ? "" : "s"}? This cannot be undone.`)
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => teachersApi.deleteTeacher(id)),
+      );
+      const failedIds = ids.filter(
+        (_, index) => results[index].status === "rejected",
+      );
+      const deletedCount = ids.length - failedIds.length;
+
+      setSelectedTeacherIds(failedIds);
+      await loadData();
+
+      if (failedIds.length > 0) {
+        const firstFailure = results.find(
+          (result) => result.status === "rejected",
+        )?.reason;
+        setError(
+          `${deletedCount} teacher${deletedCount === 1 ? "" : "s"} deleted; ${failedIds.length} could not be deleted. ${
+            firstFailure?.response?.data?.message || firstFailure?.message || ""
+          }`.trim(),
+        );
+      } else {
+        toast.success(`${deletedCount} teacher${deletedCount === 1 ? "" : "s"} deleted successfully.`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const teacherColumns = [
     {
       key: "id",
@@ -796,9 +862,9 @@ const TeacherPage = () => {
       className={`entity-admin-page ${isEditingTeacher ? "is-editing relative flex w-full h-[calc(100dvh-5rem)] min-h-128 flex-col overflow-visible max-md:h-auto max-md:max-h-none" : "space-y-6"}`}
     >
       <div
-        className={`w-full min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : "space-y-6"}`}
+        className={`w-full min-w-0 ${isEditingTeacher ? "flex min-h-0 flex-1 flex-col gap-4 overflow-hidden" : ""}`}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-[28px] font-bold text-primary">Manage Teachers</h1>
             <p className="mt-1 text-sm text-muted">
@@ -806,29 +872,35 @@ const TeacherPage = () => {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="entity-admin-button cursor-pointer rounded-xl bg-subtle px-3 py-2 text-sm text-primary">
-              Import
-              <input
-                type="file"
-                accept=".csv"
-                onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  const fd = new FormData();
-                  fd.append("file", f);
-                  try {
-                    await teachersApi.importTeachers(fd);
-                    await loadData();
-                  } catch (err) {
-                    console.error(err);
-                  }
-                }}
-                className="hidden"
-              />
-            </label>
+            <input
+              ref={teacherImportRef}
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              aria-label="Choose teacher CSV file"
+            />
             <button
+              type="button"
+              onClick={() => teacherImportRef.current?.click()}
+              title="Choose CSV to import"
+              aria-label="Choose teacher CSV file"
+              className="entity-admin-button inline-flex h-10 items-center justify-center rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
+            >
+              <Upload size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={handleTeacherImport}
+              title="Import teachers"
+              aria-label="Import teachers"
+              className="entity-admin-button inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-700 px-4 text-sm text-slate-300 hover:bg-slate-800"
+            >
+              <Download size={16} className="rotate-180" />
+            </button>
+            <button
+              type="button"
               onClick={openCreateModal}
-              className="entity-admin-button bg-accent hover:bg-accent text-muted px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition"
+              className="entity-admin-button inline-flex h-10 items-center gap-2 rounded-lg bg-teal-300 px-4 text-sm font-semibold text-slate-950 hover:bg-teal-200"
             >
               <Plus size={16} /> Add Teacher
             </button>
@@ -836,7 +908,7 @@ const TeacherPage = () => {
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-danger-soft border border-danger text-sm text-danger">
+          <div className="mb-5 p-4 rounded-xl bg-danger-soft border border-danger text-sm text-danger">
             {error}
           </div>
         )}
@@ -943,12 +1015,37 @@ const TeacherPage = () => {
                     console.error(e);
                   }
                 }}
-                className="inline-flex items-center gap-2 rounded border border-default px-3 py-2 text-muted hover:bg-subtle"
+                className="inline-flex items-center gap-2 rounded border border-slate-700 px-3 py-2 text-slate-300 hover:bg-slate-800"
               >
                 <Download size={16} /> Export CSV
               </button>
             }
           />
+          {!isEditingTeacher && selectedTeacherIds.length > 0 && (
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-700/60 bg-slate-800/30 px-4 py-2 text-sm">
+              <span className="text-slate-300">
+                {selectedTeacherIds.length} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleBulkDeleteTeachers}
+                  disabled={loading}
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 text-sm font-medium text-red-300 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 size={16} />
+                  Delete selected
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTeacherIds([])}
+                  className="text-xs text-indigo-300 hover:text-indigo-200"
+                >
+                  Clear selection
+                </button>
+              </div>
+            </div>
+          )}
           <div
             ref={teacherTableViewportRef}
             className={`entity-admin-list min-h-0 flex-1 ${isEditingTeacher ? "w-full overflow-y-auto overflow-x-hidden md:w-1/2" : "w-full overflow-auto"}`}
