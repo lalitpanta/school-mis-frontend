@@ -884,7 +884,7 @@ export default function EmployeePage() {
 
         {/* Employees Table */}
         <div
-          className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg"
+          className="entity-admin-card flex min-h-0 flex-1 flex-col overflow-visible rounded-lg"
           style={{
             background: "var(--bg-card)",
             border: "1px solid var(--border-card)",

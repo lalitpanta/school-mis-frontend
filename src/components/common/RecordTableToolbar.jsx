@@ -101,7 +101,7 @@ const RecordTableToolbar = ({
             <div
               id="record-table-columns-panel"
               data-record-table-popover
-              className="absolute left-0 top-full z-50 mt-2 grid max-h-80 w-56 gap-1 overflow-y-auto rounded border border-slate-700 bg-slate-900 p-2 shadow-xl"
+              className="absolute left-0 top-full z-50 mt-2 grid w-56 gap-1 rounded border border-slate-700 bg-slate-900 p-2 shadow-xl"
             >
               {columns.map((column) => (
                 <label
