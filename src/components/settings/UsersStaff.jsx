@@ -322,11 +322,6 @@ const UsersStaff = () => {
     }
   };
 
-  const visibleUserIds = filteredUsers.map((user) => user.id);
-  const allVisibleUsersSelected =
-    visibleUserIds.length > 0 &&
-    visibleUserIds.every((id) => selectedUserIds.includes(id));
-
   const handleBulkDeleteUsers = async () => {
     const ids = selectedUserIds;
     if (
@@ -473,6 +468,10 @@ const UsersStaff = () => {
       (user.phone && user.phone.toLowerCase().includes(term))
     );
   });
+  const visibleUserIds = filteredUsers.map((user) => user.id);
+  const allVisibleUsersSelected =
+    visibleUserIds.length > 0 &&
+    visibleUserIds.every((id) => selectedUserIds.includes(id));
   const userColumns = [
     { key: "user", label: "User" },
     { key: "phone", label: "Phone" },

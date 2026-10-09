@@ -15,7 +15,24 @@ const downloadJsonFile = (payload, fileName) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  window.URL.revokeObjectURL(url);
+  window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+};
+
+const getBackupErrorMessage = (error) => {
+  const responseData = error?.response?.data;
+  if (typeof responseData === "string") {
+    try {
+      const parsed = JSON.parse(responseData);
+      if (parsed?.message) return parsed.message;
+    } catch {
+      if (responseData.trim()) return responseData;
+    }
+  }
+  return (
+    responseData?.message ||
+    error?.message ||
+    "Failed to download backup."
+  );
 };
 
 const Backup = () => {
@@ -49,7 +66,7 @@ const Backup = () => {
 
         if (!canViewAllTenants) {
           if (isMounted) {
-            const currentTenantId = user?.id || "current-tenant";
+            const currentTenantId = user?.tenantId || user?.id || "current-tenant";
             const currentTenantName =
               user?.name ||
               user?.firstName ||
@@ -189,10 +206,7 @@ const Backup = () => {
       downloadJsonFile(parsed, `${fileName}.json`);
       toast.success("Tenant backup downloaded successfully.");
     } catch (err) {
-      const message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to download backup.";
+      const message = getBackupErrorMessage(err);
       setError(message);
       toast.error(message);
     } finally {
