@@ -983,9 +983,10 @@ main > * {
 .settings-inline-edit-panel {
   position: absolute;
   top: 7rem;
-  right: 0;
+  left: calc(50% + 17px);
+  right: auto;
   z-index: 20;
-  width: min(560px, calc(100% - 300px));
+  width: calc(50% - 34px);
   height: calc(100% - 7rem);
   min-width: 0;
 }
@@ -1169,6 +1170,7 @@ main > * {
   .entity-admin-page[data-settings-screen].is-editing .settings-inline-edit-panel {
     position: relative !important;
     top: auto !important;
+    left: auto !important;
     right: auto !important;
     width: 100% !important;
     max-width: none !important;
