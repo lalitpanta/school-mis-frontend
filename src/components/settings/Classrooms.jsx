@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getClassrooms,
   createClassroom,
@@ -20,6 +20,7 @@ import {
 import SettingsModal from "../common/SettingsModal";
 import toast from "react-hot-toast";
 import { useSettings } from "../../context/SettingsContext";
+import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 
 const getDefaultClassForm = () => ({
   name: "",
@@ -51,6 +52,7 @@ const getBlockAccent = (index) =>
   FLOOR_PLAN_DARK.blockAccents[index % FLOOR_PLAN_DARK.blockAccents.length];
 
 const Classrooms = () => {
+  const layoutRef = useRef(null);
   const { settings } = useSettings();
   const school = settings?.school_profile || {};
   const blocks = useMemo(
@@ -83,6 +85,10 @@ const Classrooms = () => {
   const [draggingSectionId, setDraggingSectionId] = useState(null);
   const [sectionView, setSectionView] = useState("list");
   const isEditingClassroomItem = showClassModal || showSectionModal;
+  const editPanelStyle = useSettingsInlinePanelLayout(
+    isEditingClassroomItem,
+    layoutRef,
+  );
 
   useEffect(() => {
     loadData();
@@ -341,7 +347,8 @@ const Classrooms = () => {
 
   return (
     <div
-      className={`min-w-0 rounded-2xl p-4 ${isEditingClassroomItem ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      ref={layoutRef}
+      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingClassroomItem ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-surface)",
         border: "1px solid var(--border-default)",
@@ -370,7 +377,7 @@ const Classrooms = () => {
               onClick={
                 activeTab === "classes" ? openCreateClass : openCreateSection
               }
-              className="inline-flex items-center gap-3 px-4 py-2 rounded-full text-sm font-semibold bg-linear-to-r from-indigo-600 to-emerald-500 text-primary shadow-xl transform hover:scale-105 transition-transform ring-1 ring-focus"
+              className="settings-admin-create-button bg-accent text-primary shadow-lg transition hover:bg-accent"
             >
               <Plus size={16} />
               <span className="whitespace-nowrap">
@@ -504,7 +511,7 @@ const Classrooms = () => {
                 </div>
                 <button
                   onClick={openCreateSection}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-accent hover:bg-accent text-primary rounded"
+                  className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent"
                 >
                   <Plus size={14} /> Create
                 </button>
@@ -817,6 +824,12 @@ const Classrooms = () => {
         title={classMode === "edit" ? "Edit Class" : "Create Class"}
         width="max-w-md"
         inlinePanel={isEditingClassroomItem}
+        inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
+        inlinePanelStyle={editPanelStyle}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={saveClass} className="space-y-4 p-2">
           <div>
@@ -885,6 +898,12 @@ const Classrooms = () => {
         subtitle="Assign a section to class, block, floor, and room."
         width="max-w-lg"
         inlinePanel={isEditingClassroomItem}
+        inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
+        inlinePanelStyle={editPanelStyle}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={saveSection} className="space-y-4 p-2">
           <div>

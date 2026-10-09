@@ -925,6 +925,50 @@ main > * {
   border-radius: 10px;
 }
 
+.settings-inline-edit-panel {
+  position: absolute;
+  top: 7rem;
+  right: 1rem;
+  z-index: 20;
+  width: min(560px, calc(100% - 300px));
+  height: calc(100% - 7rem);
+  min-width: 0;
+}
+
+.settings-inline-edit-panel form {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-inline-edit-panel form > button[type="submit"] {
+  width: auto;
+  min-height: 40px;
+  align-self: flex-end;
+  margin-top: auto;
+  border-radius: 10px;
+  padding: 0 18px;
+}
+
+.settings-inline-edit-panel form > div:last-child:has(> button[type="submit"]),
+.settings-inline-edit-panel form > div:last-child:has(> button[type="button"]) {
+  position: sticky;
+  bottom: -1px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  padding: 12px 0 0;
+  background: var(--bg-card);
+}
+
+.settings-inline-edit-panel form > div:last-child > button {
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 0 16px;
+}
+
 .entity-admin-page .entity-edit-tabs {
   background: var(--bg-card);
   border-color: var(--border-dim);
@@ -1052,4 +1096,86 @@ main > * {
     height: min(80dvh, 720px);
     margin-top: 16px;
   }
+}
+
+@media (max-width: 1023px) {
+  .entity-admin-page.is-editing {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .settings-inline-edit-panel {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: min(75dvh, 720px) !important;
+    margin-top: 16px;
+  }
+}
+
+.settings-inline-edit-panel .app-modal-surface {
+  overflow: hidden;
+}
+
+.settings-inline-edit-panel .app-modal-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.settings-inline-edit-panel .app-modal-body > div,
+.settings-inline-edit-panel .app-modal-body > form {
+  min-height: 100%;
+}
+
+.settings-inline-edit-panel form > div:has(> button[type="submit"]) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.settings-inline-edit-panel form button[type="submit"] {
+  min-width: 7.5rem;
+  min-height: 2.5rem;
+  flex: 0 0 auto;
+  border-radius: 0.625rem;
+}
+
+.settings-inline-edit-panel form > button[type="submit"] {
+  align-self: flex-end;
+  width: auto;
+}
+
+.settings-inline-edit-panel form > div:has(> button[type="submit"]) > button {
+  min-width: 7.5rem;
+  min-height: 2.5rem;
+  flex: 0 0 auto;
+  border-radius: 0.625rem;
+}
+
+.settings-inline-edit-panel form button[type="submit"]:only-child {
+  align-self: flex-end;
+}
+
+.settings-inline-edit-panel .app-modal-body form button[type="button"] {
+  min-height: 2.5rem;
+  min-width: 6rem;
+  border-radius: 0.625rem;
+}
+
+.settings-admin-create-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.625rem;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
 }

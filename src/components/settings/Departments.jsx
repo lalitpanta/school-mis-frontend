@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   getDepartments,
   createDepartment,
@@ -8,8 +8,10 @@ import {
 import Button from "../common/Button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
+import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 
 const Departments = () => {
+  const layoutRef = useRef(null);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -88,10 +90,15 @@ const Departments = () => {
   };
 
   const isEditingDepartment = showModal;
+  const editPanelStyle = useSettingsInlinePanelLayout(
+    isEditingDepartment,
+    layoutRef,
+  );
 
   return (
     <div
-      className={`min-w-0 rounded-2xl p-4 ${isEditingDepartment ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      ref={layoutRef}
+      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingDepartment ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-surface)",
         border: "1px solid var(--border-default)",
@@ -109,7 +116,7 @@ const Departments = () => {
         </h2>
         <button
           onClick={openCreate}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-accent hover:bg-accent text-primary rounded"
+          className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent"
         >
           <Plus size={14} /> Create
         </button>
@@ -172,6 +179,12 @@ const Departments = () => {
         title={modalMode === "create" ? "Create Department" : "Edit Department"}
         width="max-w-md"
         inlinePanel={isEditingDepartment}
+        inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
+        inlinePanelStyle={editPanelStyle}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={submit} className="p-4 space-y-3">
           <div>

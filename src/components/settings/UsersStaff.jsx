@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usersApi } from "../../api/usersApi";
 import { teachersApi } from "../../api/teachersApi";
 import { getStudents } from "../../api/studentsApi";
@@ -8,6 +8,7 @@ import { useRolesPermissions } from "../../context/RolesPermissionsContext";
 import { RoleSelector } from "../common/RoleSelector";
 import { Plus, Trash2, Edit, X } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
+import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 
 const DEFAULT_MODULE_ACCESS = [
   "dashboard",
@@ -25,6 +26,7 @@ const DEFAULT_MODULE_ACCESS = [
 ];
 
 const UsersStaff = () => {
+  const layoutRef = useRef(null);
   const { fetchRoles, roles: availableRoles } = useRolesPermissions();
 
   const [users, setUsers] = useState([]);
@@ -388,10 +390,12 @@ const UsersStaff = () => {
     );
   });
   const isEditingUser = showModal;
+  const editPanelStyle = useSettingsInlinePanelLayout(isEditingUser, layoutRef);
 
   return (
     <div
-      className={`min-w-0 rounded-2xl border border-default bg-subtle p-4 ${isEditingUser ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      ref={layoutRef}
+      className={`entity-admin-page relative min-w-0 rounded-2xl border border-default bg-subtle p-4 ${isEditingUser ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
     >
       <div
         className={`min-w-0 ${isEditingUser ? "flex min-h-0 flex-col overflow-hidden" : "flex min-h-0 flex-1 flex-col"}`}
@@ -438,7 +442,7 @@ const UsersStaff = () => {
         />
         <button
           onClick={openCreateModal}
-          className="bg-accent hover:bg-accent text-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"
+          className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent"
         >
           <Plus size={16} />
           Create User
@@ -552,8 +556,14 @@ const UsersStaff = () => {
         title={modalMode === "create" ? "Create New User" : "Edit User"}
         width="max-w-md"
         inlinePanel={isEditingUser}
+        inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
+        inlinePanelStyle={editPanelStyle}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
-        <div className="p-2">
+        <div className="min-h-full">
           <form
             onSubmit={
               modalMode === "create" ? handleCreateUser : handleEditUser

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getCourses,
   getCourse,
@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
+import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 
 const SUBJECT_TYPES = [
   "Core",
@@ -278,6 +279,7 @@ const CheckboxField = ({ label, checked, onChange, disabled = false }) => (
 );
 
 const Courses = () => {
+  const layoutRef = useRef(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -516,6 +518,10 @@ const Courses = () => {
     sectionFilter,
   ].filter((value) => value !== "all").length;
   const isEditingCourse = showModal && mode !== "view";
+  const editPanelStyle = useSettingsInlinePanelLayout(
+    isEditingCourse,
+    layoutRef,
+  );
 
   const applyCourseView = (view) => {
     setTypeFilter(view.type || "all");
@@ -527,7 +533,8 @@ const Courses = () => {
 
   return (
     <div
-      className={`min-w-0 rounded-2xl p-4 ${isEditingCourse ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      ref={layoutRef}
+      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingCourse ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-surface)",
         border: "1px solid var(--border-default)",
@@ -543,7 +550,11 @@ const Courses = () => {
           >
             Courses Management
           </h2>
-          <Button onClick={openCreate} icon={Plus}>
+          <Button
+            onClick={openCreate}
+            icon={Plus}
+            className="settings-admin-create-button"
+          >
             Add Course
           </Button>
         </div>
@@ -833,6 +844,12 @@ const Courses = () => {
         }
         width="max-w-4xl"
         inlinePanel={isEditingCourse}
+        inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
+        inlinePanelStyle={editPanelStyle}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         {mode === "view" && (
           <div className="space-y-6 max-h-[70vh] overflow-y-auto">

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { roomsApi } from "../../api/roomsApi";
 import Button from "../common/Button";
 import { Plus, Edit, Trash2, LayoutGrid, List, Map } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import { useSettings } from "../../context/SettingsContext";
 import toast from "react-hot-toast";
+import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 
 const ROOM_TYPES = [
   "Classroom",
@@ -36,6 +37,7 @@ const getDefaultForm = (floorCount) => ({
 });
 
 const Rooms = () => {
+  const layoutRef = useRef(null);
   const { settings } = useSettings();
   const school = settings?.school_profile || {};
   const floorCount = useMemo(
@@ -51,6 +53,7 @@ const Rooms = () => {
   const [form, setForm] = useState(getDefaultForm(floorCount));
   const [editingRoom, setEditingRoom] = useState(null);
   const isEditingRoom = showModal;
+  const editPanelStyle = useSettingsInlinePanelLayout(isEditingRoom, layoutRef);
 
   const selectedBlock = useMemo(
     () => blocks.find((block) => block.id === form.block_id) || null,
@@ -219,7 +222,8 @@ const Rooms = () => {
 
   return (
     <div
-      className={`min-w-0 rounded-2xl p-4 ${isEditingRoom ? "grid h-[calc(100vh-10rem)] max-h-192 min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
+      ref={layoutRef}
+      className={`entity-admin-page relative min-w-0 rounded-2xl p-4 ${isEditingRoom ? "is-editing grid h-[calc(100dvh-10rem)] min-h-128 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-4 overflow-hidden max-lg:h-auto max-lg:max-h-none max-lg:grid-cols-1" : "flex h-full min-h-0 w-full flex-col"}`}
       style={{
         background: "var(--bg-surface)",
         border: "1px solid var(--border-default)",
@@ -265,7 +269,7 @@ const Rooms = () => {
           </div>
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-3 py-2 bg-accent hover:bg-accent text-primary rounded"
+            className="settings-admin-create-button bg-accent text-primary transition hover:bg-accent"
           >
             <Plus size={14} /> Create
           </button>
@@ -595,6 +599,12 @@ const Rooms = () => {
         }
         width="max-w-lg"
         inlinePanel={isEditingRoom}
+        inlinePanelClassName="entity-edit-panel settings-inline-edit-panel"
+        inlinePanelStyle={editPanelStyle}
+        inlinePanelSurfaceClassName="rounded-xl border border-default shadow-lg"
+        inlinePanelSurfaceStyle={{ background: "var(--bg-card)" }}
+        inlinePanelHeaderClassName="entity-edit-header min-h-11 items-center px-5 py-2"
+        inlinePanelBodyClassName="entity-edit-body px-5 py-4"
       >
         <form onSubmit={saveRoom} className="space-y-4 p-2">
           <div className="grid gap-4 md:grid-cols-2">
