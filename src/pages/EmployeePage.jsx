@@ -1005,36 +1005,39 @@ export default function EmployeePage() {
                 <tr>
                   {!isEditingEmployee && (
                     <th className="w-12 px-3 py-4 text-center">
-                      <input
-                        type="checkbox"
-                        aria-label="Select all visible employees"
-                        checked={
-                          pageEmployees.length > 0 &&
-                          pageEmployees.every((employee) =>
-                            selectedEmployeeIds.includes(employee.id),
-                          )
-                        }
-                        onChange={(event) =>
-                          setSelectedEmployeeIds((current) =>
-                            event.target.checked
-                              ? Array.from(
-                                  new Set([
-                                    ...current,
-                                    ...pageEmployees.map(
-                                      (employee) => employee.id,
-                                    ),
-                                  ]),
-                                )
-                              : current.filter(
-                                  (id) =>
-                                    !pageEmployees.some(
-                                      (employee) => employee.id === id,
-                                    ),
-                                ),
-                          )
-                        }
-                        className="accent-indigo-500"
-                      />
+                      <div className="inline-flex items-center justify-center gap-2">
+                        <span className="w-3.5 shrink-0" aria-hidden="true" />
+                        <input
+                          type="checkbox"
+                          aria-label="Select all visible employees"
+                          checked={
+                            pageEmployees.length > 0 &&
+                            pageEmployees.every((employee) =>
+                              selectedEmployeeIds.includes(employee.id),
+                            )
+                          }
+                          onChange={(event) =>
+                            setSelectedEmployeeIds((current) =>
+                              event.target.checked
+                                ? Array.from(
+                                    new Set([
+                                      ...current,
+                                      ...pageEmployees.map(
+                                        (employee) => employee.id,
+                                      ),
+                                    ]),
+                                  )
+                                : current.filter(
+                                    (id) =>
+                                      !pageEmployees.some(
+                                        (employee) => employee.id === id,
+                                      ),
+                                  ),
+                            )
+                          }
+                          className="record-selection-checkbox"
+                        />
+                      </div>
                     </th>
                   )}
                   {displayedEmployeeColumns.map((column) => (
@@ -1104,7 +1107,7 @@ export default function EmployeePage() {
                                     : current.filter((id) => id !== emp.id),
                                 )
                               }
-                              className="accent-indigo-500"
+                              className="record-selection-checkbox"
                             />
                           </div>
                         </td>

@@ -1627,32 +1627,35 @@ const Students = () => {
                   <thead className="entity-admin-table-head sticky top-0 z-10 border-b border-slate-300 bg-slate-200 text-slate-700">
                     <tr>
                       {!isEditingStudent && (
-                        <th className="w-24 px-3 py-3 text-center">
-                          <input
-                            type="checkbox"
-                            aria-label="Select all visible students"
-                            checked={allVisibleStudentsSelected}
-                            onChange={(event) =>
-                              setSelectedStudentIds((current) =>
-                                event.target.checked
-                                  ? Array.from(
-                                      new Set([
-                                        ...current,
-                                        ...pageStudents.map(
-                                          (student) => student.id,
-                                        ),
-                                      ]),
-                                    )
-                                  : current.filter(
-                                      (id) =>
-                                        !pageStudents.some(
-                                          (student) => student.id === id,
-                                        ),
-                                    ),
-                              )
-                            }
-                            className="accent-indigo-500"
-                          />
+                        <th className="w-12 px-3 py-3 text-center">
+                          <div className="inline-flex items-center justify-center gap-2">
+                            <span className="w-3.5 shrink-0" aria-hidden="true" />
+                            <input
+                              type="checkbox"
+                              aria-label="Select all visible students"
+                              checked={allVisibleStudentsSelected}
+                              onChange={(event) =>
+                                setSelectedStudentIds((current) =>
+                                  event.target.checked
+                                    ? Array.from(
+                                        new Set([
+                                          ...current,
+                                          ...pageStudents.map(
+                                            (student) => student.id,
+                                          ),
+                                        ]),
+                                      )
+                                    : current.filter(
+                                        (id) =>
+                                          !pageStudents.some(
+                                            (student) => student.id === id,
+                                          ),
+                                      ),
+                                )
+                              }
+                              className="record-selection-checkbox"
+                            />
+                          </div>
                         </th>
                       )}
                       {displayedColumns.map((column) => (
@@ -1703,7 +1706,7 @@ const Students = () => {
                         >
                           {!isEditingStudent && (
                             <td className="px-3 py-3 text-center">
-                              <div className="inline-flex items-center gap-1 text-slate-500">
+                              <div className="inline-flex items-center gap-2 text-slate-500">
                                 <GripVertical size={14} aria-hidden="true" />
                                 <button
                                   type="button"
@@ -1742,7 +1745,7 @@ const Students = () => {
                                           ),
                                     )
                                   }
-                                  className="accent-indigo-500"
+                                  className="record-selection-checkbox"
                                 />
                               </div>
                             </td>

@@ -802,6 +802,15 @@ main > * {
   height: 36px;
 }
 
+.record-selection-checkbox {
+  width: 16px !important;
+  height: 16px !important;
+  flex: 0 0 16px;
+  margin: 0;
+  accent-color: var(--accent);
+  vertical-align: middle;
+}
+
 .entity-admin-page .entity-admin-list {
   min-width: 0;
 }

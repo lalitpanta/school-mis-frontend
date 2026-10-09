@@ -960,36 +960,39 @@ const TeacherPage = () => {
                 <tr>
                   {!isEditingTeacher && (
                     <th className="w-12 px-3 py-3 text-center">
-                      <input
-                        type="checkbox"
-                        aria-label="Select all visible teachers"
-                        checked={
-                          pageTeachers.length > 0 &&
-                          pageTeachers.every((teacher) =>
-                            selectedTeacherIds.includes(teacher.id),
-                          )
-                        }
-                        onChange={(event) =>
-                          setSelectedTeacherIds((current) =>
-                            event.target.checked
-                              ? Array.from(
-                                  new Set([
-                                    ...current,
-                                    ...pageTeachers.map(
-                                      (teacher) => teacher.id,
-                                    ),
-                                  ]),
-                                )
-                              : current.filter(
-                                  (id) =>
-                                    !pageTeachers.some(
-                                      (teacher) => teacher.id === id,
-                                    ),
-                                ),
-                          )
-                        }
-                        className="accent-[var(--accent)]"
-                      />
+                      <div className="inline-flex items-center justify-center gap-2">
+                        <span className="w-3.5 shrink-0" aria-hidden="true" />
+                        <input
+                          type="checkbox"
+                          aria-label="Select all visible teachers"
+                          checked={
+                            pageTeachers.length > 0 &&
+                            pageTeachers.every((teacher) =>
+                              selectedTeacherIds.includes(teacher.id),
+                            )
+                          }
+                          onChange={(event) =>
+                            setSelectedTeacherIds((current) =>
+                              event.target.checked
+                                ? Array.from(
+                                    new Set([
+                                      ...current,
+                                      ...pageTeachers.map(
+                                        (teacher) => teacher.id,
+                                      ),
+                                    ]),
+                                  )
+                                : current.filter(
+                                    (id) =>
+                                      !pageTeachers.some(
+                                        (teacher) => teacher.id === id,
+                                      ),
+                                  ),
+                            )
+                          }
+                          className="record-selection-checkbox"
+                        />
+                      </div>
                     </th>
                   )}
                   {displayedTeacherColumns.map((column) => (
@@ -1057,7 +1060,7 @@ const TeacherPage = () => {
                                     : current.filter((id) => id !== teacher.id),
                                 )
                               }
-                              className="accent-[var(--accent)]"
+                              className="record-selection-checkbox"
                             />
                           </div>
                         </td>
@@ -2460,7 +2463,10 @@ const TeacherPage = () => {
 
       {showViewModal && viewTeacher && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4">
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default bg-surface shadow-2xl">
+          <div
+            className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-default shadow-2xl"
+            style={{ backgroundColor: "var(--bg-card)", opacity: 1 }}
+          >
             <div className="flex items-center justify-between gap-4 border-b border-default px-6 py-4">
               <div>
                 <h2 className="text-lg font-semibold text-primary">
