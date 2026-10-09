@@ -820,6 +820,57 @@ main > * {
   min-width: 0;
 }
 
+.entity-admin-page[data-settings-screen] .entity-admin-list thead th {
+  padding-right: 0.75rem !important;
+  padding-left: 0.75rem !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list tbody tr {
+  height: 68px;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list tbody tr:hover {
+  background: var(--bg-input);
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list tbody td {
+  padding-right: 0.75rem !important;
+  padding-left: 0.75rem !important;
+  font-size: 0.875rem;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list td:last-child > div {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list td:last-child {
+  width: 10rem;
+  text-align: center;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list td:last-child button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.entity-admin-page[data-settings-screen] .entity-admin-list td:last-child button svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+}
+
 .entity-admin-page thead,
 .entity-admin-page .entity-admin-table-head {
   height: 44px;

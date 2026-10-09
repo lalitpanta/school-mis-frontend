@@ -6,7 +6,7 @@ import { employeesApi } from "../../api/employeesApi";
 import { sectionsApi } from "../../api/sectionsApi";
 import { useRolesPermissions } from "../../context/RolesPermissionsContext";
 import { RoleSelector } from "../common/RoleSelector";
-import { Plus, Trash2, Edit, X } from "lucide-react";
+import { Plus, Trash2, Edit, X, Power } from "lucide-react";
 import SettingsModal from "../common/SettingsModal";
 import useSettingsInlinePanelLayout from "../../hooks/useSettingsInlinePanelLayout";
 import RecordTableToolbar from "../common/RecordTableToolbar";
@@ -46,6 +46,7 @@ const UsersStaff = () => {
   const [modalMode, setModalMode] = useState("create");
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [togglingUserId, setTogglingUserId] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [visibleColumns, setVisibleColumns] = useState([
     "user",
@@ -314,6 +315,27 @@ const UsersStaff = () => {
       setError(err.response?.data?.error || "Failed to delete user");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleUserActive = async (user) => {
+    const nextIsActive = !Boolean(user.is_active);
+    try {
+      setTogglingUserId(user.id);
+      const response = await usersApi.toggleUserActive(user.id, nextIsActive);
+      await loadData();
+      toast.success(
+        response.data?.is_active
+          ? "User activated successfully."
+          : "User deactivated successfully.",
+      );
+    } catch (err) {
+      console.error("Failed to update user status:", err);
+      toast.error(
+        err.response?.data?.error || "Failed to update user status.",
+      );
+    } finally {
+      setTogglingUserId(null);
     }
   };
 
@@ -684,14 +706,28 @@ const UsersStaff = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => openEditModal(user)}
                       className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                       title={`Edit ${user.name || user.email}`}
                       aria-label={`Edit ${user.name || user.email}`}
                     >
-                      <Edit size={16} />
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleUserActive(user)}
+                      disabled={togglingUserId === user.id}
+                      className={`rounded p-2 transition disabled:cursor-wait disabled:opacity-50 ${
+                        user.is_active
+                          ? "text-danger hover:bg-danger-soft hover:text-danger"
+                          : "text-success-text hover:bg-success hover:text-success-text"
+                      }`}
+                      title={`${user.is_active ? "Deactivate" : "Activate"} ${user.name || user.email}`}
+                      aria-label={`${user.is_active ? "Deactivate" : "Activate"} ${user.name || user.email}`}
+                    >
+                      <Power size={15} />
                     </button>
                     <button
                       onClick={() => setDeleteConfirm(user.id)}
@@ -699,7 +735,7 @@ const UsersStaff = () => {
                       title={`Delete ${user.name || user.email}`}
                       aria-label={`Delete ${user.name || user.email}`}
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={15} />
                     </button>
                     </div>
                   </td>

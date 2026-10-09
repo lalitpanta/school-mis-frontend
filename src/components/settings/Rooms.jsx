@@ -456,14 +456,15 @@ const Rooms = () => {
                     <td className={`px-4 py-3 text-right ${!visibleColumns.includes("capacity") ? "hidden" : ""}`}>
                       {room.total_capacity ?? 0}
                     </td>
-                    <td className="px-4 py-3 text-right space-x-2">
+                    <td className="px-4 py-3">
+                      <div className="inline-flex items-center justify-center gap-1">
                       <button
                         onClick={() => openEdit(room)}
                         className="rounded p-2 text-accent transition hover:bg-accent-soft hover:text-accent"
                         title={`Edit room ${room.room_number || ""}`}
                         aria-label={`Edit room ${room.room_number || ""}`}
                       >
-                        <Edit size={16} />
+                        <Edit size={15} />
                       </button>
                       <button
                         onClick={() => deleteRoom(room)}
@@ -471,8 +472,9 @@ const Rooms = () => {
                         title={`Delete room ${room.room_number || ""}`}
                         aria-label={`Delete room ${room.room_number || ""}`}
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
