@@ -829,7 +829,7 @@ export default function EmployeePage() {
       className={`entity-admin-page ${isEditingEmployee ? "is-editing relative flex h-[calc(100dvh-5rem)] min-h-128 w-full flex-col overflow-visible p-4 max-md:h-auto max-md:min-h-0" : "min-h-screen p-4"}`}
     >
       <div
-        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "mx-auto max-w-7xl space-y-6"}`}
+        className={`${isEditingEmployee ? "flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden" : "w-full min-w-0 space-y-6"}`}
       >
         {/* Header */}
         <div className="flex justify-between items-center">
