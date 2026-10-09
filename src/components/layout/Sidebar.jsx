@@ -434,20 +434,20 @@ const css = `
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 .mis-sidebar {
-  --sb-bg:         var(--accent);
-  --sb-panel:      var(--accent);
-  --sb-panel-2:    var(--accent);
-  --sb-hover:      rgba(148, 163, 184, 0.07);
-  --sb-active:     rgba(249, 115, 22, 0.10);
-  --sb-border:     rgba(148, 163, 184, 0.10);
-  --sb-border-s:   rgba(148, 163, 184, 0.12);
-  --sb-v500:       var(--danger);
-  --sb-v400:       var(--danger);
-  --sb-vglow:      rgba(245, 158, 11, 0.14);
-  --sb-hi:         var(--text-primary);
-  --sb-mid:        var(--text-primary);
-  --sb-low:        var(--accent);
-  --sb-section:    var(--accent);
+  --sb-bg:         var(--bg-sidebar);
+  --sb-panel:      var(--bg-surface);
+  --sb-panel-2:    var(--bg-card);
+  --sb-hover:      var(--bg-hover);
+  --sb-active:     var(--accent-dim);
+  --sb-border:     var(--border-dim);
+  --sb-border-s:   var(--border-dim);
+  --sb-v500:       var(--accent);
+  --sb-v400:       var(--accent);
+  --sb-vglow:      var(--accent-dim);
+  --sb-hi:         var(--text-1);
+  --sb-mid:        var(--text-2);
+  --sb-low:        var(--text-3);
+  --sb-section:    var(--text-3);
   --sb-danger:     var(--danger);
   --sb-w:          280px;
   --sb-wc:         78px;
@@ -492,12 +492,12 @@ const css = `
 .sb-brand-mark {
   width: 34px; height: 34px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--danger), var(--danger));
+  background: linear-gradient(135deg, var(--accent), var(--accent));
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.18);
+  box-shadow: 0 6px 16px var(--accent-dim);
   flex-shrink: 0;
 }
-.sb-brand-mark svg { width: 18px; height: 18px; stroke: var(--text-primary); }
+.sb-brand-mark svg { width: 18px; height: 18px; stroke: var(--accent-text); }
 
 .sb-brand-text {
   overflow: hidden;
@@ -513,7 +513,7 @@ const css = `
 }
 .mis-sidebar.sb-collapsed .sb-brand-mark {
   width: 34px; height: 34px; border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.18);
+  box-shadow: 0 6px 16px var(--accent-dim);
 }
 
 .sb-brand-title {
@@ -556,14 +556,14 @@ const css = `
 
 .sb-search-box {
   display: flex; align-items: center; gap: 9px;
-  background: rgba(17, 24, 39, 0.4);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: var(--bg-input);
+  border: 1px solid var(--border-dim);
   border-radius: 10px;
   padding: 9px 10px;
   color: var(--sb-low);
   transition: border-color .15s, background .15s;
 }
-.sb-search-box:focus-within { border-color: rgba(148, 163, 184, 0.22); background: rgba(17, 24, 39, 0.65); }
+.sb-search-box:focus-within { border-color: var(--accent); background: var(--bg-input); }
 .sb-search-box svg { width: 15px; height: 15px; flex-shrink: 0; stroke: var(--sb-low); }
 .sb-search-input {
   background: none; border: none; outline: none;
@@ -634,13 +634,13 @@ const css = `
   width: 100%;
   min-width: 0;
   min-height: 40px;
-  color: var(--text-muted);
+  color: var(--text-2);
   background: transparent;
   border-radius: 12px;
 }
 .mis-sidebar.sb-collapsed .sb-item:hover {
-  background: var(--bg-subtle);
-  color: var(--text-primary);
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 .mis-sidebar.sb-collapsed .sb-item svg,
 .mis-sidebar.sb-collapsed .sb-item svg:first-child,
@@ -657,7 +657,7 @@ const css = `
 .mis-sidebar.sb-collapsed .sb-item.sb-active {
   background: var(--accent-dim);
   color: var(--accent);
-  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.18);
+  box-shadow: inset 0 0 0 1px var(--accent-dim);
 }
 .mis-sidebar.sb-collapsed .sb-item.sb-active::before {
   display: none;
@@ -670,14 +670,14 @@ const css = `
 
 /* Active state */
 .sb-item.sb-active {
-  background: rgba(249, 115, 22, 0.10);
-  color: var(--text-primary);
-  box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.08);
+  background: var(--sb-active);
+  color: var(--sb-hi);
+  box-shadow: inset 0 0 0 1px var(--accent-dim);
 }
 .sb-item.sb-active::before {
   content: '';
   position: absolute; left: 0; top: 9px; bottom: 9px; width: 2px;
-  background: rgba(249, 115, 22, 0.8);
+  background: var(--accent);
   border-radius: 0 2px 2px 0;
 }
 
@@ -783,7 +783,7 @@ const css = `
   background: linear-gradient(135deg, var(--accent), var(--accent));
   display: flex; align-items: center; justify-content: center;
   font-family: 'Sora', sans-serif; font-weight: 700;
-  font-size: 13px; color: var(--text-primary);
+  font-size: 13px; color: var(--accent-text);
   flex-shrink: 0;
 }
 .sb-user-meta { overflow: hidden; white-space: nowrap; flex: 1; }
