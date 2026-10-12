@@ -134,7 +134,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="permission-selector space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-primary">
           Module Permissions
@@ -174,7 +174,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
           return (
             <div
               key={mod.key}
-              className="overflow-hidden rounded-xl border border-default bg-surface transition-colors hover:border-accent/60"
+              className="permission-module-card overflow-hidden rounded-xl border border-default bg-surface transition-colors hover:border-accent/60"
             >
               <div className="flex flex-col items-center gap-2 border-b border-default bg-subtle px-4 py-3 text-center">
                 <div className="flex items-center justify-center gap-2">
@@ -183,7 +183,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                     {mod.label}
                   </span>
                 </div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-default bg-surface px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent/60 hover:text-primary">
+                <label className="permission-module-select inline-flex cursor-pointer items-center gap-2 rounded-lg border border-default bg-surface px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent/60 hover:text-primary">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -192,7 +192,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                     }}
                     onChange={() => toggleModule(mod.key, actions)}
                     aria-label={`Select all ${mod.label} permissions`}
-                    className="h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
+                    className="permission-checkbox h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
                   />
                   <span>Select module</span>
                   <span className="rounded-full bg-selected px-1.5 py-0.5 text-[11px] text-muted">
@@ -201,7 +201,15 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                 </label>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-4">
+              <div
+                className="permission-action-list grid gap-2 p-3"
+                style={{
+                  gridTemplateColumns:
+                    actions.length === 1
+                      ? "minmax(120px, 160px)"
+                      : `repeat(${actions.length}, minmax(0, 1fr))`,
+                }}
+              >
                 {actions.map((action) => {
                   const permKey = `${mod.key}.${action}`;
                   const isChecked = selectedPermissions.includes(permKey);
@@ -209,7 +217,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                   return (
                     <label
                       key={permKey}
-                      className={`flex min-h-10 min-w-0 cursor-pointer items-center justify-center gap-2 rounded-lg border px-2 py-2 transition-colors ${
+                      className={`permission-action-option flex min-h-10 min-w-0 cursor-pointer items-center justify-center gap-2 rounded-lg border px-2 py-2 transition-colors ${
                         isChecked
                           ? "border-accent/60 bg-selected text-primary"
                           : "border-default bg-surface text-muted hover:border-accent/50 hover:bg-selected hover:text-primary"
@@ -220,7 +228,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                         checked={isChecked}
                         onChange={() => togglePermission(permKey)}
                         aria-label={`${ACTION_LABELS[action]} ${mod.label}`}
-                        className="h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
+                        className="permission-checkbox h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
                       />
                       <span className="truncate text-xs font-medium">
                         {ACTION_LABELS[action] || action}
