@@ -87,6 +87,7 @@ const ACTION_LABELS = {
   edit: "Edit",
   delete: "Delete",
 };
+const ACTION_ORDER = ["view", "delete", "create", "edit"];
 
 /**
  * PermissionSelector — uses modules as permissions.
@@ -157,10 +158,13 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {APP_MODULES.map((mod) => {
           const Icon = mod.icon;
-          const modulePermKeys = mod.actions.map((a) => `${mod.key}.${a}`);
+          const actions = ACTION_ORDER.filter((action) =>
+            mod.actions.includes(action),
+          );
+          const modulePermKeys = actions.map((a) => `${mod.key}.${a}`);
           const selectedCount = modulePermKeys.filter((k) =>
             selectedPermissions.includes(k),
           ).length;
@@ -170,52 +174,55 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
           return (
             <div
               key={mod.key}
-              className="border border-default rounded-lg bg-subtle overflow-hidden"
+              className="overflow-hidden rounded-xl border border-default bg-surface shadow-sm transition-colors hover:border-accent/60"
             >
-              {/* Module header */}
-              <div className="flex items-center gap-3 px-3 py-2.5 bg-subtle">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  ref={(el) => {
-                    if (el) el.indeterminate = someSelected;
-                  }}
-                  onChange={() => toggleModule(mod.key, mod.actions)}
-                  className="w-4 h-4 rounded accent-[var(--accent)]"
-                />
-                <Icon size={15} className="text-accent" />
-                <span className="text-sm font-medium text-primary flex-1">
-                  {mod.label}
-                </span>
-                <span className="text-xs text-muted">
-                  {selectedCount}/{modulePermKeys.length}
-                </span>
+              <div className="flex min-h-20 flex-col items-center justify-center gap-1.5 border-b border-default bg-subtle px-3 py-3 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Icon size={16} aria-hidden="true" className="text-accent" />
+                  <span className="text-sm font-semibold text-primary">
+                    {mod.label}
+                  </span>
+                </div>
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full px-2 py-1 text-xs text-muted transition hover:bg-selected hover:text-primary">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(el) => {
+                      if (el) el.indeterminate = someSelected;
+                    }}
+                    onChange={() => toggleModule(mod.key, actions)}
+                    aria-label={`Select all ${mod.label} permissions`}
+                    className="h-4 w-4 rounded accent-[var(--accent)]"
+                  />
+                  <span>Select module</span>
+                  <span className="text-[11px] text-muted">
+                    {selectedCount}/{modulePermKeys.length}
+                  </span>
+                </label>
               </div>
 
-              {/* Action checkboxes */}
-              <div className="flex flex-wrap gap-x-4 gap-y-1 px-4 py-2 pl-11">
-                {mod.actions.map((action) => {
+              <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-4">
+                {actions.map((action) => {
                   const permKey = `${mod.key}.${action}`;
                   const isChecked = selectedPermissions.includes(permKey);
 
                   return (
                     <label
                       key={permKey}
-                      className="flex items-center gap-1.5 cursor-pointer group"
+                      className={`flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2 py-1.5 transition-colors ${
+                        isChecked
+                          ? "border-accent/60 bg-selected text-primary"
+                          : "border-default bg-surface text-muted hover:border-accent/50 hover:bg-selected hover:text-primary"
+                      }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => togglePermission(permKey)}
-                        className="w-3.5 h-3.5 rounded accent-[var(--accent)]"
+                        aria-label={`${ACTION_LABELS[action]} ${mod.label}`}
+                        className="h-3.5 w-3.5 shrink-0 rounded accent-[var(--accent)]"
                       />
-                      <span
-                        className={`text-xs transition ${
-                          isChecked
-                            ? "text-primary"
-                            : "text-muted group-hover:text-muted"
-                        }`}
-                      >
+                      <span className="text-xs font-medium">
                         {ACTION_LABELS[action] || action}
                       </span>
                     </label>
