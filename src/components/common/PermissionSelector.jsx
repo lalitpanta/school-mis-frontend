@@ -87,7 +87,7 @@ const ACTION_LABELS = {
   edit: "Edit",
   delete: "Delete",
 };
-const ACTION_ORDER = ["view", "delete", "create", "edit"];
+const ACTION_ORDER = ["view", "create", "edit", "delete"];
 
 /**
  * PermissionSelector — uses modules as permissions.
@@ -135,30 +135,30 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="font-medium text-primary text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-primary">
           Module Permissions
         </h3>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 rounded-lg border border-default bg-surface px-3 py-1.5">
           <button
             type="button"
             onClick={selectAll}
-            className="text-xs text-accent hover:text-accent transition"
+            className="text-xs font-medium text-accent transition hover:opacity-80"
           >
             Select All
           </button>
-          <span className="text-muted">|</span>
+          <span aria-hidden="true" className="h-4 border-l border-default" />
           <button
             type="button"
             onClick={clearAll}
-            className="text-xs text-muted hover:text-muted transition"
+            className="text-xs font-medium text-muted transition hover:text-primary"
           >
             Clear All
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="space-y-3">
         {APP_MODULES.map((mod) => {
           const Icon = mod.icon;
           const actions = ACTION_ORDER.filter((action) =>
@@ -174,16 +174,16 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
           return (
             <div
               key={mod.key}
-              className="overflow-hidden rounded-xl border border-default bg-surface shadow-sm transition-colors hover:border-accent/60"
+              className="overflow-hidden rounded-xl border border-default bg-surface transition-colors hover:border-accent/60"
             >
-              <div className="flex min-h-20 flex-col items-center justify-center gap-1.5 border-b border-default bg-subtle px-3 py-3 text-center">
+              <div className="flex flex-col items-center gap-2 border-b border-default bg-subtle px-4 py-3 text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <Icon size={16} aria-hidden="true" className="text-accent" />
+                  <Icon size={17} aria-hidden="true" className="shrink-0 text-accent" />
                   <span className="text-sm font-semibold text-primary">
                     {mod.label}
                   </span>
                 </div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full px-2 py-1 text-xs text-muted transition hover:bg-selected hover:text-primary">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-default bg-surface px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent/60 hover:text-primary">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -192,10 +192,10 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                     }}
                     onChange={() => toggleModule(mod.key, actions)}
                     aria-label={`Select all ${mod.label} permissions`}
-                    className="h-4 w-4 rounded accent-[var(--accent)]"
+                    className="h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
                   />
                   <span>Select module</span>
-                  <span className="text-[11px] text-muted">
+                  <span className="rounded-full bg-selected px-1.5 py-0.5 text-[11px] text-muted">
                     {selectedCount}/{modulePermKeys.length}
                   </span>
                 </label>
@@ -209,7 +209,7 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                   return (
                     <label
                       key={permKey}
-                      className={`flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2 py-1.5 transition-colors ${
+                      className={`flex min-h-10 min-w-0 cursor-pointer items-center justify-center gap-2 rounded-lg border px-2 py-2 transition-colors ${
                         isChecked
                           ? "border-accent/60 bg-selected text-primary"
                           : "border-default bg-surface text-muted hover:border-accent/50 hover:bg-selected hover:text-primary"
@@ -220,9 +220,9 @@ export const PermissionSelector = ({ selectedPermissions = [], onChange }) => {
                         checked={isChecked}
                         onChange={() => togglePermission(permKey)}
                         aria-label={`${ACTION_LABELS[action]} ${mod.label}`}
-                        className="h-3.5 w-3.5 shrink-0 rounded accent-[var(--accent)]"
+                        className="h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
                       />
-                      <span className="text-xs font-medium">
+                      <span className="truncate text-xs font-medium">
                         {ACTION_LABELS[action] || action}
                       </span>
                     </label>
