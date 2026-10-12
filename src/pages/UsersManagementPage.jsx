@@ -842,7 +842,7 @@ export const UsersManagementPage = () => {
                   <label className="block text-sm font-medium text-muted mb-2">
                     Module Access
                   </label>
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {[
                       "dashboard",
                       "calendar",
@@ -854,7 +854,10 @@ export const UsersManagementPage = () => {
                       "results",
                       "settings",
                     ].map((module) => (
-                      <label key={module} className="flex items-center gap-2">
+                      <label
+                        key={module}
+                        className="grid min-h-10 grid-cols-[1rem_minmax(0,1fr)] items-center gap-3 rounded-md border border-default bg-surface px-3 py-2 transition-colors hover:border-accent hover:bg-selected"
+                      >
                         <input
                           type="checkbox"
                           checked={formData.module_access.includes(module)}
@@ -876,9 +879,9 @@ export const UsersManagementPage = () => {
                               });
                             }
                           }}
-                          className="w-4 h-4 rounded border-default text-accent focus:ring-focus"
+                          className="h-4 w-4 shrink-0 rounded border-default text-accent focus:ring-focus"
                         />
-                        <span className="text-sm text-muted capitalize">
+                        <span className="min-w-0 truncate text-sm font-medium capitalize text-primary">
                           {module}
                         </span>
                       </label>

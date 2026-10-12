@@ -20,19 +20,26 @@ export const RoleSelector = ({ selectedRoles = [], onChange }) => {
   }
 
   return (
-    <div className="space-y-3">
-      <h3 className="font-semibold text-muted">Select Roles</h3>
-      <div className="space-y-2 max-h-64 overflow-y-auto border rounded-lg p-3 bg-selected">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm font-semibold text-primary">Select Roles</h3>
+        <span className="text-xs font-medium text-muted">
+          {selectedRoles.length} selected
+        </span>
+      </div>
+      <div className="grid max-h-64 grid-cols-1 gap-2 overflow-y-auto rounded-lg border border-default bg-subtle p-3 sm:grid-cols-2">
         {roles.map((role) => {
           const isSelected = selectedRoles.includes(role.id);
           const isInactive = role.is_active === false;
           return (
             <label
               key={role.id}
-              className={`flex items-center p-2 rounded ${
+              className={`grid min-h-10 grid-cols-[1rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md border px-2.5 py-2 transition-colors ${
                 isInactive && !isSelected
-                  ? "cursor-not-allowed opacity-60"
-                  : "cursor-pointer hover:bg-surface"
+                  ? "cursor-not-allowed border-default bg-selected opacity-60"
+                  : isSelected
+                    ? "cursor-pointer border-accent bg-selected"
+                    : "cursor-pointer border-default bg-surface hover:border-accent hover:bg-selected"
               }`}
             >
               <input
@@ -40,21 +47,23 @@ export const RoleSelector = ({ selectedRoles = [], onChange }) => {
                 checked={isSelected}
                 onChange={() => handleRoleChange(role.id)}
                 disabled={isInactive && !isSelected}
-                className="w-4 h-4 text-accent rounded"
+                className="h-4 w-4 shrink-0 rounded border-default text-accent focus:ring-focus"
               />
-              <span className="ml-2 flex-1 text-sm text-muted font-medium">
+              <span className="min-w-0 truncate text-sm font-medium text-primary">
                 {role.role_name}
               </span>
-              {role.is_system && (
-                <span className="text-xs bg-accent text-accent px-2 py-1 rounded">
-                  System
-                </span>
-              )}
-              {isInactive && (
-                <span className="text-xs bg-danger-soft text-danger px-2 py-1 rounded">
-                  Inactive
-                </span>
-              )}
+              <span className="flex items-center gap-1">
+                {role.is_system && (
+                  <span className="rounded bg-selected px-2 py-1 text-[10px] font-semibold text-muted">
+                    System
+                  </span>
+                )}
+                {isInactive && (
+                  <span className="rounded bg-danger-soft px-2 py-1 text-[10px] font-semibold text-danger">
+                    Inactive
+                  </span>
+                )}
+              </span>
             </label>
           );
         })}

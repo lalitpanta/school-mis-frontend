@@ -118,17 +118,27 @@ const UsersStaff = () => {
         employeesApi.getEmployeeOptions(),
         sectionsApi.getSections(),
       ]);
-      setUsers(usersRes.data || []);
-      setTeachers(teachersRes.data?.data || []);
-      setStudents(studentsRes.data?.data || []);
-      setEmployees(employeesRes.data?.data || []);
-      setSections(sectionsRes.data?.data || []);
+      setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
+      setTeachers(
+        Array.isArray(teachersRes.data?.data) ? teachersRes.data.data : [],
+      );
+      setStudents(
+        Array.isArray(studentsRes.data?.data) ? studentsRes.data.data : [],
+      );
+      setEmployees(
+        Array.isArray(employeesRes.data?.data) ? employeesRes.data.data : [],
+      );
+      setSections(
+        Array.isArray(sectionsRes.data?.data) ? sectionsRes.data.data : [],
+      );
       // fetch departments for selection
       try {
         const deps = await (
           await import("../../api/departmentsApi")
         ).getDepartments();
-        setDepartmentsList(deps.data?.data || []);
+        setDepartmentsList(
+          Array.isArray(deps.data?.data) ? deps.data.data : [],
+        );
       } catch (err) {
         // ignore
       }
@@ -463,9 +473,9 @@ const UsersStaff = () => {
       return false;
     }
     return (
-      (user.email || "").toLowerCase().includes(term) ||
-      (user.name && user.name.toLowerCase().includes(term)) ||
-      (user.phone && user.phone.toLowerCase().includes(term))
+      String(user.email || "").toLowerCase().includes(term) ||
+      String(user.name || "").toLowerCase().includes(term) ||
+      String(user.phone || "").toLowerCase().includes(term)
     );
   });
   const visibleUserIds = filteredUsers.map((user) => user.id);
@@ -1242,11 +1252,11 @@ const UsersStaff = () => {
                 Module Access
               </label>
               {availableModules.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {availableModules.map((module) => (
                     <label
                       key={module}
-                      className="flex items-center gap-2 px-3 py-2 bg-subtle border border-default rounded-lg cursor-pointer hover:bg-subtle transition"
+                      className="grid min-h-10 grid-cols-[1rem_minmax(0,1fr)] items-center gap-3 rounded-md border border-default bg-surface px-3 py-2 transition-colors hover:border-accent hover:bg-selected"
                     >
                       <input
                         type="checkbox"
@@ -1269,9 +1279,9 @@ const UsersStaff = () => {
                             });
                           }
                         }}
-                        className="w-4 h-4 rounded border-default text-accent focus:ring-focus bg-selected"
+                        className="h-4 w-4 shrink-0 rounded border-default text-accent focus:ring-focus"
                       />
-                      <span className="text-sm text-muted capitalize">
+                      <span className="min-w-0 truncate text-sm font-medium capitalize text-primary">
                         {module}
                       </span>
                     </label>
